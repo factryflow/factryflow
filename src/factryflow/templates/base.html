@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <meta name="description" content="Your meta description goes here">
+        <meta name="keywords" content="your, meta, keywords, go, here">
+        <title>
+            {% block title %}
+                factryflow
+            {% endblock title %}
+
+        </title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
+                integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="{% static "css/output.css" %}">
+    </head>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        {% block outer_content %}
+            {% block content %}
+                <h1>Base</h1>
+            {% endblock content %}
+        {% endblock outer_content %}
+
+    </body>
+</html>

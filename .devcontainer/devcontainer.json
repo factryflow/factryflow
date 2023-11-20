@@ -1,0 +1,58 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "factryflow",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"remoteUser": "vscode",
+
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/bash",
+				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.organizeImports": true,
+						"source.fixAll": true
+					}
+				},
+				"[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
+					"editor.defaultFormatter": "monosans.djlint",
+					"editor.formatOnSave": true
+				},
+				"indentRainbow.ignoreErrorLanguages" : [
+					"jinja-html",
+					"css"
+				],
+
+			},
+			"extensions": [
+				// core
+				"ms-azuretools.vscode-docker",
+				"eamodio.gitlens",
+				"ms-python.python",
+
+				// linter / formatters
+				"ms-python.black-formatter",
+				"monosans.djlint",
+				"samuelcolvin.jinjahtml",
+				"charliermarsh.ruff",
+
+				// other
+				"oderwat.indent-rainbow",
+				"tamasfe.even-better-toml",
+				"otovo-oss.htmx-tags",
+				"qwtel.sqlite-viewer",
+				"bradlc.vscode-tailwindcss",
+				"ms-vscode.makefile-tools"
+			]
+		}
+	},
+
+	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+
+}
