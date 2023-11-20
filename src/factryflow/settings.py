@@ -57,7 +57,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "users.middleware.LoginRequiredMiddleware",
+    # "users.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "factryflow.urls"
@@ -65,7 +65,7 @@ ROOT_URLCONF = "factryflow.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, "factryflow/templates"],
+        "DIRS": [BASE_DIR, "src/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -148,3 +148,6 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+LOGIN_REDIRECT_URL = "/"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

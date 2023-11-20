@@ -12,6 +12,9 @@
 		"vscode": {
 			"settings": {
 				"terminal.integrated.shell.linux": "/bin/bash",
+				"files.associations": {
+					"*.html": "jinja-html"
+				},
 				"[python]": {
 					"editor.defaultFormatter": "ms-python.black-formatter",
 					"editor.formatOnSave": true,
