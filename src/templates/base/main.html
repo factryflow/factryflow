@@ -17,8 +17,10 @@
                 integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"></script>
-        <link rel="stylesheet" href="{% static "css/output.css" %}">
-        <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        {% include "base/theme.html" %}
+        {% include "base/styles.html" %}
+
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         {% include "base/header.html" %}

@@ -11,9 +11,10 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"terminal.integrated.shell.linux": "/bin/bash",
+
 				"files.associations": {
-					"*.html": "jinja-html"
+					"*.html": "django-html",
+
 				},
 				"[python]": {
 					"editor.defaultFormatter": "ms-python.black-formatter",
@@ -42,7 +43,7 @@
 				// linter / formatters
 				"ms-python.black-formatter",
 				"monosans.djlint",
-				"samuelcolvin.jinjahtml",
+				"batisteo.vscode-django",
 				"charliermarsh.ruff",
 
 				// other
@@ -56,6 +57,6 @@
 		}
 	},
 
-	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
-
+	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+	
 }
