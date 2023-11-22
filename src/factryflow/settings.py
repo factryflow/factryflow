@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "common",
     "job_manager",
     "resource_manager",
+    "resource_calendar"
 ]
 
 MIDDLEWARE = [
