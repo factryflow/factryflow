@@ -39,13 +39,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "users",
-    "common",
-    "django_htmx",
-    "template_partials",
+    # auth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    # extensions
+    "django_htmx",
+    "template_partials",
+    "simple_history",
+    "ordered_model",
+    # apps
+    "users",
+    "common",
+    "job_manager",
+    "resource_manager",
 ]
 
 MIDDLEWARE = [
@@ -58,6 +65,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
     # "users.middleware.LoginRequiredMiddleware",
 ]
 
