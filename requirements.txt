@@ -3,3 +3,5 @@ django-allauth==0.58.2
 django-htmx==1.17.2
 django-template-partials==23.3.post1
 djlint==1.34.0
+django-ordered-model==3.7.4
+django-simple-history==3.4.0
