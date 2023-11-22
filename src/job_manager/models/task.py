@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from job_manager.models.job import Job
 
@@ -8,6 +9,8 @@ class WorkCenter(BaseModel):
     name = models.CharField(max_length=150, unique=True)
     notes = models.TextField(blank=True, null=True)
 
+    history = HistoricalRecords(table_name="work_center_history")
+
     class Meta:
         db_table = "work_center"
 
@@ -15,12 +18,16 @@ class WorkCenter(BaseModel):
 class TaskStatus(BaseModel):
     name = models.CharField(max_length=150)
 
+    history = HistoricalRecords(table_name="task_status_history")
+
     class Meta:
         db_table = "task_status"
 
 
 class TaskType(BaseModel):
     name = models.CharField(max_length=150)
+
+    history = HistoricalRecords(table_name="task_type_history")
 
     class Meta:
         db_table = "task_type"
@@ -56,6 +63,8 @@ class Task(BaseModel):
     )
 
     dependencies = models.ManyToManyField("Dependency", related_name="tasks")
+
+    history = HistoricalRecords(table_name="task_history")
 
     class Meta:
         db_table = "task"

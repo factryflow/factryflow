@@ -2,10 +2,13 @@
 from common.models import BaseModel
 from django.db import models
 from ordered_model.models import OrderedModelBase
+from simple_history.models import HistoricalRecords
 
 
 class JobStatus(BaseModel):
     name = models.CharField(max_length=150)
+
+    history = HistoricalRecords(table_name="job_status_history")
 
     class Meta:
         db_table = "job_status"
@@ -13,6 +16,8 @@ class JobStatus(BaseModel):
 
 class JobType(BaseModel):
     name = models.CharField(max_length=150)
+
+    history = HistoricalRecords(table_name="job_type_history")
 
     class Meta:
         db_table = "job_type"
@@ -32,6 +37,7 @@ class Job(BaseModel, OrderedModelBase):
     job_status = models.ForeignKey(JobStatus, on_delete=models.DO_NOTHING)
     job_type = models.ForeignKey(JobType, on_delete=models.DO_NOTHING)
     dependencies = models.ManyToManyField("Dependency", related_name="jobs")
+    history = HistoricalRecords(table_name="job_history")
 
     class Meta:
         db_table = "job"

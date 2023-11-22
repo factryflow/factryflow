@@ -1,7 +1,8 @@
-from common.models import BaseModel
 from django.core.exceptions import ValidationError
 from django.db import models
-from resource_manager.models import Resource
+from simple_history.models import HistoricalRecords
+
+from common.models import BaseModel
 
 # ------------------------------------------------------------------------------
 # Weekly Shift Template Models
@@ -11,12 +12,14 @@ from resource_manager.models import Resource
 class WeeklyShiftTemplate(BaseModel):
     name = models.CharField(max_length=150, blank=True, null=True)
 
+    history = HistoricalRecords(table_name="weekly_shift_template_history")
+
     class Meta:
         db_table = "weekly_shift_template"
 
 
 class WeeklyShiftTemplateDetail(BaseModel):
-    day_of_week = models.models.IntegerField()
+    day_of_week = models.IntegerField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     weekly_shift_template = models.ForeignKey(
@@ -24,6 +27,8 @@ class WeeklyShiftTemplateDetail(BaseModel):
         on_delete=models.CASCADE,
         related_name="weekly_shift_template_details",
     )
+
+    history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
 
     def clean(self):
         if self.day_of_week < 0 or self.day_of_week > 6:
@@ -42,6 +47,8 @@ class WeeklyShiftTemplateDetail(BaseModel):
 
 class OperationalExceptionType(BaseModel):
     name = models.CharField(max_length=150)
+
+    history = HistoricalRecords(table_name="operational_exception_type_history")
 
     class Meta:
         db_table = "operational_exception_type"
@@ -62,8 +69,12 @@ class OperationalException(BaseModel):
         WeeklyShiftTemplate, on_delete=models.DO_NOTHING, blank=True, null=True
     )
     resource = models.ForeignKey(
-        Resource, on_delete=models.DO_NOTHING, related_name="operational_exceptions"
+        "resource_manager.Resource",
+        on_delete=models.DO_NOTHING,
+        related_name="operational_exceptions",
     )
+
+    history = HistoricalRecords(table_name="operational_exception_history")
 
     def clean(self):
         if self.start_datetime > self.end_datetime:
