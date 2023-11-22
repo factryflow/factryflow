@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from simple_history.models import HistoricalRecords
 
 
 class BaseModel(models.Model):
@@ -21,8 +20,6 @@ class BaseModel(models.Model):
         null=True,
         blank=True,
     )
-
-    history = HistoricalRecords(custom_model_name=lambda x: f"{x}_history")
 
     class Meta:
         abstract = True
