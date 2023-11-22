@@ -52,7 +52,8 @@
 				"otovo-oss.htmx-tags",
 				"qwtel.sqlite-viewer",
 				"bradlc.vscode-tailwindcss",
-				"ms-vscode.makefile-tools"
+				"ms-vscode.makefile-tools",
+				"GitHub.copilot"
 			]
 		}
 	},
