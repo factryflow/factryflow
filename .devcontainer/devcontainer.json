@@ -17,13 +17,14 @@
 
 				},
 				"[python]": {
-					"editor.defaultFormatter": "ms-python.black-formatter",
 					"editor.formatOnSave": true,
 					"editor.codeActionsOnSave": {
-						"source.organizeImports": true,
-						"source.fixAll": true
-					}
+						"source.fixAll": true,
+						"source.organizeImports": true
+					},
+					"editor.defaultFormatter": "charliermarsh.ruff"
 				},
+
 				"[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
 					"editor.defaultFormatter": "monosans.djlint",
 					"editor.formatOnSave": true
@@ -38,13 +39,12 @@
 				// core
 				"ms-azuretools.vscode-docker",
 				"eamodio.gitlens",
+				"charliermarsh.ruff",
 				"ms-python.python",
 
 				// linter / formatters
-				"ms-python.black-formatter",
 				"monosans.djlint",
 				"batisteo.vscode-django",
-				"charliermarsh.ruff",
 
 				// other
 				"oderwat.indent-rainbow",
