@@ -53,7 +53,8 @@
 				"qwtel.sqlite-viewer",
 				"bradlc.vscode-tailwindcss",
 				"ms-vscode.makefile-tools",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"ms-toolsai.jupyter"
 			]
 		}
 	},
