@@ -24,7 +24,7 @@
 
   <body
     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-    x-data="{ sidebarOpen: true }"
+    x-data="{ sidebarOpen: true,activeMenuItem: null,activeSubMenuItem:null}"
   >
     {% include "base/header.html" %}
 

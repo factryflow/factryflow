@@ -18,7 +18,10 @@
       <li>
         <a
           href="#"
-          class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          class="menu-item w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover: hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          @click="activeMenuItem = 'dashboard'"
+          :class="{ 'border-l-[3px]': activeMenuItem === 'dashboard', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'dashboard' }"
+          :style="{ filter: (activeMenuItem === 'dashboard') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -55,8 +58,10 @@
       <li x-data="{dropdownMenu: false}">
         <button
           type="button"
-          class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
-          @click="dropdownMenu = ! dropdownMenu"
+          class="menu-item w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          @click="activeMenuItem = 'production',dropdownMenu = ! dropdownMenu"
+          :class="{ 'border-l-[3px]': activeMenuItem === 'production', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'production' }"
+          :style="{ filter: (activeMenuItem === 'production') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +111,9 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'jobs'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'jobs'}"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +138,9 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'Tasks'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'Tasks'}"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -156,10 +165,12 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'Dependencies'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'Dependencies'}"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
+                xmlns="htt  p://www.w3.org/2000/svg"
                 width="6"
                 height="6"
                 viewBox="0 0 6 6"
@@ -185,7 +196,9 @@
         <button
           type="button"
           class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
-          @click="dropdownMenu = ! dropdownMenu"
+          @click="activeMenuItem = 'Resource-Management',dropdownMenu = ! dropdownMenu"
+          :class="{ 'border-l-[3px]': activeMenuItem === 'Resource-Management', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'Resource-Management' }"
+          :style="{ filter: (activeMenuItem === 'Resource-Management') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -232,7 +245,10 @@
           </svg>
         </button>
         <ul x-show="dropdownMenu" class="w-full space-y-2.5 ml-5">
-          <li>
+          <li
+            @click="activeSubMenuItem = 'Resources'"
+            :style="{ filter: (activeSubMenuItem === 'Resources') ? 'text-[#023E8A]  brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
+          >
             <a
               href="#"
               class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
@@ -261,6 +277,8 @@
             <a
               href="#"
               class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'Resources-Groups'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'Resources-Groups'}"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -286,6 +304,8 @@
             <a
               href="#"
               class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'WST'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'WST'}"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -311,6 +331,8 @@
             <a
               href="#"
               class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'Operational-Exception'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'Operational-Exception'}"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -336,6 +358,8 @@
             <a
               href="#"
               class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              @click="activeSubMenuItem = 'Allocation-Rules'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'Allocation-Rules'}"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -364,6 +388,9 @@
         <a
           href="#"
           class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          @click="activeMenuItem = 'setting'"
+          :class="{ 'border-l-[3px]': activeMenuItem === 'setting', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'setting' }"
+          :style="{ filter: (activeMenuItem === 'setting') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -401,6 +428,9 @@
         <a
           href="#"
           class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          @click="activeMenuItem = 'help'"
+          :class="{ 'border-l-[3px]': activeMenuItem === 'help', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'help' }"
+          :style="{ filter: (activeMenuItem === 'help') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
