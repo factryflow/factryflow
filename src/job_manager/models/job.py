@@ -27,7 +27,7 @@ class Job(BaseModel, OrderedModelBase):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     customer = models.CharField(max_length=250, blank=True)
-    due_date = models.DateField(blank=True, null=True)
+    due_date = models.DateField()
     priority = models.PositiveIntegerField(editable=False, db_index=True)
     order_field_name = "priority"
     planned_start_datetime = models.DateTimeField(null=True, blank=True)
