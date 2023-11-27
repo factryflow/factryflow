@@ -8,3 +8,5 @@ migrate:
 migrations:
 	python src/manage.py makemigrations
 
+test:
+	@cd src && pytest
