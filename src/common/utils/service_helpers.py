@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 
 
-def create_or_update_model(model, data: dict):
+def build_or_retrieve_instance(model, data: dict):
     """
     Create or update a Django model instance based on the provided data.
 
@@ -9,7 +9,8 @@ def create_or_update_model(model, data: dict):
     :param data: Dictionary containing data for the model instance.
     :return: The created or updated model instance.
     """
-    model_id = data.get("id")
+    model_id = data.pop("id", None)
+
     if model_id:
         instance = model.objects.filter(id=model_id).first()
         if not instance:
