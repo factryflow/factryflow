@@ -111,7 +111,7 @@
           <li>
             <a
               href="#"
-              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] duration-75"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] transition duration-75"
               @click="activeSubMenuItem = 'jobs',activeMenuItem = 'production'"
               :class="{'text-[#023E8A]': activeSubMenuItem === 'jobs'}"
               x-data="{ isHovered: false }"
@@ -141,7 +141,7 @@
             >
               <div
                 class="h-1.5 w-1.5 bg-gray-500 rounded-full"
-                :class="{ 'h-2 w-2 bg-blue-800': isHovered || activeSubMenuItem === 'Tasks' }"
+                :class="{ 'h-2 w-2  bg-blue-800': isHovered || activeSubMenuItem === 'Tasks'}"
               ></div>
               <span
                 class="ml-4 mr-24"
@@ -153,16 +153,17 @@
           <li>
             <a
               href="#"
-              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter duration-75"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
               @click="activeSubMenuItem = 'Dependencies',activeMenuItem = 'production'"
               :class="{'text-[#023E8A]': activeSubMenuItem === 'Dependencies'}"
+              :style="{ filter: (activeSubMenuItem === 'Dependencies') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
               x-data="{ isHovered: false }"
               x-on:mouseover="isHovered = true"
               x-on:mouseout="isHovered = false"
             >
               <div
                 class="h-1.5 w-1.5 bg-gray-500 rounded-full"
-                :class="{ 'h-2 w-2 bg-blue-800': isHovered || activeSubMenuItem === 'Dependencies' }"
+                :class="{ 'h-2 w-2': isHovered || activeSubMenuItem === 'Dependencies' }"
               ></div>
               <span
                 class="ml-4 mr-24"
