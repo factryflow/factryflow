@@ -7,25 +7,25 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta name="description" content="Your meta description goes here" />
     <meta name="keywords" content="your, meta, keywords, go, here" />
-    <title>{% block title %} factryflow {% endblock title %}</title>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
-      integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
-    ></script>
-    {% include "base/theme.html" %} {% include "base/styles.html" %}
-  </head>
+    <title>
+      {% block title %}
+        factryflow
+      {% endblock title %}
 
-  <body
-    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-    x-data="{ sidebarOpen: true,activeMenuItem: null,activeSubMenuItem:null}"
-  >
+    </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
+            integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    {% include "base/theme.html" %}
+    {% include "base/styles.html" %}
+
+  </head>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        x-data="{ sidebarOpen: true,activeMenuItem: null,activeSubMenuItem:null}">
     {% include "base/header.html" %}
 
     <div class="flex h-screen">
@@ -34,9 +34,12 @@
       <!-- Main Content -->
       <div class="flex-1 bg-[#FAFAFB] border border-[#F1F1F2] rounded-xl">
         {% block content %}
-        <h1>Base Content</h1>
+          <h1>Base Content</h1>
         {% endblock content %}
+
       </div>
     </div>
+    {% include "notifications" %}
+
   </body>
 </html>
