@@ -19,6 +19,7 @@
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
     ></script>
+
     {% include "base/theme.html" %} {% include "base/styles.html" %}
   </head>
 
@@ -34,7 +35,122 @@
       <!-- Main Content -->
       <div class="flex-1 bg-[#FAFAFB] border border-[#F1F1F2] rounded-xl">
         {% block content %}
-        <h1>Base Content</h1>
+        <div>
+          <!-- Tabs -->
+          <div
+            x-data="{
+            selectedId: null,
+            init() {
+              // Set the first available tab on the page on page load.
+              this.$nextTick(() => this.select(this.$id('tab', 1)))
+            },
+            select(id) {
+              this.selectedId = id
+            },
+            isSelected(id) {
+              return this.selectedId === id
+            },
+            whichChild(el, parent) {
+              return Array.from(parent.children).indexOf(el) + 1
+            }
+          }"
+            x-id="['tab']"
+            class="mx-auto"
+          >
+            <!-- Tab List -->
+            <ul
+              x-ref="tablist"
+              @keydown.right.prevent.stop="$focus.wrap().next()"
+              @keydown.home.prevent.stop="$focus.first()"
+              @keydown.page-up.prevent.stop="$focus.first()"
+              @keydown.left.prevent.stop="$focus.wrap().prev()"
+              @keydown.end.prevent.stop="$focus.last()"
+              @keydown.page-down.prevent.stop="$focus.last()"
+              role="tablist"
+              class="-mb-px flex items-stretch"
+            >
+              <!-- Tab 1 -->
+              <li>
+                <button
+                  :id="$id('tab', 1)"
+                  @click="select($el.id)"
+                  @mousedown.prevent
+                  @focus="select($el.id)"
+                  type="button"
+                  :tabindex="isSelected($el.id) ? 0 : -1"
+                  :aria-selected="isSelected($el.id)"
+                  :class="{ 'border-b-2 border-blue-500': isSelected($el.id), 'border-transparent': !isSelected($el.id) }"
+                  class="inline-flex px-5 py-2.5 font-semibold focus:outline-none"
+                  role="tab"
+                >
+                  Tab 1
+                </button>
+              </li>
+
+              <!-- Tab 2 -->
+              <li>
+                <button
+                  :id="$id('tab', 2)"
+                  @click="select($el.id)"
+                  @mousedown.prevent
+                  @focus="select($el.id)"
+                  type="button"
+                  :tabindex="isSelected($el.id) ? 0 : -1"
+                  :aria-selected="isSelected($el.id)"
+                  :class="{ 'border-b-2 border-blue-500': isSelected($el.id), 'border-transparent': !isSelected($el.id) }"
+                  class="inline-flex px-5 py-2.5 font-semibold focus:outline-none"
+                  role="tab"
+                >
+                  Tab 2
+                </button>
+              </li>
+            </ul>
+
+            <!-- Panels -->
+            <div
+              role="tabpanel"
+              class="border border-gray-200 bg-white rounded-b-md"
+            >
+              <!-- Panel 1 -->
+              <section
+                x-show="isSelected($id('tab', 1))"
+                :aria-labelledby="$id('tab', 1)"
+                class="p-8"
+              >
+                <h2 class="text-xl font-bold">Tab 1 Content</h2>
+                <p class="mt-2 text-gray-500">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Optio, quo sequi error quibusdam quas temporibus animi
+                  sapiente eligendi! Deleniti minima velit recusandae iure.
+                </p>
+                <button
+                  class="mt-5 rounded-md border border-gray-200 px-4 py-2 text-sm"
+                >
+                  Something focusable
+                </button>
+              </section>
+
+              <!-- Panel 2 -->
+              <section
+                x-show="isSelected($id('tab', 2))"
+                :aria-labelledby="$id('tab', 2)"
+                class="p-8"
+              >
+                <h2 class="text-xl font-bold">Tab 2 Content</h2>
+                <p class="mt-2 text-gray-500">
+                  Fugiat odit alias, eaque optio quas nobis minima reiciendis
+                  voluptate dolorem nisi facere debitis ea laboriosam vitae
+                  omnis ut voluptatum eos. Fugiat?
+                </p>
+                <button
+                  class="mt-5 rounded-md border border-gray-200 px-4 py-2 text-sm"
+                >
+                  Something else focusable
+                </button>
+              </section>
+            </div>
+          </div>
+        </div>
         {% endblock content %}
       </div>
     </div>

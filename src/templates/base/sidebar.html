@@ -1,5 +1,5 @@
 <div
-  class="bg-white text-gray-500 space-y-6 py-2 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out"
+  class="bg-white text-gray-500 space-y-6 py-2 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-all duration-200 ease-in-out"
   :class="sidebarOpen ? 'w-72' : 'w-20'"
 >
   <!-- Sidebar content (links, icons, etc.) -->
@@ -18,9 +18,9 @@
       <li>
         <a
           href="#"
-          class="menu-item w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover: hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
           @click="activeMenuItem = 'dashboard'"
-          :class="{ 'border-l-[3px]': activeMenuItem === 'dashboard', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'dashboard' }"
+          :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'dashboard'}"
           :style="{ filter: (activeMenuItem === 'dashboard') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
@@ -58,9 +58,9 @@
       <li x-data="{dropdownMenu: false}">
         <button
           type="button"
-          class="menu-item w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
+          class="menu-item w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A]"
           @click="activeMenuItem = 'production',dropdownMenu = ! dropdownMenu"
-          :class="{ 'border-l-[3px]': activeMenuItem === 'production', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'production' }"
+          :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'production'}"
           :style="{ filter: (activeMenuItem === 'production') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
@@ -111,23 +111,17 @@
           <li>
             <a
               href="#"
-              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'jobs'"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] duration-75"
+              @click="activeSubMenuItem = 'jobs',activeMenuItem = 'production'"
               :class="{'text-[#023E8A]': activeSubMenuItem === 'jobs'}"
+              x-data="{ isHovered: false }"
+              x-on:mouseover="isHovered = true"
+              x-on:mouseout="isHovered = false"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div
+                class="h-1.5 w-1.5 bg-gray-500 rounded-full"
+                :class="{ 'h-2 w-2 bg-blue-800': isHovered || activeSubMenuItem === 'jobs' }"
+              ></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -138,23 +132,17 @@
           <li>
             <a
               href="#"
-              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'Tasks'"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
+              @click="activeSubMenuItem = 'Tasks',activeMenuItem = 'production'"
               :class="{'text-[#023E8A]': activeSubMenuItem === 'Tasks'}"
+              x-data="{ isHovered: false }"
+              x-on:mouseover="isHovered = true"
+              x-on:mouseout="isHovered = false"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div
+                class="h-1.5 w-1.5 bg-gray-500 rounded-full"
+                :class="{ 'h-2 w-2 bg-blue-800': isHovered || activeSubMenuItem === 'Tasks' }"
+              ></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -165,23 +153,17 @@
           <li>
             <a
               href="#"
-              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'Dependencies'"
+              class="sub-menu-item flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter duration-75"
+              @click="activeSubMenuItem = 'Dependencies',activeMenuItem = 'production'"
               :class="{'text-[#023E8A]': activeSubMenuItem === 'Dependencies'}"
+              x-data="{ isHovered: false }"
+              x-on:mouseover="isHovered = true"
+              x-on:mouseout="isHovered = false"
             >
-              <svg
-                xmlns="htt  p://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div
+                class="h-1.5 w-1.5 bg-gray-500 rounded-full"
+                :class="{ 'h-2 w-2 bg-blue-800': isHovered || activeSubMenuItem === 'Dependencies' }"
+              ></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -197,7 +179,7 @@
           type="button"
           class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
           @click="activeMenuItem = 'Resource-Management',dropdownMenu = ! dropdownMenu"
-          :class="{ 'border-l-[3px]': activeMenuItem === 'Resource-Management', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'Resource-Management' }"
+          :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'Resource-Management'}"
           :style="{ filter: (activeMenuItem === 'Resource-Management') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
@@ -245,27 +227,15 @@
           </svg>
         </button>
         <ul x-show="dropdownMenu" class="w-full space-y-2.5 ml-5">
-          <li
-            @click="activeSubMenuItem = 'Resources'"
-            :style="{ filter: (activeSubMenuItem === 'Resources') ? 'text-[#023E8A]  brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-          >
+          <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
+              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
+              @click="activeSubMenuItem = 'Resources',activeMenuItem = 'Resource-Management'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'Resources'}"
+              :style="{ filter: (activeSubMenuItem === 'Resources') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div class="h-1.5 w-1.5 bg-gray-500 rounded-full"></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -276,23 +246,12 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'Resources-Groups'"
-              :class="{'text-[#023E8A]': activeSubMenuItem === 'Resources-Groups'}"
+              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
+              @click="activeSubMenuItem = 'RG',activeMenuItem = 'Resource-Management'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'RG'}"
+              :style="{ filter: (activeSubMenuItem === 'RG') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div class="h-1.5 w-1.5 bg-gray-500 rounded-full"></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -303,23 +262,12 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'WST'"
+              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
+              @click="activeSubMenuItem = 'WST',activeMenuItem = 'Resource-Management'"
               :class="{'text-[#023E8A]': activeSubMenuItem === 'WST'}"
+              :style="{ filter: (activeSubMenuItem === 'WST') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div class="h-1.5 w-1.5 bg-gray-500 rounded-full"></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -330,23 +278,12 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'Operational-Exception'"
-              :class="{'text-[#023E8A]': activeSubMenuItem === 'Operational-Exception'}"
+              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
+              @click="activeSubMenuItem = 'OE',activeMenuItem = 'Resource-Management'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'OE'}"
+              :style="{ filter: (activeSubMenuItem === 'OE') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div class="h-1.5 w-1.5 bg-gray-500 rounded-full"></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -357,23 +294,12 @@
           <li>
             <a
               href="#"
-              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter"
-              @click="activeSubMenuItem = 'Allocation-Rules'"
-              :class="{'text-[#023E8A]': activeSubMenuItem === 'Allocation-Rules'}"
+              class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
+              @click="activeSubMenuItem = 'A&R',activeMenuItem = 'Resource-Management'"
+              :class="{'text-[#023E8A]': activeSubMenuItem === 'A&R'}"
+              :style="{ filter: (activeSubMenuItem === 'A&R') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="6"
-                height="6"
-                viewBox="0 0 6 6"
-                fill="none"
-                class="flex-shrink-0 hover:w-2.5 hover:h-2.5"
-              >
-                <path
-                  d="M2.99169 5.5C2.53212 5.5 2.11406 5.38649 1.73754 5.15947C1.36102 4.93245 1.05925 4.63068 0.832226 4.25415C0.610742 3.87209 0.5 3.45127 0.5 2.99169C0.5 2.53765 0.610742 2.12237 0.832226 1.74585C1.05925 1.36932 1.36102 1.06755 1.73754 0.840531C2.11406 0.61351 2.53212 0.5 2.99169 0.5C3.45127 0.5 3.86932 0.61351 4.24585 0.840531C4.62791 1.06755 4.93245 1.36932 5.15947 1.74585C5.38649 2.12237 5.5 2.53765 5.5 2.99169C5.5 3.45127 5.38649 3.87209 5.15947 4.25415C4.93245 4.63068 4.62791 4.93245 4.24585 5.15947C3.86932 5.38649 3.45127 5.5 2.99169 5.5Z"
-                  fill="#5E6278"
-                />
-              </svg>
+              <div class="h-1.5 w-1.5 bg-gray-500 rounded-full"></div>
               <span
                 class="ml-4 mr-24"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0'"
@@ -388,9 +314,9 @@
         <a
           href="#"
           class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
-          @click="activeMenuItem = 'setting'"
-          :class="{ 'border-l-[3px]': activeMenuItem === 'setting', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'setting' }"
-          :style="{ filter: (activeMenuItem === 'setting') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
+          @click="activeMenuItem = 'Settings'"
+          :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'Settings'}"
+          :style="{ filter: (activeMenuItem === 'Settings') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -428,9 +354,9 @@
         <a
           href="#"
           class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
-          @click="activeMenuItem = 'help'"
-          :class="{ 'border-l-[3px]': activeMenuItem === 'help', 'bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'help' }"
-          :style="{ filter: (activeMenuItem === 'help') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
+          @click="activeMenuItem = 'H&S'"
+          :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'H&S'}"
+          :style="{ filter: (activeMenuItem === 'H&S') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
