@@ -32,10 +32,15 @@ class WeeklyShiftTemplateDetail(BaseModel):
     def clean(self):
         if self.day_of_week < 0 or self.day_of_week > 6:
             raise ValidationError("Day of week must be between 0 and 6")
-        if self.start_time > self.end_time:
+        if self.start_time >= self.end_time:
             raise ValidationError("Start time must be before end time")
 
     class Meta:
+        indexes = [
+            models.Index(
+                fields=["day_of_week"],
+            )
+        ]
         db_table = "weekly_shift_template_detail"
 
 

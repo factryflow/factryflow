@@ -1,5 +1,6 @@
-from common.utils.service_helpers import create_or_update_model
+from common.utils.service_helpers import build_or_retrieve_instance
 from django.db import transaction
+
 from job_manager.models.job import Job, JobStatus, JobType
 
 
@@ -16,7 +17,7 @@ def job_type_create(*, name: str) -> JobType:
 def job_create_or_update(
     *, job_data: dict, job_type: JobType, job_status: JobStatus
 ) -> Job:
-    job = create_or_update_model(Job, job_data)
+    job = build_or_retrieve_instance(Job, job_data)
 
     job.job_type = job_type
     job.job_status = job_status
