@@ -1,6 +1,6 @@
 from datetime import datetime, time
 
-from common.utils.service_helpers import build_or_retrieve_instance
+from common.utils.services import build_or_retrieve_instance
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from resource_manager.models import Resource
