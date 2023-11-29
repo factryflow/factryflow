@@ -42,7 +42,7 @@ def create_update_weekly_shift_template_detail(
     detail_data["end_time"] = parse_time(detail_data["end_time"])
 
     # Create or update WeeklyShiftTemplateDetail
-    detail = build_or_retrieve_instance(WeeklyShiftTemplateDetail, detail_data)
+    detail, _ = build_or_retrieve_instance(WeeklyShiftTemplateDetail, detail_data)
 
     if weekly_shift_template:
         detail.weekly_shift_template = weekly_shift_template
@@ -75,7 +75,7 @@ def create_update_weekly_shift_template(
     Create or update a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
     """
 
-    template = build_or_retrieve_instance(WeeklyShiftTemplate, template_data)
+    template, _ = build_or_retrieve_instance(WeeklyShiftTemplate, template_data)
 
     # Validate and save WeeklyShiftTemplate
     template.full_clean()
@@ -98,7 +98,7 @@ def create_update_operational_exception_type(
     Create or update an OperationalExceptionType instance.
     """
 
-    exception_type = build_or_retrieve_instance(
+    exception_type, _ = build_or_retrieve_instance(
         OperationalExceptionType, exception_type_data
     )
 
@@ -121,7 +121,7 @@ def create_update_operational_exception(
     Create or update an OperationalException instance.
     """
 
-    exception = build_or_retrieve_instance(OperationalException, exception_data)
+    exception, _ = build_or_retrieve_instance(OperationalException, exception_data)
 
     # Set the related objects
     exception.operational_exception_type = exception_type
