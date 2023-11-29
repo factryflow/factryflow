@@ -15,15 +15,6 @@ class WorkCenter(BaseModel):
         db_table = "work_center"
 
 
-class TaskStatus(BaseModel):
-    name = models.CharField(max_length=150)
-
-    history = HistoricalRecords(table_name="task_status_history")
-
-    class Meta:
-        db_table = "task_status"
-
-
 class TaskType(BaseModel):
     name = models.CharField(max_length=150)
 
@@ -31,6 +22,12 @@ class TaskType(BaseModel):
 
     class Meta:
         db_table = "task_type"
+
+
+class TaskStatusChoices(models.TextChoices):
+    NOT_STARTED = "NS", "Not Started"
+    IN_PROGRESS = "IP", "In Progress"
+    COMPLETED = "CM", "Completed"
 
 
 class Task(BaseModel):
@@ -44,11 +41,14 @@ class Task(BaseModel):
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
     planned_end_datetime = models.DateTimeField(blank=True, null=True)
     item = models.CharField(max_length=250, blank=True, null=True)
+    task_status = models.CharField(
+        max_length=2,
+        choices=TaskStatusChoices.choices,
+        default=TaskStatusChoices.NOT_STARTED,
+    )
 
     # foreign keys
-    task_status = models.ForeignKey(
-        TaskStatus, on_delete=models.CASCADE, related_name="tasks_status"
-    )
+
     task_type = models.ForeignKey(
         TaskType, on_delete=models.CASCADE, related_name="tasks_type"
     )
