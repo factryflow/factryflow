@@ -6,7 +6,7 @@ from job_manager.services import job_create_or_update, job_type_create_or_update
 
 @pytest.mark.django_db
 def test_create_job_type():
-    job_type = job_type_create_or_update(name="test")
+    job_type = job_type_create_or_update(job_type_data={"name": "test"})
 
     assert job_type.name == "test"
     assert job_type.id is not None
