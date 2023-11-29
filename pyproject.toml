@@ -3,3 +3,6 @@ profile="django"
 ignore="H006"
 blank_line_after_tag="load,extends,include,endpartialdef,endblock"
 custom_blocks="partialdef,endpartialdef"
+
+[tool.ruff]
+ignore-init-module-imports = true
