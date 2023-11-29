@@ -4,22 +4,12 @@ import factory
 from common.utils.tests import faker
 from job_manager.models import (
     Dependency,
-    DependencyStatus,
     DependencyType,
     Job,
-    JobStatus,
     JobType,
     Task,
-    TaskStatus,
     TaskType,
 )
-
-
-class JobStatusFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = JobStatus
-
-    name = factory.lazy_attribute(lambda _: faker.unique.word())
 
 
 class JobTypeFactory(factory.django.DjangoModelFactory):
@@ -41,7 +31,7 @@ class JobFactory(factory.django.DjangoModelFactory):
     planned_start_datetime = None
     planned_end_datetime = None
     external_id = None
-    job_status = factory.SubFactory(JobStatusFactory)
+    job_status = "NP"  # Not Planned
     job_type = factory.SubFactory(JobTypeFactory)
 
     class Params:
@@ -62,13 +52,6 @@ class JobFactory(factory.django.DjangoModelFactory):
         )
 
 
-class DependencyStatusFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = DependencyStatus
-
-    name = factory.lazy_attribute(lambda _: faker.unique.word())
-
-
 class DependencyTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = DependencyType
@@ -82,15 +65,8 @@ class DependencyFactory(factory.django.DjangoModelFactory):
 
     name = factory.lazy_attribute(lambda x: faker.name())
     description = None
-    dependency_status = factory.SubFactory(DependencyStatusFactory)
+    dependency_status = "PD"  # Pending
     dependency_type = factory.SubFactory(DependencyTypeFactory)
-
-
-class TaskStatusFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = TaskStatus
-
-    name = factory.lazy_attribute(lambda _: faker.unique.word())
 
 
 class TaskTypeFactory(factory.django.DjangoModelFactory):
@@ -106,7 +82,7 @@ class TaskFactory(factory.django.DjangoModelFactory):
 
     name = factory.lazy_attribute(lambda _: faker.unique.word())
     description = None
-    task_status = factory.SubFactory(TaskStatusFactory)
+    task_status = "NS"  # Not Started
     task_type = factory.SubFactory(TaskTypeFactory)
     job = None
 

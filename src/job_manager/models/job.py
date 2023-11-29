@@ -1,17 +1,11 @@
 # Create your models here.
 from common.models import BaseModel
+
+#
+from django.core.exceptions import ValidationError
 from django.db import models
 from ordered_model.models import OrderedModelBase
 from simple_history.models import HistoricalRecords
-
-
-class JobStatus(BaseModel):
-    name = models.CharField(max_length=150)
-
-    history = HistoricalRecords(table_name="job_status_history")
-
-    class Meta:
-        db_table = "job_status"
 
 
 class JobType(BaseModel):
@@ -21,6 +15,14 @@ class JobType(BaseModel):
 
     class Meta:
         db_table = "job_type"
+
+
+class JobStatusChoices(models.TextChoices):
+    NOT_PLANNED = "NP", "Not Planned"
+    IN_PROGRESS = "IP", "In Progress"
+    COMPLETED = "CM", "Completed"
+    CANCELLED = "CN", "Cancelled"
+    # TODO ON_HOLD = 'OH', 'On Hold'
 
 
 class Job(BaseModel, OrderedModelBase):
@@ -34,7 +36,11 @@ class Job(BaseModel, OrderedModelBase):
     planned_end_datetime = models.DateTimeField(null=True, blank=True)
     external_id = models.CharField(max_length=150, blank=True)
     note = models.CharField(max_length=150, blank=True)
-    job_status = models.ForeignKey(JobStatus, on_delete=models.DO_NOTHING)
+    job_status = models.CharField(
+        max_length=2,
+        choices=JobStatusChoices.choices,
+        default=JobStatusChoices.NOT_PLANNED,
+    )
     job_type = models.ForeignKey(JobType, on_delete=models.DO_NOTHING)
     dependencies = models.ManyToManyField("Dependency", related_name="jobs")
     history = HistoricalRecords(table_name="job_history")
@@ -42,3 +48,8 @@ class Job(BaseModel, OrderedModelBase):
     class Meta:
         db_table = "job"
         ordering = ("priority",)
+
+    def update_priority(self, new_priority):
+        if new_priority < 0:
+            raise ValidationError("Priority must be greater than 0")
+        self.to(new_priority)
