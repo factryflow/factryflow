@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta name="description" content="Your meta description goes here" />
+    <meta name="keywords" content="your, meta, keywords, go, here" />
+    <title>{% block title %} Job {% endblock title %}</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
+      integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
+    ></script>
+    {% include "../styles.html" %} {% include "../styles.html" %}
+  </head>
+  <body
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+    x-data="{sidebarOpen: false}"
+  >
+    {% include "../header.html" %}
+    <div class="flex">
+      {% include "../sidebar.html" %}
+      <!-- Main Content -->
+      <div
+        class="flex-1 bg-[#FAFAFB] border border-[#F1F1F2] rounded-t-xl py-5 px-10"
+      >
+        <!-- Breadcrumb -->
+        <div class="flex flex-row justify-between">
+          <div class="flex-wrap">
+            <nav class="flex pb-4" aria-label="Breadcrumb">
+              <ol
+                class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse"
+              >
+                <li class="inline-flex items-center">
+                  <a
+                    href="/"
+                    class="inline-flex items-center text-xs font-semibold text-[#5E6278]"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M13.1533 15.16H10.8867C10.3562 15.16 9.84752 14.9493 9.47244 14.5742C9.09737 14.1991 8.88666 13.6904 8.88666 13.16V10.18C8.88609 10.0524 8.85735 9.92646 8.80249 9.81124C8.74762 9.69601 8.66799 9.59433 8.56927 9.51345C8.47056 9.43256 8.3552 9.37448 8.23144 9.34334C8.10767 9.31221 7.97856 9.30879 7.85332 9.33333C7.64535 9.37857 7.45992 9.49553 7.3295 9.66373C7.19908 9.83193 7.132 10.0406 7.13999 10.2533V13.1333C7.13999 13.6638 6.92928 14.1725 6.5542 14.5475C6.17913 14.9226 5.67042 15.1333 5.13999 15.1333H2.84666C2.31622 15.1333 1.80752 14.9226 1.43244 14.5475C1.05737 14.1725 0.846656 13.6638 0.846656 13.1333V7.55334C0.841084 7.06258 0.941203 6.57638 1.14021 6.12775C1.33922 5.67912 1.63245 5.27858 1.99999 4.95334L5.83999 1.62C6.44282 1.10711 7.20849 0.82547 7.99999 0.82547C8.79148 0.82547 9.55715 1.10711 10.16 1.62L13.9933 4.95334C14.3654 5.27532 14.6639 5.67352 14.8687 6.12096C15.0734 6.5684 15.1796 7.05461 15.18 7.54667V13.1333C15.1836 13.4005 15.1336 13.6656 15.033 13.9131C14.9324 14.1606 14.7833 14.3855 14.5944 14.5744C14.4055 14.7633 14.1806 14.9125 13.9331 15.013C13.6856 15.1136 13.4205 15.1636 13.1533 15.16ZM7.99999 8.32667C8.49214 8.32667 8.96423 8.52171 9.31286 8.86909C9.66148 9.21647 9.85823 9.68786 9.85999 10.18V13.1333C9.85999 13.4056 9.96816 13.6668 10.1607 13.8593C10.3532 14.0518 10.6144 14.16 10.8867 14.16H13.1533C13.2887 14.1609 13.4229 14.135 13.5483 14.0838C13.6736 14.0326 13.7876 13.9571 13.8836 13.8617C13.9796 13.7662 14.0559 13.6528 14.1079 13.5278C14.1599 13.4028 14.1867 13.2687 14.1867 13.1333V7.54667C14.1847 7.19672 14.1075 6.85128 13.9602 6.5338C13.813 6.21632 13.5992 5.93423 13.3333 5.70667L9.49999 2.37334C9.07995 2.01461 8.5457 1.81752 7.99332 1.81752C7.44095 1.81752 6.9067 2.01461 6.48666 2.37334L2.66666 5.71334C2.40029 5.94007 2.18655 6.22215 2.04033 6.53993C1.89411 6.8577 1.81892 7.20353 1.81999 7.55334V13.1333C1.81999 13.2687 1.84676 13.4028 1.89877 13.5278C1.95078 13.6528 2.027 13.7662 2.12305 13.8617C2.21909 13.9571 2.33306 14.0326 2.45839 14.0838C2.58372 14.135 2.71794 14.1609 2.85332 14.16H5.11999C5.39112 14.1582 5.65055 14.0493 5.84165 13.857C6.03274 13.6646 6.14 13.4045 6.13999 13.1333V10.2533C6.13485 9.80398 6.28748 9.36706 6.57132 9.01866C6.85515 8.67026 7.2522 8.43246 7.69332 8.34667C7.79498 8.33315 7.89744 8.32647 7.99999 8.32667Z"
+                        fill="#5E6278"
+                      />
+                    </svg>
+                  </a>
+                </li>
+                <li>
+                  <div class="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="6"
+                      height="10"
+                      viewBox="0 0 6 10"
+                      fill="none"
+                    >
+                      <path
+                        d="M0.893444 9.66667C0.761028 9.66745 0.631381 9.62876 0.521035 9.55556C0.410689 9.48236 0.324641 9.37796 0.273864 9.25566C0.223086 9.13337 0.209878 8.99872 0.235925 8.86889C0.261971 8.73906 0.326091 8.61992 0.420111 8.52668L3.90011 5.00001L0.420111 1.55334C0.357952 1.49118 0.308644 1.41739 0.275004 1.33617C0.241364 1.25496 0.224049 1.16791 0.224049 1.08001C0.224049 0.992102 0.241364 0.905057 0.275004 0.823842C0.308644 0.742628 0.357952 0.668834 0.420111 0.606675C0.48227 0.544516 0.556063 0.495209 0.637278 0.461569C0.718492 0.427929 0.805538 0.410614 0.893444 0.410614C0.98135 0.410614 1.0684 0.427929 1.14961 0.461569C1.23082 0.495209 1.30462 0.544516 1.36678 0.606675L5.33344 4.56001C5.45761 4.68492 5.52731 4.85388 5.52731 5.03001C5.52731 5.20613 5.45761 5.3751 5.33344 5.50001L1.38678 9.44668C1.32445 9.51574 1.24835 9.57099 1.16339 9.60888C1.07843 9.64677 0.986473 9.66646 0.893444 9.66667Z"
+                        fill="#5E6278"
+                      />
+                    </svg>
+                    <a
+                      href="/job"
+                      class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2"
+                      >Job</a
+                    >
+                  </div>
+                </li>
+                <li aria-current="page">
+                  <div class="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="6"
+                      height="10"
+                      viewBox="0 0 6 10"
+                      fill="none"
+                    >
+                      <path
+                        d="M0.893444 9.66667C0.761028 9.66745 0.631381 9.62876 0.521035 9.55556C0.410689 9.48236 0.324641 9.37796 0.273864 9.25566C0.223086 9.13337 0.209878 8.99872 0.235925 8.86889C0.261971 8.73906 0.326091 8.61992 0.420111 8.52668L3.90011 5.00001L0.420111 1.55334C0.357952 1.49118 0.308644 1.41739 0.275004 1.33617C0.241364 1.25496 0.224049 1.16791 0.224049 1.08001C0.224049 0.992102 0.241364 0.905057 0.275004 0.823842C0.308644 0.742628 0.357952 0.668834 0.420111 0.606675C0.48227 0.544516 0.556063 0.495209 0.637278 0.461569C0.718492 0.427929 0.805538 0.410614 0.893444 0.410614C0.98135 0.410614 1.0684 0.427929 1.14961 0.461569C1.23082 0.495209 1.30462 0.544516 1.36678 0.606675L5.33344 4.56001C5.45761 4.68492 5.52731 4.85388 5.52731 5.03001C5.52731 5.20613 5.45761 5.3751 5.33344 5.50001L1.38678 9.44668C1.32445 9.51574 1.24835 9.57099 1.16339 9.60888C1.07843 9.64677 0.986473 9.66646 0.893444 9.66667Z"
+                        fill="#5E6278"
+                      />
+                    </svg>
+                    <span
+                      class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2"
+                      >Overview</span
+                    >
+                  </div>
+                </li>
+              </ol>
+            </nav>
+            <div>
+              <h1 class="text-xl font-semibold text-[#181C32] pb-5">
+                Job Management
+              </h1>
+            </div>
+          </div>
+
+          <div class="flex py-4">
+            <button
+              class="text-base font-semibold text-white px-6 bg-[#023E8A] rounded-md"
+            >
+              Create New Job
+            </button>
+          </div>
+        </div>
+        {% block content %}
+        <!-- Tabs -->
+        <div x-data="{ activeTab: 'tab1' }">
+          <!-- Tabs -->
+          <div
+            class="bg-white pt-7 pl-7 border-b border-[#e1e3ea80] rounded-t-xl"
+          >
+            <div class="flex">
+              <button
+                x-on:click="activeTab = 'tab1'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1'}"
+                class="px-4 py-2 mr-2 cursor-pointer focus:outline-none"
+              >
+                All
+              </button>
+              <button
+                x-on:click="activeTab = 'tab2'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2' }"
+                class="px-4 py-2 mr-2 cursor-pointer focus:outline-none"
+              >
+                Planned
+              </button>
+              <button
+                x-on:click="activeTab = 'tab3'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab3'}"
+                class="px-4 py-2 cursor-pointer focus:outline-none"
+              >
+                In Progress
+              </button>
+              <button
+                x-on:click="activeTab = 'tab4'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab4'}"
+                class="px-4 py-2 cursor-pointer focus:outline-none"
+              >
+                Not Planned
+              </button>
+              <button
+                x-on:click="activeTab = 'tab5'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab5'}"
+                class="px-4 py-2 cursor-pointer focus:outline-none"
+              >
+                Completed
+              </button>
+            </div>
+          </div>
+          <!-- Tab Content -->
+          <div class="bg-white pt-6 pl-7 rounded-b-xl flex h-screen">
+            <div x-show="activeTab === 'tab1'" class="">
+              <!-- Tab 1 content goes here -->
+              <p>Content for Tab 1</p>
+            </div>
+            <div x-show="activeTab === 'tab2'" class="">
+              <!-- Tab 2 content goes here -->
+              <p>Content for Tab 2</p>
+            </div>
+            <div x-show="activeTab === 'tab3'" class="">
+              <!-- Tab 3 content goes here -->
+              <p>Content for Tab 3</p>
+            </div>
+            <div x-show="activeTab === 'tab4'" class="">
+              <!-- Tab 4 content goes here -->
+              <p>Content for Tab 4</p>
+            </div>
+            <div x-show="activeTab === 'tab5'" class="">
+              <!-- Tab 5 content goes here -->
+              <p>Content for Tab 5</p>
+            </div>
+          </div>
+        </div>
+
+        {% endblock content %}
+      </div>
+    </div>
+    {% include "../notifications.html" %}
+  </body>
+</html>

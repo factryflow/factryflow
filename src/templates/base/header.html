@@ -1,6 +1,5 @@
 {% load static %}
-
-<header class="bg-white p-4">
+<header class="sticky top-0 z-50 bg-white p-4">
   <div
     class="flex items-center justify-between md:justify-start md:space-x-5 h-10"
   >
@@ -9,10 +8,9 @@
       <img
         src="{% static 'images/FactryFlow.svg' %}"
         alt="Logo"
-        class="mr-6 ml-1 w-56 h-10"
+        class="mr-8 ml-1 w-56 h-10"
       />
     </div>
-
     <!-- Menu Bar Icon -->
     <div class="flex items-center mr-2.5 bg-[#181c320d] p-1.5 rounded-md">
       <button>
@@ -44,7 +42,6 @@
         </svg>
       </button>
     </div>
-
     <!-- Search Bar with SVG Icon -->
     <div class="relative w-48 md:w-[584px]">
       <!-- Inline SVG Icon -->
@@ -64,17 +61,14 @@
         <circle cx="10" cy="10" r="7"></circle>
         <line x1="21" y1="21" x2="15" y2="15"></line>
       </svg>
-
       <!-- Search Input -->
       <input
         type="text"
         placeholder="Search..."
-        class="w-full pl-10 p-2 focus:outline-none border border-[#F9F9F9] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]"
+        class="w-full pl-10 p-2 focus:outline-none border border-[#E1E3EA] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]"
       />
     </div>
-
     <div class="flex-grow"></div>
-
     <!-- Notification Icon -->
     <div class="hidden md:flex items-center bg-[#181c320d] p-2.5 rounded-md">
       <svg
@@ -102,7 +96,6 @@
           />
         </g>
       </svg>
-
       <!-- Badge -->
       <div class="absolute top-3.5">
         <span
@@ -111,14 +104,12 @@
         >
       </div>
     </div>
-
     <!-- User Initial -->
     <div
       class="hidden md:flex items-center bg-[#181c320d] py-4 px-5 rounded-[24px]"
     >
       <h1 class="text-lg leading-4 font-semibold text-[#2884EF]">J</h1>
     </div>
-
     <!-- User name -->
     <div class="hidden md:flex items-center">
       <h3 class="text-base leading-4 font-semibold text-[#181C32] mr-10">
