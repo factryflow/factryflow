@@ -30,7 +30,7 @@
 					"editor.formatOnSave": true
 				},
 				"indentRainbow.ignoreErrorLanguages" : [
-					"jinja-html",
+					"django-html",
 					"css"
 				],
 
