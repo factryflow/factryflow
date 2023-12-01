@@ -2,37 +2,51 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta content="width=device-width, initial-scale=1" name="viewport">
-        <meta name="description" content="Your meta description goes here">
-        <meta name="keywords" content="your, meta, keywords, go, here">
-        <title>
-            {% block title %}
-                factryflow
-            {% endblock title %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta name="description" content="Your meta description goes here" />
+    <meta name="keywords" content="your, meta, keywords, go, here" />
+    <title>{% block title %} factryflow {% endblock title %}</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
+      integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="stylesheet" href="{% static "css/output.css" %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://unpkg.com/htmx.org@1.9.9"
+      integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% if user.is_authenticated %}
+            <div class="h-screen w-full flex flex-col absolute top-0 z-10">
+                {% include "base/header.html" %}
+                <div class="flex bg-gray-100 h-full">
+                    {% include "base/sidebar.html" %}
+                    
+                    <!-- Main Content -->
+                    <div class="flex-1" id="dashboard-container">
+                        {% block contents %}
+                            <h1>{{ user.is_authenticated }}</h1>
+                        {% endblock contents %}
+                    </div>
+                </div>
+            </div>
+            
+        {% else %}
+        <div class="h-screen w-full flex flex-col absolute top-0 left-0 z-10">
+            {% include 'base/navbar.html' %}
 
-        </title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
-                integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"></script>
-        <link rel="stylesheet" href="{% static "css/output.css" %}">
-        <!-- <script src="https://cdn.tailwindcss.com"></script> -->
-    </head>
-    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-        {% include "base/header.html" %}
-
-        <div class="flex h-screen bg-gray-100">
-            {% include "base/sidebar.html" %}
-
-            <!-- Main Content -->
-            <div class="flex-1">
+            <div id="main-container" class="flex-1 bg-gray-50">
                 {% block content %}
-                    <h1>Base Content</h1>
                 {% endblock content %}
-
             </div>
         </div>
-    </body>
+        {% endif %}
+  </body>
 </html>
