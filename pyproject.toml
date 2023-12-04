@@ -1,5 +1,8 @@
 [tool.djlint]
 profile="django"
-ignore="H006"
+ignore="H006,H021"
 blank_line_after_tag="load,extends,include,endpartialdef,endblock"
 custom_blocks="partialdef,endpartialdef"
+
+[tool.ruff]
+ignore-init-module-imports = true

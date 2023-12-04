@@ -1,0 +1,30 @@
+<style type="text/tailwindcss">
+  @layer utilities {
+    .content-auto {
+      content-visibility: auto;
+    }
+  }
+  ​ .btn {
+    @apply font-bold py-2 px-4 rounded;
+  }
+  .btn-blue {
+    @apply bg-blue-500 text-white;
+  }
+  .btn-blue:hover {
+    @apply bg-blue-700;
+  }
+  ​ .custom-filter:hover,
+  .custom-filter:active {
+    filter: brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%)
+      hue-rotate(202deg) brightness(100%) contrast(102%);
+  }
+  ​ .svg-custom-size:hover {
+    width: 10px;
+    height: 10px;
+  }
+  ​ .container::-webkit-scrollbar {
+    width: 4px;
+    background-color: gray;
+    border-radius: 5px;
+  }
+</style>

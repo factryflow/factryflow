@@ -1,0 +1,50 @@
+name: Models CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Create virtual environment
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run migrations (check for migration issues)
+        run: |
+          source venv/bin/activate
+          python src/manage.py migrate
+          
+      - name: Start the backend (checks if the server starts)
+        run: |
+          source venv/bin/activate 
+          python src/manage.py runserver &
+          sleep 10
+
+      - name: Run tests
+        run: |
+          source ../venv/bin/activate
+          pytest
+        working-directory: src
