@@ -4,7 +4,7 @@
       content-visibility: auto;
     }
   }
-  ​ .btn {
+  .btn {
     @apply font-bold py-2 px-4 rounded;
   }
   .btn-blue {
@@ -13,18 +13,31 @@
   .btn-blue:hover {
     @apply bg-blue-700;
   }
-  ​ .custom-filter:hover,
+  .custom-filter:hover,
   .custom-filter:active {
     filter: brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%)
       hue-rotate(202deg) brightness(100%) contrast(102%);
   }
-  ​ .svg-custom-size:hover {
+  .svg-custom-size:hover {
     width: 10px;
     height: 10px;
   }
-  ​ .container::-webkit-scrollbar {
+  .container::-webkit-scrollbar {
     width: 4px;
-    background-color: gray;
+    background-color: gainsboro;
     border-radius: 5px;
+  }
+  .container::-webkit-scrollbar-thumb{
+    background-color: grey;
+    border-radius:5px;
+  }
+  .table-container::-webkit-scrollbar {
+    height: 4px;
+    background-color: gainsboro;
+    border-radius: 5px;
+  }
+  .table-container::-webkit-scrollbar-thumb{
+    background-color: grey;
+    border-radius:5px;
   }
 </style>

@@ -1,118 +1,51 @@
 {% load static %}
-<header class="sticky top-0 z-50 bg-white p-4">
-  <div
-    class="flex items-center justify-between md:justify-start md:space-x-5 h-10"
-  >
+<header class="fixed top-0 z-50 bg-white p-4 w-full">
+  <div class="flex items-center justify-between md:justify-start md:space-x-5 h-10">
+
     <!-- Logo -->
     <div class="flex items-center">
-      <img
-        src="{% static 'images/FactryFlow.svg' %}"
-        alt="Logo"
-        class="mr-8 ml-1 w-56 h-10"
-      />
+      <a href="/">
+        <img src="{% static 'images/FactryFlow.svg' %}" alt="Logo" class="mr-8 ml-1 w-40 h-10 md:w-56 md:h-10" />
+      </a>
     </div>
+
     <!-- Menu Bar Icon -->
-    <div class="flex items-center mr-2.5 bg-[#181c320d] p-1.5 rounded-md">
-      <button>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          viewBox="0 0 32 32"
-          fill="none"
-          @click="sidebarOpen = !sidebarOpen"
-        >
-          <mask
-            id="mask0_664_4519"
-            style="mask-type: alpha"
-            maskUnits="userSpaceOnUse"
-            x="0"
-            y="0"
-            width="32"
-            height="32"
-          >
-            <rect width="32" height="32" fill="#D9D9D9" />
-          </mask>
-          <g mask="url(#mask0_664_4519)">
-            <path
-              d="M5.33333 24C4.95556 24 4.63889 23.8722 4.38333 23.6167C4.12778 23.3611 4 23.0444 4 22.6667C4 22.2889 4.12778 21.9722 4.38333 21.7167C4.63889 21.4611 4.95556 21.3333 5.33333 21.3333H20C20.3778 21.3333 20.6944 21.4611 20.95 21.7167C21.2056 21.9722 21.3333 22.2889 21.3333 22.6667C21.3333 23.0444 21.2056 23.3611 20.95 23.6167C20.6944 23.8722 20.3778 24 20 24H5.33333ZM25.2 21.7333L20.4 16.9333C20.1333 16.6667 20 16.3556 20 16C20 15.6444 20.1333 15.3333 20.4 15.0667L25.2 10.2667C25.4444 10.0222 25.7556 9.9 26.1333 9.9C26.5111 9.9 26.8222 10.0222 27.0667 10.2667C27.3111 10.5111 27.4333 10.8222 27.4333 11.2C27.4333 11.5778 27.3111 11.8889 27.0667 12.1333L23.2 16L27.0667 19.8667C27.3111 20.1111 27.4333 20.4222 27.4333 20.8C27.4333 21.1778 27.3111 21.4889 27.0667 21.7333C26.8222 21.9778 26.5111 22.1 26.1333 22.1C25.7556 22.1 25.4444 21.9778 25.2 21.7333ZM5.33333 17.3333C4.95556 17.3333 4.63889 17.2056 4.38333 16.95C4.12778 16.6944 4 16.3778 4 16C4 15.6222 4.12778 15.3056 4.38333 15.05C4.63889 14.7944 4.95556 14.6667 5.33333 14.6667H16C16.3778 14.6667 16.6944 14.7944 16.95 15.05C17.2056 15.3056 17.3333 15.6222 17.3333 16C17.3333 16.3778 17.2056 16.6944 16.95 16.95C16.6944 17.2056 16.3778 17.3333 16 17.3333H5.33333ZM5.33333 10.6667C4.95556 10.6667 4.63889 10.5389 4.38333 10.2833C4.12778 10.0278 4 9.71111 4 9.33333C4 8.95556 4.12778 8.63889 4.38333 8.38333C4.63889 8.12778 4.95556 8 5.33333 8H20C20.3778 8 20.6944 8.12778 20.95 8.38333C21.2056 8.63889 21.3333 8.95556 21.3333 9.33333C21.3333 9.71111 21.2056 10.0278 20.95 10.2833C20.6944 10.5389 20.3778 10.6667 20 10.6667H5.33333Z"
-              fill="#181C32"
-            />
-          </g>
-        </svg>
+    <div class="flex items-center ml-2.5 mr-2.5 bg-[#181c320d] p-1.5 rounded-md">
+      <button @click="isSidebarHidden = !isSidebarHidden" type="button">
+        <img class="w-8 h-8" src="{% static 'images/menu_open.svg' %}" />
       </button>
     </div>
+
     <!-- Search Bar with SVG Icon -->
     <div class="relative w-48 md:w-[584px]">
       <!-- Inline SVG Icon -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        stroke-width="2"
-        stroke="currentColor"
-        fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <circle cx="10" cy="10" r="7"></circle>
-        <line x1="21" y1="21" x2="15" y2="15"></line>
-      </svg>
+      <img class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+        src="{% static 'images/search.svg' %}" />
       <!-- Search Input -->
-      <input
-        type="text"
-        placeholder="Search..."
-        class="w-full pl-10 p-2 focus:outline-none border border-[#E1E3EA] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]"
-      />
+      <input type="text" placeholder="Search..."
+        class="w-full pl-10 p-2 focus:outline-none border border-[#E1E3EA] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]" />
     </div>
     <div class="flex-grow"></div>
+
     <!-- Notification Icon -->
     <div class="hidden md:flex items-center bg-[#181c320d] p-2.5 rounded-md">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <mask
-          id="mask0_664_4531"
-          style="mask-type: alpha"
-          maskUnits="userSpaceOnUse"
-          x="0"
-          y="0"
-          width="24"
-          height="24"
-        >
-          <rect width="24" height="24" fill="#D9D9D9" />
-        </mask>
-        <g mask="url(#mask0_664_4531)">
-          <path
-            d="M4 19V17H6V10C6 8.61667 6.41667 7.3875 7.25 6.3125C8.08333 5.2375 9.16667 4.53333 10.5 4.2V3.5C10.5 3.08333 10.6458 2.72917 10.9375 2.4375C11.2292 2.14583 11.5833 2 12 2C12.4167 2 12.7708 2.14583 13.0625 2.4375C13.3542 2.72917 13.5 3.08333 13.5 3.5V4.2C14.8333 4.53333 15.9167 5.2375 16.75 6.3125C17.5833 7.3875 18 8.61667 18 10V17H20V19H4ZM12 22C11.45 22 10.9792 21.8042 10.5875 21.4125C10.1958 21.0208 10 20.55 10 20H14C14 20.55 13.8042 21.0208 13.4125 21.4125C13.0208 21.8042 12.55 22 12 22ZM8 17H16V10C16 8.9 15.6083 7.95833 14.825 7.175C14.0417 6.39167 13.1 6 12 6C10.9 6 9.95833 6.39167 9.175 7.175C8.39167 7.95833 8 8.9 8 10V17Z"
-            fill="#181C32"
-          />
-        </g>
-      </svg>
+      <img class="w-6 h-6" src="{% static 'images/notifications.svg' %}" />
+
       <!-- Badge -->
       <div class="absolute top-3.5">
         <span
-          class="inline-flex items-center rounded-[50px] bg-[#2884EF] px-1.5 py-px text-xs font-semibold text-white"
-          >2</span
-        >
+          class="inline-flex items-center rounded-[50px] bg-[#2884EF] px-1.5 py-px text-xs font-semibold text-white">2</span>
       </div>
     </div>
+
     <!-- User Initial -->
-    <div
-      class="hidden md:flex items-center bg-[#181c320d] py-4 px-5 rounded-[24px]"
-    >
+    <div class="hidden md:flex items-center bg-[#181c320d] py-4 px-5 rounded-full">
       <h1 class="text-lg leading-4 font-semibold text-[#2884EF]">J</h1>
     </div>
+
     <!-- User name -->
     <div class="hidden md:flex items-center">
-      <h3 class="text-base leading-4 font-semibold text-[#181C32] mr-10">
+      <h3 class="text-base leading-4 font-semibold text-[#181C32] mr-5 md:mr-10">
         Jacob Jones
       </h3>
     </div>
