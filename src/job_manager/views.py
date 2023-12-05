@@ -1,11 +1,13 @@
 # views.py
 from common.utils.views import add_notification_headers
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from .forms import JobForm
 from .models import Job, JobType
-from .services import job_create_or_update
+from .services import get_all_jobs, job_create_or_update
 
 
 def show_job_form(request):
@@ -15,6 +17,43 @@ def show_job_form(request):
         "objects/details.html",
         {"form": form, "button_text": "Add Job", "form_label": "Job Details"},
     )
+
+
+def show_all_jobs(request):
+    jobs = get_all_jobs()
+    headers = [
+        "Job ID",
+        "Job Name",
+        "Description",
+        "Customer",
+        "Due Date",
+        "Planned Start",
+        "Planned End",
+        "Priority",
+        "Status",
+    ]
+
+    # Create rows as a list of lists
+    rows = [
+        [
+            job.id,
+            job.name,
+            job.description,
+            job.customer,
+            job.due_date.strftime("%Y-%m-%d") if job.due_date else "",
+            job.planned_start_datetime.strftime("%Y-%m-%d")
+            if job.planned_start_datetime
+            else "",
+            job.planned_end_datetime.strftime("%Y-%m-%d")
+            if job.planned_end_datetime
+            else "",
+            job.priority,
+            job.get_job_status_display(),
+        ]
+        for job in jobs
+    ]
+
+    return render(request, "objects/list.html", {"headers": headers, "rows": rows})
 
 
 @require_http_methods(["POST"])
@@ -44,14 +83,16 @@ def save_job_form(request, id: int = None):
             "objects/details.html#partial-form",
             {"form": form, "button_text": "Add Job", "form_label": "Job Details"},
         )
-        add_notification_headers(response, "Job created successfully!", "success")
+        # add_notification_headers(response, "Job created successfully!", "success")
 
-        return response
-
-    # Re-render the form with errors if it's not valid
-    # template_name = (
-    #     "job_manager/forms/form_add_job.html"
-    #     if not id
-    #     else "job_manager/forms/form_edit_job.html"
-    # )
-    # return render(request, template_name, {"form": form})
+        # return response
+        # If the request is from htmx
+        if request.htmx:
+            headers = {
+                "HX-Redirect": reverse(
+                    "job"
+                )  # This is where you want to redirect after success
+            }
+            response = HttpResponse(status=204, headers=headers)
+            add_notification_headers(response, "Job created successfully!", "success")
+            return response

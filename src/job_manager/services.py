@@ -137,7 +137,7 @@ def get_all_jobs(id: int = None):
     if id:
         return get_object_or_404(Job.objects.select_related("job_status"), id=id)
     else:
-        return Job.objects.select_related("job_status").all()
+        return Job.objects.all()
 
 
 @transaction.atomic

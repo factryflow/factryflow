@@ -17,8 +17,6 @@ def jobform(request):
 
 urlpatterns = [
     path("", home, name="home"),
-    path("job/", job, name="job"),
-    path("job/form/", jobform, name="jobform"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("", include("users.urls")),
