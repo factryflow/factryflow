@@ -4,180 +4,135 @@
 
 
 {% partialdef _menu_item %}
-  <li>
-    <a href="#" class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
-       @click="activeMenuItem = '{{ menu_item_id }}'"
-       :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === '{{ menu_item_id }}'}"
-       :style="{ filter: (activeMenuItem === '{{ menu_item_id }}') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }">
-       <img class="h-6 w-6" src="{% static menu_item_icon %}" />
-      <span class="ml-4" :class="!isSidebarHidden ? 'block' : 'hidden'">{{ menu_item_name }}</span>
-    </a>
-  </li>
+<li>
+  <a href="#" class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center" x-data="{isHovered:false}"
+    x-on:mouseover="isHovered = true" x-on:mouseleave="isHovered = false"
+    @click="$store.sidebar.active = '{{menu_item_id}}'"
+    :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter':$store.sidebar.active == '{{menu_item_id}}' || isHovered }">
+    <img class="h-6 w-6" src="{% static menu_item_icon %}" />
+    <span class="ml-4" :class="$store.sidebar.full ? 'block' : 'hidden'">{{ menu_item_name }}</span>
+  </a>
+</li>
+{% endpartialdef %}
+
+
+{% partialdef _dropdown_menu_item %}
+<li>
+  <a href="{{menu_item_url}}"
+    class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
+    x-data="{isHovered:false}" @click="active='{{menu_item_id}}'" x-on:mouseover="isHovered = true"
+    x-on:mouseleave="isHovered = false"
+    :class="{'text-[#023E8A]  custom-filter': active == '{{menu_item_id}}' || isHovered}">
+    <img class="h-2 w-2" :class="{ 'h-2.5 w-2.5': isHovered || active == '{{menu_item_id}}' }"
+      src="{% static 'images/dot.svg' %}" />
+    <span class="ml-4 mr-24" :class="$store.sidebar.full ? 'block' : 'hidden'">{{menu_item_name}}</span>
+  </a>
+</li>
 {% endpartialdef %}
 
 
 
-<aside id="default-sidebar"
-  class="fixed top-20 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-  aria-label="Sidebar">
+{% partialdef _dropdown_menu %}
 
-  <div
-    class="container h-full overflow-y-auto overflow-x-hidden bg-white text-gray-500 space-y-6 py-2 px-2 mr-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-all duration-200 ease-in-out"
-    :class="!isSidebarHidden ? 'w-72' : 'w-20'" x-data="{activeMenuItem: null,activeSubMenuItem:null}"
-    style="height: calc(100vh - 80px)">
-   
+<button type="button" @click="toggle('{{menu_item_id}}')" x-data="{ isHovered: false }"
+  x-on:mouseover="isHovered = true" x-on:mouseleave="isHovered = false"
+  class="w-full flex py-2.5 pl-3 pr-4 text-sm leading-5 rounded-lg items-center"
+  :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter': $store.sidebar.active == '{{menu_item_id}}' || isHovered}">
+  <div class="flex items-center">
+    <img src="{% static menu_item_icon %}" class="h-6 w-6" />
+    <span class="ml-4">{{ menu_item_name }}</span>
+  </div>
+  <img class="h-6 w-6 ml-auto" :class="pt-2.5:pt-0"
+    :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/DownArrow.svg' %}'" />
+</button>
+
+
+{% endpartialdef %}
+
+
+
+<div
+  class="container h-full overflow-y-auto overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-screen">
+  <div class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer">
     <!-- Sidebar content (links, icons, etc.) -->
-    <div class="text-[#A1A5B7] ml-6">
-      <h1 class="flex leading-5 font-medium uppercase" :class="!isSidebarHidden ? 'block' : 'hidden'">
+    <div class="text-[#A1A5B7] ml-2">
+      <h1 class="flex leading-5 font-medium uppercase">
         Management
       </h1>
     </div>
-    <nav class="text-[#5E6278] ml-2.5">
-      <ul class="space-y-5 font-semibold">
-       {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' %}
-          {% partial _menu_item %}
-       {% endwith %}
-
-        <li x-data="{dropdownMenu: false}">
-          <button type="button"
-            class="menu-item w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A]"
-            @click="activeMenuItem = 'production',dropdownMenu = ! dropdownMenu"
-            :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'production'}"
-            :style="{ filter: (activeMenuItem === 'production') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }">
-            <img src="{% static 'images/Production.svg' %}" class="h-6 w-6" />
-            <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Production</span>
-            <img class="h-6 w-6" :class="!isSidebarHidden ? 'block' : 'hidden'"
-              src="{% static 'images/RightArrow.svg' %}" />
-          </button>
-          <ul x-show="dropdownMenu" class="w-full space-y-2.5 ml-5 mt-4">
-            <li>
-              <a href="{% url 'job' %}"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'jobs',activeMenuItem = 'production'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'jobs'}"
-                :style="{ filter: (activeSubMenuItem === 'jobs') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'jobs' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Jobs</span>
-              </a>
-            </li>
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'Tasks',activeMenuItem = 'production'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'Tasks'}"
-                :style="{ filter: (activeSubMenuItem === 'Tasks') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'Tasks' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Tasks</span>
-              </a>
-            </li>
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'Dependencies',activeMenuItem = 'production'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'Dependencies'}"
-                :style="{ filter: (activeSubMenuItem === 'Dependencies') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'Dependencies' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Dependencies</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-
-        <li x-data="{dropdownMenu: false}">
-          <button type="button"
-            class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center hover:border-l-[3px] hover:bg-[#023e8a0d] hover:text-[#023E8A] custom-filter"
-            @click="activeMenuItem = 'Resource-Management',dropdownMenu = ! dropdownMenu"
-            :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A]': activeMenuItem === 'Resource-Management'}"
-            :style="{ filter: (activeMenuItem === 'Resource-Management') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }">
-            <img src="{% static 'images/Rm.svg' %}" class="h-6 w-6" />
-            <span class="ml-4 mr-5" :class="!isSidebarHidden ? 'block' : 'hidden'">Resource Management</span>
-            <img class="h-6 w-6" :class="!isSidebarHidden ? 'block' : 'hidden'"
-              src="{% static 'images/RightArrow.svg' %}" />
-          </button>
-          <ul x-show="dropdownMenu" class="w-full space-y-2.5 ml-5 mt-4">
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'Resources',activeMenuItem = 'Resource-Management'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'Resources'}"
-                :style="{ filter: (activeSubMenuItem === 'Resources') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-2.5 w-2.5': isHovered || activeSubMenuItem === 'Resources' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Resources</span>
-              </a>
-            </li>
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'RG',activeMenuItem = 'Resource-Management'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'RG'}"
-                :style="{ filter: (activeSubMenuItem === 'RG') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'RG' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Resources Groups</span>
-              </a>
-            </li>
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'WST',activeMenuItem = 'Resource-Management'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'WST'}"
-                :style="{ filter: (activeSubMenuItem === 'WST') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'WST' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Weekly Shift
-                  Template</span>
-              </a>
-            </li>
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'OE',activeMenuItem = 'Resource-Management'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'OE'}"
-                :style="{ filter: (activeSubMenuItem === 'OE') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'OE' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Operational
-                  Exception</span>
-              </a>
-            </li>
-            <li>
-              <a href="#"
-                class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center hover:text-[#023E8A] custom-filter transition duration-75"
-                @click="activeSubMenuItem = 'A&R',activeMenuItem = 'Resource-Management'"
-                :class="{'text-[#023E8A]': activeSubMenuItem === 'A&R'}"
-                :style="{ filter: (activeSubMenuItem === 'A&R') ? 'brightness(0) saturate(100%) invert(17%) sepia(24%) saturate(6703%) hue-rotate(202deg) brightness(100%) contrast(102%)' : 'none' }"
-                x-data="{ isHovered: false }" x-on:mouseover="isHovered = true" x-on:mouseout="isHovered = false">
-                <img class="h-2 w-2" :class="{ 'h-3 w-3': isHovered || activeSubMenuItem === 'A&R' }"
-                  src="{% static 'images/dot.svg' %}" />
-                <span class="ml-4 mr-24" :class="!isSidebarHidden ? 'block' : 'hidden'">Allocation Rules</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-
-        {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' %}
-          {% partial _menu_item %}
-        {% endwith %}
-
-
-        {% with menu_item_id='H&S' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' %}
-         {% partial _menu_item %}
-        {% endwith %}
-
-      </ul>
-      <!-- Add more sidebar links here -->
-    </nav>
   </div>
-</aside>
+  <nav class="text-[#5E6278] ml-2.5">
+    <ul class="space-y-5 font-semibold">
 
+      {% comment %} dashboard menu {% endcomment %}
+      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_item_url='job' %}
+      {% partial _menu_item %}
+      {% endwith %}
+
+      {% comment %} Production Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='Production' menu_item_icon='images/Production.svg' menu_item_name='Production'  %}
+        {% partial _dropdown_menu %}
+        {% endwith %}
+
+        <ul x-show="open" @click.outside="open=false" class="w-full space-y-2.5 ml-5 mt-4">
+          {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/job" %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="#" %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="#" %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+        </ul>
+      </div>
+
+
+      {% comment %} Resource Management Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='RM' menu_item_icon='images/Rm.svg' menu_item_name='Resource Management' %}
+        {% partial _dropdown_menu %}
+        {% endwith %}
+
+        <ul x-show="open" @click.outside="open=false" class="w-full space-y-2.5 ml-5 mt-4">
+          {% with menu_item_id='resources' menu_item_name='Resources' %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='RG' menu_item_name='Resources Groups' %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='OE' menu_item_name='Operational Exception' %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='AR' menu_item_name='Allocation Rules' %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+        </ul>
+      </div>
+
+      {% comment %} setti ng menu {% endcomment %}
+      {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='job' %}
+      {% partial _menu_item %}
+      {% endwith %}
+
+      {% comment %} Help and Support manu {% endcomment %}
+      {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='job' %}
+      {% partial _menu_item %}
+      {% endwith %}
+
+    </ul>
+    <!-- Add more sidebar links here -->
+  </nav>
+</div>
