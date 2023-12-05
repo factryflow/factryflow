@@ -1,231 +1,216 @@
-{% extends 'base/main.html' %}
+{% extends "base/main.html" %}
 
-{% block title %} Job {% endblock %}
+{% block title %}
+  Job
+{% endblock title %}
 
 {% block content %}
+  {% load static %}
 
-{% load static %}
-
-{% load partials %}
-
-{% partialdef _TabsItems %}
-
-  {% for tab in tabs%}
-  <button
-    x-on:click="activeTab = '{{tab}}'"
-    :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{tab}}'}"
-    class="mr-2.5 pb-3 md:mr-12 cursor-pointer focus:outline-none"
-  >
-  {{ tab }}
-  </button>
-  {% endfor %}
-{% endpartialdef %}
-
-
-<!-- Breadcrumb -->
-<div class="flex justify-between items-center">
-  <div class="flex-wrap">
-    <nav class="flex pb-4" aria-label="Breadcrumb">
-      <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-        <li class="inline-flex items-center">
-          <a href="/" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
-            <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
-          </a>
-        </li>
-        <li>
-          <div class="flex items-center">
-            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-            <a href="/job" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Job</a>
-          </div>
-        </li>
-        <li aria-current="page">
-          <div class="flex items-center">
-            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-            <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Overview</span>
-          </div>
-        </li>
-      </ol>
-    </nav>
-
-    <div>
-      <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Job Management</h1>
-    </div>
-  </div>
-
-  <div class="flex">
-    <a href="{% url 'jobform' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
-      Job</a>
-  </div>
-</div>
-
-<!-- Tabs -->
-<div x-data="{ activeTab: 'All' }">
-  <!-- Tabs -->
-  <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
-    <div class="md:flex flex-wrap text-sm md:text-base">
-      {% with "All Planned In-Progress Not-Planned Completed" as tablist %}
-        {% with tabs=tablist.split %}
-          {% partial _TabsItems %}
-        {% endwith %}
-      {% endwith %}
-    </div>
-  </div>
-
-  <!-- Tab Content -->
-  <div class="bg-white pt-6 rounded-b-xl flex h-screen">
-    <div x-show="activeTab === 'All'" class="w-full">
-      <!-- Tab 1 content goes here -->
-      <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7">
-        <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
-          <div class="relative w-full md:w-[600px]">
-            <!-- Inline SVG Icon -->
-            <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400" src="{% static 'images/search.svg' %}" />
-            
-            <!-- Search Input -->
-            <input type="text" placeholder="Search Job ID / Job Name"
-              class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
-          </div>
-        </div>
-        <div class="flex flex-nowrap gap-x-5">
-          <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
-            <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
-            <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
-          </div>
-          <div class="flex bg-[#00B4D8] py-3.5 px-4 md:px-6 rounded-md">
-            <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
-            <span class="text-base font-semibold text-white">Filter</span>
-          </div>
-        </div>
+  <!-- Breadcrumb -->
+  <div class="flex justify-between items-center">
+    <div class="flex-wrap">
+      <nav class="flex pb-4" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+          <li class="inline-flex items-center">
+            <a href="/"
+               class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+              <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+              <a href="/job" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Job</a>
+            </div>
+          </li>
+          <li aria-current="page">
+            <div class="flex items-center">
+              <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+              <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Overview</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+      <div>
+        <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Job Management</h1>
       </div>
-
-      <div class="pt-6">
-        <div class="relative overflow-x-auto table-container">
-          <table class="w-full text-sm text-center">
-            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
-              <tr class="text-[#181C32] h-16">
-                <th scope="col" class="w-[90px] p-2">
-                  <div class="flex items-center justify-center">
-                    <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
-                  </div>
-                </th>
-                <th scope="col" class=" w-[90px]  p-2 text-start">Job Id</th>
-                <th scope="col" class=" w-[136px] p-2 text-start ">Job Name</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Description</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Customer</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Due Date</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Planned Start</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Planned End</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Priority</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Status</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="bg-white text-startder-b h-[100px] border-b-2">
-                <td class="w-auto p-2 h-full">
-                  <div class="flex items-center justify-center">
-                    <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
-                  </div>
-                </td>
-                <td class="text-[#181C32] font-semibold whitespace-nowrap h-full w-auto text-start p-2">#Job-014</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Loreum Ipsum Job</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Lorem Ipsum is simply dum...</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">24 Customers</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">19/09/2023</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#3DAD99]  text-center font-medium h-full w-auto p-2">3</td>
-                <td class=" h-full w-auto items-start ">
-                  <span class="h-3 p-2 bg-hax text-[#F6C000] font-bold rounded">
-                    In Progress
-                  </span>                  
-                </td>
-            
-                <td class="w-4 p-2 h-full">
-                  <div class="flex items-center justify-center">
-                    <a href="#" class="mr-3">
+    </div>
+    <div class="flex">
+      <a href="{% url 'jobform' %}"
+         class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+      Job</a>
+    </div>
+  </div>
+  <!-- Tabs -->
+  <div x-data="{ activeTab: 'tab1' }">
+    <!-- Tabs -->
+    <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
+      <div class="md:flex flex-wrap text-sm md:text-base">
+        <button x-on:click="activeTab = 'tab1'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1'}"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
+        <button x-on:click="activeTab = 'tab2'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2' }"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Planned</button>
+        <button x-on:click="activeTab = 'tab3'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab3'}"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">In Progress</button>
+        <button x-on:click="activeTab = 'tab4'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab4'}"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Not Planned</button>
+        <button x-on:click="activeTab = 'tab5'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab5'}"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Completed</button>
+      </div>
+    </div>
+    <!-- Tab Content -->
+    <div class="bg-white pt-6 rounded-b-xl flex h-screen">
+      <div x-show="activeTab === 'tab1'" class="w-full">
+        <!-- Tab 1 content goes here -->
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7">
+          <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
+            <div class="relative w-full md:w-[600px]">
+              <!-- Inline SVG Icon -->
+              <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+                   src="{% static 'images/search.svg' %}" />
+              <!-- Search Input -->
+              <input type="text"
+                     placeholder="Search Job ID / Job Name"
+                     class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
+            </div>
+          </div>
+          <div class="flex flex-nowrap gap-x-5">
+            <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
+              <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
+              <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
+            </div>
+            <div class="flex bg-[#00B4D8] py-3.5 px-4 md:px-6 rounded-md">
+              <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
+              <span class="text-base font-semibold text-white">Filter</span>
+            </div>
+          </div>
+        </div>
+        <div class="pt-6">
+          <div class="relative overflow-x-auto table-container">
+            <table class="w-full text-sm text-center">
+              <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+                <tr class="text-[#181C32]">
+                  <th scope="col" class="p-4">
+                    <div class="flex items-center">
+                      <input id="checkbox-all-search"
+                             type="checkbox"
+                             class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                      <!-- <label for="checkbox-all-search" class="sr-only">checkbox</label> -->
+                    </div>
+                  </th>
+                  <th scope="col" class="px-6 py-3">Job Id</th>
+                  <th scope="col" class="px-6 py-3">Job Name</th>
+                  <th scope="col" class="px-6 py-3">Description</th>
+                  <th scope="col" class="px-6 py-3">Customer</th>
+                  <th scope="col" class="px-6 py-3">Due Date</th>
+                  <th scope="col" class="px-6 py-3">Planned Start</th>
+                  <th scope="col" class="px-6 py-3">Planned End</th>
+                  <th scope="col" class="px-6 py-3">Priority</th>
+                  <th scope="col" class="px-6 py-3">Status</th>
+                  <th scope="col" class="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="bg-white border-b">
+                  <td class="w-4 p-4">
+                    <div class="flex items-center">
+                      <input id="checkbox-table-search-1"
+                             type="checkbox"
+                             class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                      <!-- <label for="checkbox-table-search-1" class="sr-only">checkbox</label> -->
+                    </div>
+                  </td>
+                  <th scope="row"
+                      class="px-6 py-4 text-[#181C32] font-semibold whitespace-nowrap">#Job-014</th>
+                  <td class="px-6 py-4 text-[#7E8299] font-medium">Loreum Ipsum Job</td>
+                  <td class="px-6 py-4 text-[#7E8299] font-medium">Lorem Ipsum is simply dum...</td>
+                  <td class="px-6 py-4 text-[#7E8299] font-medium">24 Customers</td>
+                  <td class="px-6 py-4 text-[#7E8299] font-medium">19/09/2023</td>
+                  <td class="px-6 py-4 text-[#7E8299] font-medium">10/09/2023</td>
+                  <td class="px-6 py-4 text-[#7E8299] font-medium">10/09/2023</td>
+                  <td class="px-6 py-4 text-[#3DAD99] font-medium">3</td>
+                  <td class="px-6 py-4 text-[#F6C000] font-medium">In Progress</td>
+                  <td class="flex items-center px-6 py-4">
+                    <a href="#" class="font-medium">
                       <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
                     </a>
-                    <a href="#" class="mr-3">
+                    <a href="#" class="font-medium ms-3">
                       <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
                     </a>
-                    <a href="#" class="mr-3">
+                    <a href="#" class="font-medium ms-3">
                       <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
                     </a>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      
-    </div>
-    <div x-show="activeTab === 'Planned'" class="">
-      <!-- Tab 2 content goes here -->
-      <p>Content for Tab 2</p>
-    </div>
-
-    <div x-show="activeTab === 'InProgress'" class="">
-      <!-- Tab 3 content goes here -->
-      <p>Content for Tab 3</p>
-    </div>
-
-    <div x-show="activeTab === 'NotPlanned'" class="">
-      <!-- Tab 4 content goes here -->
-      <p>Content for Tab 4</p>
-    </div>
-
-    <div x-show="activeTab === 'Completed'" class="">
-      <!-- Tab 5 content goes here -->
-      <p>Content for Tab 5</p>
-    </div>
-  </div>
-</div>
-<div class="">
-  <div class="flex items-center justify-between pt-7">
-    <div class="flex flex-1 justify-between sm:hidden">
-      <a href="#"
-        class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-      <a href="#"
-        class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-    </div>
-    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-      <div>
-        <p class="text-base text-[#181C32] font-normal">
-          Showing
-          <span class="font-medium">1</span>
-          to
-          <span class="font-medium">10</span>
-          of
-          <span class="font-medium">5</span>
-          entries
-        </p>
+      <div x-show="activeTab === 'tab2'" class="">
+        <!-- Tab 2 content goes here -->
+        <p>Content for Tab 2</p>
       </div>
-      <div class="flex">
-        <a href="#"
-          class="relative inline-flex items-center rounded-full px-5 py-3 mr-3.5 border border-[#E1E3EA80] bg-white">
-          <span class="sr-only">Previous</span>
-          <img class="h-5 w-1.5" src="{% static 'images/left-arrow.svg' %}" />
-        </a>
-
-        <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Page</span>
-
-        <a href="#" aria-current="page"
-          class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
-          1
-        </a>
-
-        <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of 5</span>
-
-        <a href="#"
-          class="relative inline-flex items-center rounded-full px-5 py-3 ml-3.5 border border-[#E1E3EA80] bg-white">
-          <span class="sr-only">Next</span>
-          <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" />
-        </a>
+      <div x-show="activeTab === 'tab3'" class="">
+        <!-- Tab 3 content goes here -->
+        <p>Content for Tab 3</p>
+      </div>
+      <div x-show="activeTab === 'tab4'" class="">
+        <!-- Tab 4 content goes here -->
+        <p>Content for Tab 4</p>
+      </div>
+      <div x-show="activeTab === 'tab5'" class="">
+        <!-- Tab 5 content goes here -->
+        <p>Content for Tab 5</p>
       </div>
     </div>
   </div>
-</div>
-
+  <div class="">
+    <div class="flex items-center justify-between pt-7">
+      <div class="flex flex-1 justify-between sm:hidden">
+        <a href="#"
+           class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
+        <a href="#"
+           class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+      </div>
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-base text-[#181C32] font-normal">
+            Showing
+            <span class="font-medium">1</span>
+            to
+            <span class="font-medium">10</span>
+            of
+            <span class="font-medium">5</span>
+            entries
+          </p>
+        </div>
+        <div class="flex">
+          <a href="#"
+             class="relative inline-flex items-center rounded-full px-5 py-3 mr-3.5 border border-[#E1E3EA80] bg-white">
+            <span class="sr-only">Previous</span>
+            <img class="h-5 w-1.5" src="{% static 'images/left-arrow.svg' %}" />
+          </a>
+          <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Page</span>
+          <a href="#"
+             aria-current="page"
+             class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
+            1
+          </a>
+          <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of 5</span>
+          <a href="#"
+             class="relative inline-flex items-center rounded-full px-5 py-3 ml-3.5 border border-[#E1E3EA80] bg-white">
+            <span class="sr-only">Next</span>
+            <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
