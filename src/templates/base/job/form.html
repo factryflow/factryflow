@@ -1,0 +1,118 @@
+{% extends 'base/main.html' %}
+
+{% block title %} Job {% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="flex-wrap">
+  <nav class="flex pb-4" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <li class="inline-flex items-center">
+        <a href="/" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+          <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+        </a>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+          <a href="/job" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Job</a>
+        </div>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+          <a href="/job/form" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Loreum Ipsum Job</a>
+        </div>
+      </li>
+      <li aria-current="page">
+        <div class="flex items-center">
+          <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+          <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Job Details</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+  <div>
+    <h1 class="text-2xl font-semibold text-[#181C32] pb-5">New Job</h1>
+  </div>
+</div>
+
+<div class="rounded-xl bg-white px-8 py-8 w-full">
+  <div>
+    <h1 class="text-xl font-semibold text-[#5E6278] pb-8">Job Details</h1>
+  </div>
+
+  <form>
+    <div class="grid gap-y-6 gap-x-7 mb-6 md:grid-cols-2">
+      <div>
+        <label for="job_name" class="block mb-2.5 text-sm text-[#181C32] font-semibold">Job Name<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="text" id="job_name"
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          placeholder="Enter Job Name" required />
+      </div>
+
+      <div>
+        <label for="Description" class="block mb-2.5 text-sm text-[#181C32] font-semibold">Description<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="text" id="Description"
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          placeholder="Write Description" required />
+      </div>
+
+      <div>
+        <label for="date" class="block mb-2.5 text-sm text-[#181C32] font-semibold">Due Date<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="date" id="date"
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          required />
+      </div>
+
+      <div>
+        <label for="Priority" class="block mb-2.5 text-sm text-[#181C32] font-semibold">Priority<span
+            class="text-[#FF4D4F]">*</span></label>
+        <select id="Priority"
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+          required>
+          <!-- Placeholder option -->
+          <option value="" disabled selected>Select an option</option>
+          <!-- Add your options here -->
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="Status" class="block mb-2.5 text-sm text-[#181C32] font-semibold">Status<span
+            class="text-[#FF4D4F]">*</span></label>
+        <select id="Status"
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+          required>
+          <!-- Placeholder option -->
+          <option value="" disabled selected>Select an option</option>
+          <!-- Add your options here -->
+          <option value="planned">Planned</option>
+          <option value="in-progress">In-Progress</option>
+          <option value="not-planned">Not-Planned</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-nowrap mt-8">
+      <a href="{% url 'job' %}"
+        class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center mr-2.5">
+        Cancel
+      </a>
+      <button type="submit"
+        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-2.5 text-center">
+        Create
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
