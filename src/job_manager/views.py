@@ -32,7 +32,7 @@ class JobTableView:
     def table_rows(self):
         return [
             [
-                job.id,
+                job.id,  # As much as possible, we put the table id first
                 job.name,
                 job.description,
                 job.customer,
@@ -56,6 +56,7 @@ def show_job_form(request, id: int = None, edit: str = ""):
     if id:
         job = get_object_or_404(Job, id=id)
         form = JobForm(instance=job)
+        page_label = job.name
 
         if edit != "T":
             view_mode = True
@@ -74,9 +75,10 @@ def show_job_form(request, id: int = None, edit: str = ""):
 
     else:
         form = JobForm()
-        button_text = "Create Job"
+        button_text = "Create"
         view_mode = False
         form_label = "New Job Details"
+        page_label = "New Job"
 
     context = {
         "form": form,
@@ -86,6 +88,7 @@ def show_job_form(request, id: int = None, edit: str = ""):
         "form_action_url": form_action_url,
         "id": id if id else None,
         "edit_url": edit_url if "edit_url" in locals() else "#",
+        "page_label": page_label,
     }
 
     return render(
@@ -100,7 +103,11 @@ def show_all_jobs(request):
     return render(
         request,
         "objects/list.html",
-        {"headers": table.table_headers, "rows": table.table_rows},
+        {
+            "headers": table.table_headers,
+            "rows": table.table_rows,
+            "show_actions": True,
+        },
     )
 
 
@@ -133,10 +140,7 @@ def save_job_form(request, id: int = None):
             "objects/details.html#partial-form",
             {"form": form, "button_text": "Add Job", "form_label": "Job Details"},
         )
-        # add_notification_headers(response, "Job created successfully!", "success")
 
-        # return response
-        # If the request is from htmx
         if request.htmx:
             headers = {
                 "HX-Redirect": reverse(
