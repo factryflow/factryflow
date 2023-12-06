@@ -1,6 +1,6 @@
 {% extends 'base/main.html' %}
 
-{% block title %} Job {% endblock %}
+{% block title %} Task {% endblock %}
 
 {% block content %}
 
@@ -13,7 +13,7 @@
   {% for tab in tabs%}
   <button
     x-on:click="activeTab = '{{tab}}'"
-    :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{tab}}'}"
+    :class="{ 'border-b-4  border-[#00B4D8]': activeTab === '{{tab}}'}"
     class="mr-2.5 pb-3 md:mr-12 cursor-pointer focus:outline-none"
   >
   {{ tab }}
@@ -35,7 +35,7 @@
         <li>
           <div class="flex items-center">
             <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-            <a href="/job" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Job</a>
+            <a href="/task" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Task</a>
           </div>
         </li>
         <li aria-current="page">
@@ -48,22 +48,22 @@
     </nav>
 
     <div>
-      <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Job Management</h1>
+      <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Task Management</h1>
     </div>
   </div>
 
   <div class="flex">
-    <a href="{% url 'jobform' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
-      Job</a>
+    <a href="{% url 'taskform' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+      Task</a>
   </div>
 </div>
 
 <!-- Tabs -->
 <div x-data="{ activeTab: 'All' }">
   <!-- Tabs -->
-  <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
+  <div class="bg-white pt-7  px-7 border-b border-[#e1e3ea80] rounded-t-xl">
     <div class="md:flex flex-wrap text-sm md:text-base">
-      {% with "All Planned In-Progress Not-Planned Completed" as tablist %}
+      {% with "All Task-Type-1  Task-Type-2 Task-Type-3 Task-Type-4" as tablist %}
         {% with tabs=tablist.split %}
           {% partial _TabsItems %}
         {% endwith %}
@@ -108,15 +108,16 @@
                     <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                   </div>
                 </th>
-                <th scope="col" class=" w-[90px]  p-2 text-start">Job Id</th>
-                <th scope="col" class=" w-[136px] p-2 text-start ">Job Name</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Description</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Customer</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Due Date</th>
+                <th scope="col" class=" w-[90px]  p-2 text-start">Task Id</th>
+                <th scope="col" class=" w-[90px] p-2 text-start ">Job</th>
+                <th scope="col" class=" w-[90px] p-2 text-center">Item</th>
+                <th scope="col" class=" w-[100px] p-2 text-center">Quantity</th>
+                <th scope="col" class=" w-[136px] p-2 text-start">Run Time</th>
                 <th scope="col" class=" w-[136px] p-2 text-start">Planned Start</th>
                 <th scope="col" class=" w-[136px] p-2 text-start">Planned End</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Priority</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Status</th>
+                <th scope="col" class=" w-[136px] p-2 text-start">Task Type</th>
+                <th scope="col" class=" w-[160px] p-2 text-center">Assigned Resources</th>
+                <th scope="col" class=" w-[136px] p-2 text-center">status</th>
                 <th scope="col" class=" w-[136px] p-2 text-center">Actions</th>
               </tr>
             </thead>
@@ -127,15 +128,17 @@
                     <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                   </div>
                 </td>
-                <td class="text-[#181C32] font-semibold whitespace-nowrap h-full w-auto text-start p-2">#Job-014</td>
+                <td class="text-[#181C32] font-semibold whitespace-nowrap h-full w-auto text-start p-2">#Task-014</td>
                 <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Loreum Ipsum Job</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Lorem Ipsum is simply dum...</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">24 Customers</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">19/09/2023</td>
+               
+                <td class="text-[#7E8299] text-center p-2 font-medium h-full w-auto">03</td>
+                <td class="text-[#7E8299] text-center p-2 font-medium h-full w-auto">03</td>
+                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">24 hrs 22 mins</td>
                 <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#3DAD99]  text-center font-medium h-full w-auto p-2">3</td>
-                <td class=" h-full w-auto items-start ">
+                <td class="text-[#7E8299] text-start font-medium h-full w-auto p-2">10/09/2023</td>
+                <td class="text-[#7E8299]  text-start font-medium h-full w-auto p-2">Loreum Ipsum</td>
+                <td class="text-blue-500 text-center p-2 font-medium h-full w-auto"><a href="#">View</a></td>
+                <td class=" h-full w-auto items-center ">
                   <span class="h-3 p-2 bg-hax text-[#F6C000] font-bold rounded">
                     In Progress
                   </span>                  
@@ -161,22 +164,22 @@
       </div>
       
     </div>
-    <div x-show="activeTab === 'Planned'" class="">
+    <div x-show="activeTab === 'Task-Type-1'" class="">
       <!-- Tab 2 content goes here -->
       <p>Content for Tab 2</p>
     </div>
 
-    <div x-show="activeTab === 'InProgress'" class="">
+    <div x-show="activeTab === 'Task-Type-2'" class="">
       <!-- Tab 3 content goes here -->
       <p>Content for Tab 3</p>
     </div>
 
-    <div x-show="activeTab === 'NotPlanned'" class="">
+    <div x-show="activeTab === 'Task-Type-3'" class="">
       <!-- Tab 4 content goes here -->
       <p>Content for Tab 4</p>
     </div>
 
-    <div x-show="activeTab === 'Completed'" class="">
+    <div x-show="activeTab === 'Task-Type-4'" class="">
       <!-- Tab 5 content goes here -->
       <p>Content for Tab 5</p>
     </div>
