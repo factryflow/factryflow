@@ -19,7 +19,7 @@
                     </div>
                 </th>
                 {% for header in headers %}<th scope="col" class="px-6 py-3">{{ header }}</th>{% endfor %}
-                <th scope="col" class="px-6 py-3">Actions</th>
+                {% if show_actions %}<th scope="col" class="px-6 py-3">Actions</th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -33,31 +33,33 @@
                         </div>
                     </td>
                     {% for cell in row %}<td class="px-6 py-4">{{ cell }}</td>{% endfor %}
-                    <td class="flex items-center px-6 py-4">
-                        <a href="{% url 'view_job' id=row.0 %}">
-                            <button id="view-{{ row.0 }}"
+                    {% if show_actions %}
+                        <td class="flex items-center px-6 py-4">
+                            <a href="{% url 'view_job' id=row.0 %}">
+                                <button id="view-{{ row.0 }}"
+                                        type="button"
+                                        class="font-medium ms-3 focus:outline-none bg-transparent border-none">
+                                    <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" alt="View" />
+                                </button>
+                            </a>
+                            <a href="{% url 'edit_job' id=row.0 edit='T' %}">
+                                <button id="edit-{{ row.0 }}"
+                                        type="button"
+                                        class="font-medium ms-3 focus:outline-none bg-transparent border-none">
+                                    <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                </button>
+                            </a>
+                            <button id="delete-{{ row.0 }}"
                                     type="button"
-                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none">
-                                <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" alt="View" />
+                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none"
+                                    hx-delete="/jobs/delete/{{ row.0 }}"
+                                    hx-target="#jobs_table"
+                                    hx-swap="outerHTML"
+                                    hx-confirm="Are you sure?">
+                                <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" alt="Delete" />
                             </button>
-                        </a>
-                        <a href="{% url 'edit_job' id=row.0 edit='T' %}">
-                            <button id="edit-{{ row.0 }}"
-                                    type="button"
-                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none">
-                                <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" alt="Edit" />
-                            </button>
-                        </a>
-                        <button id="delete-{{ row.0 }}"
-                                type="button"
-                                class="font-medium ms-3 focus:outline-none bg-transparent border-none"
-                                hx-delete="/jobs/delete/{{ row.0 }}"
-                                hx-target="#jobs_table"
-                                hx-swap="outerHTML"
-                                hx-confirm="Are you sure?">
-                            <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" alt="Delete" />
-                        </button>
-                    </td>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
