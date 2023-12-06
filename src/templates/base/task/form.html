@@ -1,0 +1,133 @@
+{% extends 'base/main.html' %}
+
+{% block title %} Task {% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="flex-wrap">
+  <nav class="flex pb-4" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <li class="inline-flex items-center">
+        <a href="/" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+          <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+        </a>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+          <a href="/task" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Task</a>
+        </div>
+      </li>
+      
+      <li aria-current="page">
+        <div class="flex items-center">
+          <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+          <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">New Task</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+  
+</div>
+
+<div class="rounded-xl bg-white px-8 py-8 w-full">
+  <div>
+    <h1 class="text-xl font-semibold text-[#5E6278] pb-8">Task Details</h1>
+  </div>
+
+  <form>
+    <div class="grid gap-y-6 gap-x-7 mb-6 md:grid-cols-2">
+      <div>
+        <label  class="block mb-2.5 text-sm text-[#181C32] font-semibold">Job<span
+            class="text-[#FF4D4F]">*</span></label>
+        <select 
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+          required>
+          <!-- Placeholder option -->
+          <option value="" disabled selected>Select option</option>
+          <!-- Add your options here -->
+          <option value="planned">Job1</option>
+          <option value="in-progress">Job2</option>
+          <option value="not-planned">Job-3</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
+      <div>
+        <label  class="block mb-2.5 text-sm text-[#181C32] font-semibold">Time Required<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="time" 
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          placeholder="Ex. 14 Hrs 35 Mins" required />
+      </div>
+
+      <div>
+        <label  class="block mb-2.5 text-sm text-[#181C32] font-semibold">Planned Start<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="date" 
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          required />
+      </div>
+
+      <div>
+        <label  class="block mb-2.5 text-sm text-[#181C32] font-semibold">Item<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="number"
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          required />
+      </div>
+
+      <div>
+        <label  class="block mb-2.5 text-sm text-[#181C32] font-semibold">Task Type</label>
+        <select 
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+          required>
+          <!-- Placeholder option -->
+          <option value="" disabled selected>Select an option</option>
+          <!-- Add your options here -->
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block mb-2.5 text-sm text-[#181C32] font-semibold">Quantity<span
+            class="text-[#FF4D4F]">*</span></label>
+        <input type="number" 
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+          required />
+      </div>
+
+      <div>
+        <label  class="block mb-2.5 text-sm text-[#181C32] font-semibold">Status</label>
+        <select 
+          class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+          required>
+          <!-- Placeholder option -->
+          <option value="" disabled selected>Select an option</option>
+          <!-- Add your options here -->
+          <option value="planned">Planned</option>
+          <option value="in-progress">In-Progress</option>
+          <option value="not-planned">Not-Planned</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-nowrap mt-8">
+      <a href="{% url 'task' %}"
+        class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center mr-2.5">
+        Cancel
+      </a>
+      <button type="submit"
+        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-2.5 text-center">
+        Create
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
