@@ -11,8 +11,15 @@ from .services import delete_job, get_all_jobs, job_create_or_update
 
 
 class JobTableView:
-    def __init__(self):
+    def __init__(self, status_filter=None):
         self.jobs = get_all_jobs()
+        self.status_filter = status_filter if status_filter else "all"
+
+    @property
+    def filtered_jobs(self):
+        if self.status_filter != "all":
+            return [job for job in self.jobs if job.job_status == self.status_filter]
+        return self.jobs
 
     @property
     def table_headers(self):
@@ -46,8 +53,29 @@ class JobTableView:
                 job.priority,
                 job.get_job_status_display(),
             ]
-            for job in self.jobs
+            for job in self.filtered_jobs
         ]
+
+
+def show_all_jobs(request):
+    job_status_filter = request.GET.get("status", "all")
+    table = JobTableView(status_filter=job_status_filter)
+
+    template_name = (
+        "objects/list.html#partial-table-template"
+        if "HX-Request" in request.headers
+        else "objects/list.html"
+    )
+
+    return render(
+        request,
+        template_name,
+        {
+            "headers": table.table_headers,
+            "rows": table.table_rows,
+            "show_actions": True,
+        },
+    )
 
 
 def show_job_form(request, id: int = None, edit: str = ""):
@@ -60,7 +88,7 @@ def show_job_form(request, id: int = None, edit: str = ""):
 
         if edit != "T":
             view_mode = True
-            form_label = "View Job"
+            form_label = "Job Details"
             button_text = "Edit"
             edit_url = reverse("edit_job", args=[id, "T"])
 
@@ -70,7 +98,7 @@ def show_job_form(request, id: int = None, edit: str = ""):
 
         else:
             button_text = "Save"
-            form_label = "Edit Job"
+            form_label = "Job Details"
             view_mode = False
 
     else:
@@ -95,19 +123,6 @@ def show_job_form(request, id: int = None, edit: str = ""):
         request,
         "objects/details.html",
         context,
-    )
-
-
-def show_all_jobs(request):
-    table = JobTableView()
-    return render(
-        request,
-        "objects/list.html",
-        {
-            "headers": table.table_headers,
-            "rows": table.table_rows,
-            "show_actions": True,
-        },
     )
 
 
