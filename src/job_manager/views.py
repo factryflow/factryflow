@@ -11,15 +11,25 @@ from .services import delete_job, get_all_jobs, job_create_or_update
 
 
 class JobTableView:
-    def __init__(self, status_filter=None):
+    def __init__(self, status_filter=None, search_query=None):
         self.jobs = get_all_jobs()
         self.status_filter = status_filter if status_filter else "all"
+        self.search_query = search_query
 
     @property
     def filtered_jobs(self):
+        jobs = self.jobs
         if self.status_filter != "all":
-            return [job for job in self.jobs if job.job_status == self.status_filter]
-        return self.jobs
+            jobs = [job for job in jobs if job.job_status == self.status_filter]
+        if self.search_query:
+            jobs = [
+                job
+                for job in jobs
+                if self.search_query.lower() in job.name.lower()
+                or self.search_query.lower() in job.description.lower()
+                or self.search_query.lower() in job.customer.lower()
+            ]
+        return jobs
 
     @property
     def table_headers(self):
@@ -59,7 +69,8 @@ class JobTableView:
 
 def show_all_jobs(request):
     job_status_filter = request.GET.get("status", "all")
-    table = JobTableView(status_filter=job_status_filter)
+    search_query = request.GET.get("query", None)
+    table = JobTableView(status_filter=job_status_filter, search_query=search_query)
 
     template_name = (
         "objects/list.html#partial-table-template"
