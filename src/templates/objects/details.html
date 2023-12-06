@@ -7,8 +7,10 @@
 {% load partials %}
 
 {% partialdef partial-form %}
-    <form method="post" hx-post="/job-create/" hx-redirect="true">
+    <form method="post" hx-post="{{ form_action_url }}" hx-redirect="true">
         {% csrf_token %}
+        {% comment %} Hidden ID {% endcomment %}
+        {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
         <div class="md:flex md:flex-wrap -mx-3">
             {% for field in form %}
                 <div class="md:w-1/2 px-3 mb-6">
@@ -31,10 +33,17 @@
             <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                 Cancel
             </button>
-            <button type="submit"
-                    class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                {{ button_text }}
-            </button>
+            {% if view_mode %}
+                <a href="{{ edit_url }}"
+                   class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                    {{ button_text }}
+                </a>
+            {% else %}
+                <button type="submit"
+                        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                    {{ button_text }}
+                </button>
+            {% endif %}
         </div>
     </form>
 {% endpartialdef %}

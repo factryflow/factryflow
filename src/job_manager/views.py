@@ -51,6 +51,8 @@ class JobTableView:
 
 
 def show_job_form(request, id: int = None, edit: str = ""):
+    form_action_url = "/job-create/"
+
     if id:
         job = get_object_or_404(Job, id=id)
         form = JobForm(instance=job)
@@ -59,6 +61,7 @@ def show_job_form(request, id: int = None, edit: str = ""):
             view_mode = True
             form_label = "View Job"
             button_text = "Edit"
+            edit_url = reverse("edit_job", args=[id, "T"])
 
             # Make all form fields read-only
             for field in form.fields.values():
@@ -73,13 +76,16 @@ def show_job_form(request, id: int = None, edit: str = ""):
         form = JobForm()
         button_text = "Create Job"
         view_mode = False
-        form_label = "New Job"
+        form_label = "New Job Details"
 
     context = {
         "form": form,
         "view_mode": view_mode,
         "form_label": form_label,
         "button_text": button_text,
+        "form_action_url": form_action_url,
+        "id": id if id else None,
+        "edit_url": edit_url if "edit_url" in locals() else "#",
     }
 
     return render(
@@ -108,11 +114,12 @@ def save_job_form(request, id: int = None):
 
     # Instantiate the form with POST data and optionally the job instance
     form = JobForm(request.POST, instance=job_instance)
+    id = request.POST.get("id")
 
     if form.is_valid():
         # Extract data from the form
         job_data = form.cleaned_data
-        print(job_data)
+        job_data["id"] = id
 
         # Prepare additional data for the service function, if needed
         job_type = JobType.objects.get(id=1)
