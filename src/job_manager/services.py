@@ -109,6 +109,7 @@ def job_create_or_update(
             "due_date",
             "external_id",
             "note",
+            "job_status",
         ],
     )
 
