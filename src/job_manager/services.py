@@ -135,7 +135,7 @@ def get_all_jobs(id: int = None):
     Otherwise, returns all job statuses.
     """
     if id:
-        return get_object_or_404(Job.objects.select_related("job_status"), id=id)
+        return get_object_or_404(Job.objects.all(), id=id)
     else:
         return Job.objects.all()
 

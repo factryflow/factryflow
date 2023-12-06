@@ -7,53 +7,95 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import JobForm
 from .models import Job, JobType
-from .services import get_all_jobs, job_create_or_update
+from .services import delete_job, get_all_jobs, job_create_or_update
 
 
-def show_job_form(request):
-    form = JobForm()
+class JobTableView:
+    def __init__(self):
+        self.jobs = get_all_jobs()
+
+    @property
+    def table_headers(self):
+        return [
+            "Job ID",
+            "Job Name",
+            "Description",
+            "Customer",
+            "Due Date",
+            "Planned Start",
+            "Planned End",
+            "Priority",
+            "Status",
+        ]
+
+    @property
+    def table_rows(self):
+        return [
+            [
+                job.id,
+                job.name,
+                job.description,
+                job.customer,
+                job.due_date.strftime("%Y-%m-%d") if job.due_date else "",
+                job.planned_start_datetime.strftime("%Y-%m-%d")
+                if job.planned_start_datetime
+                else "",
+                job.planned_end_datetime.strftime("%Y-%m-%d")
+                if job.planned_end_datetime
+                else "",
+                job.priority,
+                job.get_job_status_display(),
+            ]
+            for job in self.jobs
+        ]
+
+
+def show_job_form(request, id: int = None, edit: str = ""):
+    if id:
+        job = get_object_or_404(Job, id=id)
+        form = JobForm(instance=job)
+
+        if edit != "T":
+            view_mode = True
+            form_label = "View Job"
+            button_text = "Edit"
+
+            # Make all form fields read-only
+            for field in form.fields.values():
+                field.widget.attrs["readonly"] = True
+
+        else:
+            button_text = "Save"
+            form_label = "Edit Job"
+            view_mode = False
+
+    else:
+        form = JobForm()
+        button_text = "Create Job"
+        view_mode = False
+        form_label = "New Job"
+
+    context = {
+        "form": form,
+        "view_mode": view_mode,
+        "form_label": form_label,
+        "button_text": button_text,
+    }
+
     return render(
         request,
         "objects/details.html",
-        {"form": form, "button_text": "Add Job", "form_label": "Job Details"},
+        context,
     )
 
 
 def show_all_jobs(request):
-    jobs = get_all_jobs()
-    headers = [
-        "Job ID",
-        "Job Name",
-        "Description",
-        "Customer",
-        "Due Date",
-        "Planned Start",
-        "Planned End",
-        "Priority",
-        "Status",
-    ]
-
-    # Create rows as a list of lists
-    rows = [
-        [
-            job.id,
-            job.name,
-            job.description,
-            job.customer,
-            job.due_date.strftime("%Y-%m-%d") if job.due_date else "",
-            job.planned_start_datetime.strftime("%Y-%m-%d")
-            if job.planned_start_datetime
-            else "",
-            job.planned_end_datetime.strftime("%Y-%m-%d")
-            if job.planned_end_datetime
-            else "",
-            job.priority,
-            job.get_job_status_display(),
-        ]
-        for job in jobs
-    ]
-
-    return render(request, "objects/list.html", {"headers": headers, "rows": rows})
+    table = JobTableView()
+    return render(
+        request,
+        "objects/list.html",
+        {"headers": table.table_headers, "rows": table.table_rows},
+    )
 
 
 @require_http_methods(["POST"])
@@ -70,6 +112,7 @@ def save_job_form(request, id: int = None):
     if form.is_valid():
         # Extract data from the form
         job_data = form.cleaned_data
+        print(job_data)
 
         # Prepare additional data for the service function, if needed
         job_type = JobType.objects.get(id=1)
@@ -96,3 +139,19 @@ def save_job_form(request, id: int = None):
             response = HttpResponse(status=204, headers=headers)
             add_notification_headers(response, "Job created successfully!", "success")
             return response
+
+
+def request_job_delete(request, id: int):
+    """
+    Handle job deletion request. Deletes a job based on the given ID,
+    retrieves the updated job list, and returns a response with a notification.
+    """
+    delete_job(id=id)
+    table = JobTableView()
+    response = render(
+        request,
+        "objects/list.html#partial-table-template",
+        {"headers": table.table_headers, "rows": table.table_rows},
+    )
+    add_notification_headers(response, "Job has been deleted.", "info")
+    return response
