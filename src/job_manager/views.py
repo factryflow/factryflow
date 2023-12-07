@@ -9,15 +9,29 @@ from .forms import JobForm
 from .models import Job, JobType
 from .services import delete_job, get_all_jobs, job_create_or_update
 
+# ------------------------------------------------------------------------------
+# Job Views
+# ------------------------------------------------------------------------------
+
 
 class JobTableView:
+    """
+    Class representing a view for displaying jobs in a table format
+    """
+
     def __init__(self, status_filter=None, search_query=None):
+        """
+        Initialization of the class with optional filtering parameters.
+        """
         self.jobs = get_all_jobs()
         self.status_filter = status_filter if status_filter else "all"
         self.search_query = search_query
 
     @property
     def filtered_jobs(self):
+        """
+        Property to get filtered job list based on status and search query.
+        """
         jobs = self.jobs
         if self.status_filter != "all":
             jobs = [job for job in jobs if job.job_status == self.status_filter]
@@ -33,6 +47,9 @@ class JobTableView:
 
     @property
     def table_headers(self):
+        """
+        Property to define table headers for the job list.
+        """
         return [
             "Job ID",
             "Job Name",
@@ -47,6 +64,9 @@ class JobTableView:
 
     @property
     def table_rows(self):
+        """
+        Property to get the rows of data for the job table based on filtered jobs.
+        """
         return [
             [
                 job.id,  # As much as possible, we put the table id first
@@ -68,6 +88,9 @@ class JobTableView:
 
 
 def show_all_jobs(request):
+    """
+    View function to display all jobs with optional filtering.
+    """
     job_status_filter = request.GET.get("status", "all")
     search_query = request.GET.get("query", None)
     table = JobTableView(status_filter=job_status_filter, search_query=search_query)
@@ -90,6 +113,9 @@ def show_all_jobs(request):
 
 
 def show_job_form(request, id: int = None, edit: str = ""):
+    """
+    View function to display a form for a job. This can be used for both creating and editing a job.
+    """
     form_action_url = "/job-create/"
 
     if id:
