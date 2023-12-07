@@ -72,9 +72,11 @@
             <div class="relative w-full md:w-[600px]">
                 <!-- Inline SVG Icon -->
                 <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
-                     src="{% static 'images/search.svg' %}" />
+                     src="{% static 'images/search.svg' %}"
+                     alt="image_search" />
                 <!-- Search Input -->
                 <input type="text"
+                       id="job_search_bar"
                        placeholder="Search Job ID / Job Name"
                        hx-get="{% url 'job' %}"
                        hx-target="#all-jobs-table"

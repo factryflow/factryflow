@@ -42,6 +42,7 @@ class JobTableView:
                 if self.search_query.lower() in job.name.lower()
                 or self.search_query.lower() in job.description.lower()
                 or self.search_query.lower() in job.customer.lower()
+                or str(self.search_query) in str(job.id)
             ]
         return jobs
 
