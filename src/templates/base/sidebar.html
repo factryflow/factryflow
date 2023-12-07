@@ -76,7 +76,7 @@
         {% endwith %}
 
         <ul x-show="open" @click.outside="open=false" class="w-full space-y-2.5 ml-5 mt-4">
-          {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/job" %}
+          {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
           {% partial _dropdown_menu_item %}
           {% endwith %}
 
