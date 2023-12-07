@@ -1,5 +1,6 @@
 from common.utils.services import build_or_retrieve_instance
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 from job_manager.models import (
     Dependency,
@@ -108,6 +109,7 @@ def job_create_or_update(
             "due_date",
             "external_id",
             "note",
+            "job_status",
         ],
     )
 
@@ -125,6 +127,24 @@ def job_create_or_update(
         job.update_priority(job_data["priority"])
 
     return job
+
+
+def get_all_jobs(id: int = None):
+    """
+    Gets all job data including related values from job_status model.
+    If an id is provided, returns the job data with that ID.
+    Otherwise, returns all job statuses.
+    """
+    if id:
+        return get_object_or_404(Job.objects.all(), id=id)
+    else:
+        return Job.objects.all()
+
+
+@transaction.atomic
+def delete_job(id: int):
+    job = get_all_jobs(id=id)
+    job.delete()
 
 
 # ------------------------------------------------------------------------------
