@@ -215,7 +215,11 @@ def request_job_delete(request, id: int):
     response = render(
         request,
         "objects/list.html#partial-table-template",
-        {"headers": table.table_headers, "rows": table.table_rows},
+        {
+            "headers": table.table_headers,
+            "rows": table.table_rows,
+            "show_actions": True,
+        },
     )
     add_notification_headers(response, "Job has been deleted.", "info")
     return response
