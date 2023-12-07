@@ -12,9 +12,10 @@
 
   {% for tab in tabs%}
   <button
+    x-cloak
     x-on:click="activeTab = '{{tab}}'"
-    :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{tab}}'}"
-    class="mr-2.5 pb-3 md:mr-12 cursor-pointer focus:outline-none"
+    :class="{ 'border-b-4 rounded border-[#00B4D8] text-black font-semibold': activeTab === '{{tab}}'}"
+    class="mr-2.5 pb-3 md:mr-12 cursor-pointer font-semibold text-[#7E8299] focus:outline-none"
   >
   {{ tab }}
   </button>
@@ -23,7 +24,7 @@
 
 
 <!-- Breadcrumb -->
-<div class="flex justify-between items-center">
+<div class="flex justify-between items-center" x-cloak>
   <div class="flex-wrap">
     <nav class="flex pb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -59,7 +60,7 @@
 </div>
 
 <!-- Tabs -->
-<div x-data="{ activeTab: 'All' }">
+<div x-data="{ activeTab: 'All' }" x-cloak>
   <!-- Tabs -->
   <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
     <div class="md:flex flex-wrap text-sm md:text-base">
@@ -72,7 +73,7 @@
   </div>
 
   <!-- Tab Content -->
-  <div class="bg-white pt-6 rounded-b-xl flex h-screen">
+  <div class="bg-white pt-6 rounded-b-xl flex h-screen" x-cloak>
     <div x-show="activeTab === 'All'" class="w-full">
       <!-- Tab 1 content goes here -->
       <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7">
@@ -100,89 +101,201 @@
 
       <div class="pt-6">
         <div class="relative overflow-x-auto table-container">
-          <table class="w-full text-sm text-center">
-            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
-              <tr class="text-[#181C32] h-16">
-                <th scope="col" class="w-[90px] p-2">
-                  <div class="flex items-center justify-center">
-                    <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
-                  </div>
-                </th>
-                <th scope="col" class=" w-[90px]  p-2 text-start">Job Id</th>
-                <th scope="col" class=" w-[136px] p-2 text-start ">Job Name</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Description</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Customer</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Due Date</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Planned Start</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Planned End</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Priority</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Status</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Actions</th>
+          <table class="w-full text-sm text-left">
+            <thead class="text-sm capitalize font-semibold bg-[#FAFAFA] border border-[#e1e3ea80]">
+              <tr>
+                  <th scope="col" class="p-4">
+                      <div class="flex items-center">
+                        <input id="checkbox-all" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                          <label for="checkbox-all" class="sr-only">checkbox</label>
+                      </div>
+                  </th>
+                  <th scope="col" class="px-4 py-3">Job Id</th>
+                  <th scope="col" class="px-4 py-3 w-[120px]">Job Name</th>
+                  <th scope="col" class="px-4 py-3 w-[150px]">Description</th>
+                  <th scope="col" class="px-4 py-3">Customer</th>
+                  <th scope="col" class="px-4 py-3">Due Date</th>
+                  <th scope="col" class="px-4 py-3 whitespace-nowrap">Planned Start</th>
+                  <th scope="col" class="px-4 py-3 whitespace-nowrap">Planned End</th>
+                  <th scope="col" class="px-4 py-3 text-center">Priority</th>
+                  <th scope="col" class="px-4 py-3 text-center">status</th>
+                  <th scope="col" class="px-4 py-3 text-center">Actions</th>
               </tr>
-            </thead>
+          </thead>
+           
             <tbody>
               <tr class="bg-white text-startder-b h-[100px] border-b-2">
-                <td class="w-auto p-2 h-full">
-                  <div class="flex items-center justify-center">
-                    <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                      <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                      <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
                   </div>
-                </td>
-                <td class="text-[#181C32] font-semibold whitespace-nowrap h-full w-auto text-start p-2">#Job-014</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Loreum Ipsum Job</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Lorem Ipsum is simply dum...</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">24 Customers</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">19/09/2023</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#3DAD99]  text-center font-medium h-full w-auto p-2">3</td>
-                <td class=" h-full w-auto items-start ">
-                  <span class="h-3 p-2 bg-hax text-[#F6C000] font-bold rounded">
-                    In Progress
-                  </span>                  
+              </td>
+                
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Job-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Lorem Ipsum is simply dum...</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 Customers</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-green-300 text-center">03</td>
+               
+                <td class="px-4 py-2 text-center">
+                  <span class="bg-hax text-[#F6C000] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">In Progress</span>
+              </td>
+            
+              <td class="px-1 py-1">
+                <div class="flex  justify-center">
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                  </a>
+                </div>
+              </td>
+              </tr>
+
+              <tr class="bg-white text-startder-b h-[100px] border-b-2">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                      <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                      <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                  </div>
+              </td>
+                
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Job-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Lorem Ipsum is simply dum...</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">24 Customers</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-green-300 text-center">03</td>
+                
+                <td class="px-4 py-2 text-center">
+                  <span class="bg-haxred text-[#FF4D4F] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">Not Planned</span>
                 </td>
             
-                <td class="w-4 p-2 h-full">
-                  <div class="flex items-center justify-center">
-                    <a href="#" class="mr-3">
-                      <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
-                    </a>
-                    <a href="#" class="mr-3">
-                      <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
-                    </a>
-                    <a href="#" class="mr-3">
-                      <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
-                    </a>
+              <td class="px-1 py-1">
+                <div class="flex  justify-center">
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                  </a>
+                </div>
+              </td>
+              </tr>
+
+              <tr class="bg-white text-startder-b h-[100px] border-b-2">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                      <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                      <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
                   </div>
+              </td>
+                
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Job-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Lorem Ipsum is simply dum...</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">24 Customers</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-green-300 text-center">03</td>
+                
+                <td class="px-4 py-2 text-center">
+                  <span class="bg-haxgreen text-[#3DAD99] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">Completed</span>
                 </td>
+            
+              <td class="px-1 py-1">
+                <div class="flex  justify-center">
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                  </a>
+                </div>
+              </td>
+              </tr>
+
+              <tr class="bg-white text-startder-b h-[100px] border-b-2">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                      <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                      <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                  </div>
+              </td>
+                
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Job-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Lorem Ipsum is simply dum...</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">24 Customers</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-green-300 text-center">03</td>
+                
+                <td class="px-4 py-2 text-center">
+                  <span class="bg-haxpurple text-[#7239EA] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">Planned</span>
+                </td>
+            
+              <td class="px-1 py-1">
+                <div class="flex  justify-center">
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                  </a>
+                  <a href="#" class="mr-3">
+                    <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                  </a>
+                </div>
+              </td>
               </tr>
             </tbody>
           </table>
+          
         </div>
       </div>
       
     </div>
-    <div x-show="activeTab === 'Planned'" class="">
+    <div x-cloak x-show="activeTab === 'Planned'" class="">
       <!-- Tab 2 content goes here -->
       <p>Content for Tab 2</p>
     </div>
 
-    <div x-show="activeTab === 'InProgress'" class="">
+    <div x-cloak x-show="activeTab === 'InProgress'" class="">
       <!-- Tab 3 content goes here -->
       <p>Content for Tab 3</p>
     </div>
 
-    <div x-show="activeTab === 'NotPlanned'" class="">
+    <div x-cloak x-show="activeTab === 'NotPlanned'" class="">
       <!-- Tab 4 content goes here -->
       <p>Content for Tab 4</p>
     </div>
 
-    <div x-show="activeTab === 'Completed'" class="">
+    <div x-cloak x-show="activeTab === 'Completed'" class="">
       <!-- Tab 5 content goes here -->
       <p>Content for Tab 5</p>
     </div>
   </div>
 </div>
-<div class="">
+<div class="" x-cloak>
   <div class="flex items-center justify-between pt-7">
     <div class="flex flex-1 justify-between sm:hidden">
       <a href="#"

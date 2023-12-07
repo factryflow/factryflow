@@ -10,20 +10,22 @@
 
 {% partialdef _TabsItems %}
 
-  {% for tab in tabs%}
-  <button
-    x-on:click="activeTab = '{{tab}}'"
-    :class="{ 'border-b-4  border-[#00B4D8]': activeTab === '{{tab}}'}"
-    class="mr-2.5 pb-3 md:mr-12 cursor-pointer focus:outline-none"
-  >
+{% for tab in tabs%}
+<button x-cloak x-on:click="activeTab = '{{tab}}'" :class="{ 'border-b-4  border-[#00B4D8] font-semibold text-black': activeTab === '{{tab}}'}"
+  class="mr-2.5 pb-3 md:mr-12 cursor-pointer text-[#7E8299] font-semibold focus:outline-none">
   {{ tab }}
-  </button>
-  {% endfor %}
+</button>
+{% endfor %}
 {% endpartialdef %}
 
 
+
+
+
+
+
 <!-- Breadcrumb -->
-<div class="flex justify-between items-center">
+<div class="flex justify-between items-center" x-cloak>
   <div class="flex-wrap">
     <nav class="flex pb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -53,34 +55,82 @@
   </div>
 
   <div class="flex">
-    <a href="{% url 'taskform' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+    <a href="{% url 'taskform' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create
+      New
       Task</a>
   </div>
 </div>
 
 <!-- Tabs -->
-<div x-data="{ activeTab: 'All' }">
+<div x-data="{ activeTab: 'All',openmodal:false }">
+
+
+ <!-- Modal -->
+ <div x-show="openmodal" x-cloak x-on:keydown.escape.prevent.stop="openmodal = false" role="dialog"
+ aria-modal="true" :aria-labelledby="$nextTick(() => $refs.title.id)"
+ class="fixed inset-0 z-10 overflow-y-auto">
+ <!-- Overlay -->
+ <div x-show="openmodal" x-transition:enter="transition-opacity ease-in duration-300"
+   x-transition:leave="transition-opacity ease-out duration-300"
+   class="fixed inset-0 bg-black bg-opacity-50"></div>
+
+ <!-- Panel -->
+ <div x-show="openmodal" x-transition:enter="transition-transform ease-out duration-300"
+   x-transition:leave="transition-transform ease-in duration-300" x-on:click="openmodal = false"
+   class="relative flex min-h-screen items-center justify-center p-4">
+   <div x-on:click.stop x-trap.noscroll.inert="openmodal"
+     class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
+     <!-- Title -->
+     <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
+       <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
+         <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
+     </div>
+   
+       <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete?</p>
+
+       <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">By deleting <span class="text-[#5E6278] font-semibold">“Loreum Ipsum”</span> Job, all task inside that column will also be deleted. </p>
+
+     </div>
+
+     <!-- Buttons -->
+     <div class="px-9 py-5 flex justify-center items-center gap-3">
+       <button type="button" x-on:click="openmodal = false"
+         class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white">
+         Delete
+       </button>
+
+       <button type="button" x-on:click="openmodal = false"
+         class="rounded-md bg-[#F9F9F9] py-4 px-10 text-[#7E8299]">
+         Cancel
+       </button>
+   
+     </div>
+   </div>
+ </div>
+</div>
+
   <!-- Tabs -->
   <div class="bg-white pt-7  px-7 border-b border-[#e1e3ea80] rounded-t-xl">
     <div class="md:flex flex-wrap text-sm md:text-base">
-      {% with "All Task-Type-1  Task-Type-2 Task-Type-3 Task-Type-4" as tablist %}
-        {% with tabs=tablist.split %}
-          {% partial _TabsItems %}
-        {% endwith %}
+      {% with "All Task-Type-1 Task-Type-2 Task-Type-3 Task-Type-4" as tablist %}
+      {% with tabs=tablist.split %}
+      {% partial _TabsItems %}
+      {% endwith %}
       {% endwith %}
     </div>
   </div>
 
   <!-- Tab Content -->
-  <div class="bg-white pt-6 rounded-b-xl flex h-screen">
+  <div class="bg-white pt-6 rounded-b-xl flex h-screen" x-cloak>
     <div x-show="activeTab === 'All'" class="w-full">
       <!-- Tab 1 content goes here -->
       <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7">
         <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
           <div class="relative w-full md:w-[600px]">
             <!-- Inline SVG Icon -->
-            <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400" src="{% static 'images/search.svg' %}" />
-            
+            <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+              src="{% static 'images/search.svg' %}" />
+
             <!-- Search Input -->
             <input type="text" placeholder="Search Job ID / Job Name"
               class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
@@ -100,92 +150,227 @@
 
       <div class="pt-6">
         <div class="relative overflow-x-auto table-container">
-          <table class="w-full text-sm text-center">
-            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
-              <tr class="text-[#181C32] h-16">
-                <th scope="col" class="w-[90px] p-2">
-                  <div class="flex items-center justify-center">
-                    <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+          <table class="w-full text-sm text-left">
+            <thead class="text-sm capitalize font-semibold bg-[#FAFAFA] border border-[#e1e3ea80]">
+              <tr>
+                <th scope="col" class="p-4">
+                  <div class="flex items-center">
+                    <input id="checkbox-all" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    <label for="checkbox-all" class="sr-only">checkbox</label>
                   </div>
                 </th>
-                <th scope="col" class=" w-[90px]  p-2 text-start">Task Id</th>
-                <th scope="col" class=" w-[90px] p-2 text-start ">Job</th>
-                <th scope="col" class=" w-[90px] p-2 text-center">Item</th>
-                <th scope="col" class=" w-[100px] p-2 text-center">Quantity</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Run Time</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Planned Start</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Planned End</th>
-                <th scope="col" class=" w-[136px] p-2 text-start">Task Type</th>
-                <th scope="col" class=" w-[160px] p-2 text-center">Assigned Resources</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">status</th>
-                <th scope="col" class=" w-[136px] p-2 text-center">Actions</th>
+                <th scope="col" class="px-4 py-3">Task Id</th>
+                <th scope="col" class="px-4 py-3 w-[100px]">Job</th>
+                <th scope="col" class="px-4 py-3 text-center">Item</th>
+                <th scope="col" class="px-4 py-3 text-center">Quantity</th>
+                <th scope="col" class="px-4 py-3">Run Time</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Planned Start</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Planned End</th>
+                <th scope="col" class="px-4 py-3">Task Type</th>
+                <th scope="col" class="px-4 py-3 text-center whitespace-nowrap">Assigned Resources</th>
+                <th scope="col" class="px-4 py-3 text-center">status</th>
+                <th scope="col" class="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
+
             <tbody>
               <tr class="bg-white text-startder-b h-[100px] border-b-2">
-                <td class="w-auto p-2 h-full">
-                  <div class="flex items-center justify-center">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
                     <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
                   </div>
                 </td>
-                <td class="text-[#181C32] font-semibold whitespace-nowrap h-full w-auto text-start p-2">#Task-014</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">Loreum Ipsum Job</td>
-               
-                <td class="text-[#7E8299] text-center p-2 font-medium h-full w-auto">03</td>
-                <td class="text-[#7E8299] text-center p-2 font-medium h-full w-auto">03</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">24 hrs 22 mins</td>
-                <td class="text-[#7E8299] text-start p-2 font-medium h-full w-auto">10/09/2023</td>
-                <td class="text-[#7E8299] text-start font-medium h-full w-auto p-2">10/09/2023</td>
-                <td class="text-[#7E8299]  text-start font-medium h-full w-auto p-2">Loreum Ipsum</td>
-                <td class="text-blue-500 text-center p-2 font-medium h-full w-auto"><a href="#">View</a></td>
-                <td class=" h-full w-auto items-center ">
-                  <span class="h-3 p-2 bg-hax text-[#F6C000] font-bold rounded">
-                    In Progress
-                  </span>                  
+
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Task-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">Loreum Ipsum</td>
+                <td class="px-4 py-2 font-medium text-[#2884EF] text-center underline underline-offset-4"><a
+                    href="#">View</a></td>
+                <td class="px-4 py-2 text-center">
+                  <span
+                    class="bg-haxyellow text-[#F6C000] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">In
+                    Progress</span>
                 </td>
-            
-                <td class="w-4 p-2 h-full">
-                  <div class="flex items-center justify-center">
+
+                <td class="px-1 py-1">
+                  <div class="flex  justify-center">
                     <a href="#" class="mr-3">
                       <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
                     </a>
                     <a href="#" class="mr-3">
                       <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
                     </a>
-                    <a href="#" class="mr-3">
-                      <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
-                    </a>
+                    <div class="flex justify-center">
+                      <!-- Trigger -->
+                      <span  x-on:click="openmodal = !openmodal" class="cursor-pointer">
+                        <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                      </span>
+                    </div>
                   </div>
                 </td>
               </tr>
+
+              <tr class="bg-white text-startder-b h-[100px] border-b-2">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                    <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                  </div>
+                </td>
+
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Task-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">Loreum Ipsum</td>
+                <td class="px-4 py-2 font-medium text-[#2884EF] text-center underline underline-offset-4"><a
+                    href="#">View</a></td>
+                <td class="px-4 py-2 text-center">
+                  <span class="bg-haxred text-[#FF4D4F] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">Not
+                    Planned</span>
+                </td>
+
+                <td class="px-1 py-1">
+                  <div class="flex  justify-center">
+                    <a href="#" class="mr-3">
+                      <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                    </a>
+                    <a href="#" class="mr-3">
+                      <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                    </a>
+                    <div class="flex justify-center">
+                      <!-- Trigger -->
+                      <span  x-on:click="openmodal = !openmodal" class="cursor-pointer">
+                        <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="bg-white text-startder-b h-[100px] border-b-2">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                    <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                  </div>
+                </td>
+
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Task-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">Loreum Ipsum</td>
+                <td class="px-4 py-2 font-medium text-[#2884EF] text-center underline underline-offset-4"><a
+                    href="#">View</a></td>
+                <td class="px-4 py-2 text-center">
+                  <span
+                    class="bg-haxgreen text-[#3DAD99] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">Completed</span>
+                </td>
+
+                <td class="px-1 py-1">
+                  <div class="flex  justify-center">
+                    <a href="#" class="mr-3">
+                      <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                    </a>
+                    <a href="#" class="mr-3">
+                      <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                    </a>
+                    <div class="flex justify-center">
+                      <!-- Trigger -->
+                      <span  x-on:click="openmodal = !openmodal" class="cursor-pointer">
+                        <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="bg-white text-startder-b h-[100px] border-b-2">
+                <td class="w-4 px-4 py-3">
+                  <div class="flex items-center">
+                    <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                  </div>
+                </td>
+
+                <td class="px-4 py-2 font-medium text-[#181C32] whitespace-nowrap">#Task-014</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299]">Loreum Ipsum Job</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] text-center whitespace-nowrap">03</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">24 hrs 22 mins</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">10/09/2023</td>
+                <td class="px-4 py-2 font-medium text-[#7E8299] whitespace-nowrap">Loreum Ipsum</td>
+                <td class="px-4 py-2 font-medium text-[#2884EF] text-center underline underline-offset-4"><a
+                    href="#">View</a></td>
+                <td class="px-4 py-2 text-center">
+                  <span
+                    class="bg-haxpurple text-[#7239EA] text-xs font-medium px-2 py-0.5 rounded  whitespace-nowrap">Planned</span>
+                </td>
+
+                <td class="px-1 py-1">
+                  <div class="flex  justify-center">
+                    <a href="#" class="mr-3">
+                      <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" />
+                    </a>
+                    <a href="#" class="mr-3">
+                      <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" />
+                    </a>
+
+
+                    <div class="flex justify-center">
+                      <!-- Trigger -->
+                      <span  x-on:click="openmodal = !openmodal" class="cursor-pointer">
+                        <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" />
+                      </span>
+                    </div>
+
+
+                  </div>
+                </td>
+              </tr>
+
             </tbody>
           </table>
         </div>
       </div>
-      
+
     </div>
-    <div x-show="activeTab === 'Task-Type-1'" class="">
+    <div x-cloak x-show="activeTab === 'Task-Type-1'" class="">
       <!-- Tab 2 content goes here -->
       <p>Content for Tab 2</p>
     </div>
 
-    <div x-show="activeTab === 'Task-Type-2'" class="">
+    <div x-cloak x-show="activeTab === 'Task-Type-2'" class="">
       <!-- Tab 3 content goes here -->
       <p>Content for Tab 3</p>
     </div>
 
-    <div x-show="activeTab === 'Task-Type-3'" class="">
+    <div x-cloak x-show="activeTab === 'Task-Type-3'" class="">
       <!-- Tab 4 content goes here -->
       <p>Content for Tab 4</p>
     </div>
 
-    <div x-show="activeTab === 'Task-Type-4'" class="">
+    <div x-cloak x-show="activeTab === 'Task-Type-4'" class="">
       <!-- Tab 5 content goes here -->
       <p>Content for Tab 5</p>
     </div>
   </div>
 </div>
-<div class="">
+<div class="" x-cloak>
   <div class="flex items-center justify-between pt-7">
     <div class="flex flex-1 justify-between sm:hidden">
       <a href="#"

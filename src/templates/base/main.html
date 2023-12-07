@@ -15,6 +15,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
   {% include "base/theme.html" %} {% include "base/styles.html" %}
+
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
 </head>
 
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data >
