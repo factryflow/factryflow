@@ -1,23 +1,36 @@
 {% load static %}
-<header class="fixed top-0 z-50 bg-white p-4 w-full">
-  <div class="flex items-center justify-between md:justify-start md:space-x-5 h-10">
 
-    <!-- Logo -->
-    <div class="flex items-center">
-      <a href="/">
-        <img src="{% static 'images/FactryFlow.svg' %}" alt="Logo" class="mr-8 ml-1 w-40 h-10 md:w-56 md:h-10" />
-      </a>
+<div class="flex items-center justify-between h-16 bg-white fixed top-0 z-50 w-full">
+  <div class="flex items-center px-4">
+    <div class="p-2.5 mt-1 flex items-center rounded-md ">
+      <!-- Logo -->
+      <div class="hidden lg:inline-flex  items-center">
+        <a href="/">
+          <img src="{% static 'images/FactryFlow.svg' %}" alt="Logo" class="mr-9 ml-1 w-40 h-10 lg:w-56 md:h-10" />
+        </a>
+      </div>
     </div>
 
-    <!-- Menu Bar Icon -->
-    <div class="flex items-center ml-2.5 mr-2.5 bg-[#181c320d] p-1.5 rounded-md">
-      <button @click="isSidebarHidden = !isSidebarHidden" type="button">
-        <img class="w-8 h-8" src="{% static 'images/menu_open.svg' %}" />
-      </button>
+    <span class="lg:hidden absolute text-white text-4xl top-3 left-3 cursor-pointer" :class="transition duration 700 :Openbar()" onclick="Openbar()">
+      <!-- Menu Bar Icon -->
+      <div class="flex items-center ml-2.5 mr-2.5 bg-[#181c320d] p-1.5 rounded-md">
+        <button type="button">
+          <img class="w-8 h-8" src="{% static 'images/menu_open.svg' %}" />
+        </button>
+      </div>
+    </span>
+
+    <div class="p-2.5 mt-1 flex items-center rounded-md justify-center">
+      <!-- Logo -->
+      <div class="inline-flex lg:hidden  items-center">
+        <a href="/">
+          <img src="{% static 'images/FactryFlow.svg' %}" alt="Logo" class="mr-8 ml-12 w-40 h-10 lg:w-56 md:h-10" />
+        </a>
+      </div>
     </div>
 
     <!-- Search Bar with SVG Icon -->
-    <div class="relative w-48 md:w-[584px]">
+    <div class="absolute md:relative right-5 md:right-0 w-32 lg:w-[584px]">
       <!-- Inline SVG Icon -->
       <img class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
         src="{% static 'images/search.svg' %}" />
@@ -25,10 +38,11 @@
       <input type="text" placeholder="Search..."
         class="w-full pl-10 p-2 focus:outline-none border border-[#E1E3EA] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]" />
     </div>
-    <div class="flex-grow"></div>
+  </div>
 
+  <div class="flex items-center pr-4 md:space-x-5">
     <!-- Notification Icon -->
-    <div class="hidden md:flex items-center bg-[#181c320d] p-2.5 rounded-md">
+    <div class="hidden md:inline-flex  items-center bg-[#181c320d] p-2.5 rounded-md">
       <img class="w-6 h-6" src="{% static 'images/notifications.svg' %}" />
 
       <!-- Badge -->
@@ -39,15 +53,15 @@
     </div>
 
     <!-- User Initial -->
-    <div class="hidden md:flex items-center bg-[#181c320d] py-4 px-5 rounded-full">
+    <div class="hidden md:inline-flex  items-center bg-[#181c320d] py-4 px-5 rounded-full">
       <h1 class="text-lg leading-4 font-semibold text-[#2884EF]">J</h1>
     </div>
 
     <!-- User name -->
-    <div class="hidden md:flex items-center">
+    <div class="hidden md:inline-flex  items-center">
       <h3 class="text-base leading-4 font-semibold text-[#181C32] mr-5 md:mr-10">
         Jacob Jones
       </h3>
     </div>
   </div>
-</header>
+</div>
