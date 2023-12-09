@@ -8,8 +8,8 @@
 {% load static %}
 
 {% partialdef partial-table-template %}
-    <table class="w-full text-sm text-center" id="{{ table_id }}">
-        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+    <table class="w-full text-sm text-center" id="{{ table_id }}" x-cloak>
+        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
             <tr class="text-[#181C32]">
                 <th scope="col" class="p-4">
                     <div class="flex items-center">
@@ -18,8 +18,8 @@
                                class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                     </div>
                 </th>
-                {% for header in headers %}<th scope="col" class="px-6 py-3">{{ header }}</th>{% endfor %}
-                {% if show_actions %}<th scope="col" class="px-6 py-3">Actions</th>{% endif %}
+                {% for header in headers %}<th scope="col" class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>{% endfor %}
+                {% if show_actions %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                         </div>
                     </td>
-                    {% for cell in row %}<td class="px-6 py-4">{{ cell }}</td>{% endfor %}
+                    {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
                     {% if show_actions %}
                         <td class="flex items-center px-6 py-4">
                             <a href="{% url 'view_job' id=row.0 %}">
@@ -67,7 +67,7 @@
 {% endpartialdef %}
 
 {% partialdef partial-search-filter %}
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7" x-cloak>
         <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
             <div class="relative w-full md:w-[600px]">
                 <!-- Inline SVG Icon -->
@@ -102,7 +102,7 @@
     {% load static %}
 
     <!-- Breadcrumb -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center" x-cloak>
         <div class="flex-wrap">
             <nav class="flex pb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -137,36 +137,36 @@
         </div>
     </div>
     <!-- Tabs -->
-    <div x-data="{ activeTab: 'tab1' }">
+    <div x-data="{ activeTab: 'tab1' }" class="border-x border-y border-[#e1e3ea80] rounded-xl" x-cloak>
         <!-- Tabs -->
         <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
             <div class="md:flex flex-wrap text-sm md:text-base">
                 <button x-on:click="activeTab = 'tab1'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1'}"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
                 <button hx-get="{% url 'job' %}?status=IP"
                         hx-target="#ip-jobs-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab2'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2'}"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2','text-[#7E8299]':activeTab != 'tab2'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">In Progress</button>
                 <button hx-get="{% url 'job' %}?status=NP"
                         hx-target="#np-jobs-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab3'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab3'}"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab3','text-[#7E8299]':activeTab != 'tab3'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Not Planned</button>
                 <button hx-get="{% url 'job' %}?status=CM"
                         hx-target="#cm-jobs-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab4'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab4'}"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab4','text-[#7E8299]':activeTab != 'tab4'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Completed</button>
                 <button hx-get="{% url 'job' %}?status=CN"
                         hx-target="#cn-jobs-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab5'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab5'}"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab5','text-[#7E8299]':activeTab != 'tab5'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Cancelled</button>
             </div>
         </div>
