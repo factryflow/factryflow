@@ -67,7 +67,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
-    # "users.middleware.LoginRequiredMiddleware",
+    "users.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "factryflow.urls"
