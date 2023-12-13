@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,8 +71,18 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+]
+
+# CUSTOM MIDDLEWARE SETTINGS
+CUSTOM_MIDDLEWARE = [
     "users.middleware.LoginRequiredMiddleware",
 ]
+
+CUSTOM_MIDDLEWARE_ACCESS = os.getenv('CUSTOM_MIDDLEWARE_ACCESS')
+
+if CUSTOM_MIDDLEWARE_ACCESS.capitalize() == 'True':
+    MIDDLEWARE = MIDDLEWARE + CUSTOM_MIDDLEWARE
+
 
 ROOT_URLCONF = "factryflow.urls"
 
