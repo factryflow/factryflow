@@ -83,24 +83,24 @@ Job
                 <td class="flex items-center px-6 py-4">
                     <a href="{% url 'view_job' id=row.0 %}">
                         <button id="view-{{ row.0 }}" type="button"
-                            class="font-medium ms-3 focus:outline-none bg-transparent border-none">
-                            <img class="h-5 w-5" src="{% static 'images/visibility.svg' %}" alt="View" />
+                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                            <img  src="{% static 'images/visibility.svg' %}" alt="View" />
                         </button>
                     </a>
                     <a href="{% url 'edit_job' id=row.0 edit='T' %}">
                         <button id="edit-{{ row.0 }}" type="button"
-                            class="font-medium ms-3 focus:outline-none bg-transparent border-none">
-                            <img class="h-5 w-5" src="{% static 'images/edit.svg' %}" alt="Edit" />
+                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
                         </button>
                     </a>
                     <button id="delete-{{ row.0 }}" type="button"
-                        class="font-medium ms-3 focus:outline-none bg-transparent border-none"
+                        class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
                         {% comment %} hx-delete="/jobs/delete/{{ row.0 }}"
                         hx-target="#all-jobs-table"
                         hx-swap="outerHTML"
                         hx-confirm="Are you sure?" {% endcomment %}
                         @click="showModal = !showModal">
-                        <img class="h-5 w-5" src="{% static 'images/delete.svg' %}" alt="Delete" />
+                        <img src="{% static 'images/delete.svg' %}" alt="Delete" />
                     </button>
                 </td>
                 {% endif %}
