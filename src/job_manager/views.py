@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import JobForm
 from .models import Job, JobType
-from .services import job_delete, get_all_jobs, job_create_or_update
+from .services import job_delete, job_list, job_create_or_update
 
 # ------------------------------------------------------------------------------
 # Job Views
@@ -23,7 +23,7 @@ class JobTableView:
         """
         Initialization of the class with optional filtering parameters.
         """
-        self.jobs = get_all_jobs()
+        self.jobs = job_list()
         self.status_filter = status_filter if status_filter else "all"
         self.search_query = search_query
 

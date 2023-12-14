@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from common.services import model_update
 from common.utils.services import build_or_retrieve_instance
 from django.db import transaction
 from django.shortcuts import get_object_or_404
@@ -94,6 +97,64 @@ def job_type_create_or_update(job_type_data: dict) -> JobType:
     return job_type
 
 
+class JobService:
+    def __init__(self):
+        pass
+
+    @transaction.atomic
+    def create(
+        name: str,
+        due_date: datetime,
+        job_type: JobType,
+        customer: str = "",
+        description: str = "",
+        external_id: str = "",
+        note: str = "",
+        priority: int = None,
+    ):
+        job = Job.objects.create(
+            name=name,
+            due_date=due_date,
+            job_type=job_type,
+            customer=customer,
+            external_id=external_id,
+            note=note,
+            description=description,
+        )
+
+        job.full_clean()
+        job.save()
+
+        job.update_priority(priority)
+
+        return job
+
+    @transaction.atomic
+    def update(job: Job, data: dict):
+        fields = [
+            "name",
+            "due_date",
+            "job_type",
+            "customer",
+            "description",
+            "external_id",
+            "note",
+            "dependencies",
+        ]
+
+        job, _ = model_update(instance=job, fields=fields, data=data)
+
+        # update job priority
+        if data.get("priority", None):
+            job.update_priority(data["priority"])
+
+        return job
+
+    @transaction.atomic
+    def delete(job: Job):
+        job.delete()
+
+
 @transaction.atomic
 def job_create_or_update(
     *, job_data: dict, job_type: JobType = None, dependencies: list[Dependency] = None
@@ -129,7 +190,7 @@ def job_create_or_update(
     return job
 
 
-def get_all_jobs(id: int = None):
+def job_list(id: int = None):
     """
     Gets all job data including related values from job_status model.
     If an id is provided, returns the job data with that ID.
@@ -143,7 +204,7 @@ def get_all_jobs(id: int = None):
 
 @transaction.atomic
 def job_delete(id: int):
-    job = get_all_jobs(id=id)
+    job = job_list(id=id)
     job.delete()
 
 
