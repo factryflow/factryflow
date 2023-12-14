@@ -4,7 +4,7 @@
 
 
 {% partialdef _menu_item %}
-<li>
+<li x-cloak>
   <a href="#" class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center" x-data="{isHovered:false}"
     x-on:mouseover="isHovered = true" x-on:mouseleave="isHovered = false"
     @click="$store.sidebar.active = '{{menu_item_id}}'"
@@ -17,7 +17,7 @@
 
 
 {% partialdef _dropdown_menu_item %}
-<li>
+<li x-cloak>
   <a href="{{menu_item_url}}"
     class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
     x-data="{isHovered:false}" @click="active='{{menu_item_id}}'" x-on:mouseover="isHovered = true"
@@ -34,7 +34,7 @@
 
 {% partialdef _dropdown_menu %}
 
-<button type="button" @click="toggle('{{menu_item_id}}')" x-data="{ isHovered: false }"
+<button type="button" @click="toggle('{{menu_item_id}}')" x-data="{ isHovered: false }" x-cloak
   x-on:mouseover="isHovered = true" x-on:mouseleave="isHovered = false"
   class="w-full flex py-2.5 pl-3 pr-4 text-sm leading-5 rounded-lg items-center"
   :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter': $store.sidebar.active == '{{menu_item_id}}' || isHovered}">
@@ -42,7 +42,7 @@
     <img src="{% static menu_item_icon %}" class="h-6 w-6" />
     <span class="ml-4">{{ menu_item_name }}</span>
   </div>
-  <img class="h-6 w-6 ml-auto" :class="pt-2.5:pt-0"
+  <img class="h-6 w-6 ml-auto" class="pt-2.5"
     :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/DownArrow.svg' %}'" />
 </button>
 
@@ -52,7 +52,7 @@
 
 
 <div
-  class="container overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-screen">
+  class="container overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-screen" x-cloak>
   <div class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer">
     <!-- Sidebar content (links, icons, etc.) -->
     <div class="text-[#A1A5B7] ml-2">
@@ -85,6 +85,10 @@
           {% endwith %}
 
           {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="#" %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
           {% partial _dropdown_menu_item %}
           {% endwith %}
 
@@ -131,6 +135,8 @@
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='job' %}
       {% partial _menu_item %}
       {% endwith %}
+
+       
 
     </ul>
     <!-- Add more sidebar links here -->
