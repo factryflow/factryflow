@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import JobForm
 from .models import Job, JobType
-from .services import delete_job, get_all_jobs, job_create_or_update
+from .services import job_delete, get_all_jobs, job_create_or_update
 
 # ------------------------------------------------------------------------------
 # Job Views
@@ -225,7 +225,7 @@ def request_job_delete(request, id: int):
     Handle job deletion request. Deletes a job based on the given ID,
     retrieves the updated job list, and returns a response with a notification.
     """
-    delete_job(id=id)
+    job_delete(id=id)
     table = JobTableView()
     response = render(
         request,

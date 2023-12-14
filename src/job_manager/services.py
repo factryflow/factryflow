@@ -142,7 +142,7 @@ def get_all_jobs(id: int = None):
 
 
 @transaction.atomic
-def delete_job(id: int):
+def job_delete(id: int):
     job = get_all_jobs(id=id)
     job.delete()
 
