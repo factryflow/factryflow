@@ -24,13 +24,14 @@ class JobFactory(factory.django.DjangoModelFactory):
         model = Job
 
     name = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
-    description = None
-    customer = None
+    description = ""
+    customer = ""
+    external_id = ""
+    note = ""
     due_date = factory.lazy_attribute(lambda _: faker.date_this_year())
     priority = None
     planned_start_datetime = None
     planned_end_datetime = None
-    external_id = None
     job_status = "NP"  # Not Planned
     job_type = factory.SubFactory(JobTypeFactory)
 
