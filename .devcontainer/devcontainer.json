@@ -7,7 +7,6 @@
 	"service": "app",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"remoteUser": "vscode",
-	"runArgs": ["--env-file", ".devcontainer/devcontainer.env"],
 
 	"customizations": {
 		"vscode": {
