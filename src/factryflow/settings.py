@@ -24,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-n@d7f@16$!08x$)*4d8jig853z1^*o@elq)43c8w)5y7^=im&y"
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -80,8 +80,13 @@ CUSTOM_MIDDLEWARE = [
 
 CUSTOM_MIDDLEWARE_ACCESS = os.getenv('CUSTOM_MIDDLEWARE_ACCESS')
 
-if CUSTOM_MIDDLEWARE_ACCESS:
-    MIDDLEWARE = MIDDLEWARE + CUSTOM_MIDDLEWARE if CUSTOM_MIDDLEWARE_ACCESS == 'True' else MIDDLEWARE
+if DEBUG == 'TRUE' and CUSTOM_MIDDLEWARE_ACCESS == 'TRUE':
+      MIDDLEWARE += CUSTOM_MIDDLEWARE
+else:
+    MIDDLEWARE += CUSTOM_MIDDLEWARE
+
+# if CUSTOM_MIDDLEWARE_ACCESS:
+#     MIDDLEWARE = MIDDLEWARE + CUSTOM_MIDDLEWARE if CUSTOM_MIDDLEWARE_ACCESS == 'True' else MIDDLEWARE
 
 
 ROOT_URLCONF = "factryflow.urls"
