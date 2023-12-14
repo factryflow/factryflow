@@ -88,6 +88,10 @@
           {% partial _dropdown_menu_item %}
           {% endwith %}
 
+          {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
+          {% partial _dropdown_menu_item %}
+          {% endwith %}
+
         </ul>
       </div>
 
@@ -131,6 +135,8 @@
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='job' %}
       {% partial _menu_item %}
       {% endwith %}
+
+       
 
     </ul>
     <!-- Add more sidebar links here -->

@@ -22,9 +22,13 @@ def jobform(request):
 def taskform(request):
     return render(request, "base/task/form.html")
 
+def chart(request):
+    return render(request,"base/chart/main.html")
+
 
 urlpatterns = [
     path("", home, name="home"),
+    path("chart/",chart,name="chart"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("", include("users.urls")),
