@@ -1,6 +1,7 @@
+from collections import defaultdict
 from datetime import datetime, time
 
-from common.utils.services import build_or_retrieve_instance
+from common.services import model_update
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from resource_manager.models import Resource
@@ -11,124 +12,288 @@ from .models import (
     WeeklyShiftTemplate,
     WeeklyShiftTemplateDetail,
 )
-from .selectors import weekly_shift_template_detail_list_overlapping
 
 
-def parse_time(time_input: str | time) -> datetime.time:
-    """
-    Parse a time string (expected in %H:%M format) and return a time object.
-    """
-    if isinstance(time_input, time):
-        time_input = time_input.strftime("%H:%M")
-    try:
-        return datetime.strptime(time_input, "%H:%M").time()
-    except ValueError:
-        raise ValidationError(
-            f"Invalid time format: '{time_input}'. Expected format HH:MM."
+class WeeklyShiftTemplateDetailService:
+    def __init__(self):
+        pass
+
+    def _parse_time(time_input: str | time) -> datetime.time:
+        """
+        Parse a time string (expected in %H:%M format) and return a time object.
+        """
+        if isinstance(time_input, time):
+            time_input = time_input.strftime("%H:%M")
+        try:
+            return datetime.strptime(time_input, "%H:%M").time()
+        except ValueError:
+            raise ValidationError(
+                f"Invalid time format: '{time_input}'. Expected format HH:MM."
+            )
+
+    @transaction.atomic
+    def create(
+        self,
+        *,
+        day_of_week: int,
+        start_time: str | time,
+        end_time: str | time,
+        weekly_shift_template: WeeklyShiftTemplate,
+    ) -> WeeklyShiftTemplateDetail:
+        """
+        Create a WeeklyShiftTemplateDetail.
+        """
+
+        weekly_shift_template_detail = WeeklyShiftTemplateDetail.objects.create(
+            day_of_week=day_of_week,
+            start_time=self._parse_time(start_time),
+            end_time=self._parse_time(end_time),
+            weekly_shift_template=weekly_shift_template,
         )
 
+        weekly_shift_template_detail.full_clean()
+        weekly_shift_template_detail.save()
 
-@transaction.atomic
-def create_update_weekly_shift_template_detail(
-    *,
-    detail_data: dict,
-    weekly_shift_template: WeeklyShiftTemplate = None,
-) -> WeeklyShiftTemplateDetail:
-    """
-    Create or update a WeeklyShiftTemplateDetail.
-    """
-    # Parse time strings into time objects
-    detail_data["start_time"] = parse_time(detail_data["start_time"])
-    detail_data["end_time"] = parse_time(detail_data["end_time"])
+        return weekly_shift_template_detail
 
-    # Create or update WeeklyShiftTemplateDetail
-    detail, _ = build_or_retrieve_instance(WeeklyShiftTemplateDetail, detail_data)
+    @transaction.atomic
+    def create_bulk(
+        self,
+        weekly_shift_template: WeeklyShiftTemplate,
+        details: list[dict],
+    ) -> None:
+        """
+        Create a list of WeeklyShiftTemplateDetails.
+        """
+        for detail_data in details:
+            WeeklyShiftTemplateDetailService().create(
+                day_of_week=detail_data["day_of_week"],
+                start_time=detail_data["start_time"],
+                end_time=detail_data["end_time"],
+                weekly_shift_template=weekly_shift_template,
+            )
 
-    if weekly_shift_template:
-        detail.weekly_shift_template = weekly_shift_template
+    @transaction.atomic
+    def delete(detail: WeeklyShiftTemplateDetail) -> None:
+        """
+        Delete a WeeklyShiftTemplateDetail.
+        """
+        detail.delete()
 
-    # Validate
-    detail.full_clean()
 
-    # Check for overlapping times
-    overlapping_details = weekly_shift_template_detail_list_overlapping(detail)
+class WeeklyShiftTemplateService:
+    def __init__(self):
+        pass
 
-    if overlapping_details.exists():
-        overlapping_detail = overlapping_details.first()
-        raise ValidationError(
-            f"Overlapping times detected with detail ID {overlapping_detail.id}: "
-            f"{overlapping_detail.start_time.strftime('%H:%M')} - {overlapping_detail.end_time.strftime('%H:%M')}"
+    def _process_details(
+        self, template: WeeklyShiftTemplate, new_details: list[dict]
+    ) -> None:
+        """
+        Process a list of WeeklyShiftTemplateDetails for a given WeeklyShiftTemplate.
+        """
+        existing_details = template.details.all()
+
+        # Convert existing details to a comparable format (e.g., a set of tuples)
+        existing_detail_set = {
+            (detail.day_of_week, detail.start_time, detail.end_time)
+            for detail in existing_details
+        }
+
+        # Convert new details to a comparable format
+        new_detail_set = {
+            (d["day_of_week"], d["start_time"], d["end_time"]) for d in new_details
+        }
+
+        # Determine details to create and delete
+        details_to_create = new_detail_set - existing_detail_set
+        details_to_delete = existing_detail_set - new_detail_set
+
+        # Create new details
+        WeeklyShiftTemplateDetailService().create_bulk(template, details_to_create)
+
+        # Delete old details
+        for detail in details_to_delete:
+            WeeklyShiftTemplateDetail.objects.filter(
+                weekly_shift_template=template,
+                day_of_week=detail[0],
+                start_time=detail[1],
+                end_time=detail[2],
+            ).delete()
+
+    def _check_no_overlapping_details(self, template: WeeklyShiftTemplate) -> None:
+        details_by_day = defaultdict(list)
+
+        # Group details by day of the week
+        for detail in template.details.all():
+            details_by_day[detail.day_of_week].append(detail)
+
+        # Check for overlaps within each day, but only if there's more than one detail for that day
+        for day, details in details_by_day.items():
+            if len(details) > 1:
+                self._check_overlaps_for_single_day(details)
+
+    def _check_overlaps_for_single_day(self, details) -> None:
+        details.sort(key=lambda d: d.start_time)  # Sort by start time
+
+        for i in range(len(details) - 1):
+            if details[i].end_time > details[i + 1].start_time:
+                raise ValidationError(
+                    f"Details overlap on day {details[i].day_of_week}: Detail {details[i].id} overlaps with Detail {details[i + 1].id}"
+                )
+
+    def _validate_details_fields(self, details):
+        required_keys = {"day_of_week", "start_time", "end_time"}
+        for detail in details:
+            missing_keys = required_keys - detail.keys()
+            if missing_keys:
+                raise ValueError(
+                    f"Detail is missing required keys: {', '.join(missing_keys)}"
+                )
+
+    @transaction.atomic
+    def create(
+        self,
+        *,
+        name: str,
+        details: list[dict],
+    ) -> WeeklyShiftTemplate:
+        """
+        Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
+        """
+        self._validate_details_fields(details)
+
+        # Create WeeklyShiftTemplate
+        template = WeeklyShiftTemplate.objects.create(name=name)
+
+        # Create WeeklyShiftTemplateDetails
+        WeeklyShiftTemplateDetailService().create_bulk(template, details)
+
+        # Check for overlapping details
+        self._check_no_overlapping_details(template)
+
+        template.full_clean()
+        template.save()
+
+        return template
+
+    @transaction.atomic
+    def update(
+        self,
+        instance: WeeklyShiftTemplate,
+        data: dict,
+    ) -> WeeklyShiftTemplate:
+        """
+        Update a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
+        """
+
+        fields = [
+            "name",
+        ]
+
+        template, _ = model_update(instance=instance, fields=fields, data=data)
+
+        details = data.get("details", [])
+
+        if details:
+            # Validate details
+            self._validate_details_fields(details)
+
+            # Process details
+            self._process_details(template, details)
+
+            # Check for overlapping details
+            self._check_no_overlapping_details(template)
+
+        template.full_clean()
+        template.save()
+
+        return template
+
+    @transaction.atomic
+    def delete(template: WeeklyShiftTemplate) -> None:
+        """
+        Delete a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
+        """
+        template.delete()
+
+
+class OperationalExceptionTypeService:
+    def __init__(self):
+        pass
+
+    @transaction.atomic
+    def create(name: str) -> OperationalExceptionType:
+        exception_type = OperationalExceptionType.objects.create(name=name)
+        exception_type.full_clean()
+        exception_type.save()
+
+        return exception_type
+
+    @transaction.atomic
+    def update(
+        exception_type: OperationalExceptionType, data: dict
+    ) -> OperationalExceptionType:
+        fields = [
+            "name",
+        ]
+
+        exception_type, _ = model_update(
+            instance=exception_type, fields=fields, data=data
         )
 
-    # Save
-    detail.save()
+        return exception_type
 
-    return detail
+    @transaction.atomic
+    def delete(exception_type: OperationalExceptionType) -> None:
+        exception_type.delete()
 
 
-@transaction.atomic
-def create_update_weekly_shift_template(
-    template_data: dict,
-    template_details_data: list[dict] = [],
-) -> WeeklyShiftTemplate:
-    """
-    Create or update a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
-    """
+class OperationalExceptionService:
+    def __init__(self):
+        pass
 
-    template, _ = build_or_retrieve_instance(WeeklyShiftTemplate, template_data)
-
-    # Validate and save WeeklyShiftTemplate
-    template.full_clean()
-    template.save()
-
-    # Create or update WeeklyShiftTemplateDetails
-    for detail_data in template_details_data:
-        create_update_weekly_shift_template_detail(
-            detail_data=detail_data, weekly_shift_template=template
+    @transaction.atomic
+    def create(
+        *,
+        resource: Resource,
+        start_datetime: datetime,
+        end_datetime: datetime,
+        exception_type: OperationalExceptionType,
+        weekly_shift_template: WeeklyShiftTemplate = None,
+        external_id: str = "",
+        notes="",
+    ) -> OperationalException:
+        exception = OperationalException.objects.create(
+            resource=resource,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+            operational_exception_type=exception_type,
+            weekly_shift_template=weekly_shift_template,
+            external_id=external_id,
+            notes=notes,
         )
 
-    return template
+        exception.full_clean()
+        exception.save()
 
+        return exception
 
-@transaction.atomic
-def create_update_operational_exception_type(
-    exception_type_data: dict,
-) -> OperationalExceptionType:
-    """
-    Create or update an OperationalExceptionType instance.
-    """
+    @transaction.atomic
+    def update(exception: OperationalException, data: dict) -> OperationalException:
+        fields = [
+            "resource",
+            "start_datetime",
+            "end_datetime",
+            "operational_exception_type",
+            "weekly_shift_template",
+            "external_id",
+            "notes",
+        ]
 
-    exception_type, _ = build_or_retrieve_instance(
-        OperationalExceptionType, exception_type_data
-    )
+        exception, _ = model_update(instance=exception, fields=fields, data=data)
 
-    # Validate and save
-    exception_type.full_clean()
-    exception_type.save()
+        return exception
 
-    return exception_type
-
-
-@transaction.atomic
-def create_update_operational_exception(
-    *,
-    exception_data: dict,
-    exception_type: OperationalExceptionType,
-    weekly_shift_template: WeeklyShiftTemplate = None,
-    resource: Resource,
-) -> OperationalException:
-    """
-    Create or update an OperationalException instance.
-    """
-
-    exception, _ = build_or_retrieve_instance(OperationalException, exception_data)
-
-    # Set the related objects
-    exception.operational_exception_type = exception_type
-    exception.weekly_shift_template = weekly_shift_template
-    exception.resource = resource
-
-    exception.full_clean()
-    exception.save()
-
-    return exception
+    @transaction.atomic
+    def delete(exception: OperationalException) -> None:
+        exception.delete()
