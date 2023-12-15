@@ -31,13 +31,14 @@ class TaskStatusChoices(models.TextChoices):
 
 
 class Task(BaseModel):
+    # core fields
     id = models.AutoField(primary_key=True)
     external_id = models.CharField(max_length=150, blank=True)
     name = models.CharField(max_length=150)
-    setup_time = models.IntegerField(blank=True, null=True, default=0)
-    run_time_per_unit = models.IntegerField(blank=True, null=True)
-    teardown_time = models.IntegerField(default=0)
-    quantity = models.IntegerField(default=1)
+    setup_time = models.IntegerField()
+    run_time_per_unit = models.IntegerField()
+    teardown_time = models.IntegerField()
+    quantity = models.IntegerField()
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
     planned_end_datetime = models.DateTimeField(blank=True, null=True)
     item = models.CharField(max_length=250, blank=True, null=True)
@@ -47,8 +48,7 @@ class Task(BaseModel):
         default=TaskStatusChoices.NOT_STARTED,
     )
 
-    # foreign keys
-
+    # relationship fields
     task_type = models.ForeignKey(
         TaskType, on_delete=models.CASCADE, related_name="tasks_type"
     )
@@ -61,9 +61,9 @@ class Task(BaseModel):
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
-
     dependencies = models.ManyToManyField("Dependency", related_name="tasks")
 
+    # special fields
     history = HistoricalRecords(table_name="task_history")
 
     class Meta:

@@ -22,10 +22,10 @@ class DependencyStatusChoices(models.TextChoices):
 
 class Dependency(BaseModel):
     name = models.CharField(max_length=150)
-    external_id = models.CharField(max_length=180, blank=True, null=True)
+    external_id = models.CharField(max_length=180, blank=True)
     expected_close_datetime = models.DateTimeField(blank=True, null=True)
     actual_close_datetime = models.DateTimeField(blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True)
     dependency_type = models.ForeignKey(DependencyType, on_delete=models.DO_NOTHING)
     dependency_status = models.CharField(
         max_length=2,
