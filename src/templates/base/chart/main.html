@@ -27,21 +27,31 @@
         /* background: #ccc; */
     }
 
-  
 
-    /* button:hover,
-    button:focus {
+    .chart-button:hover,
+    .chart-button:focus {
         background: #a3a3ff;
     }
 
-    button {
+    .chart-button {
         border: solid thin grey;
         border-radius: 3px;
     }
 
-    button.selected {
+    .chart-button.selected {
         background: #a3a3ff;
-    } */
+    }
+
+    .chart-collapse {
+        border: solid thin grey;
+        border-radius: 3px;
+    }
+
+
+    .chart-collapse:hover,
+    .chart-collapse:focus {
+        background: #a3a3ff;
+    }
 
     /* task custom class */
     .gantt-target .bar-milestone .bar {
@@ -60,6 +70,8 @@
     }
 </style>
 
+
+
 <div class="rounded-xl bg-white px-8 py-8 w-full">
     <div>
         <h1 class="text-xl font-semibold text-[#5E6278] pb-8">Chart Details</h1>
@@ -68,15 +80,15 @@
 
     <div class="container">
         <div style="display: inline;" class="js-view">
-            <button type="button" data-view="Quarter Day" class="selected">Quarter Day</button>
-            <button type="button" data-view="Half Day">Half Day</button>
-            <button type="button" data-view="Day">Day</button>
-            <button type="button" data-view="Week">Week</button>
-            <button type="button" data-view="Month">Month</button>
+            <button type="button" data-view="Quarter Day" class="chart-button" class="selected">Quarter Day</button>
+            <button type="button" data-view="Half Day" class="chart-button">Half Day</button>
+            <button type="button" data-view="Day" class="chart-button">Day</button>
+            <button type="button" data-view="Week" class="chart-button">Week</button>
+            <button type="button" data-view="Month" class="chart-button">Month</button>
         </div>
         <div style="display: inline;float: right;">
-            <button type="button" onclick="collapseAll();">Collapse all</button>
-            <button type="button" onclick="expandBars();">Expand all</button>
+            <button type="button" class="chart-collapse" onclick="collapseAll();">Collapse all</button>
+            <button type="button" class="chart-collapse" onclick="expandBars();">Expand all</button>
         </div>
         <div class="gantt-target"></div>
 
@@ -86,52 +98,102 @@
 
 <script>
     // Your Gantt chart initialization code here
+    // const locale = navigator.language.substring(0, 2);
+
+    // let jobs = [
+    //         {
+    //             start: new Date('2022-01-22T08:00:00'),
+    //             end: new Date('2022-01-23T12:00:00'),
+    //             name: 'Job 1',
+    //             id: 'Job 1',
+    //             // other job properties
+    //         },
+    //         {
+    //             start: new Date('2022-01-23T13:30:00'),
+    //             end: new Date('2022-01-25T16:00:00'),
+    //             name: 'Job 2',
+    //             id: 'Job 2',
+    //             // other job properties
+    //         },
+    //         // ... other jobs
+    //     ];
+
+    //     // Array representing tasks
+    //     let tasks = [
+    //         {
+    //             start: new Date('2022-01-24T13:30:00'),
+    //             end: new Date('2022-01-25T16:00:00'),
+    //             name: 'Task 1',
+    //             id: 'Task 1',
+    //             progress: 100,
+    //             dependencies: ['Job 1'], // Connect Task 1 to Job 1
+    //             // other task properties
+    //         },
+    //         {
+    //             start: new Date('2022-01-25T16:30:00'),
+    //             end: new Date('2022-01-27T10:00:00'),
+    //             name: 'Task 2',
+    //             id: 'Task 2',
+    //             dependencies: ['Job 2'], // Connect Task 2 to Task 1
+    //             // other task properties
+    //         },
+    //         // ... other tasks
+    //     ];
+
     const locale = navigator.language.substring(0, 2);
 
-    let jobs = [
-            {
-                start: new Date('2022-01-22T08:00:00'),
-                end: new Date('2022-01-23T12:00:00'),
-                name: 'Job 1',
-                id: 'Job 1',
-                // other job properties
-            },
-            {
-                start: new Date('2022-01-23T13:30:00'),
-                end: new Date('2022-01-25T16:00:00'),
-                name: 'Job 2',
-                id: 'Job 2',
-                // other job properties
-            },
-            // ... other jobs
-        ];
 
-        // Array representing tasks
-        let tasks = [
-            {
-                start: new Date('2022-01-24T13:30:00'),
-                end: new Date('2022-01-25T16:00:00'),
-                name: 'Task 1',
-                id: 'Task 1',
-                progress: 100,
-                dependencies: ['Job 1'], // Connect Task 1 to Job 1
-                // other task properties
-            },
-            {
-                start: new Date('2022-01-25T16:30:00'),
-                end: new Date('2022-01-27T10:00:00'),
-                name: 'Task 2',
-                id: 'Task 2',
-                dependencies: ['Job 1'], // Connect Task 2 to Task 1
-                // other task properties
-            },
-            // ... other tasks
-        ];
+    let tasks = [{
+            id: 'Job 1',
+            name: 'job1',
+            start: '2022-01-22',
+            end: '2022-01-23',
+            progress: 100,
+        },
+        {
+            id: 'Job 2',
+            name: 'job2',
+            start: '2022-01-23',
+            end: '2022-01-25',
+            progress: 100,
+        },
+        {
+            id: 'Job 3',
+            name: 'job3',
+            start: '2022-01-25',
+            end: '2022-01-27',
+            progress: 20,
 
-        // Combine jobs and tasks into a single array
-        let allTasks = [...jobs, ...tasks];
+        },
+        {
+            id: 'Task 1',
+            name: 'task1',
+            start: '2022-02-01',
+            end: '2022-02-03',
+            progress: 0,
+            dependencies: 'Job 1'
+        },
+        {
+            id: 'Task 2',
+            name: 'task2',
+            start: '2022-02-03',
+            end: '2022-02-07',
+            progress: 0,
+            dependencies: 'Job 3'
+        },
+        {
+            id: 'Task 3',
+            name: 'task3',
+            start: '2022-02-07',
+            end: '2022-02-09',
+            progress: 0,
+            dependencies: 'Job 1, Job 2'
+        },
+    ]
 
-    const gantt_chart = new Gantt(".gantt-target", allTasks, {
+    console.log(tasks, "taskssssss")
+
+    const gantt_chart = new Gantt(".gantt-target", tasks, {
         on_click: function (task) {
             toggleBars(task);
         },
