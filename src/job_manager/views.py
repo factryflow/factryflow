@@ -7,7 +7,18 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import JobForm
 from .models import Job, JobType
-from .services import job_delete, job_list, job_create_or_update
+
+# patch missing functions
+def job_delete(id: int):
+    pass
+
+def job_list():
+    pass
+
+def job_create_or_update(job_data: dict, job_type: JobType):
+    pass
+
+#TODO - implement these functions from JobService
 
 # ------------------------------------------------------------------------------
 # Job Views
