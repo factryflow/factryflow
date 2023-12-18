@@ -24,7 +24,7 @@ class WeeklyShiftTemplateDetail(BaseModel):
     weekly_shift_template = models.ForeignKey(
         WeeklyShiftTemplate,
         on_delete=models.CASCADE,
-        related_name="weekly_shift_template_details",
+        related_name="details",
     )
 
     history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
