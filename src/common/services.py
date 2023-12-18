@@ -1,8 +1,10 @@
 from typing import Any, Dict, List, Tuple
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 
+from common.models import CustomField
 from common.types import DjangoModelType
 
 
@@ -91,3 +93,37 @@ def model_update(
         has_updated = True
 
     return instance, has_updated
+
+
+class CustomFieldService:
+    def __init__(self) -> None:
+        pass
+
+    def create(
+        *,
+        content_type=ContentType,
+        name: str,
+        label: str,
+        field_type: str,
+        description: str = "",
+    ):
+        custom_field = CustomField.objects.create(
+            content_type=content_type,
+            name=name,
+            label=label,
+            description=description,
+            field_type=field_type,
+            is_required=False,
+        )
+        custom_field.full_clean()
+        custom_field.save()
+
+        return custom_field
+
+    def update(*, instance: CustomField, data: dict):
+        fields = ["name", "label", "field_type", "description"]
+        custom_field, _ = model_update(instance=instance, fields=fields, data=data)
+        return custom_field
+
+    def delete(instance: CustomField):
+        instance.delete()
