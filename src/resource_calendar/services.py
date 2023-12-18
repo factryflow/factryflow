@@ -18,7 +18,7 @@ class WeeklyShiftTemplateDetailService:
     def __init__(self):
         pass
 
-    def _parse_time(time_input: str | time) -> datetime.time:
+    def _parse_time(self, time_input: str | time) -> datetime.time:
         """
         Parse a time string (expected in %H:%M format) and return a time object.
         """
@@ -58,7 +58,7 @@ class WeeklyShiftTemplateDetailService:
 
     @transaction.atomic
     def create_bulk(
-        self,
+        *self,
         weekly_shift_template: WeeklyShiftTemplate,
         details: list[dict],
     ) -> None:
@@ -74,11 +74,11 @@ class WeeklyShiftTemplateDetailService:
             )
 
     @transaction.atomic
-    def delete(detail: WeeklyShiftTemplateDetail) -> None:
+    def delete(self, instance: WeeklyShiftTemplateDetail) -> None:
         """
         Delete a WeeklyShiftTemplateDetail.
         """
-        detail.delete()
+        instance.delete()
 
 
 class WeeklyShiftTemplateService:
@@ -93,32 +93,37 @@ class WeeklyShiftTemplateService:
         """
         existing_details = template.details.all()
 
-        # Convert existing details to a comparable format (e.g., a set of tuples)
-        existing_detail_set = {
-            (detail.day_of_week, detail.start_time, detail.end_time)
+        # Convert existing details to a dictionary
+        existing_detail_dict = {
+            (detail.day_of_week, detail.start_time, detail.end_time): detail
             for detail in existing_details
         }
 
-        # Convert new details to a comparable format
-        new_detail_set = {
-            (d["day_of_week"], d["start_time"], d["end_time"]) for d in new_details
+        # Convert new details to a dictionary
+        new_detail_dict = {
+            (d["day_of_week"], d["start_time"], d["end_time"]): d for d in new_details
         }
-
         # Determine details to create and delete
-        details_to_create = new_detail_set - existing_detail_set
-        details_to_delete = existing_detail_set - new_detail_set
+        details_to_create = [
+            detail
+            for key, detail in new_detail_dict.items()
+            if key not in existing_detail_dict
+        ]
 
-        # Create new details
-        WeeklyShiftTemplateDetailService().create_bulk(template, details_to_create)
+        details_to_delete = [
+            detail
+            for key, detail in existing_detail_dict.items()
+            if key not in new_detail_dict
+        ]
 
         # Delete old details
         for detail in details_to_delete:
-            WeeklyShiftTemplateDetail.objects.filter(
-                weekly_shift_template=template,
-                day_of_week=detail[0],
-                start_time=detail[1],
-                end_time=detail[2],
-            ).delete()
+            WeeklyShiftTemplateDetailService().delete(detail)
+
+        # Create new details
+        WeeklyShiftTemplateDetailService().create_bulk(
+            weekly_shift_template=template, details=details_to_create
+        )
 
     def _check_no_overlapping_details(self, template: WeeklyShiftTemplate) -> None:
         details_by_day = defaultdict(list)
@@ -166,7 +171,9 @@ class WeeklyShiftTemplateService:
         template = WeeklyShiftTemplate.objects.create(name=name)
 
         # Create WeeklyShiftTemplateDetails
-        WeeklyShiftTemplateDetailService().create_bulk(template, details)
+        WeeklyShiftTemplateDetailService().create_bulk(
+            weekly_shift_template=template, details=details
+        )
 
         # Check for overlapping details
         self._check_no_overlapping_details(template)
