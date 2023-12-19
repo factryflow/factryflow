@@ -48,6 +48,8 @@ class TaskService:
 
     @transaction.atomic
     def create(
+        self,
+        *,
         name: str,
         run_time_per_unit: float,
         quantity: int,
@@ -88,7 +90,7 @@ class TaskService:
         return task
 
     @transaction.atomic
-    def update(task: Task, data: dict) -> Task:
+    def update(self, *, instance: Task, data: dict) -> Task:
         fields = [
             "name",
             "setup_time",
@@ -101,15 +103,19 @@ class TaskService:
             "job",
             "dependencies",
             "predecessors",
-            "successors",
         ]
 
-        task, _ = model_update(instance=task, fields=fields, data=data)
+        task, _ = model_update(instance=instance, fields=fields, data=data)
+
+        # handle reverse m2m fields
+        successors = data.get("successors", None)
+        if successors is not None:
+            task.successors.set(successors)
 
         return task
 
     @transaction.atomic
-    def delete(task: Task) -> None:
+    def delete(self, *, task: Task) -> None:
         task.delete()
 
 
