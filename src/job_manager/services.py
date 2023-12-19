@@ -81,10 +81,10 @@ class TaskService:
         if dependencies:
             task.dependencies.set(dependencies)
 
-        if predecessors is not None:
+        if predecessors:
             task.predecessors.set(predecessors)
 
-        if successors is not None:
+        if successors:
             task.successors.set(successors)
 
         return task
@@ -103,14 +103,10 @@ class TaskService:
             "job",
             "dependencies",
             "predecessors",
+            "successors",
         ]
 
         task, _ = model_update(instance=instance, fields=fields, data=data)
-
-        # handle reverse m2m fields
-        successors = data.get("successors", None)
-        if successors is not None:
-            task.successors.set(successors)
 
         return task
 
@@ -280,18 +276,11 @@ class DependencyService:
             "expected_close_datetime",
             "notes",
             "external_id",
+            "tasks",
+            "jobs",
         ]
 
         dependency, _ = model_update(instance=instance, fields=fields, data=data)
-
-        # handle reverse m2m fields
-        tasks = data.get("tasks", None)
-        if tasks is not None:
-            dependency.tasks.set(tasks)
-
-        jobs = data.get("jobs", None)
-        if jobs is not None:
-            dependency.jobs.set(jobs)
 
         return dependency
 

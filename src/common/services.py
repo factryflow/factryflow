@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Tuple
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models.fields.related import ManyToManyRel
 from django.utils import timezone
 
 from common.models import CustomField
@@ -59,10 +60,14 @@ def model_update(
         ), f"{field} is not part of {instance.__class__.__name__} fields."
 
         # If we have m2m field, handle differently
-        if isinstance(model_field, models.ManyToManyField):
+        # include ManyToManyRel for reverse relations
+        if isinstance(model_field, models.ManyToManyField) or isinstance(
+            model_field, ManyToManyRel
+        ):
             m2m_data[field] = data[field]
             continue
 
+        print("fields", field)
         if getattr(instance, field) != data[field]:
             has_updated = True
             update_fields.append(field)
