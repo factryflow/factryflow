@@ -11,3 +11,4 @@ from .resource_calendar_factories import (
     WeeklyShiftTemplateDetailFactory,
     WeeklyShiftTemplateFactory,
 )
+from .resource_manager_factories import ResourceFactory, ResourceGroupFactory
