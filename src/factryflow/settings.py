@@ -73,18 +73,15 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
-# CUSTOM MIDDLEWARE SETTINGS
-CUSTOM_MIDDLEWARE = [
+# CUSTOM AUTH MIDDLEWARE SETTINGS
+AUTH_MIDDEWARE = [ 
     "users.middleware.LoginRequiredMiddleware",
 ]
 
-CUSTOM_MIDDLEWARE_ACCESS = os.getenv('CUSTOM_MIDDLEWARE_ACCESS')
+DISABLE_AUTH = os.getenv('DISABLE_AUTH')
 
-if DEBUG == 'TRUE':
-    if CUSTOM_MIDDLEWARE_ACCESS == 'TRUE':
-      MIDDLEWARE += CUSTOM_MIDDLEWARE
-else:
-    MIDDLEWARE += CUSTOM_MIDDLEWARE
+if not(DEBUG == 'TRUE' and DISABLE_AUTH == 'TRUE') :
+    MIDDLEWARE += AUTH_MIDDEWARE
 
 
 ROOT_URLCONF = "factryflow.urls"
@@ -92,7 +89,7 @@ ROOT_URLCONF = "factryflow.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, "templates"],
+        "DIRS": [BASE_DIR, "src/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

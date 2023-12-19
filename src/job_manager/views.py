@@ -82,10 +82,25 @@ class JobTableView:
                 if job.planned_end_datetime
                 else "",
                 job.priority,
-                job.get_job_status_display(),
+                  f'<span class="{self.get_status_colored_text(job.job_status)} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">{job.get_job_status_display()}</span>'
             ]
             for job in self.filtered_jobs
         ]
+  
+    def get_status_colored_text(self, job_status):
+        """
+        Method to get the colored text based on job status.
+        """
+        # You can customize this part based on your specific job status and colors
+        tailwind_classes = {
+            "CM": "bg-haxgreen text-[#3DAD99]",
+            "NP":"bg-haxred text-[#FF4D4F]",
+            "IP":"bg-haxyellow text-[#F6C000]",
+            "CN":"bg-haxpurple text-[#7239EA]",
+            
+        }
+        return tailwind_classes.get(job_status)
+    
 
 
 def show_all_jobs(request):
