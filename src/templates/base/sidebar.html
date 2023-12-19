@@ -5,7 +5,8 @@
 
 {% partialdef _menu_item %}
 <li>
-  <a href="#" class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center" x-data="{isHovered:false}"
+  <a href="#" hx-get="{{ menu_item_url }}" hx-target="body" hx-push-url="true"
+    class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center" x-data="{isHovered:false}"
     x-on:mouseover="isHovered = true" x-on:mouseleave="isHovered = false"
     @click="$store.sidebar.active = '{{menu_item_id}}'"
     :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter':$store.sidebar.active == '{{menu_item_id}}' || isHovered }">
@@ -118,7 +119,6 @@
           {% with menu_item_id='AR' menu_item_name='Allocation Rules' %}
           {% partial _dropdown_menu_item %}
           {% endwith %}
-
         </ul>
       </div>
 
@@ -129,6 +129,11 @@
 
       {% comment %} Help and Support manu {% endcomment %}
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='job' %}
+      {% partial _menu_item %}
+      {% endwith %}
+
+      {% comment %} Logout {% endcomment %}
+      {% with menu_item_id='logout' menu_item_icon='images/Dashboard.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %}
       {% partial _menu_item %}
       {% endwith %}
 
