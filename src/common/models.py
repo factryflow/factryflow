@@ -69,8 +69,8 @@ class CustomField(BaseModel):
 
     def clean(self):
         """Validate field data."""
-        self._validate_snake_case(self.name)
+        self._validate_custom_field_name(self.name)
 
-    def _validate_snake_case(value):
-        if not re.match(r"^[a-z]+(?:_[a-z]+)*$", value):
-            raise ValidationError("Field name must be in snake_case. Example: my_field")
+    def _validate_custom_field_name(self, value):
+        if not re.match(r"^custom_[a-z]+(?:_[a-z]+)*$", value):
+            raise ValidationError("Field name must be snake_case. Example: my_field")
