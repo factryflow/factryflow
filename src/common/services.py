@@ -99,7 +99,11 @@ class CustomFieldService:
     def __init__(self) -> None:
         pass
 
+    def _add_prefix_to_name(self, name: str) -> str:
+        return f"custom_{name}"
+
     def create(
+        self,
         *,
         content_type=ContentType,
         name: str,
@@ -107,6 +111,7 @@ class CustomFieldService:
         field_type: str,
         description: str = "",
     ):
+        name = self._add_prefix_to_name(name)
         custom_field = CustomField.objects.create(
             content_type=content_type,
             name=name,
@@ -120,10 +125,14 @@ class CustomFieldService:
 
         return custom_field
 
-    def update(*, instance: CustomField, data: dict):
-        fields = ["name", "label", "field_type", "description"]
+    def update(self, *, instance: CustomField, data: dict):
+        # add prefix to name
+        if "name" in data:
+            data["name"] = self._add_prefix_to_name(data["name"])
+
+        fields = ["name", "label", "description"]
         custom_field, _ = model_update(instance=instance, fields=fields, data=data)
         return custom_field
 
-    def delete(instance: CustomField):
+    def delete(self, instance: CustomField):
         instance.delete()
