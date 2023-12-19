@@ -1,6 +1,7 @@
-from common.utils.services import build_or_retrieve_instance
+from datetime import datetime
+
+from common.services import model_update
 from django.db import transaction
-from django.shortcuts import get_object_or_404
 
 from job_manager.models import (
     Dependency,
@@ -17,67 +18,101 @@ from job_manager.models import (
 # ------------------------------------------------------------------------------
 
 
-@transaction.atomic
-def task_type_create_or_update(task_type_data: dict) -> TaskType:
-    task_type, _ = build_or_retrieve_instance(TaskType, task_type_data)
+class TaskTypeService:
+    def __init__(self):
+        pass
 
-    task_type.full_clean()
-    task_type.save()
+    def create(name: str) -> TaskType:
+        task_type = TaskType.objects.create(name=name)
+        task_type.full_clean()
+        task_type.save()
 
-    return task_type
+        return task_type
+
+    def update(task_type: TaskType, data: dict) -> TaskType:
+        fields = [
+            "name",
+        ]
+
+        task_type, _ = model_update(instance=task_type, fields=fields, data=data)
+
+        return task_type
+
+    def delete(task_type: TaskType) -> None:
+        task_type.delete()
 
 
-@transaction.atomic
-def task_create_or_update(
-    *,
-    task_data: dict,
-    task_type: TaskType = None,
-    work_center: WorkCenter = None,
-    job: Job = None,
-    predecessors: list[Task] = None,
-    successors: list[Task] = None,
-    dependencies: list[Dependency] = None,
-) -> Task:
-    task, _ = build_or_retrieve_instance(
-        Task,
-        task_data,
-        allowed_fields=[
-            "id",
-            "external_id",
+class TaskService:
+    def __init__(self):
+        pass
+
+    @transaction.atomic
+    def create(
+        self,
+        *,
+        name: str,
+        run_time_per_unit: float,
+        quantity: int,
+        task_type: TaskType,
+        setup_time: float = 0,
+        teardown_time: float = 0,
+        external_id: str = "",
+        work_center: WorkCenter = None,
+        job: Job = None,
+        dependencies: list[Dependency] = None,
+        predecessors: list[Task] = None,
+        successors: list[Task] = None,
+    ) -> Task:
+        task = Task.objects.create(
+            name=name,
+            external_id=external_id,
+            setup_time=setup_time,
+            run_time_per_unit=run_time_per_unit,
+            teardown_time=teardown_time,
+            quantity=quantity,
+            task_type=task_type,
+            work_center=work_center,
+            job=job,
+        )
+
+        task.full_clean()
+        task.save()
+
+        if dependencies:
+            task.dependencies.set(dependencies)
+
+        if predecessors:
+            task.predecessors.set(predecessors)
+
+        if successors:
+            task.successors.set(successors)
+
+        return task
+
+    @transaction.atomic
+    def update(self, *, instance: Task, data: dict) -> Task:
+        fields = [
             "name",
             "setup_time",
             "run_time_per_unit",
             "teardown_time",
             "quantity",
             "item",
-        ],
-    )
+            "task_type",
+            "work_center",
+            "job",
+            "dependencies",
+            "predecessors",
+            "successors",
+        ]
 
-    # set foreign keys if provided
-    if task_type is not None:
-        task.task_type = task_type
+        task, _ = model_update(instance=instance, fields=fields, data=data)
 
-    if work_center is not None:
-        task.work_center = work_center
+        return task
 
-    if job is not None:
-        task.job = job
-
-    if dependencies is not None:
-        task.dependencies.set(dependencies)
-
-    if predecessors is not None:
-        task.predecessors.set(predecessors)
-
-    if successors is not None:
-        task.successors.set(successors)
-
-    # todo - update assignment rule
-
-    task.full_clean()
-    task.save()
-
-    return task
+    @transaction.atomic
+    def delete(self, *, task: Task) -> None:
+        task.delete()
 
 
 # ------------------------------------------------------------------------------
@@ -85,66 +120,86 @@ def task_create_or_update(
 # ------------------------------------------------------------------------------
 
 
-@transaction.atomic
-def job_type_create_or_update(job_type_data: dict) -> JobType:
-    job_type, _ = build_or_retrieve_instance(JobType, job_type_data)
-    job_type.full_clean()
-    job_type.save()
+class JobTypeService:
+    def __init__(self):
+        pass
 
-    return job_type
+    def create(name: str) -> JobType:
+        job_type = JobType.objects.create(name=name)
+        job_type.full_clean()
+        job_type.save()
 
+        return job_type
 
-@transaction.atomic
-def job_create_or_update(
-    *, job_data: dict, job_type: JobType = None, dependencies: list[Dependency] = None
-) -> Job:
-    job, _ = build_or_retrieve_instance(
-        Job,
-        job_data,
-        allowed_fields=[
-            "id",
+    def update(job_type: JobType, data: dict) -> JobType:
+        fields = [
             "name",
-            "description",
-            "customer",
+        ]
+
+        job_type, _ = model_update(instance=job_type, fields=fields, data=data)
+
+        return job_type
+
+    def delete(job_type: JobType) -> None:
+        job_type.delete()
+
+
+class JobService:
+    def __init__(self):
+        pass
+
+    @transaction.atomic
+    def create(
+        name: str,
+        due_date: datetime,
+        job_type: JobType,
+        customer: str = "",
+        description: str = "",
+        external_id: str = "",
+        note: str = "",
+        priority: int = None,
+    ) -> Job:
+        job = Job.objects.create(
+            name=name,
+            due_date=due_date,
+            job_type=job_type,
+            customer=customer,
+            external_id=external_id,
+            note=note,
+            description=description,
+        )
+
+        job.full_clean()
+        job.save()
+
+        job.update_priority(priority)
+
+        return job
+
+    @transaction.atomic
+    def update(job: Job, data: dict) -> Job:
+        fields = [
+            "name",
             "due_date",
+            "job_type",
+            "customer",
+            "description",
             "external_id",
             "note",
-            "job_status",
-        ],
-    )
+            "dependencies",
+        ]
 
-    if job_type is not None:
-        job.job_type = job_type
+        job, _ = model_update(instance=job, fields=fields, data=data)
 
-    if dependencies is not None:
-        job.dependencies.set(dependencies)
+        # update job priority
+        if data.get("priority", None):
+            job.update_priority(data["priority"])
 
-    job.full_clean()
-    job.save()
+        return job
 
-    # update job priority
-    if job_data.get("priority", None):
-        job.update_priority(job_data["priority"])
-
-    return job
-
-
-def get_all_jobs(id: int = None):
-    """
-    Gets all job data including related values from job_status model.
-    If an id is provided, returns the job data with that ID.
-    Otherwise, returns all job statuses.
-    """
-    if id:
-        return get_object_or_404(Job.objects.all(), id=id)
-    else:
-        return Job.objects.all()
-
-
-@transaction.atomic
-def delete_job(id: int):
-    job = get_all_jobs(id=id)
-    job.delete()
+    @transaction.atomic
+    def delete(job: Job) -> None:
+        job.delete()
 
 
 # ------------------------------------------------------------------------------
@@ -152,47 +207,83 @@ def delete_job(id: int):
 # ------------------------------------------------------------------------------
 
 
-@transaction.atomic
-def dependency_type_create_or_update(dependency_type_data: dict) -> DependencyType:
-    dependency_type, _ = build_or_retrieve_instance(
-        DependencyType, dependency_type_data
-    )
-    dependency_type.full_clean()
-    dependency_type.save()
+class DependencyTypeService:
+    def __init__(self):
+        pass
 
-    return dependency_type
+    def create(name: str) -> DependencyType:
+        dependency_type = DependencyType.objects.create(name=name)
+        dependency_type.full_clean()
+        dependency_type.save()
 
+        return dependency_type
 
-@transaction.atomic
-def dependency_create_or_update(
-    *,
-    dependency_data: dict,
-    dependency_type: DependencyType = None,
-    tasks: list[Task] = None,
-    jobs: list[Job] = None,
-) -> Dependency:
-    dependency, _ = build_or_retrieve_instance(
-        Dependency,
-        dependency_data,
-        allowed_fields=[
-            "id",
+    def update(dependency_type: DependencyType, data: dict) -> DependencyType:
+        fields = [
             "name",
-            "external_id",
+        ]
+
+        dependency_type, _ = model_update(
+            instance=dependency_type, fields=fields, data=data
+        )
+
+        return dependency_type
+
+    def delete(dependency_type: DependencyType) -> None:
+        dependency_type.delete()
+
+
+class DependencyService:
+    def __init__(self):
+        pass
+
+    @transaction.atomic
+    def create(
+        self,
+        *,
+        name: str,
+        dependency_type: DependencyType,
+        expected_close_datetime: datetime = None,
+        notes: str = "",
+        external_id: str = "",
+        tasks: list[Task] = None,
+        jobs: list[Job] = None,
+    ) -> Dependency:
+        dependency = Dependency.objects.create(
+            name=name,
+            dependency_type=dependency_type,
+            expected_close_datetime=expected_close_datetime,
+            notes=notes,
+            external_id=external_id,
+        )
+
+        dependency.full_clean()
+        dependency.save()
+
+        if tasks:
+            dependency.tasks.set(tasks)
+
+        if jobs:
+            dependency.jobs.set(jobs)
+
+        return dependency
+
+    @transaction.atomic
+    def update(self, *, instance: Dependency, data: dict) -> Dependency:
+        fields = [
+            "name",
+            "dependency_type",
             "expected_close_datetime",
             "notes",
-        ],
-    )
+            "external_id",
+            "tasks",
+            "jobs",
+        ]
 
-    if dependency_type is not None:
-        dependency.dependency_type = dependency_type
+        dependency, _ = model_update(instance=instance, fields=fields, data=data)
 
-    if tasks is not None:
-        dependency.tasks.set(tasks)
+        return dependency
 
-    if jobs is not None:
-        dependency.jobs.set(jobs)
-
-    dependency.full_clean()
-    dependency.save()
-
-    return dependency
+    @transaction.atomic
+    def delete(self, instance: Dependency) -> None:
+        instance.delete()

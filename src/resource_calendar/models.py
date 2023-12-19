@@ -9,7 +9,7 @@ from simple_history.models import HistoricalRecords
 
 
 class WeeklyShiftTemplate(BaseModel):
-    name = models.CharField(max_length=150, blank=True, null=True)
+    name = models.CharField(max_length=150)
 
     history = HistoricalRecords(table_name="weekly_shift_template_history")
 
@@ -24,7 +24,7 @@ class WeeklyShiftTemplateDetail(BaseModel):
     weekly_shift_template = models.ForeignKey(
         WeeklyShiftTemplate,
         on_delete=models.CASCADE,
-        related_name="weekly_shift_template_details",
+        related_name="details",
     )
 
     history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
@@ -40,6 +40,9 @@ class WeeklyShiftTemplateDetail(BaseModel):
             models.Index(
                 fields=["day_of_week"],
             )
+        ]
+        unique_together = [
+            ["day_of_week", "weekly_shift_template", "start_time", "end_time"]
         ]
         db_table = "weekly_shift_template_detail"
 
@@ -59,10 +62,10 @@ class OperationalExceptionType(BaseModel):
 
 
 class OperationalException(BaseModel):
-    external_id = models.CharField(max_length=250, blank=True, null=True)
+    external_id = models.CharField(max_length=250, blank=True)
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
-    notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True)
 
     # foreign keys
     operational_exception_type = models.ForeignKey(
