@@ -1,4 +1,5 @@
 from common.services import model_update
+from resource_calendar.models import WeeklyShiftTemplate
 
 from resource_manager.models import Resource, ResourceGroup
 
@@ -8,13 +9,17 @@ class ResourceService:
         pass
 
     def create(
+        self,
+        *,
         name: str,
-        resource_groups: list[ResourceGroup] = None,
         external_id: str = "",
+        resource_groups: list[ResourceGroup] = None,
+        weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
         resource = Resource.objects.create(
             name=name,
             external_id=external_id,
+            weekly_shift_template=weekly_shift_template,
         )
 
         if resource_groups:
@@ -25,18 +30,15 @@ class ResourceService:
 
         return resource
 
-    def update(resource: Resource, data: dict) -> Resource:
-        fields = [
-            "name",
-            "external_id",
-        ]
+    def update(self, *, instance: Resource, data: dict) -> Resource:
+        fields = ["name", "external_id", "resource_groups", "weekly_shift_template"]
 
-        resource, _ = model_update(instance=resource, fields=fields, data=data)
+        resource, _ = model_update(instance=instance, fields=fields, data=data)
 
         return resource
 
-    def delete(resource: Resource) -> None:
-        resource.delete()
+    def delete(self, instance: Resource) -> None:
+        instance.delete()
 
 
 class ResourceGroupService:
@@ -44,8 +46,11 @@ class ResourceGroupService:
         pass
 
     def create(
+        self,
+        *,
         name: str,
         external_id: str = "",
+        resources: list[Resource] = None,
     ) -> ResourceGroup:
         resource_group = ResourceGroup.objects.create(
             name=name,
@@ -55,19 +60,21 @@ class ResourceGroupService:
         resource_group.full_clean()
         resource_group.save()
 
+        if resources:
+            resource_group.resources.set(resources)
+
         return resource_group
 
-    def update(resource_group: ResourceGroup, data: dict) -> ResourceGroup:
+    def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
         fields = [
             "name",
             "external_id",
+            "resources",
         ]
 
-        resource_group, _ = model_update(
-            instance=resource_group, fields=fields, data=data
-        )
+        resource_group, _ = model_update(instance=instance, fields=fields, data=data)
 
         return resource_group
 
-    def delete(resource_group: ResourceGroup) -> None:
-        resource_group.delete()
+    def delete(self, instance: ResourceGroup) -> None:
+        instance.delete()
