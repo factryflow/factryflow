@@ -243,11 +243,15 @@ class DependencyService:
 
     @transaction.atomic
     def create(
+        self,
+        *,
         name: str,
         dependency_type: DependencyType,
         expected_close_datetime: datetime = None,
         notes: str = "",
         external_id: str = "",
+        tasks: list[Task] = None,
+        jobs: list[Job] = None,
     ) -> Dependency:
         dependency = Dependency.objects.create(
             name=name,
@@ -260,24 +264,37 @@ class DependencyService:
         dependency.full_clean()
         dependency.save()
 
+        if tasks:
+            dependency.tasks.set(tasks)
+
+        if jobs:
+            dependency.jobs.set(jobs)
+
         return dependency
 
     @transaction.atomic
-    def update(dependency: Dependency, data: dict) -> Dependency:
+    def update(self, *, instance: Dependency, data: dict) -> Dependency:
         fields = [
             "name",
             "dependency_type",
             "expected_close_datetime",
             "notes",
             "external_id",
-            "tasks",
-            "jobs",
         ]
 
-        dependency, _ = model_update(instance=dependency, fields=fields, data=data)
+        dependency, _ = model_update(instance=instance, fields=fields, data=data)
+
+        # handle reverse m2m fields
+        tasks = data.get("tasks", None)
+        if tasks is not None:
+            dependency.tasks.set(tasks)
+
+        jobs = data.get("jobs", None)
+        if jobs is not None:
+            dependency.jobs.set(jobs)
 
         return dependency
 
     @transaction.atomic
-    def delete(dependency: Dependency) -> None:
-        dependency.delete()
+    def delete(self, instance: Dependency) -> None:
+        instance.delete()
