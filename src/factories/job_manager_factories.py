@@ -9,6 +9,7 @@ from job_manager.models import (
     JobType,
     Task,
     TaskType,
+    WorkCenter,
 )
 
 
@@ -65,7 +66,6 @@ class DependencyFactory(factory.django.DjangoModelFactory):
         model = Dependency
 
     name = factory.lazy_attribute(lambda x: faker.name())
-    description = None
     dependency_status = "PD"  # Pending
     dependency_type = factory.SubFactory(DependencyTypeFactory)
 
@@ -77,14 +77,25 @@ class TaskTypeFactory(factory.django.DjangoModelFactory):
     name = factory.lazy_attribute(lambda _: faker.unique.word())
 
 
+class WorkCenterFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = WorkCenter
+
+    name = factory.lazy_attribute(lambda _: faker.unique.word())
+
+
 class TaskFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Task
 
     name = factory.lazy_attribute(lambda _: faker.unique.word())
-    description = None
     task_status = "NS"  # Not Started
     task_type = factory.SubFactory(TaskTypeFactory)
+    work_center = factory.SubFactory(WorkCenterFactory)
+    quantity = 1
+    setup_time = 0
+    teardown_time = 0
+    run_time_per_unit = 1
     job = None
 
     class Params:
