@@ -4,3 +4,4 @@ django-htmx==1.17.2
 django-template-partials==23.3.post1
 django-ordered-model==3.7.4
 django-simple-history==3.4.0
+django-ninja==1.1.0
