@@ -8,9 +8,21 @@ from django.core.exceptions import (
 )
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
+from ninja.security import APIKeyHeader
 from resource_manager.api import resource_router
 
-api = NinjaAPI()
+
+class ApiKey(APIKeyHeader):
+    param_name = "X-API-Key"
+
+    def authenticate(self, request, key):
+        if key == "supersecret":
+            return key
+
+
+header_key = ApiKey()
+
+api = NinjaAPI(auth=header_key)
 
 api.add_router("", resource_router)
 
