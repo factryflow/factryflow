@@ -24,6 +24,10 @@ class Resource(BaseModel):
     class Meta:
         db_table = "resource"
 
+    @property
+    def resource_group_id_list(self):
+        return list(self.resource_groups.values_list("id", flat=True))
+
 
 class ResourceGroup(BaseModel):
     name = models.CharField(max_length=100)
@@ -33,3 +37,7 @@ class ResourceGroup(BaseModel):
 
     class Meta:
         db_table = "resource_group"
+
+    @property
+    def resource_id_list(self):
+        return list(self.resources.values_list("id", flat=True))

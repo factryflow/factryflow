@@ -9,7 +9,7 @@ from django.core.exceptions import (
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from ninja.security import APIKeyHeader
-from resource_manager.api import resource_router
+from resource_manager.api import resource_manager_router
 
 
 class ApiKey(APIKeyHeader):
@@ -24,7 +24,7 @@ header_key = ApiKey()
 
 api = NinjaAPI(auth=header_key)
 
-api.add_router("", resource_router)
+api.add_router("", resource_manager_router)
 
 
 @api.exception_handler(ObjectDoesNotExist)
