@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "resource_manager",
     "resource_calendar",
     "resource_assigner",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -76,13 +77,13 @@ MIDDLEWARE = [
 ]
 
 # CUSTOM AUTH MIDDLEWARE SETTINGS
-AUTH_MIDDEWARE = [ 
+AUTH_MIDDEWARE = [
     "users.middleware.LoginRequiredMiddleware",
 ]
 
-DISABLE_AUTH = os.getenv('DISABLE_AUTH')
+DISABLE_AUTH = os.getenv("DISABLE_AUTH")
 
-if not(DEBUG == 'TRUE' and DISABLE_AUTH == 'TRUE') :
+if not (DEBUG == "TRUE" and DISABLE_AUTH == "TRUE"):
     MIDDLEWARE += AUTH_MIDDEWARE
 
 
@@ -178,6 +179,6 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 LOGIN_REDIRECT_URL = "/"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-# SUPERUSER CREDENTIALS 
-SUPERUSER_USERNAME = os.getenv('SUPERUSER_USERNAME')
-SUPERUSER_PASSWORD = os.getenv('SUPERUSER_PASSWORD')
+# SUPERUSER CREDENTIALS
+SUPERUSER_USERNAME = os.getenv("SUPERUSER_USERNAME")
+SUPERUSER_PASSWORD = os.getenv("SUPERUSER_PASSWORD")
