@@ -16,6 +16,7 @@ class ApiKey(APIKeyHeader):
     param_name = "X-API-Key"
 
     def authenticate(self, request, key):
+        # TODO add api key to env file
         if key == "supersecret":
             return key
 
@@ -25,6 +26,8 @@ header_key = ApiKey()
 api = NinjaAPI(auth=header_key)
 
 api.add_router("", resource_manager_router)
+
+# TODO add remaining routers
 
 
 @api.exception_handler(ObjectDoesNotExist)
