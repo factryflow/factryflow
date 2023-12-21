@@ -1,6 +1,6 @@
 {% extends 'base/main.html' %}
 
-{% block title %} Task {% endblock %}
+{% block title %} Chart {% endblock %}
 
 {% block content %}
 
@@ -27,21 +27,34 @@
         /* background: #ccc; */
     }
 
-  
 
-    /* button:hover,
-    button:focus {
+    .chart-button:hover,
+    .chart-button:focus {
         background: #a3a3ff;
     }
 
-    button {
+    .chart-button {
         border: solid thin grey;
         border-radius: 3px;
     }
 
-    button.selected {
+    .chart-button.selected {
         background: #a3a3ff;
-    } */
+    }
+
+    .chart-collapse {
+        border: solid thin grey;
+        border-radius: 3px;
+    }
+
+   
+
+
+    .chart-collapse:hover,
+    .chart-collapse:focus {
+        background: #a3a3ff;
+    }
+
 
     /* task custom class */
     .gantt-target .bar-milestone .bar {
@@ -60,78 +73,196 @@
     }
 </style>
 
+
+
 <div class="rounded-xl bg-white px-8 py-8 w-full">
     <div>
         <h1 class="text-xl font-semibold text-[#5E6278] pb-8">Chart Details</h1>
     </div>
 
+    <div class="container flex">
+        <div class="w-[300px]">
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">Task#</th>
+                        <th class="border bg-[#294567] text-white py-2 pl-2 pr-5 text-left text-sm">Name</th>
+                        <th class="border bg-[#294567] text-white py-2 pl-2 pr-5 text-left text-sm">Job</th>
+                        <th class="border bg-[#294567] text-white py-2 pl-2 pr-5 text-left text-sm">Process Time</th>
+                    </tr>
+                </thead>
+                <tbody x-data="{ openDropdown: null }" >
+                    <!-- Job 1 -->
+                    <tr>
+                        <td colspan="4">
+                            <button @click="openDropdown === 'job1' ? openDropdown = null : openDropdown = 'job1'"
+                                class="w-full flex p-2 text-sm items-center transition-all duration-500 ease-in-out border-y bg-[#9C9999] text-white mt-6">
+                                <div class="flex items-center">
+                                    <span class="text-center text-sm">Job1</span>
+                                </div>
+                            </button>
+                
+                            <div x-show="openDropdown === 'job1'" x-cloak class="w-full space-y-2.5">
+                                <!-- Task 1 -->
+                                <tr x-show="openDropdown === 'job1'">
+                                    <td class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">T010</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Task 1</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Job 1</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">00</td>
+                                </tr>
+                
+                                <!-- Task 2 -->
+                                <tr x-show="openDropdown === 'job1'">
+                                    <td class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">T011</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Task 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Job 1</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">01</td>
+                                </tr>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <!-- Job 2 -->
+                    <tr>
+                        <td colspan="4">
+                            <button @click="openDropdown === 'job2' ? openDropdown = null : openDropdown = 'job2'"
+                                class="w-full flex p-2 text-sm items-center transition-all duration-500 ease-in-out border-y bg-[#9C9999] text-white">
+                                <div class="flex items-center">
+                                    <span class="text-center text-sm">Job2</span>
+                                </div>
+                            </button>
+                
+                            <div x-show="openDropdown === 'job2'" x-cloak class="w-full space-y-2.5">
+                                <!-- Task 1 -->
+                                <tr x-show="openDropdown === 'job2'">
+                                    <td class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">T020</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Task 1</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Job 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">00</td>
+                                </tr>
+                
+                                <!-- Task 2 -->
+                                <tr x-show="openDropdown === 'job2'">
+                                    <td class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">T021</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Task 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Job 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">01</td>
+                                </tr>
+                            </div>
+                        </td>
+                    </tr>
+                      <!-- Job 2 -->
+                      <tr>
+                        <td colspan="4">
+                            <button @click="openDropdown === 'job3' ? openDropdown = null : openDropdown = 'job3'"
+                                class="w-full flex p-2 text-sm items-center transition-all duration-500 ease-in-out border-y bg-[#9C9999] text-white">
+                                <div class="flex items-center">
+                                    <span class="text-center text-sm">Job3</span>
+                                </div>
+                            </button>
+                
+                            <div x-show="openDropdown === 'job3'" x-cloak class="w-full space-y-2.5">
+                                <!-- Task 1 -->
+                                <tr x-show="openDropdown === 'job3'">
+                                    <td class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">T020</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Task 1</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Job 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">00</td>
+                                </tr>
+                
+                                <!-- Task 2 -->
+                                <tr x-show="openDropdown === 'job3'">
+                                    <td class="border bg-[#294567] text-white py-2 pl-2 pr-8 text-left text-sm">T021</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Task 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">Job 2</td>
+                                    <td class="border text-black py-2 pl-2 pr-5 text-left text-sm">01</td>
+                                </tr>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                
+                
+                
+                
+            </table>
+        </div>
 
-    <div class="container">
-        <div style="display: inline;" class="js-view">
-            <button type="button" data-view="Quarter Day" class="selected">Quarter Day</button>
-            <button type="button" data-view="Half Day">Half Day</button>
-            <button type="button" data-view="Day">Day</button>
-            <button type="button" data-view="Week">Week</button>
-            <button type="button" data-view="Month">Month</button>
-        </div>
-        <div style="display: inline;float: right;">
-            <button type="button" onclick="collapseAll();">Collapse all</button>
-            <button type="button" onclick="expandBars();">Expand all</button>
-        </div>
-        <div class="gantt-target"></div>
+           <div class="overflow-hidden">
+                 <div style="display: inline;" class="js-view">
+                    <button type="button" data-view="Quarter Day" class="chart-button" >Quarter Day</button>
+                    <button type="button" data-view="Half Day" class="chart-button">Half Day</button>
+                    <button type="button" data-view="Day" class="chart-button selected">Day</button>
+                    <button type="button" data-view="Week" class="chart-button">Week</button>
+                    <button type="button" data-view="Month" class="chart-button">Month</button>
+                </div>
+                <div style="display: inline;float: right;">
+                    <button type="button" class="chart-collapse" onclick="collapseAll();">Collapse all</button>
+                    <button type="button" class="chart-collapse" onclick="expandBars();">Expand all</button>
+                </div>
+            <div class="gantt-target"></div>
+         </div>
 
     </div>
 
 </div>
 
 <script>
-    // Your Gantt chart initialization code here
+   
     const locale = navigator.language.substring(0, 2);
 
-    let jobs = [
-            {
-                start: new Date('2022-01-22T08:00:00'),
-                end: new Date('2022-01-23T12:00:00'),
-                name: 'Job 1',
-                id: 'Job 1',
-                // other job properties
-            },
-            {
-                start: new Date('2022-01-23T13:30:00'),
-                end: new Date('2022-01-25T16:00:00'),
-                name: 'Job 2',
-                id: 'Job 2',
-                // other job properties
-            },
-            // ... other jobs
-        ];
 
-        // Array representing tasks
-        let tasks = [
-            {
-                start: new Date('2022-01-24T13:30:00'),
-                end: new Date('2022-01-25T16:00:00'),
-                name: 'Task 1',
-                id: 'Task 1',
-                progress: 100,
-                dependencies: ['Job 1'], // Connect Task 1 to Job 1
-                // other task properties
-            },
-            {
-                start: new Date('2022-01-25T16:30:00'),
-                end: new Date('2022-01-27T10:00:00'),
-                name: 'Task 2',
-                id: 'Task 2',
-                dependencies: ['Job 1'], // Connect Task 2 to Task 1
-                // other task properties
-            },
-            // ... other tasks
-        ];
+    let tasks = [{
+            id: 'Job 1',
+            name: 'job1',
+            start: '2022-01-22',
+            end: '2022-01-23',
+            progress: 100,
+        },
+        {
+            id: 'Job 2',
+            name: 'job2',
+            start: '2022-01-23',
+            end: '2022-01-25',
+            progress: 100,
+        },
+        {
+            id: 'Job 3',
+            name: 'job3',
+            start: '2022-01-25',
+            end: '2022-01-27',
+            progress: 20,
 
-        // Combine jobs and tasks into a single array
-        let allTasks = [...jobs, ...tasks];
+        },
+        {
+            id: 'Task 1',
+            name: 'task1',
+            start: '2022-02-01',
+            end: '2022-02-03',
+            progress: 0,
+            dependencies: 'Job 1'
+        },
+        {
+            id: 'Task 2',
+            name: 'task2',
+            start: '2022-02-03',
+            end: '2022-02-07',
+            progress: 0,
+            dependencies: 'Job 3'
+        },
+        {
+            id: 'Task 3',
+            name: 'task3',
+            start: '2022-02-07',
+            end: '2022-02-09',
+            progress: 0,
+            dependencies: 'Job 1, Job 2'
+        },
+    ]
 
-    const gantt_chart = new Gantt(".gantt-target", allTasks, {
+    console.log(tasks, "taskssssss")
+
+    const gantt_chart = new Gantt(".gantt-target", tasks, {
         on_click: function (task) {
             toggleBars(task);
         },
@@ -145,21 +276,21 @@
             console.log('on_progress_change', task, progress);
         },
         on_view_change: function (mode) {
-            console.log(mode);
+            console.log(mode,"mode");
         },
-        view_mode: 'Quarter Day',
+        view_mode: 'Day',
         language: locale,
         popup_trigger: 'mouseover', // default 'click'
-        // custom_popup_html: function (task) {
-        //     const end_date = new Intl.DateTimeFormat().format(task._end);
-        //     return `
-        //       <div class="details-container">
-        //         <p>${task.name}</p>
-        //         <p>Expected to finish by ${end_date}<br>
-        //         ${task.progress}% completed!</p>
-        //       </div>
-        //     `;
-        // }
+         {% comment %} custom_popup_html: function (task) {
+             const end_date = new Intl.DateTimeFormat().format(task._end);
+             return `
+               <div class="details-container">
+                 <p>${task.name}</p>
+                 <p>Expected to finish by ${end_date}<br>
+                 ${task.progress}% completed!</p>
+               </div>
+             `;
+         } {% endcomment %}
     });
 
     console.log(gantt_chart);
@@ -297,7 +428,7 @@
 
         let taskId = gantt_chart.bar_being_dragged;
         let task = gantt_chart.get_task(taskId);
-
+        console.log(task,"jjhjh")
         let children = task.children
             .map(item => gantt_chart.tasks_all[item])
             .filter(item => item.collapsed);
@@ -322,6 +453,7 @@
             }
         });
     }
+  
 </script>
 
 {% endblock %}
