@@ -26,23 +26,30 @@ class JobStatusChoices(models.TextChoices):
 
 
 class Job(BaseModel, OrderedModelBase):
+    # Core fields
     name = models.CharField(max_length=100)
+    external_id = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     customer = models.CharField(max_length=250, blank=True)
-    due_date = models.DateField()
-    priority = models.PositiveIntegerField(editable=False, db_index=True)
-    order_field_name = "priority"
-    planned_start_datetime = models.DateTimeField(null=True, blank=True)
-    planned_end_datetime = models.DateTimeField(null=True, blank=True)
-    external_id = models.CharField(max_length=150, blank=True)
     note = models.CharField(max_length=150, blank=True)
+    due_date = models.DateField()
     job_status = models.CharField(
         max_length=2,
         choices=JobStatusChoices.choices,
         default=JobStatusChoices.NOT_PLANNED,
     )
+
+    # Relationship fields
     job_type = models.ForeignKey(JobType, on_delete=models.DO_NOTHING)
     dependencies = models.ManyToManyField("Dependency", related_name="jobs")
+
+    # Utility fields
+    priority = models.PositiveIntegerField(editable=False, db_index=True)
+    planned_start_datetime = models.DateTimeField(null=True, blank=True)
+    planned_end_datetime = models.DateTimeField(null=True, blank=True)
+
+    # Special Fields
+    order_field_name = "priority"
     history = HistoricalRecords(table_name="job_history")
 
     class Meta:
@@ -51,5 +58,5 @@ class Job(BaseModel, OrderedModelBase):
 
     def update_priority(self, new_priority):
         if new_priority < 0:
-            raise ValidationError("Priority must be greater than 0")
+            raise ValidationError("Priority must be greater or equal 0")
         self.to(new_priority)

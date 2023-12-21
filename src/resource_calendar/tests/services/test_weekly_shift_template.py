@@ -1,74 +1,76 @@
+from datetime import time
+
 import pytest
-from resource_calendar.services import create_update_weekly_shift_template
+from django.core.exceptions import ValidationError
+from resource_calendar.services import WeeklyShiftTemplateService
 
 
 @pytest.fixture
 def template_data():
-    return {"name": "Test Template"}
-
-
-@pytest.fixture
-def template_detail_data():
-    data = [
-        {"day_of_week": 0, "start_time": "08:00", "end_time": "16:00"},
-        {"day_of_week": 1, "start_time": "08:00", "end_time": "16:00"},
-        {"day_of_week": 2, "start_time": "08:00", "end_time": "16:00"},
-        {"day_of_week": 3, "start_time": "08:00", "end_time": "16:00"},
-        {"day_of_week": 4, "start_time": "08:00", "end_time": "14:00"},
-    ]
+    data = {
+        "name": "Test Template",
+        "details": [
+            {"day_of_week": 0, "start_time": "08:00", "end_time": "16:00"},
+            {"day_of_week": 1, "start_time": "08:00", "end_time": "16:00"},
+            {"day_of_week": 2, "start_time": "08:00", "end_time": "16:00"},
+            {"day_of_week": 3, "start_time": "08:00", "end_time": "16:00"},
+            {"day_of_week": 4, "start_time": "08:00", "end_time": "14:00"},
+        ],
+    }
     return data
 
 
 @pytest.mark.django_db
-def test_can_create_template(template_data, template_detail_data):
-    template = create_update_weekly_shift_template(
-        template_data=template_data, template_details_data=template_detail_data
-    )
+def test_can_create_template(template_data):
+    template = WeeklyShiftTemplateService().create(**template_data)
 
     assert template.id is not None
     assert template.name == template_data["name"]
-    assert template.weekly_shift_template_details.count() == len(template_detail_data)
-    assert template.weekly_shift_template_details.first().day_of_week == 0
+    assert template.details.count() == len(template_data["details"])
+    assert template.details.first().day_of_week == 0
 
 
 @pytest.mark.django_db
 def test_can_update_template(template_data):
-    template = create_update_weekly_shift_template(template_data=template_data)
+    template = WeeklyShiftTemplateService().create(**template_data)
 
     updated_data = template_data.copy()
     updated_data["name"] = "Updated Template"
-    updated_data["id"] = template.id
 
-    updated_template = create_update_weekly_shift_template(template_data=updated_data)
+    updated_template = WeeklyShiftTemplateService().update(template, updated_data)
 
     assert updated_template.id == template.id
     assert updated_template.name == updated_data["name"]
 
 
 @pytest.mark.django_db
-def test_can_update_template_details(template_data, template_detail_data):
-    template = create_update_weekly_shift_template(
-        template_data=template_data, template_details_data=template_detail_data
-    )
-    detail_to_update = template.weekly_shift_template_details.first()
-    print(detail_to_update.id)
+def test_details_overwrite_on_template_update(template_data):
+    template = WeeklyShiftTemplateService().create(**template_data)
 
-    # Update the first detail ignore the rest
-    updated_detail_data = template_detail_data[0]
-    updated_detail_data["start_time"] = "09:00"
-    updated_detail_data["end_time"] = "17:00"
-    updated_detail_data["id"] = detail_to_update.id
+    new_details = template_data["details"].copy()
+    new_details = new_details[1:4]
+    new_details[0]["start_time"] = "09:00"
+    new_data = {"details": new_details}
 
-    template_data["id"] = template.id
+    updated_template = WeeklyShiftTemplateService().update(template, new_data)
 
-    create_update_weekly_shift_template(
-        template_data=template_data, template_details_data=[updated_detail_data]
-    )
+    assert updated_template.details.count() == len(new_details)
+    assert updated_template.details.first().start_time == time(hour=9)
 
-    # Fetch the updated detail
-    updated_detail = template.weekly_shift_template_details.get(id=detail_to_update.id)
 
-    # Assertions
-    assert updated_detail.start_time == updated_detail_data["start_time"]
-    assert updated_detail.end_time == updated_detail_data["end_time"]
-    assert template.weekly_shift_template_details.count() == len(template_detail_data)
+# throw error on missing detail fields
+@pytest.mark.django_db
+def test_create_throws_value_error_on_missing_detail_fields(template_data):
+    template_data["details"][0].pop("start_time")
+    with pytest.raises(ValueError):
+        WeeklyShiftTemplateService().create(**template_data)
+
+
+@pytest.mark.django_db
+def test_create_throws_validation_error_on_overlapping_details(template_data):
+    template_data["details"][0]["day_of_week"] = 0
+    template_data["details"][1]["day_of_week"] = 0
+    template_data["details"][1]["start_time"] = "07:00"
+
+    with pytest.raises(ValidationError):
+        WeeklyShiftTemplateService().create(**template_data)
