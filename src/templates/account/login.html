@@ -6,7 +6,7 @@
     class="md:w-2/4 h-fit bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0"
   >
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-      <!-- Sign In Section -->
+      <!-- Sign In Title -->
       <h1
         class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl"
       >
@@ -80,7 +80,14 @@
             </div>
           </div>
           <!-- Forgot Password Link -->
-          <a href="#" class="text-sm font-medium text-gray-400 hover:underline"
+          <a
+            href="#"
+            hx-get="{% url 'account_reset_password' %}"
+            hx-trigger="click"
+            hx-swap="outerHTML"
+            hx-target="body"
+            hx-push-url="true"
+            class="text-sm font-medium text-gray-400 hover:underline"
             >Forgot password?</a
           >
         </div>
