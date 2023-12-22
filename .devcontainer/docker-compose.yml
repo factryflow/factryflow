@@ -8,6 +8,6 @@ services:
     volumes:
       - ../..:/workspaces:cached
     env_file:
-      - ../src/.env
+      - ../.env
 
     command: sleep infinity
