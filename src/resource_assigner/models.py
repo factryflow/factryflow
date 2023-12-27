@@ -21,7 +21,8 @@ class TaskResourceAssigment(BaseModel):
         db_table = "task_resource_assigment"
 
     def clean(self):
-        if self.resources and self.resource_group != 1:
+        # if self.resources and self.resource_group != 1:
+        if self.resources and not self.resource_group:
             raise ValidationError(
                 "Resource group must be 'All Resources' if resources are selected"
             )
