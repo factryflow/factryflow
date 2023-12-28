@@ -1,9 +1,14 @@
 import factory
 from common.utils.tests import faker
-from resource_assigner.models import TaskResourceAssigment, AssigmentRule, AssigmentRuleCriteria, Operator
+from resource_assigner.models import (
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    Operator,
+    TaskResourceAssigment,
+)
 
 from .job_manager_factories import TaskFactory, WorkCenterFactory
-from .resource_manager_factories import ResourceFactory, ResourceGroupFactory
+from .resource_manager_factories import ResourceGroupFactory
 
 
 class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
