@@ -11,6 +11,7 @@ from ninja.errors import ValidationError as NinjaValidationError
 from ninja.security import APIKeyHeader
 from resource_manager.api import resource_manager_router
 
+from resource_calendar.api import resource_calendar_router
 
 class ApiKey(APIKeyHeader):
     param_name = "X-API-Key"
@@ -28,7 +29,7 @@ api = NinjaAPI(auth=header_key)
 api.add_router("", resource_manager_router)
 
 # TODO add remaining routers
-
+api.add_router("", resource_calendar_router)
 
 @api.exception_handler(ObjectDoesNotExist)
 def handle_object_does_not_exist(request, exc):
