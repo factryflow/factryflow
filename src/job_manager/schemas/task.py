@@ -3,6 +3,7 @@ from ninja import Field, ModelSchema
 from job_manager.models import (
     Task,
     TaskType,
+    TaskStatusChoices
 )
 
 
@@ -21,6 +22,7 @@ class TaskTypeOut(ModelSchema):
 class TaskIn(ModelSchema):
     predecessors: list[int] = Field(None, alias="predecessor_ids")
     dependencies: list[int] = Field(None, alias="dependency_ids")
+    task_status: TaskStatusChoices = Field(None, alias="taskStatus")
 
     class Meta:
         model = Task
@@ -28,7 +30,6 @@ class TaskIn(ModelSchema):
             "name",
             "id",
             "external_id",
-            "task_status",
             "planned_start_datetime",
             "planned_end_datetime",
             "setup_time",

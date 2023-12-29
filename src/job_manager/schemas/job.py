@@ -3,6 +3,7 @@ from ninja import Field, ModelSchema
 from job_manager.models import (
     Job,
     JobType,
+    JobStatusChoices,
 )
 
 
@@ -20,6 +21,7 @@ class JobTypeOut(ModelSchema):
 
 class JobIn(ModelSchema):
     dependencies: list[int] = Field(None, alias="dependency_ids")
+    job_status: JobStatusChoices = Field(None, alias="jobStatus")
 
     class Meta:
         model = Job
@@ -27,7 +29,6 @@ class JobIn(ModelSchema):
             "name",
             "external_id",
             "job_type",
-            "job_status",
             "note",
             "description",
             "due_date",

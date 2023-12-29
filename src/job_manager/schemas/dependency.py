@@ -1,8 +1,9 @@
-from ninja import ModelSchema
+from ninja import Field, ModelSchema
 
 from job_manager.models import (
     Dependency,
     DependencyType,
+    DependencyStatusChoices,
 )
 
 
@@ -19,6 +20,8 @@ class DependencyTypeOut(ModelSchema):
 
 
 class DependencyIn(ModelSchema):
+    dependency_status: DependencyStatusChoices = Field(None, alias="dependencyStatus")
+
     class Meta:
         model = Dependency
         fields = [
@@ -27,7 +30,6 @@ class DependencyIn(ModelSchema):
             "dependency_type",
             "expected_close_datetime",
             "notes",
-            "dependency_status",
             "actual_close_datetime",
         ]
 
