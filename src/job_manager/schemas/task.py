@@ -23,6 +23,10 @@ class WorkCenterOut(ModelSchema):
         fields = "__all__"
 
 
+#------------------------------------------------------------------
+# TaskType Schemas
+#------------------------------------------------------------------
+
 class TaskTypeIn(ModelSchema):
     class Meta:
         model = TaskType

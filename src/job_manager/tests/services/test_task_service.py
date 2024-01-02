@@ -9,6 +9,7 @@ from factories import (
 from job_manager.models import Task, WorkCenter
 from job_manager.services import TaskService, WorkCenterService
 
+
 @pytest.fixture
 def task_data():
     data = {
@@ -31,6 +32,12 @@ def work_center_data():
     return data
 
 
+@pytest.fixture
+def work_center_data():
+    data = {"name": "name", "notes": "notes"}
+    return data
+
+
 @pytest.mark.django_db
 def test_can_create_work_center(work_center_data):
     work_center = WorkCenterService().create(**work_center_data)
@@ -41,29 +48,25 @@ def test_can_create_work_center(work_center_data):
 
 
 @pytest.mark.django_db
-def test_can_update_work_center(work_center_data):
-    work_center = WorkCenterService().create(**work_center_data)
-
+def test_can_update_work_center():
+    work_center_instance = WorkCenterFactory()
     updated_data = {"name": "Updated Work Center"}
 
-    updated_work_center = WorkCenterService().update(
-        instance=work_center, data=updated_data
-    )
+    updated_work_center = WorkCenterService().update(work_center_instance, updated_data)
 
-    assert updated_work_center.id == work_center.id
+    assert updated_work_center.id == work_center_instance.id
     assert updated_work_center.name == updated_data["name"]
 
 
 @pytest.mark.django_db
-def test_can_delete_work_center(work_center_data):
-    work_center = WorkCenterService().create(**work_center_data)
+def test_can_delete_work_center():
+    work_center_instance = WorkCenterFactory()
 
-    starting_count = WorkCenter.objects.count()
+    objects_count = WorkCenter.objects.count()
 
-    WorkCenterService().delete(instance=work_center)
+    WorkCenterService().delete(work_center_instance)
 
-    assert WorkCenter.objects.count() == starting_count - 1
-
+    assert WorkCenter.objects.count() == objects_count - 1
 
 
 @pytest.mark.django_db
