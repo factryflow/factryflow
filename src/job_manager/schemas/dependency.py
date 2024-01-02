@@ -6,6 +6,9 @@ from job_manager.models import (
     DependencyStatusChoices,
 )
 
+# ------------------------------------------------------------------------------
+# DependencyType Schemas
+# ------------------------------------------------------------------------------
 
 class DependencyTypeIn(ModelSchema):
     class Meta:

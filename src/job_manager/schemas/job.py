@@ -6,6 +6,10 @@ from job_manager.models import (
     JobStatusChoices,
 )
 
+# ------------------------------------------------------------------------------
+# JobType Schemas
+# ------------------------------------------------------------------------------
+
 
 class JobTypeIn(ModelSchema):
     class Meta:

@@ -14,9 +14,38 @@ from job_manager.models import (
 )
 
 # ------------------------------------------------------------------------------
-# Task Services
+# WorkCenter Services
 # ------------------------------------------------------------------------------
 
+
+
+class WorkCenterService:
+    def __init__(self):
+        pass
+
+    def create(name: str, notes: str) -> WorkCenter:
+        work_center = WorkCenter.objects.create(name=name, notes=notes)
+        work_center.full_clean()
+        work_center.save()
+
+        return work_center
+
+    def update(work_center: WorkCenter, data: dict) -> WorkCenter:
+        fields = [
+            "name",
+            "notes",
+        ]
+
+        work_center, _ = model_update(instance=work_center, fields=fields, data=data)
+
+        return work_center
+
+    def delete(work_center: WorkCenter) -> None:
+        work_center.delete()
+
+# ------------------------------------------------------------------------------
+# Task Type Services
+# ------------------------------------------------------------------------------
 
 class TaskTypeService:
     def __init__(self):
@@ -35,11 +64,15 @@ class TaskTypeService:
         ]
 
         task_type, _ = model_update(instance=task_type, fields=fields, data=data)
-
         return task_type
 
     def delete(task_type: TaskType) -> None:
         task_type.delete()
+
+
+# ------------------------------------------------------------------------------
+# Task Services
+# ------------------------------------------------------------------------------
 
 
 class TaskService:

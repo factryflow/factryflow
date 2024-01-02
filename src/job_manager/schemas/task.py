@@ -3,8 +3,24 @@ from ninja import Field, ModelSchema
 from job_manager.models import (
     Task,
     TaskType,
-    TaskStatusChoices
+    TaskStatusChoices,
+    WorkCenter
 )
+#------------------------------------------------------------------
+# WorkCenter Schemas
+#------------------------------------------------------------------
+
+
+class WorkCenterIn(ModelSchema):
+    class Meta:
+        model = WorkCenter
+        fields = ["name", "notes"]
+
+
+class WorkCenterOut(ModelSchema):
+    class Meta:
+        model = WorkCenter
+        fields = "__all__"
 
 
 class TaskTypeIn(ModelSchema):

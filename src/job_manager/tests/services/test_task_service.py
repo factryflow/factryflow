@@ -6,9 +6,8 @@ from factories import (
     TaskTypeFactory,
     WorkCenterFactory,
 )
-from job_manager.models import Task
-from job_manager.services import TaskService
-
+from job_manager.models import Task, WorkCenter
+from job_manager.services import TaskService, WorkCenterService
 
 @pytest.fixture
 def task_data():
@@ -24,6 +23,47 @@ def task_data():
         "dependencies": [DependencyFactory()],
     }
     return data
+
+
+@pytest.fixture
+def work_center_data():
+    data = {"name": "name", "notes": "notes"}
+    return data
+
+
+@pytest.mark.django_db
+def test_can_create_work_center(work_center_data):
+    work_center = WorkCenterService().create(**work_center_data)
+
+    assert work_center.id is not None
+    assert work_center.name == work_center_data["name"]
+    assert work_center.notes == work_center_data["notes"]
+
+
+@pytest.mark.django_db
+def test_can_update_work_center(work_center_data):
+    work_center = WorkCenterService().create(**work_center_data)
+
+    updated_data = {"name": "Updated Work Center"}
+
+    updated_work_center = WorkCenterService().update(
+        instance=work_center, data=updated_data
+    )
+
+    assert updated_work_center.id == work_center.id
+    assert updated_work_center.name == updated_data["name"]
+
+
+@pytest.mark.django_db
+def test_can_delete_work_center(work_center_data):
+    work_center = WorkCenterService().create(**work_center_data)
+
+    starting_count = WorkCenter.objects.count()
+
+    WorkCenterService().delete(instance=work_center)
+
+    assert WorkCenter.objects.count() == starting_count - 1
+
 
 
 @pytest.mark.django_db
