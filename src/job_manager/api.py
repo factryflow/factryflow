@@ -12,7 +12,7 @@ from job_manager.services import (
     WorkCenterService,
 )
 
-from schemas import (
+from job_manager.schemas import (
     DependencyIn,
     DependencyOut,
     DependencyTypeIn,
