@@ -42,6 +42,7 @@ class AssigmentRuleFactory(factory.django.DjangoModelFactory):
     description = ""
     resource_group = factory.SubFactory(ResourceGroupFactory)
     work_center = factory.SubFactory(WorkCenterFactory)
+    is_active = True
 
 
 class AssigmentRuleCriteriaFactory(factory.django.DjangoModelFactory):

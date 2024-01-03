@@ -134,7 +134,7 @@ class AssigmentRuleService:
         description: str,
         resource_group: ResourceGroup,
         work_center: WorkCenter,
-        criteria: list[dict],
+        criteria: list[dict] = [],
     ) -> AssigmentRule:
         self._validate_criteria_keys_throw_validation_eror(criteria=criteria)
 
@@ -161,10 +161,6 @@ class AssigmentRuleService:
 
     @transaction.atomic
     def update(self, *, instance: AssigmentRule, data: dict) -> AssigmentRule:
-        # validate criteria keys
-        criteria = data.get("criteria")
-        self._validate_criteria_keys_throw_validation_eror(criteria=criteria)
-
         fields = [
             "name",
             "description",
@@ -172,6 +168,8 @@ class AssigmentRuleService:
             "work_center",
         ]
         instance, _ = model_update(instance=instance, fields=fields, data=data)
+
+        criteria = data.get("criteria", [])
 
         # Create or update criteria
         for criteria_dict in criteria:
@@ -185,6 +183,10 @@ class AssigmentRuleService:
                     data=criteria_dict,
                 )
             else:
+                # validate criteria keys
+                self._validate_criteria_keys_throw_validation_eror(
+                    criteria=[criteria_dict]
+                )
                 AssigmentRuleCriteriaService().create(
                     assigment_rule=instance,
                     field=criteria_dict.get("field"),
