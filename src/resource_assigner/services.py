@@ -1,18 +1,21 @@
 from common.services import model_update
+from common.utils import get_object
+
+# validation error
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
 
-from .models import (
+from resource_assigner.models import (
     AssigmentRule,
     AssigmentRuleCriteria,
-    Operator,
     TaskResourceAssigment,
 )
 
 
 class TaskResourceAssigmentService:
-    def __init__(self) -> None:
+    def __init__(self):
         pass
 
     @transaction.atomic
@@ -20,116 +23,177 @@ class TaskResourceAssigmentService:
         self,
         *,
         task: Task,
-        use_all_resources: bool = True,
-        resource_count: int = None,
         resource_group: ResourceGroup,
-        resources: list[Resource] = None,
-        is_direct: bool = False,
-    ):
-        task_resource_assignment = TaskResourceAssigment.objects.create(
+        resource: Resource = None,
+        resource_count: int = 1,
+        use_all_resources: bool = False,
+        is_direct: bool = True,
+    ) -> TaskResourceAssigment:
+        instance = TaskResourceAssigment.objects.create(
             task=task,
             resource_group=resource_group,
+            resource=resource,
+            resource_count=resource_count,
             use_all_resources=use_all_resources,
             is_direct=is_direct,
         )
 
-        if resources:
-            task_resource_assignment.resources.set(resources)
+        instance.full_clean()
+        instance.save()
 
-        if resource_count:
-            task_resource_assignment.resource_count = resource_count
-
-        task_resource_assignment.full_clean()
-        task_resource_assignment.save()
-
-        return task_resource_assignment
+        return instance
 
     @transaction.atomic
-    def update(self, *, instance: TaskResourceAssigment, data: dict):
+    def update(
+        self, *, instance: TaskResourceAssigment, data: dict
+    ) -> TaskResourceAssigment:
         fields = [
             "task",
             "resource_group",
-            "resources",
+            "resource",
             "resource_count",
             "use_all_resources",
             "is_direct",
         ]
+        instance, _ = model_update(instance=instance, fields=fields, data=data)
+        return instance
 
-        task_resource_assignment, _ = model_update(
-            instance=instance, fields=fields, data=data
-        )
-        return task_resource_assignment
-
-    def delete(self, instance: TaskResourceAssigment):
+    @transaction.atomic
+    def delete(self, *, instance: TaskResourceAssigment) -> None:
         instance.delete()
 
 
-class AssigmentRuleService:
-    def __init__(self) -> None:
+# ------------------------------------------------------------------------------
+# Assigment Rule Services
+# ------------------------------------------------------------------------------
+
+
+class AssigmentRuleCriteriaService:
+    def __init__(self):
         pass
 
     @transaction.atomic
     def create(
         self,
         *,
-        name: str,
-        description: str = "",
-        resource_group: ResourceGroup,
-        work_center: WorkCenter,
-    ):
-        assignment_rule = AssigmentRule.objects.create(
-            name=name,
-            description=description,
-            resource_group=resource_group,
-            work_center=work_center,
-        )
-
-        assignment_rule.full_clean()
-        assignment_rule.save()
-
-        return assignment_rule
-
-    @transaction.atomic
-    def update(self, instance: AssigmentRule, data: dict):
-        fields = ["name", "description", "resource_group", "work_center"]
-        assignment_rule, _ = model_update(instance=instance, fields=fields, data=data)
-        return assignment_rule
-
-    def delete(self, instance: AssigmentRule):
-        instance.delete()
-
-
-class AssigmentRuleCriteriaService:
-    def __init__(self) -> None:
-        pass
-
-    @transaction.atomic
-    def create(
-        self,
         assigment_rule: AssigmentRule,
         field: str,
-        operator: Operator,
-        value: str = "",
-    ):
-        assignment_rule_criteria = AssigmentRuleCriteria.objects.create(
+        operator: str,
+        value: str,
+    ) -> AssigmentRuleCriteria:
+        instance = AssigmentRuleCriteria.objects.create(
             assigment_rule=assigment_rule,
             field=field,
             operator=operator,
             value=value,
         )
 
-        assigment_rule.full_clean()
-        assignment_rule_criteria.save()
+        instance.full_clean()
+        instance.save()
 
-        return assignment_rule_criteria
+        return instance
 
     @transaction.atomic
-    def update(self, instance: AssigmentRuleCriteria, data: dict):
-        fields = ["assigment_rule", "field", "operator", "value"]
-        assignment_rule_criteria, _ = model_update(
-            instance=instance, fields=fields, data=data
-        )
-        return assignment_rule_criteria
+    def update(
+        self, *, instance: AssigmentRuleCriteria, data: dict
+    ) -> AssigmentRuleCriteria:
+        fields = [
+            "field",
+            "operator",
+            "value",
+        ]
+        instance, _ = model_update(instance=instance, fields=fields, data=data)
+        return instance
 
-    def delete(self, instance: AssigmentRuleCriteria):
+    @transaction.atomic
+    def delete(self, *, instance: AssigmentRuleCriteria) -> None:
+        instance.delete()
+
+
+class AssigmentRuleService:
+    def __init__(self):
+        pass
+
+    def _validate_criteria_keys_throw_validation_eror(
+        self, criteria: list[dict]
+    ) -> bool:
+        keys = ["field", "operator", "value"]
+        # check if keys exist
+        for criteria_dict in criteria:
+            if not all(key in criteria_dict for key in keys):
+                missing_keys = [key for key in keys if key not in criteria_dict]
+                raise ValidationError(
+                    f"Assignment Rule Criteria missing following keys: {', '.join(missing_keys)}"
+                )
+
+    @transaction.atomic
+    def create(
+        self,
+        *,
+        name: str,
+        description: str,
+        resource_group: ResourceGroup,
+        work_center: WorkCenter,
+        criteria: list[dict],
+    ) -> AssigmentRule:
+        self._validate_criteria_keys_throw_validation_eror(criteria=criteria)
+
+        instance = AssigmentRule.objects.create(
+            name=name,
+            description=description,
+            resource_group=resource_group,
+            work_center=work_center,
+        )
+
+        instance.full_clean()
+        instance.save()
+
+        # Create criteria
+        for criteria_dict in criteria:
+            AssigmentRuleCriteriaService().create(
+                assigment_rule=instance,
+                field=criteria_dict["field"],
+                operator=criteria_dict["operator"],
+                value=criteria_dict["value"],
+            )
+
+        return instance
+
+    @transaction.atomic
+    def update(self, *, instance: AssigmentRule, data: dict) -> AssigmentRule:
+        # validate criteria keys
+        criteria = data.get("criteria")
+        self._validate_criteria_keys_throw_validation_eror(criteria=criteria)
+
+        fields = [
+            "name",
+            "description",
+            "resource_group",
+            "work_center",
+        ]
+        instance, _ = model_update(instance=instance, fields=fields, data=data)
+
+        # Create or update criteria
+        for criteria_dict in criteria:
+            criteria_id = criteria_dict.get("id")
+            criteria_instance = get_object(
+                model_or_queryset=AssigmentRuleCriteria, id=criteria_id
+            )
+            if criteria_instance:
+                AssigmentRuleCriteriaService().update(
+                    instance=criteria_instance,
+                    data=criteria_dict,
+                )
+            else:
+                AssigmentRuleCriteriaService().create(
+                    assigment_rule=instance,
+                    field=criteria_dict.get("field"),
+                    operator=criteria_dict.get("operator"),
+                    value=criteria_dict.get("value"),
+                )
+
+        return instance
+
+    @transaction.atomic
+    def delete(self, *, instance: AssigmentRule) -> None:
         instance.delete()
