@@ -1,3 +1,3 @@
-from .dependency import Dependency, DependencyType
-from .job import Job, JobType
-from .task import Task, TaskType, WorkCenter
+from .dependency import Dependency, DependencyType, DependencyStatusChoices
+from .job import Job, JobType, JobStatusChoices
+from .task import Task, TaskType, WorkCenter, TaskStatusChoices
