@@ -24,7 +24,7 @@ class TaskResourceAssigmentService:
         *,
         task: Task,
         resource_group: ResourceGroup,
-        resource: Resource = None,
+        resources: list[Resource] = None,
         resource_count: int = 1,
         use_all_resources: bool = False,
         is_direct: bool = True,
@@ -32,11 +32,13 @@ class TaskResourceAssigmentService:
         instance = TaskResourceAssigment.objects.create(
             task=task,
             resource_group=resource_group,
-            resource=resource,
             resource_count=resource_count,
             use_all_resources=use_all_resources,
             is_direct=is_direct,
         )
+
+        if resources:
+            instance.resources.set(resources)
 
         instance.full_clean()
         instance.save()
