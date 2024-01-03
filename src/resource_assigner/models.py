@@ -47,6 +47,7 @@ class AssigmentRule(BaseModel):
     description = models.TextField(blank=True)
     resource_group = models.ForeignKey(ResourceGroup, on_delete=models.DO_NOTHING)
     work_center = models.ForeignKey(WorkCenter, on_delete=models.DO_NOTHING)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = "assigment_rule"
@@ -62,7 +63,9 @@ class Operator(models.TextChoices):
 
 
 class AssigmentRuleCriteria(BaseModel):
-    assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.DO_NOTHING)
+    assigment_rule = models.ForeignKey(
+        AssigmentRule, on_delete=models.CASCADE, related_name="criteria"
+    )
     field = models.CharField(max_length=100)
     operator = models.CharField(
         max_length=20, choices=Operator.choices, default=Operator.EQUALS
