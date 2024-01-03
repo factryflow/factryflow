@@ -9,6 +9,9 @@ from django.core.exceptions import (
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from ninja.security import APIKeyHeader
+
+# import and register routers
+from resource_assigner.api import resource_assigner_router
 from resource_manager.api import resource_manager_router
 from job_manager.api import job_manager_router
 
@@ -27,8 +30,10 @@ api = NinjaAPI(auth=header_key)
 
 api.add_router("", resource_manager_router)
 
-# TODO add remaining routers
 api.add_router("", job_manager_router)
+
+api.add_router("", resource_assigner_router)
+
 
 @api.exception_handler(ObjectDoesNotExist)
 def handle_object_does_not_exist(request, exc):
