@@ -14,8 +14,8 @@ class TaskResourceAssigment(BaseModel):
         Resource, related_name="task_resource_assigments", blank=True, null=True
     )
     resource_count = models.IntegerField(blank=True, null=True)
-    use_all_resources = models.BooleanField()
-    is_direct = models.BooleanField()
+    use_all_resources = models.BooleanField(default=False)
+    is_direct = models.BooleanField(default=True)
 
     class Meta:
         db_table = "task_resource_assigment"

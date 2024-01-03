@@ -8,7 +8,7 @@ from resource_assigner.models import (
 )
 
 from .job_manager_factories import TaskFactory, WorkCenterFactory
-from .resource_manager_factories import ResourceGroupFactory
+from .resource_manager_factories import ResourceFactory, ResourceGroupFactory
 
 
 class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
@@ -17,21 +17,14 @@ class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
 
     task = factory.SubFactory(TaskFactory)
     resource_group = factory.SubFactory(ResourceGroupFactory)
-    # resources = factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
     resource_count = None
     use_all_resources = False
-    is_direct = False
+    is_direct = True
 
-    @factory.post_generation
-    def resources(self, create, extracted, **kwargs):
-        if not create:
-            # If not creating TaskResourceAssigment instance, do nothing
-            return
-
-        if extracted:
-            # If resources were provided, add them to the many-to-many relationship
-            for resource in extracted:
-                self.resources.set(resource)
+    class Params:
+        with_resources = factory.Trait(
+            resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
+        )
 
 
 class AssigmentRuleFactory(factory.django.DjangoModelFactory):
