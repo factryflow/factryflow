@@ -48,3 +48,5 @@ jobs:
           source ../venv/bin/activate
           pytest
         working-directory: src
+        env:
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
