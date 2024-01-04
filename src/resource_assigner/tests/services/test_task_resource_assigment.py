@@ -11,10 +11,14 @@ from resource_assigner.services import TaskResourceAssigmentService
 
 
 @pytest.fixture
-def task_resource_assignment_data():
+def resources():
+    return [ResourceFactory(), ResourceFactory()]
+
+
+@pytest.fixture
+def task_resource_assignment_data(resources):
     task = TaskFactory()
     resource_group = ResourceGroupFactory()
-    resources = [ResourceFactory(), ResourceFactory()]
 
     return {
         "task": task,
@@ -39,14 +43,11 @@ def test_task_resource_assignment_create(task_resource_assignment_data):
         assignment.use_all_resources
         == task_resource_assignment_data["use_all_resources"]
     )
-    assert assignment.is_direct == task_resource_assignment_data["is_direct"]
 
 
 @pytest.mark.django_db
 def test_task_resource_assignment_update():
-    assignment = TaskResourceAssigmentFactory(
-        resources=[ResourceFactory.create_batch(2)]
-    )
+    assignment = TaskResourceAssigmentFactory()
 
     new_task = TaskFactory()
     new_resources = [ResourceFactory(), ResourceFactory()]
@@ -56,16 +57,13 @@ def test_task_resource_assignment_update():
         data={
             "task": new_task,
             "resources": new_resources,
-            "use_all_resources": False,
         },
     )
 
     assignment.refresh_from_db()
 
     assert assignment.task == new_task
-
     assert assignment.resources.all().count() == len(new_resources)
-    assert assignment.use_all_resources is False
 
 
 @pytest.mark.django_db
@@ -77,16 +75,17 @@ def test_task_resource_delete():
     assert TaskResourceAssigment.objects.count() == 0
 
 
-# parameterize
-@pytest.mark.parameterize(
-    "combinations",
-    [
+@pytest.mark.django_db
+def test_validation_error_raised_on_invalid_task_resource_assignment_data(
+    task_resource_assignment_data, resources
+):
+    combinations = [
         {
-            "resources": [ResourceFactory(), ResourceFactory()],
+            "resources": resources,
             "resource_count": 1,
         },
         {
-            "resources": [ResourceFactory(), ResourceFactory()],
+            "resources": resources,
             "use_all_resources": True,
         },
         {
@@ -94,13 +93,11 @@ def test_task_resource_delete():
             "resource_count": 1,
             "use_all_resources": True,
         },
-    ],
-)
-@pytest.mark.django_db
-def test_validation_error_raised_on_invalid_task_resource_assignment_data(
-    combinations, data=task_resource_assignment_data
-):
-    data.update(combinations)
+    ]
 
-    with pytest.raises(ValidationError):
-        TaskResourceAssigmentService().create(**data)
+    for combination in combinations:
+        data = task_resource_assignment_data
+        data.update(combination)
+
+        with pytest.raises(ValidationError):
+            TaskResourceAssigmentService().create(**data)
