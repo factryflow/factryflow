@@ -25,7 +25,7 @@ class TaskResourceAssigmentService:
         task: Task,
         resource_group: ResourceGroup,
         resources: list[Resource] = None,
-        resource_count: int = 1,
+        resource_count: int = None,
         use_all_resources: bool = False,
         is_direct: bool = True,
     ) -> TaskResourceAssigment:
@@ -52,7 +52,7 @@ class TaskResourceAssigmentService:
         fields = [
             "task",
             "resource_group",
-            "resource",
+            "resources",
             "resource_count",
             "use_all_resources",
             "is_direct",
