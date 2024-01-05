@@ -1,11 +1,12 @@
 import pytest
+from django.conf import settings
 from django.core.management import call_command
 from django.test import Client
 
 
 @pytest.fixture()
 def api_client():
-    headers = {"X-API-Key": "supersecret"}
+    headers = {"X-API-Key": settings.API_KEY}
     client = Client(headers=headers)
     return client
 

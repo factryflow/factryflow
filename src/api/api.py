@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from django.conf import settings
 from django.core.exceptions import (
     FieldError,
     ObjectDoesNotExist,
@@ -22,8 +23,7 @@ class ApiKey(APIKeyHeader):
     param_name = "X-API-Key"
 
     def authenticate(self, request, key):
-        # TODO add api key to env file
-        if key == "supersecret":
+        if key == settings.API_KEY:
             return key
 
 
