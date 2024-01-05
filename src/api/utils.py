@@ -28,6 +28,7 @@ class CRUDModelViewSet:
             self.path,
             response={HTTPStatus.CREATED: self.output_schema},
             summary=f"Create {self.name}",
+            operation_id=f"{self.name}_create",
         )
         def create(request: HttpRequest, payload: self.input_schema):
             data = self._process_foreign_keys(payload_data=payload.model_dump())
@@ -39,6 +40,7 @@ class CRUDModelViewSet:
             self.path,
             response={HTTPStatus.OK: List[self.output_schema]},
             summary=f"List {self.name_plural}",
+            operation_id=f"{self.name}_list",
         )
         def list(request: HttpRequest):
             instances = self.model.objects.all()
@@ -49,6 +51,7 @@ class CRUDModelViewSet:
             self.path + "/{id}",
             response={HTTPStatus.OK: self.output_schema},
             summary=f"Retrieve {self.name}",
+            operation_id=f"{self.name}_retrieve",
         )
         def get(request: HttpRequest, id: int):
             instance = self._get_instance(id=id)
@@ -59,6 +62,7 @@ class CRUDModelViewSet:
             self.path + "/{id}",
             response={HTTPStatus.OK: self.output_schema},
             summary=f"Update {self.name}",
+            operation_id=f"{self.name}_update",
         )
         def update(request: HttpRequest, id: int, payload: self.input_schema):
             instance = self._get_instance(id=id)
@@ -71,6 +75,7 @@ class CRUDModelViewSet:
             self.path + "/{id}",
             response={HTTPStatus.NO_CONTENT: None},
             summary=f"Delete {self.name}",
+            operation_id=f"{self.name}_delete",
         )
         def delete(request: HttpRequest, id: int):
             instance = self._get_instance(id=id)

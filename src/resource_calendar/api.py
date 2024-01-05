@@ -40,19 +40,6 @@ weekly_shift_template_router = weekly_shift_template_viewset.router
 resource_calendar_router.add_router("", weekly_shift_template_router)
 
 
-weekly_shift_template_detail_viewset = CRUDModelViewSet(
-    model=WeeklyShiftTemplateDetail,
-    path="/weekly-shift-template-details",
-    service=WeeklyShiftTemplateDetailService,
-    input_schema=WeeklyShiftTemplateDetailIn,
-    output_schema=WeeklyShiftTemplateDetailOut,
-    tags=["Weekly Shift Template Details"],
-)
-
-weekly_shift_template_detail_router = weekly_shift_template_detail_viewset.router
-resource_calendar_router.add_router("", weekly_shift_template_detail_router)
-
-
 operational_exception_type_viewset = CRUDModelViewSet(
     model=OperationalExceptionType,
     path="/operational-exception-types",
