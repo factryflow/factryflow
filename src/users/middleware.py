@@ -11,6 +11,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
             reverse("account_signup"),
             reverse("account_reset_password"),
             reverse("account_reset_password_done"),
+            reverse("api"),
         ]
 
         # Skip middleware for exempt paths

@@ -35,5 +35,5 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("", include("users.urls")),
     path("", include("job_manager.urls")),
-    path("api/", api.urls),
+    path("api/", api.urls, name="api"),
 ]
