@@ -1,28 +1,13 @@
-from typing import Type
-
-from django.core.exceptions import ValidationError
-from django.db.models import Model
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 
-def build_or_retrieve_instance(
-    model: Type[Model], data: dict, allowed_fields: list = None
-) -> (Model, str):
+def get_object(model_or_queryset, **kwargs):
     """
-    Create or update a Django model instance based on the provided data.
+    Reuse get_object_or_404 since the implementation supports both Model && queryset.
+    Catch Http404 & return None
     """
-
-    if allowed_fields is not None:
-        data = {k: v for k, v in data.items() if k in allowed_fields}
-
-    model_id = data.pop("id", None)
-    action = "update" if model_id else "create"
-    if action == "update":
-        instance = model.objects.filter(id=model_id).first()
-        if not instance:
-            raise ValidationError(f"{model.__name__} with given id does not exist.")
-        for key, value in data.items():
-            setattr(instance, key, value)
-    else:
-        instance = model(**data)
-
-    return (instance, action)
+    try:
+        return get_object_or_404(model_or_queryset, **kwargs)
+    except Http404:
+        return None

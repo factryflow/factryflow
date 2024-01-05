@@ -3,18 +3,14 @@ from ninja import Router
 
 from resource_assigner.models import (
     AssigmentRule,
-    AssigmentRuleCriteria,
     TaskResourceAssigment,
 )
 from resource_assigner.services import (
-    AssigmentRuleCriteriaService,
     AssigmentRuleService,
     TaskResourceAssigmentService,
 )
 
 from .schemas import (
-    AssigmentRuleCriteriaIn,
-    AssigmentRuleCriteriaOut,
     AssigmentRuleIn,
     AssigmentRuleOut,
     TaskResourceAssigmentIn,
@@ -47,16 +43,3 @@ assigment_rule_viewset = CRUDModelViewSet(
 
 assigment_rule_router = assigment_rule_viewset.router
 resource_assigner_router.add_router("", assigment_rule_router)
-
-
-assigment_rule_criteria_viewset = CRUDModelViewSet(
-    model=AssigmentRuleCriteria,
-    path="/assigment-rules-criteria",
-    service=AssigmentRuleCriteriaService,
-    input_schema=AssigmentRuleCriteriaIn,
-    output_schema=AssigmentRuleCriteriaOut,
-    tags=["Assigment Rules Criteria"],
-)
-
-assigment_rule_criteria_router = assigment_rule_criteria_viewset.router
-resource_assigner_router.add_router("", assigment_rule_criteria_router)

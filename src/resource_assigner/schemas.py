@@ -30,30 +30,36 @@ class TaskResourceAssigmentOut(ModelSchema):
         exclude = ["resources"]
 
 
-class AssigmentRuleIn(ModelSchema):
-    class Meta:
-        model = AssigmentRule
-        fields = ["name", "description", "resource_group", "work_center"]
-
-
-class AssigmentRuleOut(ModelSchema):
-    class Meta:
-        model = AssigmentRule
-        fields = "__all__"
-
-
 class AssigmentRuleCriteriaIn(ModelSchema):
+    id: int = Field(None)
     operator: Operator = Field(None, alias="operator")
 
     class Meta:
         model = AssigmentRuleCriteria
-        fields = ["field", "value", "assigment_rule"]
+        fields = ["field", "value"]
 
 
 class AssigmentRuleCriteriaOut(ModelSchema):
-    operator: Operator = Field(None, alias="operator")
-
     class Meta:
         model = AssigmentRuleCriteria
         fields = "__all__"
-        exclude = ["operator"]
+
+
+class AssigmentRuleIn(ModelSchema):
+    resource_group_id: int
+    work_center_id: int
+    criteria: list[AssigmentRuleCriteriaIn] = Field(None)
+
+    class Meta:
+        model = AssigmentRule
+        fields = ["name", "description"]
+
+
+class AssigmentRuleOut(ModelSchema):
+    resource_group_id: int
+    work_center_id: int
+    criteria: list[AssigmentRuleCriteriaOut] = Field([])
+
+    class Meta:
+        model = AssigmentRule
+        exclude = ["resource_group", "work_center"]
