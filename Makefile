@@ -10,3 +10,6 @@ migrations:
 
 test:
 	@cd src && pytest -W ignore
+
+superuser:
+	python src/manage.py makesuperuser
