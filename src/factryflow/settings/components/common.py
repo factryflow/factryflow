@@ -18,8 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -75,16 +74,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
-
-# CUSTOM AUTH MIDDLEWARE SETTINGS
-AUTH_MIDDEWARE = [
-    "users.middleware.LoginRequiredMiddleware",
-]
-
-DISABLE_AUTH = os.getenv("DISABLE_AUTH")
-
-if not (DEBUG == "TRUE" and DISABLE_AUTH == "TRUE"):
-    MIDDLEWARE += AUTH_MIDDEWARE
 
 
 ROOT_URLCONF = "factryflow.urls"
@@ -179,9 +168,9 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 LOGIN_REDIRECT_URL = "/"
 
 
-# SUPERUSER CREDENTIALS 
-SUPERUSER_USERNAME = os.getenv('SUPERUSER_USERNAME')
-SUPERUSER_PASSWORD = os.getenv('SUPERUSER_PASSWORD')
+# SUPERUSER CREDENTIALS
+SUPERUSER_USERNAME = os.getenv("SUPERUSER_USERNAME")
+SUPERUSER_PASSWORD = os.getenv("SUPERUSER_PASSWORD")
 
 
 # Settings for Email Backend with SMTP
@@ -190,11 +179,10 @@ ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_EMAIL_VERIFICATION = None
 
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-

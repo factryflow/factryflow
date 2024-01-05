@@ -1,7 +1,9 @@
 from api.api import api
+from django.conf import settings
 from django.contrib import admin
 from django.shortcuts import render
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 
 def home(request):
@@ -28,6 +30,9 @@ def chart(request):
     return render(request, "base/chart/main.html")
 
 
+if settings.DEBUG:
+    import debug_toolbar
+
 urlpatterns = [
     path("", home, name="home"),
     path("chart/", chart, name="chart"),
@@ -36,4 +41,8 @@ urlpatterns = [
     path("", include("users.urls")),
     path("", include("job_manager.urls")),
     path("api/", api.urls),
+    path("", TemplateView.as_view(template_name="index.html")),
 ]
+
+if settings.DEBUG == "TRUE":
+    urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
