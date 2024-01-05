@@ -11,7 +11,7 @@ class TaskResourceAssigment(BaseModel):
     task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
     resource_group = models.ForeignKey(ResourceGroup, on_delete=models.DO_NOTHING)
     resources = models.ManyToManyField(
-        Resource, related_name="task_resource_assigments", blank=True, null=True
+        Resource, related_name="task_resource_assigments"
     )
     resource_count = models.IntegerField(blank=True, null=True)
     use_all_resources = models.BooleanField(default=False)

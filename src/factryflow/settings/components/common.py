@@ -18,8 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -50,16 +49,13 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     # extensions
     "django_htmx",
-    "django_extensions",
     "template_partials",
     "simple_history",
     "ordered_model",
-    "taggit",
     # apps
     "users",
     "common",
     "job_manager",
-    "operator_view",
     "resource_manager",
     "resource_calendar",
     "resource_assigner",
@@ -78,16 +74,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
-
-# CUSTOM AUTH MIDDLEWARE SETTINGS
-AUTH_MIDDEWARE = [
-    "users.middleware.LoginRequiredMiddleware",
-]
-
-DISABLE_AUTH = os.getenv("DISABLE_AUTH")
-
-if not (DEBUG == "TRUE" and DISABLE_AUTH == "TRUE"):
-    MIDDLEWARE += AUTH_MIDDEWARE
 
 
 ROOT_URLCONF = "factryflow.urls"
@@ -200,13 +186,3 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
-# API
-
-API_KEY = os.getenv("API_KEY")
-
-# IMAGE / FILE UPLOADS
-MEDIA_ROOT = BASE_DIR / "static/media"
-
-# TAGGIT SETTINGS
-TAGGIT_CASE_INSENSITIVE = True
