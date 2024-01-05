@@ -9,4 +9,7 @@ migrations:
 	python src/manage.py makemigrations
 
 test:
-	@cd src && pytest
+	@cd src && pytest -W ignore
+
+superuser:
+	python src/manage.py makesuperuser

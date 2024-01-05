@@ -1,0 +1,22 @@
+[
+	{
+		"model" : "resource_manager.resourcegroup",
+		"fields": {
+			"id": 1,
+            "name": "All Resources",
+            "external_id": "",
+			"created_at": "2024-01-01T00:00:00Z",
+			"updated_at": "2024-01-01T00:00:00Z"
+        }
+	},
+	{
+		"model": "job_manager.workcenter",
+		"fields": {
+			"id": 1,
+			"name": "Default",
+			"notes": "",
+			"created_at": "2024-01-01T00:00:00Z",
+			"updated_at": "2024-01-01T00:00:00Z"
+		}
+	}
+]
