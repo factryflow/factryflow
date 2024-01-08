@@ -50,13 +50,16 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     # extensions
     "django_htmx",
+    "django_extensions",
     "template_partials",
     "simple_history",
     "ordered_model",
+    "taggit",
     # apps
     "users",
     "common",
     "job_manager",
+    "operator_view",
     "resource_manager",
     "resource_calendar",
     "resource_assigner",
@@ -201,3 +204,9 @@ EMAIL_USE_SSL = False
 # API
 
 API_KEY = os.getenv("API_KEY")
+
+# IMAGE / FILE UPLOADS
+MEDIA_ROOT = BASE_DIR / "static/media"
+
+# TAGGIT SETTINGS
+TAGGIT_CASE_INSENSITIVE = True
