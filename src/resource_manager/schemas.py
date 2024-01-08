@@ -21,6 +21,7 @@ class ResourceGroupOut(ModelSchema):
 
 class ResourceIn(ModelSchema):
     resource_groups: list[int] = Field(None, alias="resource_group_ids")
+    users: list[int] = Field(None, alias="user_ids")
 
     class Meta:
         model = Resource
@@ -29,7 +30,8 @@ class ResourceIn(ModelSchema):
 
 class ResourceOut(ModelSchema):
     resource_group_ids: list[int] = Field([], alias="resource_group_id_list")
+    user_ids: list[int] = Field([], alias="user_id_list")
 
     class Meta:
         model = Resource
-        exclude = ["resource_groups"]
+        exclude = ["resource_groups", "users"]
