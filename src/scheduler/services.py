@@ -3,6 +3,8 @@ from datetime import datetime, time
 
 import numpy as np
 from factryengine import Resource as SchedulerResource
+from factryengine import Task as SchedulerTask
+from job_manager.models import Task
 from resource_calendar.models import WeeklyShiftTemplate
 from resource_manager.models import Resource
 
@@ -21,7 +23,25 @@ class SchedulingService:
         )
 
     def run(self):
-        # create resources
+        scheduler_resources = self._create_scheduler_resource_objects()
+        # get tasks filter where job is not null
+        scheduler_tasks = self._create_scheduler_task_objects()
+
+    def _create_scheduler_task_objects(self):
+        tasks = Task.objects.filter(job__isnull=False)
+        scheduler_tasks = []
+        for task in tasks:
+            task_assigments = task.assigments.first()
+            scheduler_task = SchedulerTask(
+                id=task.id,
+                duration=task.duration,
+                priority=task.job.priority,
+                quantity=1,
+            )
+            scheduler_tasks.append(scheduler_task)
+        return scheduler_tasks
+
+    def _create_scheduler_resource_objects(self):
         resources = Resource.objects.all()
         scheduler_resources = []
         for resource in resources:
@@ -32,8 +52,6 @@ class SchedulingService:
                 id=resource.id, available_windows=available_windows
             )
             scheduler_resources.append(scheduler_resource)
-        # create tasks
-        pass
 
     def _get_weekly_shift_template_windows_dict(self) -> dict:
         weekly_shift_templates = WeeklyShiftTemplate.objects.all()
