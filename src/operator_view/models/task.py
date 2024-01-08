@@ -29,12 +29,10 @@ class OperatorViewTask(Task):
     issue = models.ForeignKey(
         Issue, on_delete=models.DO_NOTHING, related_name="issues", blank=True, null=True
     )
-    assigned_resource = models.ForeignKey(
+    assigned_resource = models.ManyToManyField(
         Resource,
-        on_delete=models.DO_NOTHING,
         related_name="assigned_resources",
         blank=True,
-        null=True,
     )
 
     objects = models.Manager()  # The default manager
@@ -44,4 +42,5 @@ class OperatorViewTask(Task):
         db_table = "operator_view_task"
 
     def update_issue_status(self, new_status):
+        # TODO: Implementing "update" action for tags
         pass
