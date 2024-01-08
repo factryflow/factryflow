@@ -35,10 +35,10 @@ class Task(BaseModel):
     id = models.AutoField(primary_key=True)
     external_id = models.CharField(max_length=150, blank=True)
     name = models.CharField(max_length=150)
-    setup_time = models.IntegerField()
-    run_time_per_unit = models.IntegerField()
-    teardown_time = models.IntegerField()
-    quantity = models.IntegerField()
+    setup_time = models.PositiveIntegerField()
+    run_time_per_unit = models.PositiveIntegerField()
+    teardown_time = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
     planned_end_datetime = models.DateTimeField(blank=True, null=True)
     item = models.CharField(max_length=250, blank=True, null=True)
@@ -68,3 +68,11 @@ class Task(BaseModel):
 
     class Meta:
         db_table = "task"
+
+    @property
+    def duration(self):
+        return (
+            self.setup_time
+            + (self.run_time_per_unit * self.quantity)
+            + self.teardown_time
+        )
