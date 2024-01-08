@@ -11,6 +11,7 @@ class Issue(admin.ModelAdmin):
         "name",
         "description",
         "issuer",
+        "tag_list",
         "thumbnail",
         "created_at",
         "created_by",
@@ -18,13 +19,19 @@ class Issue(admin.ModelAdmin):
     list_filter = ("issuer", "created_at", "created_by")
     search_fields = ["name"]
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("tags")
+
+    def tag_list(self, obj):
+        return ", ".join([t.name for t in obj.tags.all()])
+
 
 @admin.register(OperatorViewTask)
 class OperatorViewTask(admin.ModelAdmin):
     list_display = [
         "name",
         "item",
-        "assigned_resource",
+        "assigned_resources",
         "planned_start_datetime",
         "thumbnail_url",
         "created_at",
@@ -32,6 +39,12 @@ class OperatorViewTask(admin.ModelAdmin):
     ]
     list_filter = ("created_at", "created_by")
     search_fields = ["name"]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("assigned_resources")
+
+    def assigned_resources(self, obj):
+        return ", ".join([p for p in obj.assigned_resources.all()])
 
 
 @admin.register(OperatorViewException)
