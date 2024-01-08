@@ -189,4 +189,4 @@ EMAIL_USE_SSL = False
 
 
 # API KEY
-API_KEY = os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY")  
