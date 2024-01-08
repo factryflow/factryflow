@@ -2,7 +2,9 @@
 from datetime import datetime, time
 
 import numpy as np
+from factryengine import Resource as SchedulerResource
 from resource_calendar.models import WeeklyShiftTemplate
+from resource_manager.models import Resource
 
 from .constants import DAY_IN_MINUTES, WEEK_IN_MINUTES
 
@@ -17,6 +19,21 @@ class SchedulingService:
         self.weekly_shift_templates_windows_dict = (
             self._get_weekly_shift_template_windows_dict()
         )
+
+    def run(self):
+        # create resources
+        resources = Resource.objects.all()
+        scheduler_resources = []
+        for resource in resources:
+            available_windows = self.weekly_shift_templates_windows_dict.get(
+                resource.weekly_shift_template_id, []
+            )
+            scheduler_resource = SchedulerResource(
+                id=resource.id, available_windows=available_windows
+            )
+            scheduler_resources.append(scheduler_resource)
+        # create tasks
+        pass
 
     def _get_weekly_shift_template_windows_dict(self) -> dict:
         weekly_shift_templates = WeeklyShiftTemplate.objects.all()
