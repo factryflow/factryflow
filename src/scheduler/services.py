@@ -3,6 +3,7 @@ from datetime import datetime, time
 
 import numpy as np
 from factryengine import Resource as SchedulerResource
+from factryengine import Scheduler
 from factryengine import Task as SchedulerTask
 from job_manager.models import Task
 from resource_calendar.models import WeeklyShiftTemplate
@@ -23,27 +24,61 @@ class SchedulingService:
         )
 
     def run(self):
-        scheduler_resources = self._create_scheduler_resource_objects()
+        scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
         # get tasks filter where job is not null
-        scheduler_tasks = self._create_scheduler_task_objects()
+        scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict)
 
-    def _create_scheduler_task_objects(self):
+        scheduler = Scheduler(scheduler_tasks)
+
+    def _create_scheduler_task_objects(self, resources_dict: dict):
         tasks = Task.objects.filter(job__isnull=False)
         scheduler_tasks = []
         for task in tasks:
-            task_assigments = task.assigments.first()
+            resource_ids, resource_count = self._get_task_assigned_resource_ids(task)
+            resources = [resources_dict[resource_id] for resource_id in resource_ids]
+            predecessor_ids = [
+                predecessor.id for predecessor in task.predecessors.all()
+            ]
             scheduler_task = SchedulerTask(
                 id=task.id,
                 duration=task.duration,
                 priority=task.job.priority,
                 quantity=1,
+                resources=resources,
+                resource_count=resource_count,
+                predecessor_ids=predecessor_ids,
             )
             scheduler_tasks.append(scheduler_task)
         return scheduler_tasks
 
-    def _create_scheduler_resource_objects(self):
+    def _get_task_assigned_resource_ids(self, task):
+        assignment = task.assignments.first()
+        resources = []
+        resource_count = None
+        # if specific resources are selected
+        if assignment.resources.count() > 0:
+            resources = assignment.resources.all()
+            resource_count = len(resources)
+        # if all resources in a group are selected
+        elif assignment.use_all_resources == True:
+            resources = Resource.objects.filter(
+                resource_group=assignment.resource_group
+            )
+            resource_count = len(resources)
+        # if a specific number of resources from a group are selected
+        elif assignment.resource_count > 0:
+            resources = Resource.objects.filter(
+                resource_group=assignment.resource_group
+            )
+            resource_count = assignment.resource_count
+
+        resource_ids = [resource.id for resource in resources]
+
+        return (resource_ids, resource_count)
+
+    def _create_scheduler_resource_objects_dict(self):
         resources = Resource.objects.all()
-        scheduler_resources = []
+        scheduler_resources = {}
         for resource in resources:
             available_windows = self.weekly_shift_templates_windows_dict.get(
                 resource.weekly_shift_template_id, []
@@ -51,7 +86,7 @@ class SchedulingService:
             scheduler_resource = SchedulerResource(
                 id=resource.id, available_windows=available_windows
             )
-            scheduler_resources.append(scheduler_resource)
+            scheduler_resources[resource.id] = scheduler_resource
 
     def _get_weekly_shift_template_windows_dict(self) -> dict:
         weekly_shift_templates = WeeklyShiftTemplate.objects.all()
