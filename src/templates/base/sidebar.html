@@ -5,7 +5,7 @@
 
 {% partialdef _menu_item %}
 <li>
-  <a href="#" hx-get="{{ menu_item_url }}" hx-target="body" hx-push-url="true"
+  <a href="{{ menu_item_url }}" hx-get="{{ menu_item_url }}" hx-target="body" hx-push-url="true" 
     class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center" x-data="{isHovered:false}"
     x-on:mouseover="isHovered = true" x-on:mouseleave="isHovered = false"
     @click="$store.sidebar.active = '{{menu_item_id}}'"
@@ -66,7 +66,7 @@
     <ul class="space-y-5 font-semibold">
 
       {% comment %} dashboard menu {% endcomment %}
-      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_item_url='job' %}
+      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_item_url='#' %}
       {% partial _menu_item %}
       {% endwith %}
 
@@ -127,17 +127,17 @@
       </div>
 
       {% comment %} setti ng menu {% endcomment %}
-      {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='job' %}
+      {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='/settings'%}
       {% partial _menu_item %}
       {% endwith %}
 
       {% comment %} Help and Support manu {% endcomment %}
-      {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='job' %}
+      {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
       {% partial _menu_item %}
       {% endwith %}
 
       {% comment %} Logout {% endcomment %}
-      {% with menu_item_id='logout' menu_item_icon='images/Dashboard.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %}
+      {% with menu_item_id='logout' menu_item_icon='images/Dashboard.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %} 
       {% partial _menu_item %}
       {% endwith %}
 
