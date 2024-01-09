@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("resource_manager", "0003_resourceuserrel_resource_users"),
+        ("resource_manager", "0002_historicalresource_external_id_and_more"),
         (
             "resource_assigner",
             "0004_alter_assigmentrulecriteria_assigment_rule_and_more",
