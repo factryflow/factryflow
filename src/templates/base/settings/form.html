@@ -1,0 +1,80 @@
+{% extends 'base/main.html' %}
+
+{% block title %}
+  Settings
+{% endblock title %}
+
+{% block content %}
+  {% load static %}
+
+  <style>
+    /* Add this style in your existing CSS file or in a <style> tag in the HTML document */
+        .input_date[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+  </style>
+  <div class="flex-wrap">
+    <nav class="flex pb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+        <li class="inline-flex items-center">
+          <a href="/"
+             class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+            <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+          </a>  
+        </li>
+        <li>
+          <div class="flex items-center">
+            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+            <a href="/settings" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Settings</a>
+          </div>
+        </li>
+      </ol>
+    </nav>
+    <div>
+      <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Settings</h1>
+    </div>
+  </div>
+  <div class=" h-[600px] w-full border-2 border-solid border-[#e1e3ea80] bg-white rounded-xl">
+    <div class="flex flex-col items-center">
+        <div class="w-full pb-8 px-8 py-8 border-b border-b-[#e1e3ea80]">
+            <div class="flex justify-between items-center relative">
+                <label  class="text-[#3F4254] text-lg font-semibold">Planning Start</label>
+                <div class="relative">
+                    <input type="date" id="date-icon" class="bg-[#F1F1F2] border border-[#E1E3EA] py-2.5 px-5 rounded-xl text-[#7E8299] text-md font-semibold input_date" style="background-image: url('{% static 'images/dateIcongrey.svg' %}'); background-repeat: no-repeat; background-position:calc(100% - 20px) center; background-size: 24px;">
+                </div>
+            </div>
+        </div>
+        
+       
+        <div class="w-full pb-8 px-8 py-8 border-b border-b-[#e1e3ea80]">
+            <div class="flex justify-between items-center relative">
+                <label  class="text-[#3F4254] text-lg font-semibold">Planning Horizon Weeks</label>
+                <select   class="w-48 bg-[#F1F1F2] border border-[#E1E3EA] py-3 px-5 rounded-xl text-[#7E8299] text-md font-semibold appearance-none" style="background-image: url('{% static 'images/downGreyArraow.svg' %}'); background-repeat: no-repeat; background-position:  calc(100% - 20px) center; background-size: 20px;">
+                    <option value="">2 Weeks</option>
+                    <option value="">4 weeks</option>
+                    <option value="">6 weeks</option>
+                </select>
+            </div>
+        </div>
+        
+      
+        <div class="w-full pb-8 px-8 py-8  border-b border-b-[#e1e3ea80]">
+            <div class="flex justify-between items-center">
+                <label  class="text-[#3F4254] text-lg font-semibold">Timezone</label>
+                <select  class="w-48 bg-[#F1F1F2] border border-[#E1E3EA] py-3 px-5 rounded-xl text-[#7E8299] text-md font-semibold appearance-none" style="background-image: url('{% static 'images/downGreyArraow.svg' %}'); background-repeat: no-repeat; background-position:  calc(100% - 20px) center; background-size: 20px;">
+                    <option value="">1</option>
+                    <option value="">2</option>
+                    <option value="">3</option>
+                </select>
+            </div> 
+        </div>
+
+       
+    </div>
+  </div> 
+
+{% endblock %}
