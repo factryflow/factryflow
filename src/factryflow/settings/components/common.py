@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "resource_calendar",
     "resource_assigner",
     "api",
+    "rolepermissions",
 ]
 
 MIDDLEWARE = [
@@ -189,4 +190,10 @@ EMAIL_USE_SSL = False
 
 
 # API KEY
-API_KEY = os.getenv("API_KEY")  
+API_KEY = os.getenv("API_KEY")
+
+# settings related to rolepermissions
+ROLEPERMISSIONS_MODULE = 'users.roles'
+
+ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
+ROLEPERMISSIONS_REGISTER_ADMIN = True
