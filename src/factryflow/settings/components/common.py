@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     "users",
     "common",
     "job_manager",
-    "operator_view",
+    "issue",
     "resource_manager",
     "resource_calendar",
     "resource_assigner",
