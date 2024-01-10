@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Issue
+from .models import Comment, Issue
 
 
 @admin.register(Issue)
@@ -22,3 +22,15 @@ class Issue(admin.ModelAdmin):
 
     def tag_list(self, obj):
         return ", ".join([o.name for o in obj.tags.all()])
+
+
+@admin.register(Comment)
+class Comment(admin.ModelAdmin):
+    list_display = [
+        "body",
+        "active",
+        "created_at",
+        "created_by",
+    ]
+    list_filter = ("created_at", "created_by")
+    search_fields = ["name"]
