@@ -37,4 +37,14 @@ class IssueForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ["created_at", "body"]
+        fields = ["body"]
+        labels = {
+            "body": "Body",
+        }
+        widgets = {
+            "body": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
+        }
