@@ -15,7 +15,7 @@ class Issue(admin.ModelAdmin):
         "created_by",
     ]
     list_filter = ("created_at", "created_by")
-    search_fields = ["name"]
+    search_fields = ["title"]
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("tags")
@@ -33,4 +33,4 @@ class Comment(admin.ModelAdmin):
         "created_by",
     ]
     list_filter = ("created_at", "created_by")
-    search_fields = ["name"]
+    search_fields = ["created_by"]
