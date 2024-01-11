@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import Http404
 
+from .permission_checker import has_permission_decorator
+
 
 class CRUDModelViewSet:
     def __init__(
@@ -30,6 +32,7 @@ class CRUDModelViewSet:
             summary=f"Create {self.name}",
             operation_id=f"{self.name}_create",
         )
+        @has_permission_decorator(operation_id=f"{self.name}_create")
         def create(request: HttpRequest, payload: self.input_schema):
             data = self._process_foreign_keys(payload_data=payload.model_dump())
             instance = self.service().create(**data)
@@ -42,6 +45,7 @@ class CRUDModelViewSet:
             summary=f"List {self.name_plural}",
             operation_id=f"{self.name}_list",
         )
+        @has_permission_decorator(operation_id=f"{self.name}_view")
         def list(request: HttpRequest):
             instances = self.model.objects.all()
             return instances
@@ -53,6 +57,7 @@ class CRUDModelViewSet:
             summary=f"Retrieve {self.name}",
             operation_id=f"{self.name}_retrieve",
         )
+        @has_permission_decorator(operation_id=f"{self.name}_view")
         def get(request: HttpRequest, id: int):
             instance = self._get_instance(id=id)
             return instance
@@ -64,6 +69,7 @@ class CRUDModelViewSet:
             summary=f"Update {self.name}",
             operation_id=f"{self.name}_update",
         )
+        @has_permission_decorator(operation_id=f"{self.name}_update")
         def update(request: HttpRequest, id: int, payload: self.input_schema):
             instance = self._get_instance(id=id)
             data = self._process_foreign_keys(payload_data=payload.model_dump())
@@ -77,6 +83,7 @@ class CRUDModelViewSet:
             summary=f"Delete {self.name}",
             operation_id=f"{self.name}_delete",
         )
+        @has_permission_decorator(operation_id=f"{self.name}_delete")
         def delete(request: HttpRequest, id: int):
             instance = self._get_instance(id=id)
             self.service().delete(instance=instance)

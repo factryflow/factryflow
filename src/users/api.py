@@ -1,13 +1,13 @@
-from rolepermissions.roles import assign_role, get_user_roles, remove_role
-from ninja import Router  
-
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from users.schemas import RoleIn
+from django.shortcuts import get_object_or_404
+from ninja import Router
+from rolepermissions.roles import assign_role, remove_role
 
-from users.utils import is_superuser, get_all_permissions
+from users.schemas import RoleIn
+from users.utils import get_all_permissions
 
 router = Router(tags=["users_roles"])
+
 
 @router.post("/assign_role")
 # @is_superuser
@@ -32,7 +32,7 @@ def remove_role_from_user(request, payload: RoleIn):
 
 
 @router.get("/permissions")
-#@is_superuser
+# @is_superuser
 def get_all_avilable_permissions(request):
     permissions = get_all_permissions()
     return {"permissions": list(permissions)}

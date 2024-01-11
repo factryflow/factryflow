@@ -1,10 +1,13 @@
 from rolepermissions.roles import AbstractUserRole
+
 from .utils import get_all_permissions
+
 
 def get_all_avilable_permissions():
     # to get all permissions from django.contrib.auth.models.Permission
     data_dict = {permission: True for permission in get_all_permissions()}
     return data_dict
+
 
 class Admin(AbstractUserRole):
     # admin has all permissions
@@ -12,7 +15,7 @@ class Admin(AbstractUserRole):
 
 
 class Operator(AbstractUserRole):
-    # permissions = get_all_permissions()
+    # TODO: operator should have only view permissions to resources under his user
     available_permissions = get_all_avilable_permissions()
 
 
