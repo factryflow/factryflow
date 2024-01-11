@@ -58,7 +58,7 @@
                     <input type="checkbox" x-model="isChecked" id="accept-terms" class="peer h-5 w-5 shrink-0 appearance-none rounded border border-blue-900 focus:outline-none" />
                     <img x-cloak x-show="isChecked" @click="isChecked = !isChecked"  class="h-3 w-3 absolute right-1 top-[4px]" src="{% static 'images/check.svg' %}"/>
                   </div>
-                    <label for="accept-terms" class="text-[#023E8A] font-semibold text-sm ml-2 select-none"><span class="text-[#181C32]">I Accept the</span> Terms & Conditions</label>
+                    <label for="accept-terms" class="text-[#023E8A] font-semibold text-sm ml-2 select-none cursor-pointer"><span class="text-[#181C32]">I Accept the</span> Terms & Conditions</label>
                 </div>
             </div>
             
