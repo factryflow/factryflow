@@ -32,6 +32,18 @@ def chart(request):
 def settingsPage(request):
     return render(request,"base/settings/form.html")
 
+def signinPage(request):
+    return render(request,"base/auth/signin.html")
+
+def signupPage(request):
+    return render(request,"base/auth/signup.html")
+
+def forgotpassPage(request):
+    return render(request,"base/auth/forgotpassword.html")
+
+def codesentPage(request):
+    return render(request,"base/auth/codesent.html")
+
 
 if settings.DEBUG:
     import debug_toolbar
@@ -40,6 +52,10 @@ urlpatterns = [
     path("", home, name="home"),
     path("chart/", chart, name="chart"),
     path("settings/",settingsPage,name="settings"),
+    path("signin/",signinPage,name="signin"),
+    path("signup/",signupPage,name="signup"),
+    path("forgotpassword/",forgotpassPage,name="forgotpass"),
+    path("forgotpassword/codesent/",codesentPage,name="codesent"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("", include("users.urls")),

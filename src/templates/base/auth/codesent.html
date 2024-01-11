@@ -1,0 +1,76 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta name="description" content="Your meta description goes here" />
+  <meta name="keywords" content="your, meta, keywords, go, here" />
+  <title>{% block title %} factryflow {% endblock title %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mohave:wght@300&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
+    integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+  {% include "base/theme.html" %} {% include "base/styles.html" %}
+
+  <style>
+    [x-cloak] { display: none !important; }
+   
+  </style>
+</head>
+
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div class="flex flex-col justify-center items-center min-h-screen bg-cover bg-center bg-no-repeat bg-blue-900 relative" style="background-image: url('{% static 'images/auth/Effects.png' %}'); background-repeat: no-repeat;">
+        <div class="flex items-center mt-7">
+          <img src="{% static 'images/auth/fflogo.svg' %}" alt="fflogo" class="w-16 h-15 mr-4" />
+          <h1 class="text-white text-center font-mohave text-5xl font-semibold pt-2">FactryFlow</h1>
+        </div>
+      
+        <div class="bg-white mt-9 w-[600px] h-[456px] flex flex-col items-center justify-center shadow-md rounded-xl p-8  overflow-hidden">
+            <form class="grid gap-3 w-full ">
+              <h1 class="text-[#181C32] text-2xl font-semibold text-center">Code sent</h1>
+              <h1 class="text-[#7E8299] text-sm font-semibold text-center">Code has been sent to your Email Address.<h1>
+            <div class="flex flex-col items-start gap-2 pt-3">
+              <label  class="text-[#181C32] font-semibold text-sm">Email Code<span class="text-[#FF4D4F]">*<span></label>
+              <input type="text"  placeholder="6 Digit Code" class="w-full rounded-md border border-solid border-[#E1E3EA] p-2 focus:outline-none" />
+            </div>                          
+            
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex items-center">
+                    <label for="accept-terms" class="text-[#7E8299] font-semibold text-sm ml-2 cursor-pointer">You can resend the Code in 30 Sec</label>
+                </div>
+                <div>
+                    <label class="text-[#023E8A] text-right text-base font-medium leading-4 cursor-pointer underline">Resent</label>
+                </div>
+
+            </div>
+            
+            <button type="submit" class=" w-full bg-[#023E8A] text-[#FFF] py-4 px-6 rounded font-semibold text-base mt-3">Confirm Code</button>
+      
+            <div class="flex items-center justify-center mt-4">
+              <p class="mr-2 text-[#7E8299]">Already have an Account?</p>
+              <a href="/signin" class="text-blue-900 font-semibold text-sm no-underline">Sign In</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="w-full flex justify-center gap-4  mt-16 mb-8 select-none">
+          <label for="accept-terms" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Terms & Conditions</label>
+          <label for="contact-us" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Contact Us</label>
+        </div>
+
+      </div>
+      
+  {% include "base/notifications.html" %}
+</body>
+
+
+</html>
