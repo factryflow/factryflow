@@ -1,5 +1,5 @@
 import pytest
-from factories import ResourceGroupFactory, WeeklyShiftTemplateFactory
+from factories import ResourceGroupFactory, UserFactory, WeeklyShiftTemplateFactory
 
 from resource_manager.models import Resource
 from resource_manager.services import ResourceService
@@ -11,6 +11,7 @@ def resource_data():
         "name": "Resource 1",
         "external_id": "1",
         "resource_groups": ResourceGroupFactory.create_batch(2),
+        "users": UserFactory.create_batch(2),
         "weekly_shift_template": WeeklyShiftTemplateFactory(),
     }
 
@@ -22,6 +23,7 @@ def test_can_create_resource(resource_data):
     assert resource.name == resource_data["name"]
     assert resource.external_id == resource_data["external_id"]
     assert resource.resource_groups.count() == 2
+    assert resource.users.count() == 2
 
 
 @pytest.mark.django_db

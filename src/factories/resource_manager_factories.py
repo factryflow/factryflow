@@ -3,6 +3,7 @@ from common.utils.tests import faker
 from resource_manager.models import Resource, ResourceGroup
 
 from .resource_calendar_factories import WeeklyShiftTemplateFactory
+from .user_factories import UserFactory
 
 
 class ResourceFactory(factory.django.DjangoModelFactory):
@@ -18,6 +19,9 @@ class ResourceFactory(factory.django.DjangoModelFactory):
             resource_groups=factory.lazy_attribute(
                 lambda _: ResourceGroupFactory.create_batch(2)
             )
+        )
+        with_users = factory.Trait(
+            users=factory.lazy_attribute(lambda _: UserFactory.create_batch(2))
         )
 
 

@@ -1,4 +1,5 @@
 from common.services import model_update
+from django.contrib.auth.models import User
 from resource_calendar.models import WeeklyShiftTemplate
 
 from resource_manager.models import Resource, ResourceGroup
@@ -14,6 +15,7 @@ class ResourceService:
         name: str,
         external_id: str = "",
         resource_groups: list[ResourceGroup] = None,
+        users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
         resource = Resource.objects.create(
@@ -25,13 +27,22 @@ class ResourceService:
         if resource_groups:
             resource.resource_groups.set(resource_groups)
 
+        if users:
+            resource.users.set(users)
+
         resource.full_clean()
         resource.save()
 
         return resource
 
     def update(self, *, instance: Resource, data: dict) -> Resource:
-        fields = ["name", "external_id", "resource_groups", "weekly_shift_template"]
+        fields = [
+            "name",
+            "external_id",
+            "resource_groups",
+            "users",
+            "weekly_shift_template",
+        ]
 
         resource, _ = model_update(instance=instance, fields=fields, data=data)
 
