@@ -4,9 +4,12 @@ from .utils import get_all_permissions
 
 
 def get_all_avilable_permissions():
-    # to get all permissions from django.contrib.auth.models.Permission
-    data_dict = {permission: True for permission in get_all_permissions()}
-    return data_dict
+    try:
+        # to get all permissions from django.contrib.auth.models.Permission
+        data_dict = {permission: True for permission in get_all_permissions()}
+        return data_dict
+    except Exception:
+        return {}
 
 
 class Admin(AbstractUserRole):
@@ -23,6 +26,7 @@ class Planner(AbstractUserRole):
     # planner should have all permissions except user management
     available_permissions = {}
     permissions = get_all_permissions()
+
     for permission in permissions:
         if not permission.startswith("user"):
             available_permissions[permission] = True

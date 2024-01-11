@@ -4,13 +4,13 @@ from ninja import Router
 from rolepermissions.roles import assign_role, remove_role
 
 from users.schemas import RoleIn
-from users.utils import get_all_permissions
+from users.utils import get_all_permissions, is_superuser
 
 router = Router(tags=["users_roles"])
 
 
 @router.post("/assign_role")
-# @is_superuser
+@is_superuser
 def assign_role_to_user(request, payload: RoleIn):
     user = get_object_or_404(User, id=payload.user_id)
     try:
@@ -21,7 +21,7 @@ def assign_role_to_user(request, payload: RoleIn):
 
 
 @router.post("/remove_role")
-# @is_superuser
+@is_superuser
 def remove_role_from_user(request, payload: RoleIn):
     user = get_object_or_404(User, id=payload.user_id)
     try:
@@ -32,7 +32,7 @@ def remove_role_from_user(request, payload: RoleIn):
 
 
 @router.get("/permissions")
-# @is_superuser
+@is_superuser
 def get_all_avilable_permissions(request):
     permissions = get_all_permissions()
     return {"permissions": list(permissions)}

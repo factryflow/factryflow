@@ -10,4 +10,7 @@
 1. Duplicate **```.env.template```** and rename it **```.env```** and add the secrets.
 1. Then <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> and select ```Dev Containers: Rebuild Container```
 1. Then <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> and select ```Developer: Reload Window``` this will ensure that the extensions and formatters work properly. This only needs to be done after a container rebuild.
-1. Run ```make dev``` in terminal to run django.
+
+1. Run ```make migrate``` in terminal to migrate changes in the database.
+1. Run ```make sync_roles``` in terminal to add user roles in the database.
+2. Run ```make dev``` in terminal to run django.

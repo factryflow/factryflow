@@ -1,52 +1,48 @@
+from functools import wraps
 from http import HTTPStatus
 
-from django.contrib.auth.models import Permission
-from functools import wraps
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
+from django.contrib.auth.models import Group, Permission, User
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
+
 
 def get_all_permissions():
-    # to get all permissions from django.contrib.auth.models.Permission
     permissions = set()
-    for permission in Permission.objects.all():
-        permissions.add(permission.codename)
-    return permissions
-
-
-
-
-def get_all_api_operations_id_from_urlpatterns():
-    from api.api import api
-    # to get all api operations id from urlpatterns
-    method_names = set()
-
-    api_openapi_schema = api.get_openapi_schema()
-    unusable_function_names = [
-        "api-root",
-        "get",
-        "create",
-        "update",
-        "delete",
-        "list",
-        "openapi-json",
-        "openapi-view",
-    ]
 
     try:
-        # get operation_id from api
-        for path in api_openapi_schema["paths"]:
-            # to get all method in path
-            for method in api_openapi_schema["paths"][path]:
-                operation_id = api_openapi_schema["paths"][path][method]["operationId"]
+        # get content types for User, Permission, SocialAccount, etc.
+        user_content_type = ContentType.objects.get_for_model(User)
 
-                # check if operation_id is not in function_names and unusable_function_names
-                if (
-                    operation_id not in method_names
-                    and operation_id not in unusable_function_names
-                ):
-                    method_names.add(operation_id)
+        permission_content_type = ContentType.objects.get_for_model(Permission)
+        social_account_content_type = ContentType.objects.get_for_model(SocialAccount)
 
-        return method_names
-    except Exception as e:
-        print(e)
+        group_content_type = ContentType.objects.get_for_model(Group)
+
+        social_app_content_type = ContentType.objects.get_for_model(SocialApp)
+        social_token_content_type = ContentType.objects.get_for_model(SocialToken)
+
+        # exclude content types for User, Permission, SocialAccount, etc. from permissions
+        excluded_content_types = Q(
+            content_type__in=[
+                user_content_type,
+                permission_content_type,
+                social_account_content_type,
+                group_content_type,
+                social_app_content_type,
+                social_token_content_type,
+            ]
+        )
+
+        # filtered permissions
+        filtered_permissions = Permission.objects.exclude(excluded_content_types)
+
+        # to get all permissions from django.contrib.auth.models.Permissions
+        for permission in filtered_permissions.all():
+            permissions.add(permission.codename)
+        return permissions
+    except Exception:
+        return []
 
 
 # decorator to check if user is superuser or not
@@ -57,8 +53,9 @@ def is_superuser(func):
             return func(request, *args, **kwargs)
         else:
             return {
-                "message": "PermissionDenied", "detail": "User is not superuser",
-                "status":HTTPStatus.FORBIDDEN,
+                "message": "PermissionDenied",
+                "detail": "User is not superuser",
+                "status": HTTPStatus.FORBIDDEN,
             }
 
     return wrapper
