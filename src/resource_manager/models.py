@@ -21,7 +21,7 @@ class Resource(BaseModel):
         related_name="resources",
     )
     resource_groups = models.ManyToManyField("ResourceGroup", related_name="resources")
-    users = models.ManyToManyField(User, related_name="operators")
+    users = models.ManyToManyField(User, related_name="resources")
 
     class Meta:
         db_table = "resource"
