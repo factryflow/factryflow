@@ -7,9 +7,14 @@ from .job_manager_factories import (
     TaskTypeFactory,
     WorkCenterFactory,
 )
+from .resource_assigner_factories import (
+    AssigmentRuleCriteriaFactory,
+    AssigmentRuleFactory,
+    TaskResourceAssigmentFactory,
+)
 from .resource_calendar_factories import (
     WeeklyShiftTemplateDetailFactory,
     WeeklyShiftTemplateFactory,
 )
 from .resource_manager_factories import ResourceFactory, ResourceGroupFactory
-from .resource_assigner_factories import TaskResourceAssigmentFactory, AssigmentRuleFactory, AssigmentRuleCriteriaFactory
+from .user_factories import UserFactory
