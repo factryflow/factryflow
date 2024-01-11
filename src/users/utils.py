@@ -2,7 +2,7 @@ from functools import wraps
 from http import HTTPStatus
 
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
@@ -11,8 +11,7 @@ def get_all_permissions():
     permissions = set()
 
     try:
-        # get content types for User, Permission, SocialAccount, etc.
-        user_content_type = ContentType.objects.get_for_model(User)
+        # get content types for Group, Permission, SocialAccount, etc.
 
         permission_content_type = ContentType.objects.get_for_model(Permission)
         social_account_content_type = ContentType.objects.get_for_model(SocialAccount)
@@ -25,7 +24,6 @@ def get_all_permissions():
         # exclude content types for User, Permission, SocialAccount, etc. from permissions
         excluded_content_types = Q(
             content_type__in=[
-                user_content_type,
                 permission_content_type,
                 social_account_content_type,
                 group_content_type,
