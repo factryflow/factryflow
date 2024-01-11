@@ -13,3 +13,6 @@ test:
 
 superuser:
 	python src/manage.py makesuperuser
+
+sync_roles:
+	python src/manage.py sync_roles
