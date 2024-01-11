@@ -17,7 +17,7 @@ class PublishedIssueManager(models.Manager):
 class Issue(BaseModel):
     class Status(models.TextChoices):
         DRAFT = "DF", "Draft"
-        PUBLISED = "PB", "Published"
+        PUBLISHED = "PB", "Published"
 
     # Core fields
     id = models.AutoField(primary_key=True)
