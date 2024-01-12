@@ -17,7 +17,7 @@ from resource_assigner.api import resource_assigner_router
 # import and register routers
 from resource_calendar.api import resource_calendar_router
 from resource_manager.api import resource_manager_router
-from users.api import router as user_router
+
 
 class ApiKey(APIKeyHeader):
     param_name = "X-API-Key"
@@ -37,7 +37,6 @@ api.add_router("", resource_manager_router)
 api.add_router("", job_manager_router)
 api.add_router("", resource_calendar_router)
 api.add_router("", resource_assigner_router)
-api.add_router("", user_router)
 
 
 @api.exception_handler(ObjectDoesNotExist)

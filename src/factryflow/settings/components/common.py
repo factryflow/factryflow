@@ -49,18 +49,20 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     # extensions
     "django_htmx",
+    "django_extensions",
     "template_partials",
     "simple_history",
     "ordered_model",
+    "taggit",
     # apps
     "users",
     "common",
     "job_manager",
+    "issue",
     "resource_manager",
     "resource_calendar",
     "resource_assigner",
     "api",
-    "rolepermissions",
 ]
 
 MIDDLEWARE = [
@@ -192,8 +194,9 @@ EMAIL_USE_SSL = False
 # API KEY
 API_KEY = os.getenv("API_KEY")
 
-# settings related to rolepermissions
-ROLEPERMISSIONS_MODULE = 'users.roles'
 
-ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
-ROLEPERMISSIONS_REGISTER_ADMIN = True
+# IMAGE / FILE UPLOADS
+MEDIA_ROOT = BASE_DIR / "static/media"
+
+# TAGGIT SETTINGS
+TAGGIT_CASE_INSENSITIVE = True
