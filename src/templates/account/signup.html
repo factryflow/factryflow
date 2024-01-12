@@ -1,12 +1,17 @@
 {% extends './main.html' %} {% block content %}
+{% load static %}
 <!-- Sign Up Section -->
-<section class="w-full h-full flex justify-center items-center">
+<section class="w-full h-full flex flex-col justify-center items-center bg-blue-900 bg-cover bg-center" style="background-image:url('{% static 'images/Effects.png' %}');">
+    <div class="flex items-center mt-4">
+        <img src="{% static 'images/fflogo.svg' %}" alt="fflogo" class="w-16 h-16 mr-2" />
+        <h1 class="text-white text-center font-mohave text-5xl font-semibold  pt-2">FactryFlow</h1>
+    </div>
   <!-- Container for Sign-Up Form -->
-  <div class="md:w-2/4 h-fit bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+  <div class="md:w-2/4 h-fit bg-[#FFFFFF] rounded-lg mt-8 shadow xl:w-[624px]" x-data="{ showPassword: true,showRePassword:true ,isChecked:false}">
+    <div class="m-11">
         <!-- Sign-Up Title -->
-        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-            Sign up your account
+        <h1 class="text-xl font-semibold leading-6 tracking-tight text-[#181C32] text-center">
+            Sign up for an account
         </h1>
         <!-- Non-field Errors -->
         <p class="text-sm font-medium text-gray-400">{{ form.non_field_errors | safe }}</p>
@@ -16,29 +21,73 @@
             {% csrf_token %}
             
             <!-- Email Input -->
-            <p class="mb-4">
+            <div>
                 <!-- Display Email Validation Errors -->
                 <ul class="errorlist text-sm font-medium text-gray-400"><li>{{ form.email.errors | safe }}</li></ul>
-                <label for="id_email" class="block mb-1 text-sm font-medium text-gray-900">Email:</label>
-                <input type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320" required autofocus id="id_email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">
-            </p>
+                <label for="id_email" class="block mb-2 text-sm font-semibold text-[#181C32]">Email Address<span class="text-red-600">*</span></label>
+                <input type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320" required autofocus id="id_email" class="text-gray-900 text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
+            </div>
 
             <!-- Password Input -->
-            <p>
+            <div class="relative">
                 <!-- Display Password Validation Errors -->
+                <label for="id_password1" class="block mb-2 text-sm font-medium text-[#181C32]">Password<span class="text-red-600">*</span></label>
+                <input :type="showPassword ? 'password' : 'text'" name="password1" placeholder="Enter Password" autocomplete="new-password" required id="id_password1" class="text-gray-900 text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
+                <img 
+                class="h-5 w-5 absolute right-[15px] top-[40px] cursor-pointer" 
+                src="{% static 'images/visibility.svg' %}"
+                x-on:click="showPassword = !showPassword"
+                />
+                <div  x-cloak  x-show="showPassword" class="absolute top-[48px] right-[14px] cursor-pointer w-5 h-0.5 bg-[#7E8299] transform -rotate-45" x-on:click="showPassword = !showPassword"></div>
                 <p class="text-sm font-medium text-gray-400">{{ form.password1.errors | safe }}</p>
-                <label for="id_password1" class="block mb-2 text-sm font-medium text-gray-900">Password:</label>
-                <input type="password" name="password1" placeholder="Password" autocomplete="new-password" required id="id_password1" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">
-            </p>
+            </div>
 
             <!-- Password Confirmation Input -->
-            <p class="mb-4">
+            <div class="relative">
                 <!-- Display Password Confirmation Validation Errors -->
+                <label for="id_password2" class="block mb-2 text-sm font-medium text-[#181C32]">Repeat Password<span class="text-red-600">*</span></label>
+                <input :type="showRePassword ? 'password' : 'text'" name="password2" placeholder="Enter Password" autocomplete="new-password" required id="id_password2" class="text-gray-900 text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
+                <img 
+                class="h-5 w-5 absolute right-[15px] top-[40px] cursor-pointer" 
+                src="{% static 'images/visibility.svg' %}"
+                x-on:click="showRePassword = !showRePassword"
+                />
+                <div  x-cloak  x-show="showRePassword" class="absolute top-[48px] right-[14px] cursor-pointer w-5 h-0.5 bg-[#7E8299] transform -rotate-45" x-on:click="showRePassword = !showRePassword"></div>  
                 <p class="text-sm font-medium text-gray-400">{{ form.password2.errors | safe }}</p>
-                <label for="id_password2" class="block mb-2 text-sm font-medium text-gray-900">Password (again):</label>
-                <input type="password" name="password2" placeholder="Password (again)" autocomplete="new-password" required id="id_password2" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">  
-            </p>
+            </div>
 
+            <!-- Terms & Conditions Checkbox -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-start">
+              <div class="flex items-center h-5 relative">
+                <input type="checkbox"
+                 x-model="isChecked" 
+                 id="accept-terms" 
+                 class="peer h-5 w-5 shrink-0 appearance-none rounded border border-blue-900 focus:outline-none" 
+                 />
+                <img x-cloak x-show="isChecked" 
+                @click="isChecked = !isChecked"  
+                class="h-3 w-3 absolute right-1 top-[4px]" 
+                src="{% static 'images/check.svg' %}"
+                />
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="accept-terms" class="text-[#023E8A] font-semibold cursor-pointer select-none"><span class="text-[#181C32]">I Accept the</span> Terms & Conditions</label>
+              </div>
+            </div>
+            <!-- Forgot Password Link -->
+            <a
+              href="#"
+              hx-get="{% url 'account_reset_password' %}"
+              hx-trigger="click"
+              hx-swap="outerHTML"
+              hx-target="body"
+              hx-push-url="true"
+              class="text-sm font-medium text-[#023E8A] hover:underline"
+              >Forgot password?</a
+            >
+          </div>
+            
             <!-- Optional: Redirect Field -->
             {% if redirect_field_value %}
                 <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
@@ -46,17 +95,22 @@
             
             <!-- Sign Up Button -->
             <button type="submit"
-                class="w-full text-white bg-violet-700 hover:bg-violet-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                class="w-full text-white bg-[#023E8A] focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg font-semibold text-base px-5 py-2.5 text-center"
             >
                 Sign Up
             </button>
         </form>
 
         <!-- Sign In Link -->
-        <p class="text-sm font-light text-gray-500">
-            Already have an account? Then please <a href="#" hx-get="{% url 'account_login' %}" hx-target="body" hx-push-url="true" class="font-medium text-primary-600 hover:underline">sign in</a>.
+        <p class="text-sm font-medium text-gray-500 text-center mt-4">
+            Already have an Account? <a href="#" hx-get="{% url 'account_login' %}" hx-target="body" hx-push-url="true" class="font-medium text-[#023E8A] hover:underline">sign in</a>.
         </p>
     </div>
+  </div>
+
+  <div class="w-full flex justify-center gap-4  mt-16 mb-8 select-none">
+    <label for="accept-terms" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Terms & Conditions</label>
+    <label for="contact-us" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Contact Us</label>
   </div>
 </section>
 {% endblock content %}

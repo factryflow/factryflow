@@ -8,6 +8,11 @@
     <meta name="description" content="Your meta description goes here" />
     <meta name="keywords" content="your, meta, keywords, go, here" />
     <title>{% block title %} factryflow {% endblock title %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mohave:wght@300&display=swap" rel="stylesheet">
+
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
       integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
@@ -19,13 +24,18 @@
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
     ></script>
+
+    <style>
+      [x-cloak] { display: none !important; }
+    </style>
+
     {% include "base/theme.html" %} {% include "base/styles.html" %}
   </head>
 
   <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data>
     <!-- Main Content -->
     <div
-      class="w-screen h-screen bg-[#FAFAFB] border border-[#F1F1F2] rounded-t-xl"
+      class="w-screen h-screen  "
     >
       {% block content %} {% endblock content %}
     </div>
