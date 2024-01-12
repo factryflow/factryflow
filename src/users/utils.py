@@ -5,9 +5,23 @@ from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 
 
 def get_all_permissions():
+    """
+    Retrieve a set of all unique permission codenames available in the system,
+    excluding permissions related to User, Permission, SocialAccount, Group,
+    SocialApp, and SocialToken.
+
+    Returns:
+        set: A set containing unique permission codenames.
+
+    Note:
+        This function queries the ContentType model to identify content types for
+        relevant models and excludes permissions associated with those content
+        types from the final result.
+    """
     permissions = set()
 
     try:
@@ -43,17 +57,55 @@ def get_all_permissions():
         return []
 
 
-# decorator to check if user is superuser or not
+
 def is_superuser(func):
+    """
+    Decorator function to check if the user making the request is a superuser.
+    
+    Args:
+        func (callable): The view function to be decorated.
+
+    Returns:
+        callable: The decorated view function.
+    """
     @wraps(func)
     def wrapper(request, *args, **kwargs):
         if request.user.is_superuser:
             return func(request, *args, **kwargs)
         else:
-            return {
-                "message": "PermissionDenied",
-                "detail": "User is not superuser",
-                "status": HTTPStatus.FORBIDDEN,
-            }
+            raise PermissionDenied()
 
     return wrapper
+
+
+
+def get_all_avilable_permissions():
+    """
+    Retrieve all available permissions as a dictionary with True values.
+
+    Returns:
+    dict: A dictionary where keys are permission codenames, and values are set to True.
+    """
+    try:
+        data_dict = {permission: True for permission in get_all_permissions()}
+        return data_dict
+    except Exception:
+        return {}
+
+
+def get_view_only_permissions():
+    """
+    Retrieve view-only permissions (excluding user-related views) as a dictionary with True values.
+
+    Returns:
+    dict: A dictionary where keys are permission codenames for view-only permissions, and values are set to True.
+    """
+    data_dict = {}
+    try:
+        permissions = get_all_permissions()
+        for permission in permissions:
+            if permission.startswith("view") and not permission.startswith("user"):
+                data_dict[permission] = True
+        return data_dict
+    except Exception:
+        return {}
