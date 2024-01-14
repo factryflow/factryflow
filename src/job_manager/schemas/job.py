@@ -2,8 +2,8 @@ from ninja import Field, ModelSchema
 
 from job_manager.models import (
     Job,
-    JobType,
     JobStatusChoices,
+    JobType,
 )
 
 # ------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ from job_manager.models import (
 class JobTypeIn(ModelSchema):
     class Meta:
         model = JobType
-        fields = ["name"]
+        fields = ["name", "external_id", "notes"]
 
 
 class JobTypeOut(ModelSchema):
@@ -33,7 +33,7 @@ class JobIn(ModelSchema):
             "name",
             "external_id",
             "job_type",
-            "note",
+            "notes",
             "description",
             "due_date",
             "customer",

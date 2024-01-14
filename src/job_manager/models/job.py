@@ -1,5 +1,5 @@
 # Create your models here.
-from common.models import BaseModel
+from common.models import BaseModelWithExtras
 
 #
 from django.core.exceptions import ValidationError
@@ -8,7 +8,7 @@ from ordered_model.models import OrderedModelBase
 from simple_history.models import HistoricalRecords
 
 
-class JobType(BaseModel):
+class JobType(BaseModelWithExtras):
     name = models.CharField(max_length=150)
 
     history = HistoricalRecords(table_name="job_type_history")
@@ -25,13 +25,11 @@ class JobStatusChoices(models.TextChoices):
     # TODO ON_HOLD = 'OH', 'On Hold'
 
 
-class Job(BaseModel, OrderedModelBase):
+class Job(BaseModelWithExtras, OrderedModelBase):
     # Core fields
     name = models.CharField(max_length=100)
-    external_id = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     customer = models.CharField(max_length=250, blank=True)
-    note = models.CharField(max_length=150, blank=True)
     due_date = models.DateField()
     job_status = models.CharField(
         max_length=2,

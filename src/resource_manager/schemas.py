@@ -8,7 +8,7 @@ class ResourceGroupIn(ModelSchema):
 
     class Meta:
         model = ResourceGroup
-        fields = ["name", "external_id"]
+        fields = ["name", "external_id", "notes"]
 
 
 class ResourceGroupOut(ModelSchema):
@@ -25,7 +25,7 @@ class ResourceIn(ModelSchema):
 
     class Meta:
         model = Resource
-        fields = ["name", "external_id"]
+        fields = ["name", "external_id", "notes"]
 
 
 class ResourceOut(ModelSchema):

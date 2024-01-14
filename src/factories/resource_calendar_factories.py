@@ -10,6 +10,8 @@ class WeeklyShiftTemplateFactory(factory.django.DjangoModelFactory):
         model = WeeklyShiftTemplate
 
     name = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
+    external_id = ""
+    notes = ""
 
 
 class WeeklyShiftTemplateDetailFactory(factory.django.DjangoModelFactory):

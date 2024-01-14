@@ -160,6 +160,8 @@ class WeeklyShiftTemplateService:
         self,
         *,
         name: str,
+        external_id: str = "",
+        notes: str = "",
         details: list[dict],
     ) -> WeeklyShiftTemplate:
         """
@@ -168,7 +170,9 @@ class WeeklyShiftTemplateService:
         self._validate_details_fields(details)
 
         # Create WeeklyShiftTemplate
-        template = WeeklyShiftTemplate.objects.create(name=name)
+        template = WeeklyShiftTemplate.objects.create(
+            name=name, external_id=external_id, notes=notes
+        )
 
         # Create WeeklyShiftTemplateDetails
         WeeklyShiftTemplateDetailService().create_bulk(
@@ -195,6 +199,8 @@ class WeeklyShiftTemplateService:
 
         fields = [
             "name",
+            "external_id",
+            "notes",
         ]
 
         template, _ = model_update(instance=instance, fields=fields, data=data)
@@ -229,8 +235,12 @@ class OperationalExceptionTypeService:
         pass
 
     @transaction.atomic
-    def create(name: str) -> OperationalExceptionType:
-        exception_type = OperationalExceptionType.objects.create(name=name)
+    def create(
+        name: str, external_id: str = "", notes: str = ""
+    ) -> OperationalExceptionType:
+        exception_type = OperationalExceptionType.objects.create(
+            name=name, external_id=external_id, notes=notes
+        )
         exception_type.full_clean()
         exception_type.save()
 
@@ -242,6 +252,8 @@ class OperationalExceptionTypeService:
     ) -> OperationalExceptionType:
         fields = [
             "name",
+            "external_id",
+            "notes",
         ]
 
         exception_type, _ = model_update(
