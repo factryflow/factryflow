@@ -1,9 +1,9 @@
-from common.models import BaseModel
+from common.models import BaseModelWithExtras
 from django.db import models
 from simple_history.models import HistoricalRecords
 
 
-class DependencyType(BaseModel):
+class DependencyType(BaseModelWithExtras):
     name = models.CharField(max_length=150)
 
     history = HistoricalRecords(table_name="dependency_type_history")
@@ -20,12 +20,10 @@ class DependencyStatusChoices(models.TextChoices):
     CANCELLED = "CN", "Cancelled"
 
 
-class Dependency(BaseModel):
+class Dependency(BaseModelWithExtras):
     name = models.CharField(max_length=150)
-    external_id = models.CharField(max_length=180, blank=True)
     expected_close_datetime = models.DateTimeField(blank=True, null=True)
     actual_close_datetime = models.DateTimeField(blank=True, null=True)
-    notes = models.TextField(blank=True)
     dependency_type = models.ForeignKey(DependencyType, on_delete=models.DO_NOTHING)
     dependency_status = models.CharField(
         max_length=2,

@@ -1,20 +1,16 @@
 from ninja import Field, ModelSchema
 
-from job_manager.models import (
-    Task,
-    TaskType,
-    TaskStatusChoices,
-    WorkCenter
-)
-#------------------------------------------------------------------
+from job_manager.models import Task, TaskStatusChoices, TaskType, WorkCenter
+
+# ------------------------------------------------------------------
 # WorkCenter Schemas
-#------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 
 class WorkCenterIn(ModelSchema):
     class Meta:
         model = WorkCenter
-        fields = ["name", "notes"]
+        fields = ["name", "external_id", "notes"]
 
 
 class WorkCenterOut(ModelSchema):
@@ -23,14 +19,15 @@ class WorkCenterOut(ModelSchema):
         fields = "__all__"
 
 
-#------------------------------------------------------------------
+# ------------------------------------------------------------------
 # TaskType Schemas
-#------------------------------------------------------------------
+# ------------------------------------------------------------------
+
 
 class TaskTypeIn(ModelSchema):
     class Meta:
         model = TaskType
-        fields = ["name"]
+        fields = ["name", "external_id", "notes"]
 
 
 class TaskTypeOut(ModelSchema):
@@ -50,6 +47,7 @@ class TaskIn(ModelSchema):
             "name",
             "id",
             "external_id",
+            "notes",
             "planned_start_datetime",
             "planned_end_datetime",
             "setup_time",

@@ -1,6 +1,4 @@
-from ninja import ModelSchema, Schema
-from ninja import Field
-from .utils import TIME_24HR_PATTERN
+from ninja import Field, ModelSchema, Schema
 
 from resource_calendar.models import (
     OperationalException,
@@ -9,10 +7,19 @@ from resource_calendar.models import (
     WeeklyShiftTemplateDetail,
 )
 
+from .utils import TIME_24HR_PATTERN
+
+
 class WeeklyShiftTemplateDetailIn(Schema):
-    day_of_week: int = Field(..., ge=0, le=6, example=0, help_text="0 is Monday, 6 is Sunday")
-    start_time: str = Field(..., pattern=TIME_24HR_PATTERN, example="08:00", help_text="24 hour format")
-    end_time: str = Field(..., pattern=TIME_24HR_PATTERN, example="16:00", help_text="24 hour format")
+    day_of_week: int = Field(
+        ..., ge=0, le=6, example=0, help_text="0 is Monday, 6 is Sunday"
+    )
+    start_time: str = Field(
+        ..., pattern=TIME_24HR_PATTERN, example="08:00", help_text="24 hour format"
+    )
+    end_time: str = Field(
+        ..., pattern=TIME_24HR_PATTERN, example="16:00", help_text="24 hour format"
+    )
 
 
 class WeeklyShiftTemplateDetailOut(ModelSchema):
@@ -20,21 +27,28 @@ class WeeklyShiftTemplateDetailOut(ModelSchema):
         model = WeeklyShiftTemplateDetail
         exclude = ["weekly_shift_template"]
 
+
 class WeeklyShiftTemplateIn(Schema):
     name: str = Field(..., example="Day Shift")
     details: list[WeeklyShiftTemplateDetailIn] = None
 
+    class Meta:
+        model = WeeklyShiftTemplate
+        fields = ["name", "external_id", "notes"]
+
 
 class WeeklyShiftTemplateOut(ModelSchema):
     details: list[WeeklyShiftTemplateDetailOut] = []
+
     class Meta:
         model = WeeklyShiftTemplate
         fields = "__all__"
 
+
 class OperationalExceptionTypeIn(ModelSchema):
     class Meta:
         model = OperationalExceptionType
-        fields = ["name"]
+        fields = ["name", "external_id", "notes"]
 
 
 class OperationalExceptionTypeOut(ModelSchema):

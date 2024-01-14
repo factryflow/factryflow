@@ -18,6 +18,8 @@ class JobTypeFactory(factory.django.DjangoModelFactory):
         model = JobType
 
     name = factory.lazy_attribute(lambda _: faker.unique.word())
+    external_id = ""
+    notes = ""
 
 
 class JobFactory(factory.django.DjangoModelFactory):
@@ -28,7 +30,7 @@ class JobFactory(factory.django.DjangoModelFactory):
     description = ""
     customer = ""
     external_id = ""
-    note = ""
+    notes = ""
     due_date = factory.lazy_attribute(lambda _: faker.date_this_year())
     priority = None
     planned_start_datetime = None
@@ -59,6 +61,8 @@ class DependencyTypeFactory(factory.django.DjangoModelFactory):
         model = DependencyType
 
     name = factory.lazy_attribute(lambda _: faker.unique.word())
+    external_id = ""
+    notes = ""
 
 
 class DependencyFactory(factory.django.DjangoModelFactory):
@@ -68,6 +72,8 @@ class DependencyFactory(factory.django.DjangoModelFactory):
     name = factory.lazy_attribute(lambda x: faker.name())
     dependency_status = "PD"  # Pending
     dependency_type = factory.SubFactory(DependencyTypeFactory)
+    external_id = ""
+    notes = ""
 
 
 class TaskTypeFactory(factory.django.DjangoModelFactory):
@@ -75,6 +81,8 @@ class TaskTypeFactory(factory.django.DjangoModelFactory):
         model = TaskType
 
     name = factory.lazy_attribute(lambda _: faker.unique.word())
+    external_id = ""
+    notes = ""
 
 
 class WorkCenterFactory(factory.django.DjangoModelFactory):
@@ -82,6 +90,8 @@ class WorkCenterFactory(factory.django.DjangoModelFactory):
         model = WorkCenter
 
     name = factory.lazy_attribute(lambda _: faker.unique.word())
+    external_id = ""
+    notes = ""
 
 
 class TaskFactory(factory.django.DjangoModelFactory):
@@ -97,6 +107,8 @@ class TaskFactory(factory.django.DjangoModelFactory):
     teardown_time = 0
     run_time_per_unit = 1
     job = None
+    external_id = ""
+    notes = ""
 
     class Params:
         with_job = factory.Trait(job=factory.SubFactory(JobFactory))

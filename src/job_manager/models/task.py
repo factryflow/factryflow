@@ -1,13 +1,12 @@
-from common.models import BaseModel
+from common.models import BaseModelWithExtras
 from django.db import models
 from simple_history.models import HistoricalRecords
 
 from job_manager.models.job import Job
 
 
-class WorkCenter(BaseModel):
+class WorkCenter(BaseModelWithExtras):
     name = models.CharField(max_length=150, unique=True)
-    notes = models.TextField(blank=True, null=True)
 
     history = HistoricalRecords(table_name="work_center_history")
 
@@ -15,7 +14,7 @@ class WorkCenter(BaseModel):
         db_table = "work_center"
 
 
-class TaskType(BaseModel):
+class TaskType(BaseModelWithExtras):
     name = models.CharField(max_length=150)
 
     history = HistoricalRecords(table_name="task_type_history")
@@ -30,10 +29,9 @@ class TaskStatusChoices(models.TextChoices):
     COMPLETED = "CM", "Completed"
 
 
-class Task(BaseModel):
+class Task(BaseModelWithExtras):
     # core fields
     id = models.AutoField(primary_key=True)
-    external_id = models.CharField(max_length=150, blank=True)
     name = models.CharField(max_length=150)
     setup_time = models.IntegerField()
     run_time_per_unit = models.IntegerField()
