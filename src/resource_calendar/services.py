@@ -15,8 +15,8 @@ from .models import (
 
 
 class WeeklyShiftTemplateDetailService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def _parse_time(self, time_input: str | time) -> datetime.time:
         """
@@ -52,7 +52,7 @@ class WeeklyShiftTemplateDetailService:
         )
 
         weekly_shift_template_detail.full_clean()
-        weekly_shift_template_detail.save()
+        weekly_shift_template_detail.save(user=self.user)
 
         return weekly_shift_template_detail
 
@@ -66,7 +66,7 @@ class WeeklyShiftTemplateDetailService:
         Create a list of WeeklyShiftTemplateDetails.
         """
         for detail_data in details:
-            WeeklyShiftTemplateDetailService().create(
+            WeeklyShiftTemplateDetailService(user=self.user).create(
                 day_of_week=detail_data["day_of_week"],
                 start_time=detail_data["start_time"],
                 end_time=detail_data["end_time"],
@@ -82,8 +82,8 @@ class WeeklyShiftTemplateDetailService:
 
 
 class WeeklyShiftTemplateService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def _process_details(
         self, template: WeeklyShiftTemplate, new_details: list[dict]
@@ -121,7 +121,7 @@ class WeeklyShiftTemplateService:
             WeeklyShiftTemplateDetailService().delete(detail)
 
         # Create new details
-        WeeklyShiftTemplateDetailService().create_bulk(
+        WeeklyShiftTemplateDetailService(user=self.user).create_bulk(
             weekly_shift_template=template, details=details_to_create
         )
 
@@ -175,7 +175,7 @@ class WeeklyShiftTemplateService:
         )
 
         # Create WeeklyShiftTemplateDetails
-        WeeklyShiftTemplateDetailService().create_bulk(
+        WeeklyShiftTemplateDetailService(user=self.user).create_bulk(
             weekly_shift_template=template, details=details
         )
 
@@ -183,7 +183,7 @@ class WeeklyShiftTemplateService:
         self._check_no_overlapping_details(template)
 
         template.full_clean()
-        template.save()
+        template.save(user=self.user)
 
         return template
 
@@ -218,7 +218,7 @@ class WeeklyShiftTemplateService:
             self._check_no_overlapping_details(template)
 
         template.full_clean()
-        template.save()
+        template.save(user=self.user)
 
         return template
 
@@ -231,24 +231,24 @@ class WeeklyShiftTemplateService:
 
 
 class OperationalExceptionTypeService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
-        name: str, external_id: str = "", notes: str = ""
+        self, name: str, external_id: str = "", notes: str = ""
     ) -> OperationalExceptionType:
         exception_type = OperationalExceptionType.objects.create(
             name=name, external_id=external_id, notes=notes
         )
         exception_type.full_clean()
-        exception_type.save()
+        exception_type.save(user=self.user)
 
         return exception_type
 
     @transaction.atomic
     def update(
-        exception_type: OperationalExceptionType, data: dict
+        self, exception_type: OperationalExceptionType, data: dict
     ) -> OperationalExceptionType:
         fields = [
             "name",
@@ -257,7 +257,7 @@ class OperationalExceptionTypeService:
         ]
 
         exception_type, _ = model_update(
-            instance=exception_type, fields=fields, data=data
+            instance=exception_type, fields=fields, data=data, user=self.user,
         )
 
         return exception_type
@@ -268,12 +268,13 @@ class OperationalExceptionTypeService:
 
 
 class OperationalExceptionService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
         *,
+        self,
         resource: Resource,
         start_datetime: datetime,
         end_datetime: datetime,
@@ -293,12 +294,12 @@ class OperationalExceptionService:
         )
 
         exception.full_clean()
-        exception.save()
+        exception.save(user=self.user)
 
         return exception
 
     @transaction.atomic
-    def update(exception: OperationalException, data: dict) -> OperationalException:
+    def update(self, exception: OperationalException, data: dict) -> OperationalException:
         fields = [
             "resource",
             "start_datetime",
@@ -309,7 +310,7 @@ class OperationalExceptionService:
             "notes",
         ]
 
-        exception, _ = model_update(instance=exception, fields=fields, data=data)
+        exception, _ = model_update(instance=exception, fields=fields, data=data, user=self.user,)
 
         return exception
 

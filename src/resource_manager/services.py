@@ -6,8 +6,8 @@ from resource_manager.models import Resource, ResourceGroup
 
 
 class ResourceService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def create(
         self,
@@ -33,7 +33,7 @@ class ResourceService:
             resource.users.set(users)
 
         resource.full_clean()
-        resource.save()
+        resource.save(user=self.user)
 
         return resource
 
@@ -47,7 +47,7 @@ class ResourceService:
             "weekly_shift_template",
         ]
 
-        resource, _ = model_update(instance=instance, fields=fields, data=data)
+        resource, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         return resource
 
@@ -56,8 +56,8 @@ class ResourceService:
 
 
 class ResourceGroupService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def create(
         self,
@@ -74,7 +74,7 @@ class ResourceGroupService:
         )
 
         resource_group.full_clean()
-        resource_group.save()
+        resource_group.save(user=self.user)
 
         if resources:
             resource_group.resources.set(resources)
@@ -89,7 +89,7 @@ class ResourceGroupService:
             "notes",
         ]
 
-        resource_group, _ = model_update(instance=instance, fields=fields, data=data)
+        resource_group, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         return resource_group
 
