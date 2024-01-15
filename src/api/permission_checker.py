@@ -1,5 +1,6 @@
 from functools import wraps
-
+from abc import ABC, abstractmethod
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from rolepermissions.checkers import has_permission
 
@@ -33,19 +34,31 @@ def has_permission_decorator(operation_id):
     return decorator
 
 
-class PermissionChecker(object):
+class AbstractPermissionService(ABC):
     """
-    Class to check if the user has a specific permission.
+    Abstract base class for services with permission-checking capabilities.
     """
 
-    def __init__(self, operation_id):
+    def __init__(self, user: User):
         """
         Args:
             operation_id (str): The operation ID of the permission to check.
         """
-        self.operation_id = operation_id
+        self.user = user
 
-    def has_permission(self, user):
+    @abstractmethod
+    def create(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def update(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def delete(self, *args, **kwargs):
+        pass
+
+    def has_permission(self, operation_id):
         """
         Check if the user has the specified permission.
 
@@ -55,4 +68,4 @@ class PermissionChecker(object):
         Returns:
             bool: True if the user has the specified permission, False otherwise.
         """
-        return has_permission(user, self.operation_id)
+        return has_permission(self.user, operation_id)

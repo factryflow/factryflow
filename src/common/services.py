@@ -11,6 +11,7 @@ from common.types import DjangoModelType
 
 def model_update(
     *,
+    user=None,
     instance: DjangoModelType,
     fields: List[str],
     data: Dict[str, Any],
@@ -87,7 +88,7 @@ def model_update(
         # Update only the fields that are meant to be updated.
         # Django docs reference:
         # https://docs.djangoproject.com/en/dev/ref/models/instances/#specifying-which-fields-to-save
-        instance.save(update_fields=update_fields)
+        instance.save(update_fields=update_fields, user=user)
 
     for field_name, value in m2m_data.items():
         related_manager = getattr(instance, field_name)
@@ -101,8 +102,8 @@ def model_update(
 
 
 class CustomFieldService:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, user=None) -> None:
+        self.user = user
 
     def _add_prefix_to_name(self, name: str) -> str:
         return f"custom_{name}"
@@ -126,7 +127,7 @@ class CustomFieldService:
             is_required=False,
         )
         custom_field.full_clean()
-        custom_field.save()
+        custom_field.save(user=self.user)
 
         return custom_field
 
@@ -136,7 +137,7 @@ class CustomFieldService:
             data["name"] = self._add_prefix_to_name(data["name"])
 
         fields = ["name", "label", "description"]
-        custom_field, _ = model_update(instance=instance, fields=fields, data=data)
+        custom_field, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
         return custom_field
 
     def delete(self, instance: CustomField):

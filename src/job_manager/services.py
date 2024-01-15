@@ -2,7 +2,7 @@ from datetime import datetime
 
 from common.services import model_update
 from django.db import transaction
-from api.permission_checker import PermissionChecker
+from api.permission_checker import AbstractPermissionService
 from job_manager.models import (
     Dependency,
     DependencyType,
@@ -18,10 +18,7 @@ from job_manager.models import (
 # ------------------------------------------------------------------------------
 
 
-class WorkCenterService:
-    def __init__(self):
-        pass
-
+class WorkCenterService(AbstractPermissionService):
     def create(self, name: str, notes: str) -> WorkCenter:
         work_center = WorkCenter.objects.create(name=name, notes=notes)
         work_center.full_clean()
