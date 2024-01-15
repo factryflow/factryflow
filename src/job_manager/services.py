@@ -2,7 +2,7 @@ from datetime import datetime
 
 from common.services import model_update
 from django.db import transaction
-
+from api.permission_checker import PermissionChecker
 from job_manager.models import (
     Dependency,
     DependencyType,

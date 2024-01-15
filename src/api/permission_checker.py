@@ -31,3 +31,28 @@ def has_permission_decorator(operation_id):
         return wrapper
 
     return decorator
+
+
+class PermissionChecker(object):
+    """
+    Class to check if the user has a specific permission.
+    """
+
+    def __init__(self, operation_id):
+        """
+        Args:
+            operation_id (str): The operation ID of the permission to check.
+        """
+        self.operation_id = operation_id
+
+    def has_permission(self, user):
+        """
+        Check if the user has the specified permission.
+
+        Args:
+            user (User): The user to check.
+
+        Returns:
+            bool: True if the user has the specified permission, False otherwise.
+        """
+        return has_permission(user, self.operation_id)

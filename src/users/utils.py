@@ -1,5 +1,4 @@
 from functools import wraps
-from http import HTTPStatus
 
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django.contrib.auth.models import Group, Permission
