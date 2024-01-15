@@ -18,11 +18,14 @@ from job_manager.models import (
 # ------------------------------------------------------------------------------
 
 
-class WorkCenterService(AbstractPermissionService):
+class WorkCenterService:
+    def __init__(self, user=None):
+        self.user = user
+
     def create(self, name: str, notes: str) -> WorkCenter:
         work_center = WorkCenter.objects.create(name=name, notes=notes)
         work_center.full_clean()
-        work_center.save()
+        work_center.save(user=self.user)
 
         return work_center
 
@@ -32,37 +35,39 @@ class WorkCenterService(AbstractPermissionService):
             "notes",
         ]
 
-        work_center, _ = model_update(instance=work_center, fields=fields, data=data)
+        work_center, _ = model_update(instance=work_center, fields=fields, data=data, user=self.user)
 
         return work_center
 
     def delete(self, work_center: WorkCenter) -> None:
         work_center.delete()
 
+
 # ------------------------------------------------------------------------------
 # Task Type Services
 # ------------------------------------------------------------------------------
 
-class TaskTypeService:
-    def __init__(self):
-        pass
 
-    def create(name: str) -> TaskType:
+class TaskTypeService:
+    def __init__(self, user=None):
+        self.user = user
+
+    def create(self, name: str) -> TaskType:
         task_type = TaskType.objects.create(name=name)
         task_type.full_clean()
-        task_type.save()
+        task_type.save(user=self.user)
 
         return task_type
 
-    def update(task_type: TaskType, data: dict) -> TaskType:
+    def update(self, task_type: TaskType, data: dict) -> TaskType:
         fields = [
             "name",
         ]
 
-        task_type, _ = model_update(instance=task_type, fields=fields, data=data)
+        task_type, _ = model_update(instance=task_type, fields=fields, data=data, user=self.user)
         return task_type
 
-    def delete(task_type: TaskType) -> None:
+    def delete(self, task_type: TaskType) -> None:
         task_type.delete()
 
 
@@ -72,8 +77,8 @@ class TaskTypeService:
 
 
 class TaskService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
@@ -86,6 +91,7 @@ class TaskService:
         setup_time: float = 0,
         teardown_time: float = 0,
         external_id: str = "",
+        notes="",
         work_center: WorkCenter = None,
         job: Job = None,
         dependencies: list[Dependency] = None,
@@ -95,6 +101,7 @@ class TaskService:
         task = Task.objects.create(
             name=name,
             external_id=external_id,
+            notes=notes,
             setup_time=setup_time,
             run_time_per_unit=run_time_per_unit,
             teardown_time=teardown_time,
@@ -105,7 +112,7 @@ class TaskService:
         )
 
         task.full_clean()
-        task.save()
+        task.save(user=self.user)
 
         if dependencies:
             task.dependencies.set(dependencies)
@@ -122,6 +129,8 @@ class TaskService:
     def update(self, *, instance: Task, data: dict) -> Task:
         fields = [
             "name",
+            "external_id",
+            "notes",
             "setup_time",
             "run_time_per_unit",
             "teardown_time",
@@ -135,7 +144,7 @@ class TaskService:
             "successors",
         ]
 
-        task, _ = model_update(instance=instance, fields=fields, data=data)
+        task, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         return task
 
@@ -150,42 +159,47 @@ class TaskService:
 
 
 class JobTypeService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
-    def create(name: str) -> JobType:
-        job_type = JobType.objects.create(name=name)
+    def create(self, name: str, external_id: str = "", notes: str = "") -> JobType:
+        job_type = JobType.objects.create(
+            name=name, external_id=external_id, notes=notes
+        )
         job_type.full_clean()
-        job_type.save()
+        job_type.save(user=self.user)
 
         return job_type
 
-    def update(job_type: JobType, data: dict) -> JobType:
+    def update(self, job_type: JobType, data: dict) -> JobType:
         fields = [
             "name",
+            "external_id",
+            "notes",
         ]
 
-        job_type, _ = model_update(instance=job_type, fields=fields, data=data)
+        job_type, _ = model_update(instance=job_type, fields=fields, data=data, user=self.user)
 
         return job_type
 
-    def delete(job_type: JobType) -> None:
+    def delete(self, job_type: JobType) -> None:
         job_type.delete()
 
 
 class JobService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
+        self,
         name: str,
         due_date: datetime,
         job_type: JobType,
         customer: str = "",
         description: str = "",
         external_id: str = "",
-        note: str = "",
+        notes: str = "",
         priority: int = None,
     ) -> Job:
         job = Job.objects.create(
@@ -194,19 +208,19 @@ class JobService:
             job_type=job_type,
             customer=customer,
             external_id=external_id,
-            note=note,
+            notes=notes,
             description=description,
         )
 
         job.full_clean()
-        job.save()
+        job.save(user=self.user)
 
         job.update_priority(priority)
 
         return job
 
     @transaction.atomic
-    def update(job: Job, data: dict) -> Job:
+    def update(self, job: Job, data: dict) -> Job:
         fields = [
             "name",
             "due_date",
@@ -214,11 +228,11 @@ class JobService:
             "customer",
             "description",
             "external_id",
-            "note",
+            "notes",
             "dependencies",
         ]
 
-        job, _ = model_update(instance=job, fields=fields, data=data)
+        job, _ = model_update(instance=job, fields=fields, data=data, user=self.user)
 
         # update job priority
         if data.get("priority", None):
@@ -227,7 +241,7 @@ class JobService:
         return job
 
     @transaction.atomic
-    def delete(job: Job) -> None:
+    def delete(self, job: Job) -> None:
         job.delete()
 
 
@@ -237,34 +251,38 @@ class JobService:
 
 
 class DependencyTypeService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
-    def create(name: str) -> DependencyType:
-        dependency_type = DependencyType.objects.create(name=name)
+    def create(self, name: str, external_id: str = "", notes: str = "") -> DependencyType:
+        dependency_type = DependencyType.objects.create(
+            name=name, external_id=external_id, notes=notes
+        )
         dependency_type.full_clean()
-        dependency_type.save()
+        dependency_type.save(user=self.user)
 
         return dependency_type
 
-    def update(dependency_type: DependencyType, data: dict) -> DependencyType:
+    def update(self, dependency_type: DependencyType, data: dict) -> DependencyType:
         fields = [
             "name",
+            "external_id",
+            "notes",
         ]
 
         dependency_type, _ = model_update(
-            instance=dependency_type, fields=fields, data=data
+            instance=dependency_type, fields=fields, data=data, user=self.user,
         )
 
         return dependency_type
 
-    def delete(dependency_type: DependencyType) -> None:
+    def delete(self, dependency_type: DependencyType) -> None:
         dependency_type.delete()
 
 
 class DependencyService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
@@ -287,7 +305,7 @@ class DependencyService:
         )
 
         dependency.full_clean()
-        dependency.save()
+        dependency.save(user=self.user)
 
         if tasks:
             dependency.tasks.set(tasks)
@@ -309,7 +327,7 @@ class DependencyService:
             "jobs",
         ]
 
-        dependency, _ = model_update(instance=instance, fields=fields, data=data)
+        dependency, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         return dependency
 

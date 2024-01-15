@@ -38,6 +38,14 @@ class BaseModel(models.Model):
         super().save(*args, **kwargs)
 
 
+class BaseModelWithExtras(BaseModel):
+    external_id = models.CharField(max_length=50, blank=True)
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class FieldType:
     TEXT = "text"
     NUMBER = "number"

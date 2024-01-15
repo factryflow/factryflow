@@ -6,14 +6,15 @@ from resource_manager.models import Resource, ResourceGroup
 
 
 class ResourceService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def create(
         self,
         *,
         name: str,
         external_id: str = "",
+        notes: str = "",
         resource_groups: list[ResourceGroup] = None,
         users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
@@ -22,6 +23,7 @@ class ResourceService:
             name=name,
             external_id=external_id,
             weekly_shift_template=weekly_shift_template,
+            notes=notes,
         )
 
         if resource_groups:
@@ -31,7 +33,7 @@ class ResourceService:
             resource.users.set(users)
 
         resource.full_clean()
-        resource.save()
+        resource.save(user=self.user)
 
         return resource
 
@@ -39,12 +41,13 @@ class ResourceService:
         fields = [
             "name",
             "external_id",
+            "notes",
             "resource_groups",
             "users",
             "weekly_shift_template",
         ]
 
-        resource, _ = model_update(instance=instance, fields=fields, data=data)
+        resource, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         return resource
 
@@ -53,23 +56,25 @@ class ResourceService:
 
 
 class ResourceGroupService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def create(
         self,
         *,
         name: str,
         external_id: str = "",
+        notes: str = "",
         resources: list[Resource] = None,
     ) -> ResourceGroup:
         resource_group = ResourceGroup.objects.create(
             name=name,
             external_id=external_id,
+            notes=notes,
         )
 
         resource_group.full_clean()
-        resource_group.save()
+        resource_group.save(user=self.user)
 
         if resources:
             resource_group.resources.set(resources)
@@ -81,9 +86,10 @@ class ResourceGroupService:
             "name",
             "external_id",
             "resources",
+            "notes",
         ]
 
-        resource_group, _ = model_update(instance=instance, fields=fields, data=data)
+        resource_group, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         return resource_group
 

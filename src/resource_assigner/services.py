@@ -15,8 +15,8 @@ from resource_assigner.models import (
 
 
 class TaskResourceAssigmentService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
@@ -41,7 +41,7 @@ class TaskResourceAssigmentService:
             instance.resources.set(resources)
 
         instance.full_clean()
-        instance.save()
+        instance.save(user=self.user)
 
         return instance
 
@@ -57,7 +57,7 @@ class TaskResourceAssigmentService:
             "use_all_resources",
             "is_direct",
         ]
-        instance, _ = model_update(instance=instance, fields=fields, data=data)
+        instance, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
         return instance
 
     @transaction.atomic
@@ -71,8 +71,8 @@ class TaskResourceAssigmentService:
 
 
 class AssigmentRuleCriteriaService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     @transaction.atomic
     def create(
@@ -91,7 +91,7 @@ class AssigmentRuleCriteriaService:
         )
 
         instance.full_clean()
-        instance.save()
+        instance.save(user=self.user)
 
         return instance
 
@@ -104,7 +104,7 @@ class AssigmentRuleCriteriaService:
             "operator",
             "value",
         ]
-        instance, _ = model_update(instance=instance, fields=fields, data=data)
+        instance, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
         return instance
 
     @transaction.atomic
@@ -113,8 +113,8 @@ class AssigmentRuleCriteriaService:
 
 
 class AssigmentRuleService:
-    def __init__(self):
-        pass
+    def __init__(self, user=None):
+        self.user = user
 
     def _validate_criteria_keys_throw_validation_eror(
         self, criteria: list[dict]
@@ -148,7 +148,7 @@ class AssigmentRuleService:
         )
 
         instance.full_clean()
-        instance.save()
+        instance.save(user=self.user)
 
         # Create criteria
         for criteria_dict in criteria:
@@ -169,7 +169,7 @@ class AssigmentRuleService:
             "resource_group",
             "work_center",
         ]
-        instance, _ = model_update(instance=instance, fields=fields, data=data)
+        instance, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
 
         criteria = data.get("criteria", [])
 

@@ -1,4 +1,4 @@
-from common.models import BaseModel
+from common.models import BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
 from django.db import models
 from simple_history.models import HistoricalRecords
@@ -8,7 +8,7 @@ from simple_history.models import HistoricalRecords
 # ------------------------------------------------------------------------------
 
 
-class WeeklyShiftTemplate(BaseModel):
+class WeeklyShiftTemplate(BaseModelWithExtras):
     name = models.CharField(max_length=150)
 
     history = HistoricalRecords(table_name="weekly_shift_template_history")
@@ -52,7 +52,7 @@ class WeeklyShiftTemplateDetail(BaseModel):
 # ------------------------------------------------------------------------------
 
 
-class OperationalExceptionType(BaseModel):
+class OperationalExceptionType(BaseModelWithExtras):
     name = models.CharField(max_length=150)
 
     history = HistoricalRecords(table_name="operational_exception_type_history")
@@ -61,11 +61,9 @@ class OperationalExceptionType(BaseModel):
         db_table = "operational_exception_type"
 
 
-class OperationalException(BaseModel):
-    external_id = models.CharField(max_length=250, blank=True)
+class OperationalException(BaseModelWithExtras):
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
-    notes = models.TextField(blank=True)
 
     # foreign keys
     operational_exception_type = models.ForeignKey(

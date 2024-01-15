@@ -12,6 +12,7 @@ class ResourceFactory(factory.django.DjangoModelFactory):
 
     name = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
     external_id = ""
+    notes = ""
     weekly_shift_template = factory.SubFactory(WeeklyShiftTemplateFactory)
 
     class Params:
@@ -31,6 +32,7 @@ class ResourceGroupFactory(factory.django.DjangoModelFactory):
 
     name = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
     external_id = ""
+    notes = ""
 
     # class Params:
     #     with_resources = factory.Trait(
