@@ -1,14 +1,14 @@
 import json
 
 import pytest
-from factories import ResourceFactory, ResourceGroupFactory, TaskFactory
+from factories import ResourceFactory, ResourcePoolFactory, TaskFactory
 from resource_assigner.models import TaskResourceAssigment
 
 
 @pytest.fixture
 def payload():
     TaskFactory.create()
-    ResourceGroupFactory.create()
+    ResourcePoolFactory.create()
     ResourceFactory.create_batch(2)
     return {
         "task_id": 1,

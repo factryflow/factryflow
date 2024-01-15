@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from factories import (
     ResourceFactory,
-    ResourceGroupFactory,
+    ResourcePoolFactory,
     TaskFactory,
     TaskResourceAssigmentFactory,
 )
@@ -18,7 +18,7 @@ def resources():
 @pytest.fixture
 def task_resource_assignment_data(resources):
     task = TaskFactory()
-    resource_group = ResourceGroupFactory()
+    resource_group = ResourcePoolFactory()
 
     return {
         "task": task,

@@ -8,7 +8,7 @@ from resource_assigner.models import (
 )
 
 from .job_manager_factories import TaskFactory, WorkCenterFactory
-from .resource_manager_factories import ResourceFactory, ResourceGroupFactory
+from .resource_manager_factories import ResourceFactory, ResourcePoolFactory
 
 
 class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
@@ -16,7 +16,7 @@ class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
         model = TaskResourceAssigment
 
     task = factory.SubFactory(TaskFactory)
-    resource_group = factory.SubFactory(ResourceGroupFactory)
+    resource_pool = factory.SubFactory(ResourcePoolFactory)
     resource_count = None
     use_all_resources = False
     is_direct = True
@@ -33,7 +33,7 @@ class AssigmentRuleFactory(factory.django.DjangoModelFactory):
 
     name = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
     description = ""
-    resource_group = factory.SubFactory(ResourceGroupFactory)
+    resource_pool = factory.SubFactory(ResourcePoolFactory)
     work_center = factory.SubFactory(WorkCenterFactory)
     is_active = True
 

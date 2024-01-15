@@ -16,5 +16,9 @@ from .resource_calendar_factories import (
     WeeklyShiftTemplateDetailFactory,
     WeeklyShiftTemplateFactory,
 )
-from .resource_manager_factories import ResourceFactory, ResourceGroupFactory
+from .resource_manager_factories import (
+    ResourceFactory,
+    ResourcePoolFactory,
+    WorkUnitFactory,
+)
 from .user_factories import UserFactory

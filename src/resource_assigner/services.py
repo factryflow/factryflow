@@ -5,7 +5,7 @@ from common.utils import get_object
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from job_manager.models import Task, WorkCenter
-from resource_manager.models import Resource, ResourceGroup
+from resource_manager.models import Resource, ResourcePool
 
 from resource_assigner.models import (
     AssigmentRule,
@@ -23,7 +23,7 @@ class TaskResourceAssigmentService:
         self,
         *,
         task: Task,
-        resource_group: ResourceGroup,
+        resource_group: ResourcePool,
         resources: list[Resource] = None,
         resource_count: int = None,
         use_all_resources: bool = False,
@@ -134,7 +134,7 @@ class AssigmentRuleService:
         *,
         name: str,
         description: str,
-        resource_group: ResourceGroup,
+        resource_group: ResourcePool,
         work_center: WorkCenter,
         criteria: list[dict] = [],
     ) -> AssigmentRule:

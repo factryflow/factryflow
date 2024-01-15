@@ -1,5 +1,5 @@
 import pytest
-from factories import AssigmentRuleFactory, ResourceGroupFactory, WorkCenterFactory
+from factories import AssigmentRuleFactory, ResourcePoolFactory, WorkCenterFactory
 from resource_assigner.models import AssigmentRule
 from resource_assigner.services import AssigmentRuleService
 
@@ -9,7 +9,7 @@ def assignment_rule_data():
     return {
         "name": "test",
         "description": "test",
-        "resource_group": ResourceGroupFactory(),
+        "resource_group": ResourcePoolFactory(),
         "work_center": WorkCenterFactory(),
         "criteria": [
             {
