@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Tuple
 
+from api.permission_checker import AbstractPermissionService
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models.fields.related import ManyToManyRel
 from django.utils import timezone
@@ -101,10 +103,7 @@ def model_update(
     return instance, has_updated
 
 
-class CustomFieldService:
-    def __init__(self, user=None) -> None:
-        self.user = user
-
+class CustomFieldService(AbstractPermissionService):
     def _add_prefix_to_name(self, name: str) -> str:
         return f"custom_{name}"
 
@@ -117,6 +116,10 @@ class CustomFieldService:
         field_type: str,
         description: str = "",
     ):
+        # check permissions for add custom field
+        if not self.check_for_permission("add_customfield"):
+            raise PermissionDenied()
+
         name = self._add_prefix_to_name(name)
         custom_field = CustomField.objects.create(
             content_type=content_type,
@@ -132,13 +135,23 @@ class CustomFieldService:
         return custom_field
 
     def update(self, *, instance: CustomField, data: dict):
+        # check permissions for update custom field
+        if not self.check_for_permission("change_customfield"):
+            raise PermissionDenied()
+
         # add prefix to name
         if "name" in data:
             data["name"] = self._add_prefix_to_name(data["name"])
 
         fields = ["name", "label", "description"]
-        custom_field, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
+        custom_field, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
         return custom_field
 
     def delete(self, instance: CustomField):
+        # check permissions for delete custom field
+        if not self.check_for_permission("delete_customfield"):
+            raise PermissionDenied()
+
         instance.delete()

@@ -1,14 +1,20 @@
+from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from resource_calendar.models import WeeklyShiftTemplate
 
 from resource_manager.models import Resource, ResourcePool, WorkUnit
 
 
+<<<<<<< HEAD
 class ResourceService:
     def __init__(self):
         pass
 
+=======
+class ResourceService(AbstractPermissionService):
+>>>>>>> 59ba0bc (added permission check to all services)
     def create(
         self,
         *,
@@ -21,6 +27,10 @@ class ResourceService:
         users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
+        # check permissions for add resource
+        if not self.check_for_permission("add_resource"):
+            raise PermissionDenied()
+
         resource = Resource.objects.create(
             name=name,
             external_id=external_id,
@@ -44,6 +54,10 @@ class ResourceService:
         return resource
 
     def update(self, *, instance: Resource, data: dict) -> Resource:
+        # check permissions for update resource
+        if not self.check_for_permission("change_resource"):
+            raise PermissionDenied()
+
         fields = [
             "name",
             "external_id",
@@ -54,18 +68,32 @@ class ResourceService:
             "weekly_shift_template",
         ]
 
+<<<<<<< HEAD
         resource, _ = model_update(instance=instance, fields=fields, data=data)
+=======
+        resource, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+>>>>>>> 59ba0bc (added permission check to all services)
 
         return resource
 
     def delete(self, instance: Resource) -> None:
+        # check permissions for delete resource
+        if not self.check_for_permission("delete_resource"):
+            raise PermissionDenied()
+
         instance.delete()
 
 
+<<<<<<< HEAD
 class WorkUnitService:
     def __init__(self):
         pass
 
+=======
+class ResourceGroupService(AbstractPermissionService):
+>>>>>>> 59ba0bc (added permission check to all services)
     def create(
         self,
         *,
@@ -73,9 +101,18 @@ class WorkUnitService:
         external_id: str = "",
         notes: str = "",
         resources: list[Resource] = None,
+<<<<<<< HEAD
         resource_pools: list[ResourcePool] = None,
     ) -> WorkUnit:
         work_unit = WorkUnit.objects.create(
+=======
+    ) -> ResourceGroup:
+        # check permissions for add resource group
+        if not self.check_for_permission("add_resourcegroup"):
+            raise PermissionDenied()
+
+        resource_group = ResourceGroup.objects.create(
+>>>>>>> 59ba0bc (added permission check to all services)
             name=name,
             external_id=external_id,
             notes=notes,
@@ -90,6 +127,7 @@ class WorkUnitService:
         if resource_pools:
             work_unit.resource_pools.set(resource_pools)
 
+<<<<<<< HEAD
         return work_unit
 
     def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
@@ -140,6 +178,13 @@ class ResourcePoolService:
         return resource_pool
 
     def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
+=======
+    def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
+        # check permissions for update resource group
+        if not self.check_for_permission("change_resourcegroup"):
+            raise PermissionDenied()
+
+>>>>>>> 59ba0bc (added permission check to all services)
         fields = [
             "name",
             "external_id",
@@ -148,9 +193,23 @@ class ResourcePoolService:
             "notes",
         ]
 
+<<<<<<< HEAD
         resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
+=======
+        resource_group, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+>>>>>>> 59ba0bc (added permission check to all services)
 
         return resource_pool
 
+<<<<<<< HEAD
     def delete(self, instance: ResourcePool) -> None:
+=======
+    def delete(self, instance: ResourceGroup) -> None:
+        # check permissions for delete resource group
+        if not self.check_for_permission("delete_resourcegroup"):
+            raise PermissionDenied()
+
+>>>>>>> 59ba0bc (added permission check to all services)
         instance.delete()

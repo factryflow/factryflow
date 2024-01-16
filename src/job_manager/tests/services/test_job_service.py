@@ -1,6 +1,5 @@
 import pytest
 from factories.job_manager_factories import JobFactory, JobTypeFactory
-
 from job_manager.models import Job
 from job_manager.services import JobService
 
@@ -16,7 +15,7 @@ def test_job_create():
         "job_type": job_type,
     }
 
-    job = JobService.create(**job_data)
+    job = JobService().create(**job_data)
 
     assert job.name == "test"
     assert job.id is not None
@@ -31,7 +30,7 @@ def test_job_update():
     data = {
         "name": "update_name",
     }
-    job = JobService.update(job=job, data=data)
+    job = JobService().update(job=job, data=data)
 
     assert job.name == "update_name"
     assert job.id is not None
@@ -42,7 +41,7 @@ def test_job_update():
 def test_job_delete():
     job = JobFactory(name="test")
 
-    JobService.delete(job=job)
+    JobService().delete(job=job)
 
     assert Job.objects.count() == 0
 
