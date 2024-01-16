@@ -1,14 +1,13 @@
+from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from resource_calendar.models import WeeklyShiftTemplate
 
 from resource_manager.models import Resource, ResourceGroup
 
 
-class ResourceService:
-    def __init__(self, user=None):
-        self.user = user
-
+class ResourceService(AbstractPermissionService):
     def create(
         self,
         *,
@@ -19,6 +18,10 @@ class ResourceService:
         users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
+        # check permissions for add resource
+        if not self.check_for_permission("add_resource"):
+            raise PermissionDenied()
+
         resource = Resource.objects.create(
             name=name,
             external_id=external_id,
@@ -38,6 +41,10 @@ class ResourceService:
         return resource
 
     def update(self, *, instance: Resource, data: dict) -> Resource:
+        # check permissions for update resource
+        if not self.check_for_permission("change_resource"):
+            raise PermissionDenied()
+
         fields = [
             "name",
             "external_id",
@@ -47,18 +54,21 @@ class ResourceService:
             "weekly_shift_template",
         ]
 
-        resource, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
+        resource, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
 
         return resource
 
     def delete(self, instance: Resource) -> None:
+        # check permissions for delete resource
+        if not self.check_for_permission("delete_resource"):
+            raise PermissionDenied()
+
         instance.delete()
 
 
-class ResourceGroupService:
-    def __init__(self, user=None):
-        self.user = user
-
+class ResourceGroupService(AbstractPermissionService):
     def create(
         self,
         *,
@@ -67,6 +77,10 @@ class ResourceGroupService:
         notes: str = "",
         resources: list[Resource] = None,
     ) -> ResourceGroup:
+        # check permissions for add resource group
+        if not self.check_for_permission("add_resourcegroup"):
+            raise PermissionDenied()
+
         resource_group = ResourceGroup.objects.create(
             name=name,
             external_id=external_id,
@@ -82,6 +96,10 @@ class ResourceGroupService:
         return resource_group
 
     def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
+        # check permissions for update resource group
+        if not self.check_for_permission("change_resourcegroup"):
+            raise PermissionDenied()
+
         fields = [
             "name",
             "external_id",
@@ -89,9 +107,15 @@ class ResourceGroupService:
             "notes",
         ]
 
-        resource_group, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
+        resource_group, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
 
         return resource_group
 
     def delete(self, instance: ResourceGroup) -> None:
+        # check permissions for delete resource group
+        if not self.check_for_permission("delete_resourcegroup"):
+            raise PermissionDenied()
+
         instance.delete()

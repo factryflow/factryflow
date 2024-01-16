@@ -1,5 +1,6 @@
+from abc import ABC
 from functools import wraps
-from abc import ABC, abstractmethod
+
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from rolepermissions.checkers import has_permission
@@ -39,26 +40,14 @@ class AbstractPermissionService(ABC):
     Abstract base class for services with permission-checking capabilities.
     """
 
-    def __init__(self, user: User):
+    def __init__(self, user: None | User = None):
         """
         Args:
             operation_id (str): The operation ID of the permission to check.
         """
         self.user = user
 
-    @abstractmethod
-    def create(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def update(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def delete(self, *args, **kwargs):
-        pass
-
-    def has_permission(self, operation_id):
+    def check_for_permission(self, operation_id):
         """
         Check if the user has the specified permission.
 
