@@ -11,6 +11,7 @@ from .resource_assigner_factories import (
     AssigmentConstraintFactory,
     AssigmentRuleCriteriaFactory,
     AssigmentRuleFactory,
+    TaskResourceAssigmentFactory,
 )
 from .resource_calendar_factories import (
     WeeklyShiftTemplateDetailFactory,

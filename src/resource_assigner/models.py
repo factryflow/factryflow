@@ -113,13 +113,14 @@ class AssignmentConstraint(BaseModel):
 
     def clean(self):
         resource_pool_set = self.resource_pool_id is not None
-        resources_or_units_set = self.resources or self.work_units
+        resources_set = self.resources.exists()
+        work_units_set = self.work_units.exists()
 
-        if resource_pool_set and resources_or_units_set:
+        if resource_pool_set and (resources_set or work_units_set):
             raise ValidationError(
                 "You cannot set both resource_pool and resources or work_units. Choose one."
             )
-        elif not resource_pool_set and not resources_or_units_set:
+        elif not resource_pool_set and not (resources_set or work_units_set):
             raise ValidationError(
                 "You must set either resource_pool or resources or work_units."
             )

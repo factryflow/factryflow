@@ -19,7 +19,9 @@ class Resource(BaseModelWithExtras):
     ]
 
     name = models.CharField(max_length=100)
-    resource_type = models.CharField(max_length=1, choices=RESOURCE_TYPES)
+    resource_type = models.CharField(
+        max_length=1, choices=RESOURCE_TYPES, blank=True, null=True
+    )
     history = HistoricalRecords(table_name="resource_history")
 
     # foreign keys

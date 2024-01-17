@@ -15,6 +15,7 @@ class ResourceService:
         name: str,
         external_id: str = "",
         notes: str = "",
+        resource_type: str = None,
         work_units: list[WorkUnit] = None,
         resource_pools: list[ResourcePool] = None,
         users: list[User] = None,
@@ -24,6 +25,7 @@ class ResourceService:
             name=name,
             external_id=external_id,
             weekly_shift_template=weekly_shift_template,
+            resource_type=resource_type,
             notes=notes,
         )
 

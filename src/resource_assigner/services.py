@@ -14,6 +14,10 @@ from resource_assigner.models import (
     TaskResourceAssigment,
 )
 
+# ------------------------------------------------------------------------------
+# Task Resource Assignment Services
+# ------------------------------------------------------------------------------
+
 
 class TaskResourceAssigmentService:
     def __init__(self):
@@ -47,6 +51,11 @@ class TaskResourceAssigmentService:
         instance.delete()
 
 
+# ------------------------------------------------------------------------------
+# Assignment Constraint Services
+# ------------------------------------------------------------------------------
+
+
 class AssignmentConstraintService:
     def __init__(self):
         pass
@@ -57,7 +66,7 @@ class AssignmentConstraintService:
         *,
         task: Task = None,
         assignment_rule: AssigmentRule = None,
-        resoruce_pool: ResourcePool = None,
+        resource_pool: ResourcePool = None,
         resources: list[Resource] = None,
         work_units: list[WorkUnit] = None,
         required_units: int = 1,
@@ -66,7 +75,7 @@ class AssignmentConstraintService:
         instance = AssignmentConstraint.objects.create(
             task=task,
             assignment_rule=assignment_rule,
-            resource_pool=resoruce_pool,
+            resource_pool=resource_pool,
             required_units=required_units,
             is_direct=is_direct,
         )
@@ -148,9 +157,9 @@ class AssigmentRuleCriteriaService:
 
 
 class AssigmentRuleService:
-    def __init__(self, user):
-        self.assignment_constraint_service = AssignmentConstraintService(user=user)
-        self.assigment_rule_criteria_service = AssigmentRuleCriteriaService(user=user)
+    def __init__(self):
+        self.assignment_constraint_service = AssignmentConstraintService()
+        self.assigment_rule_criteria_service = AssigmentRuleCriteriaService()
 
     def _validate_criteria_keys_throw_validation_error(
         self, criteria: list[dict]
