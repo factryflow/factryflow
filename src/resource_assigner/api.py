@@ -3,28 +3,28 @@ from ninja import Router
 
 from resource_assigner.models import (
     AssigmentRule,
-    TaskResourceAssigment,
+    AssignmentConstraint,
 )
 from resource_assigner.services import (
     AssigmentRuleService,
-    TaskResourceAssigmentService,
+    AssignmentConstraintService,
 )
 
 from .schemas import (
     AssigmentRuleIn,
     AssigmentRuleOut,
-    TaskResourceAssigmentIn,
-    TaskResourceAssigmentOut,
+    AssignmentConstraintIn,
+    AssignmentConstraintOut,
 )
 
 resource_assigner_router = Router()
 
 task_resource_assigment_viewset = CRUDModelViewSet(
-    model=TaskResourceAssigment,
+    model=AssignmentConstraint,
     path="/task-resource-assignments",
-    service=TaskResourceAssigmentService,
-    input_schema=TaskResourceAssigmentIn,
-    output_schema=TaskResourceAssigmentOut,
+    service=AssignmentConstraintService,
+    input_schema=AssignmentConstraintIn,
+    output_schema=AssignmentConstraintOut,
     tags=["Task Resource Assignments"],
 )
 

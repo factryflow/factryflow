@@ -3,12 +3,17 @@ from common.utils.tests import faker
 from resource_assigner.models import (
     AssigmentRule,
     AssigmentRuleCriteria,
+    AssignmentConstraint,
     Operator,
     TaskResourceAssigment,
 )
 
 from .job_manager_factories import TaskFactory, WorkCenterFactory
-from .resource_manager_factories import ResourceFactory, ResourcePoolFactory
+from .resource_manager_factories import (
+    ResourceFactory,
+    ResourcePoolFactory,
+    WorkUnitFactory,
+)
 
 
 class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
@@ -16,15 +21,7 @@ class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
         model = TaskResourceAssigment
 
     task = factory.SubFactory(TaskFactory)
-    resource_pool = factory.SubFactory(ResourcePoolFactory)
-    resource_count = None
-    use_all_resources = False
-    is_direct = True
-
-    class Params:
-        with_resources = factory.Trait(
-            resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
-        )
+    resource = factory.SubFactory(ResourceFactory)
 
 
 class AssigmentRuleFactory(factory.django.DjangoModelFactory):
@@ -32,8 +29,9 @@ class AssigmentRuleFactory(factory.django.DjangoModelFactory):
         model = AssigmentRule
 
     name = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
+    external_id = ""
     description = ""
-    resource_pool = factory.SubFactory(ResourcePoolFactory)
+    notes = ""
     work_center = factory.SubFactory(WorkCenterFactory)
     is_active = True
 
@@ -46,3 +44,31 @@ class AssigmentRuleCriteriaFactory(factory.django.DjangoModelFactory):
     operator = Operator.EQUALS
     value = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
     field = "name"
+
+
+class AssigmentConstraintFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = AssignmentConstraint
+
+    task = None
+    assignment_rule = None
+    resource_pool = None
+    required_units = 1
+    is_direct = True
+
+    class Params:
+        with_task = factory.Trait(
+            task=factory.SubFactory(TaskFactory),
+        )
+        with_assignment_rule = factory.Trait(
+            assignment_rule=factory.SubFactory(AssigmentRuleFactory)
+        )
+        with_resource_pool = factory.Trait(
+            resource_pool=factory.SubFactory(ResourcePoolFactory)
+        )
+        with_resources = factory.Trait(
+            resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
+        )
+        with_work_units = factory.Trait(
+            work_units=factory.lazy_attribute(lambda _: WorkUnitFactory.create_batch(2))
+        )
