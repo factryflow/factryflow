@@ -2,7 +2,7 @@ from common.services import model_update
 from django.contrib.auth.models import User
 from resource_calendar.models import WeeklyShiftTemplate
 
-from resource_manager.models import Resource, ResourceGroup
+from resource_manager.models import Resource, ResourcePool, WorkUnit
 
 
 class ResourceService:
@@ -15,7 +15,9 @@ class ResourceService:
         name: str,
         external_id: str = "",
         notes: str = "",
-        resource_groups: list[ResourceGroup] = None,
+        resource_type: str = None,
+        work_units: list[WorkUnit] = None,
+        resource_pools: list[ResourcePool] = None,
         users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
@@ -23,11 +25,15 @@ class ResourceService:
             name=name,
             external_id=external_id,
             weekly_shift_template=weekly_shift_template,
+            resource_type=resource_type,
             notes=notes,
         )
 
-        if resource_groups:
-            resource.resource_groups.set(resource_groups)
+        if work_units:
+            resource.work_units.set(work_units)
+
+        if resource_pools:
+            resource.resource_pools.set(resource_pools)
 
         if users:
             resource.users.set(users)
@@ -42,7 +48,8 @@ class ResourceService:
             "name",
             "external_id",
             "notes",
-            "resource_groups",
+            "work_units",
+            "resource_pools",
             "users",
             "weekly_shift_template",
         ]
@@ -55,7 +62,7 @@ class ResourceService:
         instance.delete()
 
 
-class ResourceGroupService:
+class WorkUnitService:
     def __init__(self):
         pass
 
@@ -66,32 +73,84 @@ class ResourceGroupService:
         external_id: str = "",
         notes: str = "",
         resources: list[Resource] = None,
-    ) -> ResourceGroup:
-        resource_group = ResourceGroup.objects.create(
+        resource_pools: list[ResourcePool] = None,
+    ) -> WorkUnit:
+        work_unit = WorkUnit.objects.create(
             name=name,
             external_id=external_id,
             notes=notes,
         )
 
-        resource_group.full_clean()
-        resource_group.save()
+        work_unit.full_clean()
+        work_unit.save()
 
         if resources:
-            resource_group.resources.set(resources)
+            work_unit.resources.set(resources)
 
-        return resource_group
+        if resource_pools:
+            work_unit.resource_pools.set(resource_pools)
 
-    def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
+        return work_unit
+
+    def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
+        fields = [
+            "name",
+            "external_id",
+            "notes",
+            "resources",
+            "resource_pools",
+        ]
+
+        work_unit, _ = model_update(instance=instance, fields=fields, data=data)
+
+        return work_unit
+
+    def delete(self, instance: WorkUnit) -> None:
+        instance.delete()
+
+
+class ResourcePoolService:
+    def __init__(self):
+        pass
+
+    def create(
+        self,
+        *,
+        name: str,
+        external_id: str = "",
+        notes: str = "",
+        resources: list[Resource] = None,
+        work_units: list[WorkUnit] = None,
+    ) -> ResourcePool:
+        resource_pool = ResourcePool.objects.create(
+            name=name,
+            external_id=external_id,
+            notes=notes,
+        )
+
+        resource_pool.full_clean()
+        resource_pool.save()
+
+        if resources:
+            resource_pool.resources.set(resources)
+
+        if work_units:
+            resource_pool.work_units.set(work_units)
+
+        return resource_pool
+
+    def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
         fields = [
             "name",
             "external_id",
             "resources",
+            "work_units",
             "notes",
         ]
 
-        resource_group, _ = model_update(instance=instance, fields=fields, data=data)
+        resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
 
-        return resource_group
+        return resource_pool
 
-    def delete(self, instance: ResourceGroup) -> None:
+    def delete(self, instance: ResourcePool) -> None:
         instance.delete()

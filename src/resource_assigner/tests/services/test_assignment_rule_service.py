@@ -1,5 +1,5 @@
 import pytest
-from factories import AssigmentRuleFactory, ResourceGroupFactory, WorkCenterFactory
+from factories import AssigmentRuleFactory, WorkCenterFactory
 from resource_assigner.models import AssigmentRule
 from resource_assigner.services import AssigmentRuleService
 
@@ -9,7 +9,6 @@ def assignment_rule_data():
     return {
         "name": "test",
         "description": "test",
-        "resource_group": ResourceGroupFactory(),
         "work_center": WorkCenterFactory(),
         "criteria": [
             {
@@ -33,7 +32,6 @@ def test_can_create_assignment_rule(assignment_rule_data):
     assert assignment_rule.id is not None
     assert assignment_rule.name == assignment_rule_data["name"]
     assert assignment_rule.description == assignment_rule_data["description"]
-    assert assignment_rule.resource_group == assignment_rule_data["resource_group"]
     assert assignment_rule.work_center == assignment_rule_data["work_center"]
     assert assignment_rule.criteria.count() == 2
 
