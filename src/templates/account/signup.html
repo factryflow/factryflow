@@ -1,16 +1,16 @@
 {% extends './main.html' %} {% block content %}
 {% load static %}
 <!-- Sign Up Section -->
-<section class="w-full h-full flex flex-col justify-center items-center bg-blue-900 bg-cover bg-center" style="background-image:url('{% static 'images/Effects.png' %}');">
-    <div class="flex items-center mt-4">
-        <img src="{% static 'images/fflogo.svg' %}" alt="fflogo" class="w-16 h-16 mr-2" />
-        <h1 class="text-white text-center font-mohave text-5xl font-semibold  pt-2">FactryFlow</h1>
-    </div>
+  <div class="min-h-screen flex flex-col justify-center items-center pt-20 pb-9 sm:px-6 lg:px-8">
+    <a href="#" class="flex items-center mb-16 text-8xl max-sm:text-6xl font-mohave font-semibold text-white">
+      <img class="w-36 h-28 mr-2 max-sm:w-20 max-sm:h-16" src="{% static 'images/fflogo.svg' %}" alt="logo">
+      FactryFlow    
+   </a>
   <!-- Container for Sign-Up Form -->
-  <div class="md:w-2/4 h-fit bg-[#FFFFFF] rounded-lg mt-8 shadow xl:w-[624px]" x-data="{ showPassword: true,showRePassword:true ,isChecked:false}">
-    <div class="m-11">
+    <div class="sm:mx-auto sm:w-full sm:max-w-xl w-full lg:max-w-2xl" x-data="{ showPassword: true,showRePassword:true ,isChecked:false}">
+     <div class="bg-white py-7 px-16 max-sm:py-10 max-sm:px-4 max-sm:mx-5 rounded-xl sm:px-[67px]">
         <!-- Sign-Up Title -->
-        <h1 class="text-xl font-semibold leading-6 tracking-tight text-[#181C32] text-center">
+        <h1 class="text-2xl font-semibold leading-6 tracking-tight text-[#181C32] text-center mb-9">
             Sign up for an account
         </h1>
         <!-- Non-field Errors -->
@@ -25,14 +25,14 @@
                 <!-- Display Email Validation Errors -->
                 <ul class="errorlist text-sm font-medium text-gray-400"><li>{{ form.email.errors | safe }}</li></ul>
                 <label for="id_email" class="block mb-2 text-sm font-semibold text-[#181C32]">Email Address<span class="text-red-600">*</span></label>
-                <input type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320" required autofocus id="id_email" class="text-gray-900 text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
+                <input type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320" required autofocus id="id_email" class="text-[#7E8299] text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
             </div>
 
             <!-- Password Input -->
             <div class="relative">
                 <!-- Display Password Validation Errors -->
                 <label for="id_password1" class="block mb-2 text-sm font-medium text-[#181C32]">Password<span class="text-red-600">*</span></label>
-                <input :type="showPassword ? 'password' : 'text'" name="password1" placeholder="Enter Password" autocomplete="new-password" required id="id_password1" class="text-gray-900 text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
+                <input :type="showPassword ? 'password' : 'text'" name="password1" placeholder="Enter Password" autocomplete="new-password" required id="id_password1" class="text-[#7E8299] text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
                 <img 
                 class="h-5 w-5 absolute right-[15px] top-[40px] cursor-pointer" 
                 src="{% static 'images/visibility.svg' %}"
@@ -46,7 +46,7 @@
             <div class="relative">
                 <!-- Display Password Confirmation Validation Errors -->
                 <label for="id_password2" class="block mb-2 text-sm font-medium text-[#181C32]">Repeat Password<span class="text-red-600">*</span></label>
-                <input :type="showRePassword ? 'password' : 'text'" name="password2" placeholder="Enter Password" autocomplete="new-password" required id="id_password2" class="text-gray-900 text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
+                <input :type="showRePassword ? 'password' : 'text'" name="password2" placeholder="Enter Password" autocomplete="new-password" required id="id_password2" class="text-[#7E8299] text-sm font-medium rounded-md outline-none border border-solid border-[#E1E3EA] block w-full p-2.5">
                 <img 
                 class="h-5 w-5 absolute right-[15px] top-[40px] cursor-pointer" 
                 src="{% static 'images/visibility.svg' %}"
@@ -95,7 +95,7 @@
             
             <!-- Sign Up Button -->
             <button type="submit"
-                class="w-full text-white bg-[#023E8A] focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg font-semibold text-base px-5 py-2.5 text-center"
+                class="w-full text-white bg-[#023E8A] focus:ring-4 focus:outline-none focus:ring-primary-300  rounded-lg font-semibold text-base px-5 py-2.5 text-center"
             >
                 Sign Up
             </button>
@@ -105,12 +105,13 @@
         <p class="text-sm font-medium text-gray-500 text-center mt-4">
             Already have an Account? <a href="#" hx-get="{% url 'account_login' %}" hx-target="body" hx-push-url="true" class="font-medium text-[#023E8A] hover:underline">sign in</a>.
         </p>
+     </div>
     </div>
+  
+     <div class="mt-20 flex justify-center gap-10 select-none">
+       <label for="accept-terms" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Terms & Conditions</label>
+       <label for="contact-us" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Contact Us</label>
+     </div>
   </div>
 
-  <div class="w-full flex justify-center gap-4  mt-16 mb-8 select-none">
-    <label for="accept-terms" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Terms & Conditions</label>
-    <label for="contact-us" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Contact Us</label>
-  </div>
-</section>
 {% endblock content %}
