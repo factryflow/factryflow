@@ -8,23 +8,12 @@ from taggit.models import Tag
 
 from ..forms import IssueForm
 from ..models import Issue
+from ..selectors import issue_list
+from ..services import issue_create_or_update, issue_delete
 
 # ------------------------------------------------------------------------------
 # Issue Views
 # ------------------------------------------------------------------------------
-
-
-# Include following functions to Service
-def issue_list():
-    pass
-
-
-def issue_create_or_update():
-    pass
-
-
-def issue_delete():
-    pass
 
 
 class IssueCardView:
@@ -32,11 +21,11 @@ class IssueCardView:
     Class representing a view for displaying issues in a card format.
     """
 
-    def __init__(self, search_query=None):
+    def __init__(self, search_query: dict = None):
         """
         Initialization of the class with optional filtering parameters.
         """
-        self.issues = issue_list()  # TODO - implement this function from a service
+        self.issues = issue_list()
         self.search_query = search_query
 
     @property
@@ -181,16 +170,17 @@ def save_issue_form(request, id: int = None):
 
     # Instantiate the form with POST data and optionally the issue instance
     form = IssueForm(request.POST, instance=issue_instance)
-    id = request.POST.get("id")
+
+    # id = request.POST.get("id") -> Possibly Redundant
 
     if form.is_valid():
         # Extract data from the form
         issue_data = form.cleaned_data
         issue_data["id"] = id
+        # TODO: Looking for a way to properly handle update/create of tags
+        issue_type = issue_data["tags"]
 
-        # Calling the service function
-        # Issue type would come from the Issue Form being submitted
-        issue = issue_create_or_update(issue_data=issue_data, issue_type=issue_type)
+        issue_create_or_update(issue_data=issue_data, issue_type=issue_type)
 
         form = IssueForm()
         response = render(
