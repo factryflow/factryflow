@@ -9,7 +9,6 @@ class IssueFilter(django_filters.FilterSet):
         fields = {
             "title": ["icontains"],
             "status": ["icontains"],
-            "tags": ["iexact"],
             "task": ["icontains"],
             "issue__comments": ["icontains"],
             "created_at": ["exact", "day__gte"],
