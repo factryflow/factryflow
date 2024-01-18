@@ -24,7 +24,9 @@ def resource_data():
 
 @pytest.mark.django_db
 def test_can_create_resource(resource_data):
-    resource = ResourceService().create(**resource_data)
+    user = UserFactory()
+
+    resource = ResourceService(user=user).create(**resource_data)
 
     assert resource.name == resource_data["name"]
     assert resource.external_id == resource_data["external_id"]
@@ -35,12 +37,14 @@ def test_can_create_resource(resource_data):
 
 @pytest.mark.django_db
 def test_can_update_resource(resource_data):
-    resource = ResourceService().create(**resource_data)
+    user = UserFactory()
+
+    resource = ResourceService(user=user).create(**resource_data)
 
     new_name = "Resource 2"
     new_external_id = "2"
 
-    updated_resource = ResourceService().update(
+    updated_resource = ResourceService(user=user).update(
         instance=resource,
         data={
             "name": new_name,
@@ -55,13 +59,15 @@ def test_can_update_resource(resource_data):
 
 @pytest.mark.django_db
 def test_can_update_relationships(resource_data):
-    resource = ResourceService().create(**resource_data)
+    user = UserFactory()
+
+    resource = ResourceService(user=user).create(**resource_data)
 
     new_resource_pools = [ResourcePoolFactory()]
     new_weekly_shift_template = WeeklyShiftTemplateFactory()
     new_work_units = [WorkUnitFactory()]
 
-    updated_resource = ResourceService().update(
+    updated_resource = ResourceService(user=user).update(
         instance=resource,
         data={
             "resource_pools": new_resource_pools,
@@ -78,8 +84,10 @@ def test_can_update_relationships(resource_data):
 
 @pytest.mark.django_db
 def test_can_delete_resource(resource_data):
-    resource = ResourceService().create(**resource_data)
+    user = UserFactory()
 
-    ResourceService().delete(instance=resource)
+    resource = ResourceService(user=user).create(**resource_data)
+
+    ResourceService(user=user).delete(instance=resource)
 
     assert Resource.objects.count() == 0
