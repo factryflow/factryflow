@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # extensions
     "django_htmx",
     "django_extensions",
+    "django_filters",
     "template_partials",
     "simple_history",
     "ordered_model",
