@@ -75,14 +75,10 @@ class ResourceService(AbstractPermissionService):
         instance.delete()
 
 
-<<<<<<< HEAD
-class ResourceGroupService(AbstractPermissionService):
-=======
 class WorkUnitService:
     def __init__(self):
         pass
 
->>>>>>> main
     def create(
         self,
         *,
@@ -90,30 +86,16 @@ class WorkUnitService:
         external_id: str = "",
         notes: str = "",
         resources: list[Resource] = None,
-<<<<<<< HEAD
-    ) -> ResourceGroup:
-        # check permissions for add resource group
-        if not self.check_for_permission("add_resourcegroup"):
-            raise PermissionDenied()
-
-        resource_group = ResourceGroup.objects.create(
-=======
         resource_pools: list[ResourcePool] = None,
     ) -> WorkUnit:
         work_unit = WorkUnit.objects.create(
->>>>>>> main
             name=name,
             external_id=external_id,
             notes=notes,
         )
 
-<<<<<<< HEAD
-        resource_group.full_clean()
-        resource_group.save(user=self.user)
-=======
         work_unit.full_clean()
         work_unit.save()
->>>>>>> main
 
         if resources:
             work_unit.resources.set(resources)
@@ -121,13 +103,6 @@ class WorkUnitService:
         if resource_pools:
             work_unit.resource_pools.set(resource_pools)
 
-<<<<<<< HEAD
-    def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
-        # check permissions for update resource group
-        if not self.check_for_permission("change_resourcegroup"):
-            raise PermissionDenied()
-
-=======
         return work_unit
 
     def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
@@ -178,7 +153,6 @@ class ResourcePoolService:
         return resource_pool
 
     def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
->>>>>>> main
         fields = [
             "name",
             "external_id",
@@ -187,23 +161,9 @@ class ResourcePoolService:
             "notes",
         ]
 
-<<<<<<< HEAD
-        resource_group, _ = model_update(
-            instance=instance, fields=fields, data=data, user=self.user
-        )
-=======
         resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
->>>>>>> main
 
         return resource_pool
 
-<<<<<<< HEAD
-    def delete(self, instance: ResourceGroup) -> None:
-        # check permissions for delete resource group
-        if not self.check_for_permission("delete_resourcegroup"):
-            raise PermissionDenied()
-
-=======
     def delete(self, instance: ResourcePool) -> None:
->>>>>>> main
         instance.delete()
