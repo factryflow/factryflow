@@ -87,13 +87,19 @@ class ResourceService(AbstractPermissionService):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c9eb050 (resolved conflicts)
 class WorkUnitService:
     def __init__(self):
         pass
 
+<<<<<<< HEAD
 =======
 class ResourceGroupService(AbstractPermissionService):
 >>>>>>> 59ba0bc (added permission check to all services)
+=======
+>>>>>>> c9eb050 (resolved conflicts)
     def create(
         self,
         *,
@@ -101,6 +107,7 @@ class ResourceGroupService(AbstractPermissionService):
         external_id: str = "",
         notes: str = "",
         resources: list[Resource] = None,
+<<<<<<< HEAD
 <<<<<<< HEAD
         resource_pools: list[ResourcePool] = None,
     ) -> WorkUnit:
@@ -113,6 +120,11 @@ class ResourceGroupService(AbstractPermissionService):
 
         resource_group = ResourceGroup.objects.create(
 >>>>>>> 59ba0bc (added permission check to all services)
+=======
+        resource_pools: list[ResourcePool] = None,
+    ) -> WorkUnit:
+        work_unit = WorkUnit.objects.create(
+>>>>>>> c9eb050 (resolved conflicts)
             name=name,
             external_id=external_id,
             notes=notes,
@@ -128,6 +140,9 @@ class ResourceGroupService(AbstractPermissionService):
             work_unit.resource_pools.set(resource_pools)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c9eb050 (resolved conflicts)
         return work_unit
 
     def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
@@ -178,6 +193,7 @@ class ResourcePoolService:
         return resource_pool
 
     def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
+<<<<<<< HEAD
 =======
     def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
         # check permissions for update resource group
@@ -185,6 +201,8 @@ class ResourcePoolService:
             raise PermissionDenied()
 
 >>>>>>> 59ba0bc (added permission check to all services)
+=======
+>>>>>>> c9eb050 (resolved conflicts)
         fields = [
             "name",
             "external_id",
@@ -193,6 +211,7 @@ class ResourcePoolService:
             "notes",
         ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
 =======
@@ -212,4 +231,11 @@ class ResourcePoolService:
             raise PermissionDenied()
 
 >>>>>>> 59ba0bc (added permission check to all services)
+=======
+        resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
+
+        return resource_pool
+
+    def delete(self, instance: ResourcePool) -> None:
+>>>>>>> c9eb050 (resolved conflicts)
         instance.delete()
