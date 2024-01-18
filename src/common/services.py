@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Tuple
 
+from api.permission_checker import AbstractPermissionService
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models.fields.related import ManyToManyRel
 from django.utils import timezone
@@ -11,6 +13,7 @@ from common.types import DjangoModelType
 
 def model_update(
     *,
+    user=None,
     instance: DjangoModelType,
     fields: List[str],
     data: Dict[str, Any],
@@ -87,7 +90,7 @@ def model_update(
         # Update only the fields that are meant to be updated.
         # Django docs reference:
         # https://docs.djangoproject.com/en/dev/ref/models/instances/#specifying-which-fields-to-save
-        instance.save(update_fields=update_fields)
+        instance.save(update_fields=update_fields, user=user)
 
     for field_name, value in m2m_data.items():
         related_manager = getattr(instance, field_name)
@@ -101,8 +104,9 @@ def model_update(
 
 
 class CustomFieldService:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
 
     def _add_prefix_to_name(self, name: str) -> str:
         return f"custom_{name}"
@@ -116,6 +120,10 @@ class CustomFieldService:
         field_type: str,
         description: str = "",
     ):
+        # check permissions for add custom field
+        if not self.permission_service.check_for_permission("add_customfield"):
+            raise PermissionDenied()
+
         name = self._add_prefix_to_name(name)
         custom_field = CustomField.objects.create(
             content_type=content_type,
@@ -126,18 +134,28 @@ class CustomFieldService:
             is_required=False,
         )
         custom_field.full_clean()
-        custom_field.save()
+        custom_field.save(user=self.user)
 
         return custom_field
 
     def update(self, *, instance: CustomField, data: dict):
+        # check permissions for update custom field
+        if not self.permission_service.check_for_permission("change_customfield"):
+            raise PermissionDenied()
+
         # add prefix to name
         if "name" in data:
             data["name"] = self._add_prefix_to_name(data["name"])
 
         fields = ["name", "label", "description"]
-        custom_field, _ = model_update(instance=instance, fields=fields, data=data)
+        custom_field, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
         return custom_field
 
     def delete(self, instance: CustomField):
+        # check permissions for delete custom field
+        if not self.permission_service.check_for_permission("delete_customfield"):
+            raise PermissionDenied()
+
         instance.delete()

@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "resource_calendar",
     "resource_assigner",
     "api",
+    "rolepermissions",
 ]
 
 MIDDLEWARE = [
@@ -200,3 +201,8 @@ MEDIA_ROOT = BASE_DIR / "static/media"
 
 # TAGGIT SETTINGS
 TAGGIT_CASE_INSENSITIVE = True
+
+# SETTING FOR ROLE-PERMISSIONS
+ROLEPERMISSIONS_MODULE = "users.roles"
+ROLEPERMISSIONS_REGISTER_ADMIN = True
+ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True

@@ -3,6 +3,7 @@ from factories import (
     ResourceFactory,
     TaskFactory,
     TaskResourceAssigmentFactory,
+    UserFactory,
 )
 from resource_assigner.models import TaskResourceAssigment
 from resource_assigner.services import TaskResourceAssigmentService
@@ -18,7 +19,9 @@ def data():
 
 @pytest.mark.django_db
 def test_can_create_task_resource_assignment(data):
-    assignment = TaskResourceAssigmentService().create(**data)
+    user = UserFactory()
+
+    assignment = TaskResourceAssigmentService(user=user).create(**data)
 
     assert TaskResourceAssigment.objects.count() == 1
     assert assignment.task == data["task"]
@@ -27,12 +30,14 @@ def test_can_create_task_resource_assignment(data):
 
 @pytest.mark.django_db
 def test_can_update_task_resource_assignment():
+    user = UserFactory()
+
     assignment = TaskResourceAssigmentFactory()
 
     new_task = TaskFactory()
     new_resource = ResourceFactory()
 
-    TaskResourceAssigmentService().update(
+    TaskResourceAssigmentService(user=user).update(
         instance=assignment,
         data={
             "task": new_task,
@@ -47,10 +52,12 @@ def test_can_update_task_resource_assignment():
 
 @pytest.mark.django_db
 def test_can_delete_task_resource_assignment():
+    user = UserFactory()
+
     assignment = TaskResourceAssigmentFactory()
 
     assert TaskResourceAssigment.objects.count() == 1
 
-    TaskResourceAssigmentService().delete(instance=assignment)
+    TaskResourceAssigmentService(user=user).delete(instance=assignment)
 
     assert TaskResourceAssigment.objects.count() == 0

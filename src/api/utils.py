@@ -32,7 +32,7 @@ class CRUDModelViewSet:
         )
         def create(request: HttpRequest, payload: self.input_schema):
             data = self._process_foreign_keys(payload_data=payload.model_dump())
-            instance = self.service().create(**data)
+            instance = self.service(user=request.user).create(**data)
             return instance
 
         # LIST
@@ -67,7 +67,7 @@ class CRUDModelViewSet:
         def update(request: HttpRequest, id: int, payload: self.input_schema):
             instance = self._get_instance(id=id)
             data = self._process_foreign_keys(payload_data=payload.model_dump())
-            instance = self.service().update(instance=instance, data=data)
+            instance = self.service(user=request.user).update(instance=instance, data=data)
             return instance
 
         # DELETE
