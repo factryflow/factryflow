@@ -38,9 +38,7 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ["body"]
-        labels = {
-            "body": "Body",
-        }
+        labels = {"body": "Body"}
         widgets = {
             "body": forms.Textarea(
                 attrs={
