@@ -5,15 +5,6 @@ from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
 
 
-class PublishedIssueManager(models.Manager):
-    """
-    Custom manager to return only published issues.
-    """
-
-    def get_queryset(self):
-        return super().get_queryset().filter(status=Issue.Status.PUBLISHED)
-
-
 class Issue(BaseModel):
     class Status(models.TextChoices):
         DRAFT = "DF", "Draft"
@@ -23,6 +14,7 @@ class Issue(BaseModel):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=150)
     description = models.TextField()
+    # TODO: Integrate with Azure Storage instead of Django Storage.
     thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
     status = models.CharField(
         max_length=2, choices=Status.choices, default=Status.DRAFT
@@ -33,7 +25,6 @@ class Issue(BaseModel):
 
     # Defining custom managers
     objects = models.Manager()  # Default manager.
-    published = PublishedIssueManager()  # Custom manager.
     tags = TaggableManager()  # Tagging support.
 
     # Special fields
@@ -46,7 +37,6 @@ class Issue(BaseModel):
 class Comment(BaseModel):
     # Core fields
     body = models.TextField()
-    active = models.BooleanField(default=True)
 
     # Relationship fields
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="comments")
