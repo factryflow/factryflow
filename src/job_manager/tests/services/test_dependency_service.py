@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from factories import DependencyTypeFactory, JobFactory, TaskFactory
+from factories import DependencyTypeFactory, JobFactory, TaskFactory, UserFactory
 from job_manager.models import Dependency
 from job_manager.services import DependencyService
 
@@ -20,7 +20,9 @@ def dependency_data():
 
 @pytest.mark.django_db
 def test_can_create_dependency(dependency_data):
-    dependency = DependencyService().create(**dependency_data)
+    user = UserFactory()
+
+    dependency = DependencyService(user=user).create(**dependency_data)
 
     assert dependency.id is not None
     assert dependency.dependency_type == dependency_data["dependency_type"]
@@ -34,11 +36,13 @@ def test_can_create_dependency(dependency_data):
 
 @pytest.mark.django_db
 def test_can_update_dependency(dependency_data):
-    dependency = DependencyService().create(**dependency_data)
+    user = UserFactory()
+
+    dependency = DependencyService(user=user).create(**dependency_data)
 
     updated_data = {"name": "Updated Dependency"}
 
-    updated_dependency = DependencyService().update(
+    updated_dependency = DependencyService(user=user).update(
         instance=dependency, data=updated_data
     )
 
@@ -48,14 +52,16 @@ def test_can_update_dependency(dependency_data):
 
 @pytest.mark.django_db
 def test_can_update_m2m_fields(dependency_data):
-    dependency = DependencyService().create(**dependency_data)
+    user = UserFactory()
+
+    dependency = DependencyService(user=user).create(**dependency_data)
 
     updated_data = {
         "tasks": [TaskFactory()],
         "jobs": [JobFactory()],
     }
 
-    updated_dependency = DependencyService().update(
+    updated_dependency = DependencyService(user=user).update(
         instance=dependency, data=updated_data
     )
 
@@ -66,8 +72,10 @@ def test_can_update_m2m_fields(dependency_data):
 
 @pytest.mark.django_db
 def test_can_delete_dependency(dependency_data):
-    dependency = DependencyService().create(**dependency_data)
+    user = UserFactory()
 
-    DependencyService().delete(instance=dependency)
+    dependency = DependencyService(user=user).create(**dependency_data)
+
+    DependencyService(user=user).delete(instance=dependency)
 
     assert Dependency.objects.count() == 0

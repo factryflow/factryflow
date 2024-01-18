@@ -3,6 +3,7 @@ from common.models import CustomField
 from common.services import CustomFieldService
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
+from factories import UserFactory
 from job_manager.models import Task
 
 
@@ -18,7 +19,9 @@ def custom_field_data():
 
 @pytest.mark.django_db
 def test_custom_field_create(custom_field_data):
-    CustomFieldService().create(**custom_field_data)
+    user = UserFactory()
+
+    CustomFieldService(user=user).create(**custom_field_data)
     custom_field = CustomField.objects.first()
 
     assert CustomField.objects.count() == 1
@@ -29,10 +32,12 @@ def test_custom_field_create(custom_field_data):
 
 @pytest.mark.django_db
 def test_custom_field_update(custom_field_data):
-    custom_field = CustomFieldService().create(**custom_field_data)
+    user = UserFactory()
+
+    custom_field = CustomFieldService(user=user).create(**custom_field_data)
     new_name = "new_name"
 
-    CustomFieldService().update(
+    CustomFieldService(user=user).update(
         instance=custom_field,
         data={
             "name": new_name,
@@ -46,10 +51,12 @@ def test_custom_field_update(custom_field_data):
 
 @pytest.mark.django_db
 def test_cant_update_field_type(custom_field_data):
-    custom_field = CustomFieldService().create(**custom_field_data)
+    user = UserFactory()
+
+    custom_field = CustomFieldService(user=user).create(**custom_field_data)
     new_field_type = "number"
 
-    CustomFieldService().update(
+    CustomFieldService(user=user).update(
         instance=custom_field,
         data={
             "field_type": new_field_type,
@@ -63,9 +70,11 @@ def test_cant_update_field_type(custom_field_data):
 
 @pytest.mark.django_db
 def test_custom_field_delete(custom_field_data):
-    custom_field = CustomFieldService().create(**custom_field_data)
+    user = UserFactory()
 
-    CustomFieldService().delete(instance=custom_field)
+    custom_field = CustomFieldService(user=user).create(**custom_field_data)
+
+    CustomFieldService(user=user).delete(instance=custom_field)
 
     assert CustomField.objects.count() == 0
 
@@ -77,7 +86,9 @@ def test_custom_field_delete(custom_field_data):
 def test_on_create_validation_error_when_name_is_not_snake_case(
     name, custom_field_data
 ):
+    user = UserFactory()
+
     custom_field_data["name"] = name
 
     with pytest.raises(ValidationError):
-        CustomFieldService().create(**custom_field_data)
+        CustomFieldService(user=user).create(**custom_field_data)

@@ -20,10 +20,15 @@ from job_manager.models import (
 # ------------------------------------------------------------------------------
 
 
-class WorkCenterService(AbstractPermissionService):
+class WorkCenterService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+
     def create(self, name: str, notes: str) -> WorkCenter:
         # check for permission to create work center
-        if not self.check_for_permission("add_workcenter"):
+        if not self.permission_service.check_for_permission("add_workcenter"):
             raise PermissionDenied()
 
         work_center = WorkCenter.objects.create(name=name, notes=notes)
@@ -34,7 +39,7 @@ class WorkCenterService(AbstractPermissionService):
 
     def update(self, work_center: WorkCenter, data: dict) -> WorkCenter:
         # check for permission to update work center
-        if not self.check_for_permission("change_workcenter"):
+        if not self.permission_service.check_for_permission("change_workcenter"):
             raise PermissionDenied()
 
         fields = [
@@ -50,7 +55,7 @@ class WorkCenterService(AbstractPermissionService):
 
     def delete(self, work_center: WorkCenter) -> None:
         # check for permission to delete work center
-        if not self.check_for_permission("delete_workcenter"):
+        if not self.permission_service.check_for_permission("delete_workcenter"):
             raise PermissionDenied()
 
         work_center.delete()
@@ -61,10 +66,14 @@ class WorkCenterService(AbstractPermissionService):
 # ------------------------------------------------------------------------------
 
 
-class TaskTypeService(AbstractPermissionService):
+class TaskTypeService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     def create(self, name: str) -> TaskType:
         # check for permission to create task type
-        if not self.check_for_permission("add_tasktype"):
+        if not self.permission_service.check_for_permission("add_tasktype"):
             raise PermissionDenied()
 
         task_type = TaskType.objects.create(name=name)
@@ -75,7 +84,7 @@ class TaskTypeService(AbstractPermissionService):
 
     def update(self, task_type: TaskType, data: dict) -> TaskType:
         # check for permission to update task type
-        if not self.check_for_permission("change_tasktype"):
+        if not self.permission_service.check_for_permission("change_tasktype"):
             raise PermissionDenied()
 
         fields = [
@@ -89,7 +98,7 @@ class TaskTypeService(AbstractPermissionService):
 
     def delete(self, task_type: TaskType) -> None:
         # check for permission to delete task type
-        if not self.check_for_permission("delete_tasktype"):
+        if not self.permission_service.check_for_permission("delete_tasktype"):
             raise PermissionDenied()
 
         task_type.delete()
@@ -100,7 +109,11 @@ class TaskTypeService(AbstractPermissionService):
 # ------------------------------------------------------------------------------
 
 
-class TaskService(AbstractPermissionService):
+class TaskService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     @transaction.atomic
     def create(
         self,
@@ -120,7 +133,7 @@ class TaskService(AbstractPermissionService):
         successors: list[Task] = None,
     ) -> Task:
         # check for permission to create task
-        if not self.check_for_permission("add_task"):
+        if not self.permission_service.check_for_permission("add_task"):
             raise PermissionDenied()
 
         task = Task.objects.create(
@@ -153,7 +166,7 @@ class TaskService(AbstractPermissionService):
     @transaction.atomic
     def update(self, *, instance: Task, data: dict) -> Task:
         # check for permission to update task
-        if not self.check_for_permission("change_task"):
+        if not self.permission_service.check_for_permission("change_task"):
             raise PermissionDenied()
 
         fields = [
@@ -182,7 +195,7 @@ class TaskService(AbstractPermissionService):
     @transaction.atomic
     def delete(self, *, task: Task) -> None:
         # check for permission to delete task
-        if not self.check_for_permission("delete_task"):
+        if not self.permission_service.check_for_permission("delete_task"):
             raise PermissionDenied()
 
         task.delete()
@@ -193,10 +206,14 @@ class TaskService(AbstractPermissionService):
 # ------------------------------------------------------------------------------
 
 
-class JobTypeService(AbstractPermissionService):
+class JobTypeService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     def create(self, name: str, external_id: str = "", notes: str = "") -> JobType:
         # check for permission to create job type
-        if not self.check_for_permission("add_jobtype"):
+        if not self.permission_service.check_for_permission("add_jobtype"):
             raise PermissionDenied()
 
         job_type = JobType.objects.create(
@@ -209,7 +226,7 @@ class JobTypeService(AbstractPermissionService):
 
     def update(self, job_type: JobType, data: dict) -> JobType:
         # check for permission to update job type
-        if not self.check_for_permission("change_jobtype"):
+        if not self.permission_service.check_for_permission("change_jobtype"):
             raise PermissionDenied()
 
         fields = [
@@ -226,13 +243,17 @@ class JobTypeService(AbstractPermissionService):
 
     def delete(self, job_type: JobType) -> None:
         # check for permission to delete job type
-        if not self.check_for_permission("delete_jobtype"):
+        if not self.permission_service.check_for_permission("delete_jobtype"):
             raise PermissionDenied()
 
         job_type.delete()
 
 
-class JobService(AbstractPermissionService):
+class JobService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     @transaction.atomic
     def create(
         self,
@@ -246,7 +267,7 @@ class JobService(AbstractPermissionService):
         priority: int = None,
     ) -> Job:
         # check for permission to create job
-        if not self.check_for_permission("add_job"):
+        if not self.permission_service.check_for_permission("add_job"):
             raise PermissionDenied()
 
         job = Job.objects.create(
@@ -269,7 +290,7 @@ class JobService(AbstractPermissionService):
     @transaction.atomic
     def update(self, job: Job, data: dict) -> Job:
         # check for permission to update job
-        if not self.check_for_permission("change_job"):
+        if not self.permission_service.check_for_permission("change_job"):
             raise PermissionDenied()
 
         fields = [
@@ -294,7 +315,7 @@ class JobService(AbstractPermissionService):
     @transaction.atomic
     def delete(self, job: Job) -> None:
         # check for permission to delete job
-        if not self.check_for_permission("delete_job"):
+        if not self.permission_service.check_for_permission("delete_job"):
             raise PermissionDenied()
 
         job.delete()
@@ -305,12 +326,16 @@ class JobService(AbstractPermissionService):
 # ------------------------------------------------------------------------------
 
 
-class DependencyTypeService(AbstractPermissionService):
+class DependencyTypeService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     def create(
         self, name: str, external_id: str = "", notes: str = ""
     ) -> DependencyType:
         # check for permission to create dependency type
-        if not self.check_for_permission("add_dependencytype"):
+        if not self.permission_service.check_for_permission("add_dependencytype"):
             raise PermissionDenied()
 
         dependency_type = DependencyType.objects.create(
@@ -323,7 +348,7 @@ class DependencyTypeService(AbstractPermissionService):
 
     def update(self, dependency_type: DependencyType, data: dict) -> DependencyType:
         # check for permission to update dependency type
-        if not self.check_for_permission("change_dependencytype"):
+        if not self.permission_service.check_for_permission("change_dependencytype"):
             raise PermissionDenied()
 
         fields = [
@@ -343,13 +368,17 @@ class DependencyTypeService(AbstractPermissionService):
 
     def delete(self, dependency_type: DependencyType) -> None:
         # check for permission to delete dependency type
-        if not self.check_for_permission("delete_dependencytype"):
+        if not self.permission_service.check_for_permission("delete_dependencytype"):
             raise PermissionDenied()
 
         dependency_type.delete()
 
 
-class DependencyService(AbstractPermissionService):
+class DependencyService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     @transaction.atomic
     def create(
         self,
@@ -363,7 +392,7 @@ class DependencyService(AbstractPermissionService):
         jobs: list[Job] = None,
     ) -> Dependency:
         # check for permission to create dependency
-        if not self.check_for_permission("add_dependency"):
+        if not self.permission_service.check_for_permission("add_dependency"):
             raise PermissionDenied()
 
         dependency = Dependency.objects.create(
@@ -388,7 +417,7 @@ class DependencyService(AbstractPermissionService):
     @transaction.atomic
     def update(self, *, instance: Dependency, data: dict) -> Dependency:
         # check for permission to update dependency
-        if not self.check_for_permission("change_dependency"):
+        if not self.permission_service.check_for_permission("change_dependency"):
             raise PermissionDenied()
 
         fields = [
@@ -410,7 +439,7 @@ class DependencyService(AbstractPermissionService):
     @transaction.atomic
     def delete(self, instance: Dependency) -> None:
         # check for permission to delete dependency
-        if not self.check_for_permission("delete_dependency"):
+        if not self.permission_service.check_for_permission("delete_dependency"):
             raise PermissionDenied()
 
         instance.delete()

@@ -1,4 +1,5 @@
 import pytest
+from factories import UserFactory
 from factories.job_manager_factories import JobFactory, JobTypeFactory
 from job_manager.models import Job
 from job_manager.services import JobService
@@ -7,6 +8,7 @@ from job_manager.services import JobService
 @pytest.mark.django_db
 def test_job_create():
     job_type = JobTypeFactory()
+    user = UserFactory()
 
     job_data = {
         "name": "test",
@@ -15,7 +17,7 @@ def test_job_create():
         "job_type": job_type,
     }
 
-    job = JobService().create(**job_data)
+    job = JobService(user=user).create(**job_data)
 
     assert job.name == "test"
     assert job.id is not None
@@ -26,11 +28,12 @@ def test_job_create():
 @pytest.mark.django_db
 def test_job_update():
     job = JobFactory(name="test")
+    user = UserFactory()
 
     data = {
         "name": "update_name",
     }
-    job = JobService().update(job=job, data=data)
+    job = JobService(user=user).update(job=job, data=data)
 
     assert job.name == "update_name"
     assert job.id is not None
@@ -40,8 +43,9 @@ def test_job_update():
 @pytest.mark.django_db
 def test_job_delete():
     job = JobFactory(name="test")
+    user = UserFactory()
 
-    JobService().delete(job=job)
+    JobService(user=user).delete(job=job)
 
     assert Job.objects.count() == 0
 

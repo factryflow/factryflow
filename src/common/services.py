@@ -103,7 +103,11 @@ def model_update(
     return instance, has_updated
 
 
-class CustomFieldService(AbstractPermissionService):
+class CustomFieldService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
     def _add_prefix_to_name(self, name: str) -> str:
         return f"custom_{name}"
 
@@ -117,7 +121,7 @@ class CustomFieldService(AbstractPermissionService):
         description: str = "",
     ):
         # check permissions for add custom field
-        if not self.check_for_permission("add_customfield"):
+        if not self.permission_service.check_for_permission("add_customfield"):
             raise PermissionDenied()
 
         name = self._add_prefix_to_name(name)
@@ -136,7 +140,7 @@ class CustomFieldService(AbstractPermissionService):
 
     def update(self, *, instance: CustomField, data: dict):
         # check permissions for update custom field
-        if not self.check_for_permission("change_customfield"):
+        if not self.permission_service.check_for_permission("change_customfield"):
             raise PermissionDenied()
 
         # add prefix to name
@@ -151,7 +155,7 @@ class CustomFieldService(AbstractPermissionService):
 
     def delete(self, instance: CustomField):
         # check permissions for delete custom field
-        if not self.check_for_permission("delete_customfield"):
+        if not self.permission_service.check_for_permission("delete_customfield"):
             raise PermissionDenied()
 
         instance.delete()

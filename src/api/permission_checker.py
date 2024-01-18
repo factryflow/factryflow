@@ -1,4 +1,3 @@
-from abc import ABC
 from functools import wraps
 
 from django.contrib.auth.models import User
@@ -35,9 +34,9 @@ def has_permission_decorator(operation_id):
     return decorator
 
 
-class AbstractPermissionService(ABC):
+class AbstractPermissionService:
     """
-    Abstract base class for services with permission-checking capabilities.
+    Abstract Service class for services with permission-checking capabilities.
     """
 
     def __init__(self, user: None | User = None):

@@ -8,6 +8,7 @@ from resource_manager.models import Resource, ResourcePool, WorkUnit
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 class ResourceService:
     def __init__(self):
         pass
@@ -15,6 +16,13 @@ class ResourceService:
 =======
 class ResourceService(AbstractPermissionService):
 >>>>>>> 59ba0bc (added permission check to all services)
+=======
+class ResourceService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+>>>>>>> 21703d3 (abstract permission class updated, all test updated as per new changes, added user to save method)
     def create(
         self,
         *,
@@ -28,7 +36,7 @@ class ResourceService(AbstractPermissionService):
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
         # check permissions for add resource
-        if not self.check_for_permission("add_resource"):
+        if not self.permission_service.check_for_permission("add_resource"):
             raise PermissionDenied()
 
         resource = Resource.objects.create(
@@ -55,7 +63,7 @@ class ResourceService(AbstractPermissionService):
 
     def update(self, *, instance: Resource, data: dict) -> Resource:
         # check permissions for update resource
-        if not self.check_for_permission("change_resource"):
+        if not self.permission_service.check_for_permission("change_resource"):
             raise PermissionDenied()
 
         fields = [
@@ -80,7 +88,7 @@ class ResourceService(AbstractPermissionService):
 
     def delete(self, instance: Resource) -> None:
         # check permissions for delete resource
-        if not self.check_for_permission("delete_resource"):
+        if not self.permission_service.check_for_permission("delete_resource"):
             raise PermissionDenied()
 
         instance.delete()
@@ -91,8 +99,9 @@ class ResourceService(AbstractPermissionService):
 =======
 >>>>>>> c9eb050 (resolved conflicts)
 class WorkUnitService:
-    def __init__(self):
-        pass
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
 
 <<<<<<< HEAD
 =======
@@ -111,6 +120,10 @@ class ResourceGroupService(AbstractPermissionService):
 <<<<<<< HEAD
         resource_pools: list[ResourcePool] = None,
     ) -> WorkUnit:
+        # check permissions for add workunit
+        if not self.permission_service.check_for_permission("add_workunit"):
+            raise PermissionDenied()
+
         work_unit = WorkUnit.objects.create(
 =======
     ) -> ResourceGroup:
@@ -131,7 +144,7 @@ class ResourceGroupService(AbstractPermissionService):
         )
 
         work_unit.full_clean()
-        work_unit.save()
+        work_unit.save(user=self.user)
 
         if resources:
             work_unit.resources.set(resources)
@@ -146,6 +159,10 @@ class ResourceGroupService(AbstractPermissionService):
         return work_unit
 
     def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
+        # check permissions for update work unit
+        if not self.permission_service.check_for_permission("change_workunit"):
+            raise PermissionDenied()
+
         fields = [
             "name",
             "external_id",
@@ -154,17 +171,24 @@ class ResourceGroupService(AbstractPermissionService):
             "resource_pools",
         ]
 
-        work_unit, _ = model_update(instance=instance, fields=fields, data=data)
+        work_unit, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
 
         return work_unit
 
     def delete(self, instance: WorkUnit) -> None:
+        # check permission for delete work unit
+        if not self.permission_service.check_for_permission("delete_workunit"):
+            raise PermissionDenied()
+
         instance.delete()
 
 
 class ResourcePoolService:
-    def __init__(self):
-        pass
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
 
     def create(
         self,
@@ -175,6 +199,10 @@ class ResourcePoolService:
         resources: list[Resource] = None,
         work_units: list[WorkUnit] = None,
     ) -> ResourcePool:
+        # check permissions for add resource pool
+        if not self.permission_service.check_for_permission("add_resourcepool"):
+            raise PermissionDenied()
+
         resource_pool = ResourcePool.objects.create(
             name=name,
             external_id=external_id,
@@ -182,7 +210,7 @@ class ResourcePoolService:
         )
 
         resource_pool.full_clean()
-        resource_pool.save()
+        resource_pool.save(user=self.user)
 
         if resources:
             resource_pool.resources.set(resources)
@@ -194,6 +222,7 @@ class ResourcePoolService:
 
     def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
         # check permissions for update resource group
@@ -203,6 +232,12 @@ class ResourcePoolService:
 >>>>>>> 59ba0bc (added permission check to all services)
 =======
 >>>>>>> c9eb050 (resolved conflicts)
+=======
+        # check permissions for update resource pool
+        if not self.permission_service.check_for_permission("change_resourcepool"):
+            raise PermissionDenied()
+
+>>>>>>> 21703d3 (abstract permission class updated, all test updated as per new changes, added user to save method)
         fields = [
             "name",
             "external_id",
@@ -237,5 +272,12 @@ class ResourcePoolService:
         return resource_pool
 
     def delete(self, instance: ResourcePool) -> None:
+<<<<<<< HEAD
 >>>>>>> c9eb050 (resolved conflicts)
+=======
+        # check permissions for delete resource pool
+        if not self.permission_service.check_for_permission("delete_resourcepool"):
+            raise PermissionDenied()
+
+>>>>>>> 21703d3 (abstract permission class updated, all test updated as per new changes, added user to save method)
         instance.delete()

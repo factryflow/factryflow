@@ -1,6 +1,7 @@
 import factory
 from common.utils.tests import faker
 from django.contrib.auth.models import User
+from rolepermissions.roles import assign_role
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -15,3 +16,9 @@ class UserFactory(factory.django.DjangoModelFactory):
     is_active = True
     is_staff = False
     is_superuser = False
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        user = super()._create(model_class, *args, **kwargs)
+        assign_role(user, "admin")  # Assign "admin" role to the created user
+        return user

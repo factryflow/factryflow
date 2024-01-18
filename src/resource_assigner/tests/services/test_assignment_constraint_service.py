@@ -5,6 +5,7 @@ from factories import (
     ResourceFactory,
     ResourcePoolFactory,
     TaskFactory,
+    UserFactory,
     WorkUnitFactory,
 )
 from resource_assigner.models import AssignmentConstraint
@@ -22,7 +23,9 @@ def data():
 
 @pytest.mark.django_db
 def test_can_create_assignment_constraint(data):
-    constraint = AssignmentConstraintService().create(**data)
+    user = UserFactory()
+
+    constraint = AssignmentConstraintService(user=user).create(**data)
 
     assert AssignmentConstraint.objects.count() == 1
     assert constraint.task == data["task"]
@@ -33,12 +36,14 @@ def test_can_create_assignment_constraint(data):
 
 @pytest.mark.django_db
 def test_can_update_assignment_constraint():
+    user = UserFactory()
+
     constraint = AssigmentConstraintFactory(with_task=True, with_resource_pool=True)
 
     new_resource_pool = ResourcePoolFactory()
     new_required_units = 2
 
-    AssignmentConstraintService().update(
+    AssignmentConstraintService(user=user).update(
         instance=constraint,
         data={
             "resource_pool": new_resource_pool,
@@ -54,17 +59,21 @@ def test_can_update_assignment_constraint():
 
 @pytest.mark.django_db
 def test_can_delete_assignment_constraint():
+    user = UserFactory()
+
     constraint = AssigmentConstraintFactory()
 
     assert AssignmentConstraint.objects.count() == 1
 
-    AssignmentConstraintService().delete(instance=constraint)
+    AssignmentConstraintService(user=user).delete(instance=constraint)
 
     assert AssignmentConstraint.objects.count() == 0
 
 
 @pytest.mark.django_db
 def test_validation_error_raised_on_invalid_assignment_constraint_data(data):
+    user = UserFactory()
+
     combinations = [
         {
             "task": None,
@@ -89,4 +98,4 @@ def test_validation_error_raised_on_invalid_assignment_constraint_data(data):
         data.update(combination)
 
         with pytest.raises(ValidationError):
-            AssignmentConstraintService().create(**data)
+            AssignmentConstraintService(user=user).create(**data)

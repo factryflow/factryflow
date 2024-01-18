@@ -1,5 +1,5 @@
 import pytest
-from factories import AssigmentRuleFactory, WorkCenterFactory
+from factories import AssigmentRuleFactory, UserFactory, WorkCenterFactory
 from resource_assigner.models import AssigmentRule
 from resource_assigner.services import AssigmentRuleService
 
@@ -27,7 +27,9 @@ def assignment_rule_data():
 
 @pytest.mark.django_db
 def test_can_create_assignment_rule(assignment_rule_data):
-    assignment_rule = AssigmentRuleService().create(**assignment_rule_data)
+    user = UserFactory()
+
+    assignment_rule = AssigmentRuleService(user=user).create(**assignment_rule_data)
 
     assert assignment_rule.id is not None
     assert assignment_rule.name == assignment_rule_data["name"]
@@ -38,11 +40,13 @@ def test_can_create_assignment_rule(assignment_rule_data):
 
 @pytest.mark.django_db
 def test_can_update_assignment_rule():
+    user = UserFactory()
+
     assignment_rule = AssigmentRuleFactory()
 
     updated_data = {"name": "Updated Task Assignment Rule"}
 
-    updated_assignment_rule = AssigmentRuleService().update(
+    updated_assignment_rule = AssigmentRuleService(user=user).update(
         instance=assignment_rule, data=updated_data
     )
 
@@ -52,7 +56,9 @@ def test_can_update_assignment_rule():
 
 @pytest.mark.django_db
 def test_can_update_criteria(assignment_rule_data):
-    assignment_rule = AssigmentRuleService().create(**assignment_rule_data)
+    user = UserFactory()
+
+    assignment_rule = AssigmentRuleService(user=user).create(**assignment_rule_data)
 
     updated_criteria_data = {
         "criteria": [
@@ -67,7 +73,7 @@ def test_can_update_criteria(assignment_rule_data):
             },
         ]
     }
-    updated_assignment_rule = AssigmentRuleService().update(
+    updated_assignment_rule = AssigmentRuleService(user=user).update(
         instance=assignment_rule, data=updated_criteria_data
     )
 
@@ -78,8 +84,10 @@ def test_can_update_criteria(assignment_rule_data):
 
 @pytest.mark.django_db
 def test_can_delete_assignment_rule(assignment_rule_data):
-    assignment_rule = AssigmentRuleService().create(**assignment_rule_data)
+    user = UserFactory()
 
-    AssigmentRuleService().delete(instance=assignment_rule)
+    assignment_rule = AssigmentRuleService(user=user).create(**assignment_rule_data)
+
+    AssigmentRuleService(user=user).delete(instance=assignment_rule)
 
     assert AssigmentRule.objects.count() == 0
