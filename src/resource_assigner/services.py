@@ -6,44 +6,36 @@ from common.utils import get_object
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from job_manager.models import Task, WorkCenter
-from resource_manager.models import Resource, ResourceGroup
+from resource_manager.models import Resource, ResourcePool, WorkUnit
 
 from resource_assigner.models import (
     AssigmentRule,
     AssigmentRuleCriteria,
+    AssignmentConstraint,
     TaskResourceAssigment,
 )
 
+# ------------------------------------------------------------------------------
+# Task Resource Assignment Services
+# ------------------------------------------------------------------------------
 
-class TaskResourceAssigmentService(AbstractPermissionService):
+# ------------------------------------------------------------------------------
+# Task Resource Assignment Services
+# ------------------------------------------------------------------------------
+
+class TaskResourceAssigmentService:
+    def __init__(self):
+        pass
+
     @transaction.atomic
-    def create(
-        self,
-        *,
-        task: Task,
-        resource_group: ResourceGroup,
-        resources: list[Resource] = None,
-        resource_count: int = None,
-        use_all_resources: bool = False,
-        is_direct: bool = True,
-    ) -> TaskResourceAssigment:
-        # check permissions for add task resource assigment
-        if not self.check_for_permission("add_taskresourceassigment"):
-            raise PermissionDenied()
-
+    def create(self, *, task: Task, resource: Resource) -> TaskResourceAssigment:
         instance = TaskResourceAssigment.objects.create(
             task=task,
-            resource_group=resource_group,
-            resource_count=resource_count,
-            use_all_resources=use_all_resources,
-            is_direct=is_direct,
+            resource=resource,
         )
 
-        if resources:
-            instance.resources.set(resources)
-
         instance.full_clean()
-        instance.save(user=self.user)
+        instance.save()
 
         return instance
 
@@ -51,29 +43,73 @@ class TaskResourceAssigmentService(AbstractPermissionService):
     def update(
         self, *, instance: TaskResourceAssigment, data: dict
     ) -> TaskResourceAssigment:
-        # check permissions for update task resource assigment
-        if not self.check_for_permission("change_taskresourceassigment"):
-            raise PermissionDenied()
-
         fields = [
             "task",
-            "resource_group",
-            "resources",
-            "resource_count",
-            "use_all_resources",
-            "is_direct",
+            "resource",
         ]
-        instance, _ = model_update(
-            instance=instance, fields=fields, data=data, user=self.user
-        )
+        instance, _ = model_update(instance=instance, fields=fields, data=data)
         return instance
 
     @transaction.atomic
     def delete(self, *, instance: TaskResourceAssigment) -> None:
-        # check permissions for delete task resource assigment
-        if not self.check_for_permission("delete_taskresourceassigment"):
-            raise PermissionDenied()
+        instance.delete()
 
+
+# ------------------------------------------------------------------------------
+# Assignment Constraint Services
+# ------------------------------------------------------------------------------
+
+
+class AssignmentConstraintService:
+    def __init__(self):
+        pass
+
+    @transaction.atomic
+    def create(
+        self,
+        *,
+        task: Task = None,
+        assignment_rule: AssigmentRule = None,
+        resource_pool: ResourcePool = None,
+        resources: list[Resource] = None,
+        work_units: list[WorkUnit] = None,
+        required_units: int = 1,
+        is_direct: bool = True,
+    ) -> AssignmentConstraint:
+        instance = AssignmentConstraint.objects.create(
+            task=task,
+            assignment_rule=assignment_rule,
+            resource_pool=resource_pool,
+            required_units=required_units,
+            is_direct=is_direct,
+        )
+
+        if resources:
+            instance.resources.set(resources)
+
+        if work_units:
+            instance.work_units.set(work_units)
+
+        instance.full_clean()
+        instance.save()
+
+        return instance
+
+    @transaction.atomic
+    def update(
+        self, *, instance: AssignmentConstraint, data: dict
+    ) -> AssignmentConstraint:
+        fields = [
+            "resource_pool",
+            "resources",
+            "work_units",
+            "required_units",
+        ]
+        instance, _ = model_update(instance=instance, fields=fields, data=data)
+        return instance
+
+    @transaction.atomic
+    def delete(self, *, instance: AssignmentConstraint) -> None:
         instance.delete()
 
 
@@ -135,8 +171,12 @@ class AssigmentRuleCriteriaService(AbstractPermissionService):
         instance.delete()
 
 
-class AssigmentRuleService(AbstractPermissionService):
-    def _validate_criteria_keys_throw_validation_eror(
+class AssigmentRuleService:
+    def __init__(self):
+        self.assignment_constraint_service = AssignmentConstraintService()
+        self.assigment_rule_criteria_service = AssigmentRuleCriteriaService()
+
+    def _validate_criteria_keys_throw_validation_error(
         self, criteria: list[dict]
     ) -> bool:
         keys = ["field", "operator", "value"]
@@ -148,39 +188,83 @@ class AssigmentRuleService(AbstractPermissionService):
                     f"Assignment Rule Criteria missing following keys: {', '.join(missing_keys)}"
                 )
 
+    def _create_or_update_criteria(self, criteria: list[dict], instance: AssigmentRule):
+        # Create or update criteria
+        for criteria_dict in criteria:
+            criteria_id = criteria_dict.get("id")
+            criteria_instance = get_object(
+                model_or_queryset=AssigmentRuleCriteria, id=criteria_id
+            )
+            if criteria_instance:
+                self.assigment_rule_criteria_service.update(
+                    instance=criteria_instance,
+                    data=criteria_dict,
+                )
+            else:
+                # validate criteria keys
+                self._validate_criteria_keys_throw_validation_error(
+                    criteria=[criteria_dict]
+                )
+                self.assigment_rule_criteria_service.create(
+                    assigment_rule=instance,
+                    **criteria_dict,
+                )
+
+    def _create_or_update_constraints(
+        self, assignment_constraints: list[dict], instance: AssigmentRule
+    ):
+        # Create or update assignment constraints
+        for assignment_constraint_dict in assignment_constraints:
+            assignment_constraint_id = assignment_constraint_dict.get("id")
+            assignment_constraint_instance = get_object(
+                model_or_queryset=AssignmentConstraint, id=assignment_constraint_id
+            )
+            if assignment_constraint_instance:
+                self.assignment_constraint_service.update(
+                    instance=assignment_constraint_instance,
+                    data=assignment_constraint_dict,
+                )
+            else:
+                self.assignment_constraint_service.create(
+                    assignment_rule=instance,
+                    **assignment_constraint_dict,
+                    is_direct=False,
+                )
+
     @transaction.atomic
     def create(
         self,
         *,
         name: str,
         description: str,
-        resource_group: ResourceGroup,
         work_center: WorkCenter,
+        assignment_constraints: list[dict] = [],
         criteria: list[dict] = [],
     ) -> AssigmentRule:
-        # check permissions for create assigment rule
-        if not self.check_for_permission("add_assigmentrule"):
-            raise PermissionDenied()
-
-        self._validate_criteria_keys_throw_validation_eror(criteria=criteria)
+        self._validate_criteria_keys_throw_validation_error(criteria=criteria)
 
         instance = AssigmentRule.objects.create(
             name=name,
             description=description,
-            resource_group=resource_group,
             work_center=work_center,
         )
 
         instance.full_clean()
-        instance.save(user=self.user)
+        instance.save()
+
+        # Create assignment constraints
+        for assignment_constraint_dict in assignment_constraints:
+            self.assignment_constraint_service.create(
+                assignment_rule=instance,
+                **assignment_constraint_dict,
+                is_direct=False,
+            )
 
         # Create criteria
         for criteria_dict in criteria:
-            AssigmentRuleCriteriaService(user=self.user).create(
+            self.assigment_rule_criteria_service.create(
                 assigment_rule=instance,
-                field=criteria_dict["field"],
-                operator=criteria_dict["operator"],
-                value=criteria_dict["value"],
+                **criteria_dict,
             )
 
         return instance
@@ -203,28 +287,13 @@ class AssigmentRuleService(AbstractPermissionService):
 
         criteria = data.get("criteria", [])
 
-        # Create or update criteria
-        for criteria_dict in criteria:
-            criteria_id = criteria_dict.get("id")
-            criteria_instance = get_object(
-                model_or_queryset=AssigmentRuleCriteria, id=criteria_id
-            )
-            if criteria_instance:
-                AssigmentRuleCriteriaService(user=self.user).update(
-                    instance=criteria_instance,
-                    data=criteria_dict,
-                )
-            else:
-                # validate criteria keys
-                self._validate_criteria_keys_throw_validation_eror(
-                    criteria=[criteria_dict]
-                )
-                AssigmentRuleCriteriaService(user=self.user).create(
-                    assigment_rule=instance,
-                    field=criteria_dict.get("field"),
-                    operator=criteria_dict.get("operator"),
-                    value=criteria_dict.get("value"),
-                )
+        self._create_or_update_criteria(criteria=criteria, instance=instance)
+
+        assignment_constraints = data.get("assignment_constraints", [])
+
+        self._create_or_update_constraints(
+            assignment_constraints=assignment_constraints, instance=instance
+        )
 
         return instance
 

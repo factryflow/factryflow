@@ -1,28 +1,35 @@
 from django.contrib import admin
-from resource_assigner.models import AssigmentRule, TaskResourceAssigment
+
+from resource_assigner.models import AssigmentRule, AssignmentConstraint
 
 
-@admin.register(TaskResourceAssigment)
-class TaskResourceAssigment(admin.ModelAdmin):
+@admin.register(AssignmentConstraint)
+class AssignmentConstraint(admin.ModelAdmin):
     list_display = [
         "task",
-        "resource_group",
-        "resource_count",
-        "use_all_resources",
+        "resource_pool",
+        "required_units",
         "created_at",
         "created_by",
     ]
-    list_filter = ["task", "resource_group", "created_at", "created_by"]
-    search_fields = ["task", "resource_group"]
+    list_filter = [
+        "task",
+        "resource_pool",
+        "resources",
+        "work_units",
+        "created_at",
+        "created_by",
+    ]
+    search_fields = ["task", "resource_pool"]
+
 
 @admin.register(AssigmentRule)
 class AssigmentRule(admin.ModelAdmin):
     list_display = [
         "name",
-        "resource_group",
         "work_center",
         "created_at",
         "created_by",
     ]
-    list_filter = ["resource_group", "work_center", "created_at", "created_by"]
+    list_filter = ["work_center", "created_at", "created_by"]
     search_fields = ["name"]

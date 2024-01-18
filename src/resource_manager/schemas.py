@@ -1,27 +1,30 @@
 from ninja import Field, ModelSchema
 
-from resource_manager.models import Resource, ResourceGroup
+from resource_manager.models import Resource, ResourcePool
 
 
-class ResourceGroupIn(ModelSchema):
+class ResourcePoolIn(ModelSchema):
     resources: list[int] = Field(None, alias="resource_ids")
+    work_units: list[int] = Field(None, alias="work_unit_ids")
 
     class Meta:
-        model = ResourceGroup
+        model = ResourcePool
         fields = ["name", "external_id", "notes"]
 
 
-class ResourceGroupOut(ModelSchema):
+class ResourcePoolOut(ModelSchema):
     resource_ids: list[int] = Field([], alias="resource_id_list")
+    work_unit_ids: list[int] = Field([], alias="work_unit_id_list")
 
     class Meta:
-        model = ResourceGroup
-        fields = "__all__"
+        model = ResourcePool
+        exclude = ["work_units"]
 
 
 class ResourceIn(ModelSchema):
-    resource_groups: list[int] = Field(None, alias="resource_group_ids")
+    resource_pools: list[int] = Field(None, alias="resource_pool_ids")
     users: list[int] = Field(None, alias="user_ids")
+    work_units: list[int] = Field(None, alias="work_unit_ids")
 
     class Meta:
         model = Resource
@@ -29,9 +32,26 @@ class ResourceIn(ModelSchema):
 
 
 class ResourceOut(ModelSchema):
-    resource_group_ids: list[int] = Field([], alias="resource_group_id_list")
+    resource_pool_ids: list[int] = Field([], alias="resource_pool_id_list")
     user_ids: list[int] = Field([], alias="user_id_list")
+    work_unit_ids: list[int] = Field([], alias="work_unit_id_list")
 
     class Meta:
         model = Resource
-        exclude = ["resource_groups", "users"]
+        exclude = ["resource_pools", "users", "work_units"]
+
+
+class WorkUnitIn(ModelSchema):
+    resource_pools: list[int] = Field(None, alias="resource_pool_ids")
+
+    class Meta:
+        model = Resource
+        fields = ["name", "external_id", "notes"]
+
+
+class WorkUnitOut(ModelSchema):
+    resource_pool_ids: list[int] = Field([], alias="resource_pool_id_list")
+
+    class Meta:
+        model = Resource
+        fields = "__all__"
