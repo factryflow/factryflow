@@ -1,7 +1,8 @@
+from common.utils import get_object
 from common.utils.views import add_notification_headers
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from taggit.models import Tag
@@ -9,7 +10,7 @@ from taggit.models import Tag
 from ..forms import IssueForm
 from ..models import Issue
 from ..selectors import issue_list
-from ..services import issue_create_or_update, issue_delete
+from ..services import IssueService
 
 # ------------------------------------------------------------------------------
 # Issue Views
@@ -82,7 +83,7 @@ def show_issues_list(request, tag_slug=None):
     tag = None
 
     if tag_slug:
-        tag = get_object_or_404(Tag, slug=tag_slug)
+        tag = get_object(model_or_queryset=Tag, slug=tag_slug)
         issue_list = issue_list.filter(tags__in=[tag])
 
     # Pagination with 10 issues per page
@@ -114,7 +115,7 @@ def show_issue_form(request, id: int = None, edit: str = ""):
     form_action_url = "/issue-create/"
 
     if id:
-        issue = get_object_or_404(Issue, id=id)
+        issue = get_object(model_or_queryset=Issue, id=id)
         form = IssueForm(instance=issue)
         page_label = issue.title
 
@@ -166,21 +167,23 @@ def save_issue_form(request, id: int = None):
     Handle POST request to create or update using Django form and service.
     """
     # Get the issue instance if updating, else None
-    issue_instance = get_object_or_404(Issue, id=id) if id else None
+    issue_instance = get_object(model_or_queryset=Issue, id=id) if id else None
 
     # Instantiate the form with POST data and optionally the issue instance
     form = IssueForm(request.POST, instance=issue_instance)
-
-    # id = request.POST.get("id") -> Possibly Redundant
-
     if form.is_valid():
         # Extract data from the form
         issue_data = form.cleaned_data
-        issue_data["id"] = id
-        # TODO: Looking for a way to properly handle update/create of tags
-        issue_type = issue_data["tags"]
 
-        issue_create_or_update(issue_data=issue_data, issue_type=issue_type)
+        if issue_instance:
+            IssueService().update(instance=issue_instance, data=issue_data)
+        else:
+            IssueService().create(
+                title=issue_data.get("title"),
+                description=issue_data.get("description"),
+                thumbnail=issue_data.get("thumbnail"),
+                task=issue_instance.task,
+            )
 
         form = IssueForm()
         response = render(
@@ -200,7 +203,10 @@ def request_issue_delete(request, id: int):
     Handle issue deletion request. Deletes the issue based on a given ID,
     retrieves the updated issue list, and returns a response with a notification.
     """
-    issue_delete(id=id)
+    issue_instance = get_object(model_or_queryset=Issue, id=id)
+
+    IssueService().delete(instance=issue_instance)
+
     cards = IssueCardView()
     response = render(
         request,
