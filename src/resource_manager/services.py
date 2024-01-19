@@ -7,22 +7,11 @@ from resource_calendar.models import WeeklyShiftTemplate
 from resource_manager.models import Resource, ResourcePool, WorkUnit
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-class ResourceService:
-    def __init__(self):
-        pass
-
-=======
-class ResourceService(AbstractPermissionService):
->>>>>>> 59ba0bc (added permission check to all services)
-=======
 class ResourceService:
     def __init__(self, user) -> None:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
->>>>>>> 21703d3 (abstract permission class updated, all test updated as per new changes, added user to save method)
     def create(
         self,
         *,
@@ -57,7 +46,7 @@ class ResourceService:
             resource.users.set(users)
 
         resource.full_clean()
-        resource.save()
+        resource.save(user=self.user)
 
         return resource
 
@@ -76,13 +65,9 @@ class ResourceService:
             "weekly_shift_template",
         ]
 
-<<<<<<< HEAD
-        resource, _ = model_update(instance=instance, fields=fields, data=data)
-=======
         resource, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
->>>>>>> 59ba0bc (added permission check to all services)
 
         return resource
 
@@ -94,21 +79,11 @@ class ResourceService:
         instance.delete()
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c9eb050 (resolved conflicts)
 class WorkUnitService:
     def __init__(self, user) -> None:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-<<<<<<< HEAD
-=======
-class ResourceGroupService(AbstractPermissionService):
->>>>>>> 59ba0bc (added permission check to all services)
-=======
->>>>>>> c9eb050 (resolved conflicts)
     def create(
         self,
         *,
@@ -116,8 +91,6 @@ class ResourceGroupService(AbstractPermissionService):
         external_id: str = "",
         notes: str = "",
         resources: list[Resource] = None,
-<<<<<<< HEAD
-<<<<<<< HEAD
         resource_pools: list[ResourcePool] = None,
     ) -> WorkUnit:
         # check permissions for add workunit
@@ -125,19 +98,6 @@ class ResourceGroupService(AbstractPermissionService):
             raise PermissionDenied()
 
         work_unit = WorkUnit.objects.create(
-=======
-    ) -> ResourceGroup:
-        # check permissions for add resource group
-        if not self.check_for_permission("add_resourcegroup"):
-            raise PermissionDenied()
-
-        resource_group = ResourceGroup.objects.create(
->>>>>>> 59ba0bc (added permission check to all services)
-=======
-        resource_pools: list[ResourcePool] = None,
-    ) -> WorkUnit:
-        work_unit = WorkUnit.objects.create(
->>>>>>> c9eb050 (resolved conflicts)
             name=name,
             external_id=external_id,
             notes=notes,
@@ -152,10 +112,6 @@ class ResourceGroupService(AbstractPermissionService):
         if resource_pools:
             work_unit.resource_pools.set(resource_pools)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c9eb050 (resolved conflicts)
         return work_unit
 
     def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
@@ -221,23 +177,10 @@ class ResourcePoolService:
         return resource_pool
 
     def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    def update(self, *, instance: ResourceGroup, data: dict) -> ResourceGroup:
-        # check permissions for update resource group
-        if not self.check_for_permission("change_resourcegroup"):
-            raise PermissionDenied()
-
->>>>>>> 59ba0bc (added permission check to all services)
-=======
->>>>>>> c9eb050 (resolved conflicts)
-=======
         # check permissions for update resource pool
         if not self.permission_service.check_for_permission("change_resourcepool"):
             raise PermissionDenied()
 
->>>>>>> 21703d3 (abstract permission class updated, all test updated as per new changes, added user to save method)
         fields = [
             "name",
             "external_id",
@@ -246,38 +189,13 @@ class ResourcePoolService:
             "notes",
         ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
-=======
-        resource_group, _ = model_update(
-            instance=instance, fields=fields, data=data, user=self.user
-        )
->>>>>>> 59ba0bc (added permission check to all services)
-
-        return resource_pool
-
-<<<<<<< HEAD
-    def delete(self, instance: ResourcePool) -> None:
-=======
-    def delete(self, instance: ResourceGroup) -> None:
-        # check permissions for delete resource group
-        if not self.check_for_permission("delete_resourcegroup"):
-            raise PermissionDenied()
-
->>>>>>> 59ba0bc (added permission check to all services)
-=======
         resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
 
         return resource_pool
 
     def delete(self, instance: ResourcePool) -> None:
-<<<<<<< HEAD
->>>>>>> c9eb050 (resolved conflicts)
-=======
         # check permissions for delete resource pool
         if not self.permission_service.check_for_permission("delete_resourcepool"):
             raise PermissionDenied()
 
->>>>>>> 21703d3 (abstract permission class updated, all test updated as per new changes, added user to save method)
         instance.delete()
