@@ -16,3 +16,6 @@ superuser:
 
 sync_roles:
 	python src/manage.py sync_roles
+
+shell_plus:
+	python src/manage.py shell_plus
