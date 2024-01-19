@@ -1,4 +1,4 @@
-from api import AbstractPermissionService
+from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.core.exceptions import PermissionDenied
 from django.core.files import File
@@ -24,7 +24,7 @@ class IssueService:
         title: str,
         description: str,
         thumbnail: File = None,
-        status: str = Issue.status.PUBLISHED,
+        status: str = "PB",
         task: Task,
     ) -> Issue:
         # check permissions for add issue
