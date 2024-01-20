@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="flex items-center justify-between h-16 bg-white fixed top-0 z-50 w-full">
+<div class="flex items-center justify-between h-16 bg-white fixed top-0 z-50 w-full ">
   <div class="flex items-center px-4">
     <div class="p-2.5 mt-1 flex items-center rounded-md ">
       <!-- Logo -->
@@ -12,54 +12,54 @@
     </div>
 
     <span class="lg:hidden absolute text-white text-4xl top-3 left-3 cursor-pointer" :class="transition duration 700 :Openbar()" onclick="Openbar()">
-      <!-- Menu Bar Icon -->
-      <div class="flex items-center ml-2.5 mr-2.5 bg-[#181c320d] p-1.5 rounded-md">
+      <!-- Menu Bar Icon -->                
+      <div class="flex items-center mx-2.5 max-sm:mx-0 bg-[#181c320d] p-1.5 rounded-md">
         <button type="button">
-          <img class="w-8 h-8" src="{% static 'images/menu_open.svg' %}" />
+          <img class="w-8 h-8 md:w-8 md:h-8 max-sm:w-6 max-sm:h-6" src="{% static 'images/menu_open.svg' %}" />
         </button>
       </div>
     </span>
 
-    <div class="p-2.5 mt-1 flex items-center rounded-md justify-center">
+    <div class="p-2.5 md:ml-8 max-md:ml-8 sm:ml-8 max-sm:ml-2 flex items-center rounded-md justify-center">
       <!-- Logo -->
       <div class="inline-flex lg:hidden  items-center">
         <a href="/">
-          <img src="{% static 'images/FactryFlow.svg' %}" alt="Logo" class="mr-8 ml-12 w-40 h-10 lg:w-56 md:h-10" />
+          <img src="{% static 'images/FactryFlow.svg' %}" alt="Logo" class="w-40 h-10 lg:w-56 md:h-10 max-sm:w-28 max-sm:h-5" />
         </a>
       </div>
     </div>
-
-    <!-- Search Bar with SVG Icon -->
-    <div class="absolute md:relative right-5 md:right-0 w-32 lg:w-[584px]">
-      <!-- Inline SVG Icon -->
-      <img class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
-        src="{% static 'images/search.svg' %}" />
-      <!-- Search Input -->
-      <input type="text" placeholder="Search..."
-        class="w-full pl-10 p-2 focus:outline-none border border-[#E1E3EA] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]" />
-    </div>
+     <!-- Search Bar with SVG Icon -->
+   <div class="relative w-32 lg:w-[584px] max-sm:w-28 sm:w-auto">
+    <!-- Inline SVG Icon -->
+    <img class="w-5 h-5 absolute left-3 max-sm:left-1 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+      src="{% static 'images/search.svg' %}" />
+    <!-- Search Input -->
+    <input type="text" placeholder="Search..."
+      class="w-full pl-10 max-sm:pl-6 p-2 max-sm:text-sm focus:outline-none border border-[#E1E3EA] rounded-[9px] shadow-[0px_3px_4px_0px_rgba(0,0,0,0.03)]" />
   </div>
+  </div>
+  
 
-  <div class="flex items-center pr-4 md:space-x-5">
+  <div class="flex items-center pr-4 md:space-x-5 sm:space-x-2 max-sm:space-x-1">
     <!-- Notification Icon -->
-    <div class="hidden md:inline-flex  items-center bg-[#181c320d] p-2.5 rounded-md">
+    <div class=" md:inline-flex relative items-center bg-[#181c320d] p-2.5 rounded-md">
       <img class="w-6 h-6" src="{% static 'images/notifications.svg' %}" />
 
       <!-- Badge -->
-      <div class="absolute top-3.5">
+      <div class="absolute top-0 right-2">
         <span
-          class="inline-flex items-center rounded-[50px] bg-[#2884EF] px-1.5 py-px text-xs font-semibold text-white">2</span>
+          class="inline-flex items-center rounded-[50px] bg-[#2884EF] px-1.5 md:px-1 max-sm:px-1 text-xs font-semibold text-white">2</span>
       </div>
     </div>
 
     <!-- User Initial -->
-    <div class="hidden md:inline-flex  items-center bg-[#181c320d] py-4 px-5 rounded-full">
+    <div class="md:inline-flex  items-center bg-[#181c320d] lg:py-4 lg:px-5 sm:py-4 sm:px-5 max-sm:py-3 max-sm:px-4 rounded-full">
       <h1 class="text-lg leading-4 font-semibold text-[#2884EF]">J</h1>
     </div>
 
     <!-- User name -->
-    <div class="hidden md:inline-flex  items-center">
-      <h3 class="text-base leading-4 font-semibold text-[#181C32] mr-5 md:mr-10">
+    <div class="md:inline-flex items-center">
+      <h3 class="text-base max-sm:text-sm max-sm:leading-3 leading-4 font-semibold text-[#181C32] mr-5 md:mr-10 max-sm:mr-0">
         Jacob Jones
       </h3>
     </div>
