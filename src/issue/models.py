@@ -14,7 +14,6 @@ class Issue(BaseModel):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=150)
     description = models.TextField()
-    # TODO: Integrate with Azure Storage instead of Django Storage.
     thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
     status = models.CharField(
         max_length=2, choices=Status.choices, default=Status.DRAFT

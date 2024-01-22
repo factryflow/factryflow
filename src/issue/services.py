@@ -1,8 +1,11 @@
+import os
+
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.core.exceptions import PermissionDenied
 from django.core.files import File
 from django.db import transaction
+from integrations.azure.client import az_storage_get_client
 from job_manager.models.task import Task
 
 from .models import Comment, Issue
@@ -38,6 +41,12 @@ class IssueService:
             status=status,
             task=task,
         )
+
+        # Before saving issue model instance, we will upload
+        # Thumbnail image to targeted Azure Storage.
+        service = ImageDirectUploadService(user=self.user)
+        service.upload_local(file=thumbnail, file_obj=thumbnail.file)
+
         issue.full_clean()
         issue.save(user=self.user)
 
@@ -54,6 +63,12 @@ class IssueService:
         issue, _ = model_update(
             instance=issue, fields=fields, data=data, user=self.user
         )
+
+        # After updating model instance, we will also update
+        # Thumbnail image in targeted Azure Storage.
+        service = ImageDirectUploadService(user=self.user)
+        service.upload_local(file=issue.thumbnail, file_obj=issue.thumbnail.file)
+
         return issue
 
     @transaction.atomic
@@ -76,7 +91,7 @@ class CommentService:
         self.permission_service = AbstractPermissionService(user=user)
 
     @transaction.atomic
-    def create(self, *, body: str, issue: Issue) -> Issue:
+    def create(self, *, body: str, issue: Issue) -> Comment:
         # check permissions for add comment
         if not self.permission_service.check_for_permission("add_comment"):
             raise PermissionDenied()
@@ -102,7 +117,34 @@ class CommentService:
 
     @transaction.atomic
     def delete(self, *, comment: Comment) -> None:
+        # check permissions for delete comment
         if not self.permission_service.check_for_permission("delete_comment"):
             raise PermissionDenied()
 
         comment.delete()
+
+
+# ------------------------------------------------------------------------------
+# Image Service
+# ------------------------------------------------------------------------------
+
+
+class ImageDirectUploadService:
+    """
+    Encapsulating the flow of uploading an image directly to Azure Storage,
+    with the ability to check against user permissions.
+    """
+
+    def __init__(self, user):
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    @transaction.atomic
+    def upload_local(self, *, file: File, file_obj: str) -> File:
+        # check permissions for upload image
+        if not self.permission_service.check_for_permission("upload_image"):
+            raise PermissionDenied()
+
+        azure_storage = az_storage_get_client()
+        file_name = os.path.basename(file.name)
+        azure_storage.save(file_name, file_obj)

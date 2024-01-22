@@ -170,7 +170,7 @@ def save_issue_form(request, id: int = None):
     issue_instance = get_object(model_or_queryset=Issue, id=id) if id else None
 
     # Instantiate the form with POST data and optionally the issue instance
-    form = IssueForm(request.POST, instance=issue_instance)
+    form = IssueForm(request.POST, request.FILES, instance=issue_instance)
     if form.is_valid():
         # Extract data from the form
         issue_data = form.cleaned_data
