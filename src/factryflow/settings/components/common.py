@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django_filters",
     "template_partials",
     "simple_history",
+    "storages",
     "ordered_model",
     "taggit",
     # apps
@@ -198,7 +199,18 @@ API_KEY = os.getenv("API_KEY")
 
 
 # IMAGE / FILE UPLOADS
-MEDIA_ROOT = BASE_DIR / "static/media"
+# MEDIA_ROOT_NAME = "media"
+# MEDIA_ROOT = BASE_DIR / MEDIA_ROOT_NAME
+
+# AZURE STORAGE SETTINGS
+DEFAULT_FILE_STORAGE = "backend.custom_azure.AzureMediaStorage"
+
+AZURE_ACCOUNT_NAME = os.getenv("AZURE_ACCOUNT_NAME")
+AZURE_ACCOUNT_KEY = os.getenv("AZURE_ACCOUNT_KEY")
+AZURE_CONTAINER = os.getenv("AZURE_ACCOUNT_CONTAINER")
+AZURE_CUSTOM_DOMAIN = f"{AZURE_ACCOUNT_NAME}.blob.core.windows.net"
+MEDIA_URL = f"https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/"
+
 
 # TAGGIT SETTINGS
 TAGGIT_CASE_INSENSITIVE = True
