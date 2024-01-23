@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -219,3 +219,6 @@ TAGGIT_CASE_INSENSITIVE = True
 ROLEPERMISSIONS_MODULE = "users.roles"
 ROLEPERMISSIONS_REGISTER_ADMIN = True
 ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
+
+
+from factryflow.settings.files_and_storages import *
