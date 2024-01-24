@@ -29,8 +29,9 @@ def taskform(request):
 def chart(request):
     return render(request, "base/chart/main.html")
 
+
 def settingsPage(request):
-    return render(request,"base/settings/form.html")
+    return render(request, "base/settings/form.html")
 
 
 if settings.DEBUG:
@@ -39,11 +40,12 @@ if settings.DEBUG:
 urlpatterns = [
     path("", home, name="home"),
     path("chart/", chart, name="chart"),
-    path("settings/",settingsPage,name="settings"),
+    path("settings/", settingsPage, name="settings"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("", include("users.urls")),
     path("", include("job_manager.urls")),
+    path("", include("issue.urls")),
     path("api/", api.urls),
     path("", TemplateView.as_view(template_name="index.html")),
 ]
