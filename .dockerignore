@@ -1,0 +1,32 @@
+# Ignore Python bytecode files
+*.pyc
+
+# Ignore Python cache directories
+__pycache__
+
+# Ignore system directories
+.dockerignore
+.git
+node_modules
+*.sqlite3
+
+# Ignore development and temporary files
+*.log
+*.bak
+*.swp
+*.tmp
+
+# Ignore IDE and editor-specific files
+.vscode
+.idea
+
+# Ignore local environment files
+.env
+
+# Ignore Docker-related files
+.docker
+.dockerignore
+
+# Ignore dependency and virtual environment directories
+venv
+env
