@@ -33,6 +33,14 @@ def chart(request):
 def settingsPage(request):
     return render(request, "base/settings/form.html")
 
+def operatorPage(request):
+    return render(request,"base/operatorview/main.html")
+
+def operatorIssuePage(request):
+    return render(request,"base/operatorview/issuepage.html")
+
+def operatorOEPage(request):
+    return render(request,"base/operatorview/operationexception.html")
 
 if settings.DEBUG:
     import debug_toolbar
@@ -43,6 +51,9 @@ urlpatterns = [
     path("settings/", settingsPage, name="settings"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
+    path("operatorview/",operatorPage,name="operatorPage"),
+    path("operatorview/issue/",operatorIssuePage, name="operatorIssuePage"),
+     path("operatorview/operationexception/",operatorOEPage, name="operatorOEPage"),
     path("", include("users.urls")),
     path("", include("job_manager.urls")),
     path("", include("issue.urls")),
