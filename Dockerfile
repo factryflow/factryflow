@@ -1,31 +1,39 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+FROM python:3.11.5-slim-bookworm
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements-dev.txt
+# Update package lists and install make
+RUN apt-get update && \
+    apt-get install -y make
+
+# RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Copy the current directory contents into the container at /app
+COPY . .
+
+# RUN poetry install --no-root
+
+# System deps:
+RUN pip install -r requirements-dev.txt
+
 
 # Expose port 8000 to the outside world
 EXPOSE 8000
 
 # Run makemigrations and migrate when the container launches
-CMD ["make", "migrations"]
-CMD ["make", "migrate"]
+RUN make migrations
+RUN make migrate
 
 # to sync all user roles
-CMD ["make", "sync_roles"]
+RUN make sync_roles
 
 # to create superuser
-CMD ["make", "superuser"]
+RUN make superuser
 
 # Command to start the Django development server
 CMD ["make", "dev"]
