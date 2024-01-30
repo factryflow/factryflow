@@ -34,7 +34,7 @@ class TaskResourceAssigmentService:
         # check permissions for create task resource assignment
         if not self.permission_service.check_for_permission("add_taskresourceassigment"):
             raise PermissionDenied()
-        
+
         instance = TaskResourceAssigment.objects.create(
             task=task,
             resource=resource,
@@ -95,7 +95,7 @@ class AssignmentConstraintService:
         # check permissions for create assignment constraint
         if not self.permission_service.check_for_permission("add_assignmentconstraint"):
             raise PermissionDenied()
-        
+
         instance = AssignmentConstraint.objects.create(
             task=task,
             assignment_rule=assignment_rule,
@@ -279,7 +279,7 @@ class AssigmentRuleService:
         # check permissions for create assigment rule
         if not self.permission_service.check_for_permission("add_assigmentrule"):
             raise PermissionDenied()
-        
+      
         self._validate_criteria_keys_throw_validation_error(criteria=criteria)
 
         instance = AssigmentRule.objects.create(

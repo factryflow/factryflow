@@ -10,6 +10,7 @@ class Issue(admin.ModelAdmin):
         "description",
         "status",
         "thumbnail",
+        "task",
         "tag_list",
         "created_at",
         "created_by",
@@ -26,11 +27,6 @@ class Issue(admin.ModelAdmin):
 
 @admin.register(Comment)
 class Comment(admin.ModelAdmin):
-    list_display = [
-        "body",
-        "active",
-        "created_at",
-        "created_by",
-    ]
+    list_display = ["body", "issue", "created_at", "created_by", "updated_by"]
     list_filter = ("created_at", "created_by")
     search_fields = ["created_by"]

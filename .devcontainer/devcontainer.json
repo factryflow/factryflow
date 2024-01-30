@@ -36,17 +36,12 @@
 
 			},
 			"extensions": [
-				// core
 				"ms-azuretools.vscode-docker",
 				"eamodio.gitlens",
 				"charliermarsh.ruff",
 				"ms-python.python",
-
-				// linter / formatters
 				"monosans.djlint",
 				"batisteo.vscode-django",
-
-				// other
 				"oderwat.indent-rainbow",
 				"tamasfe.even-better-toml",
 				"otovo-oss.htmx-tags",

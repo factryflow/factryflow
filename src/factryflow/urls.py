@@ -29,9 +29,18 @@ def taskform(request):
 def chart(request):
     return render(request, "base/chart/main.html")
 
-def settingsPage(request):
-    return render(request,"base/settings/form.html")
 
+def settingsPage(request):
+    return render(request, "base/settings/form.html")
+
+def operatorPage(request):
+    return render(request,"base/operatorview/main.html")
+
+def operatorIssuePage(request):
+    return render(request,"base/operatorview/issuepage.html")
+
+def operatorOEPage(request):
+    return render(request,"base/operatorview/operationexception.html")
 
 if settings.DEBUG:
     import debug_toolbar
@@ -39,11 +48,15 @@ if settings.DEBUG:
 urlpatterns = [
     path("", home, name="home"),
     path("chart/", chart, name="chart"),
-    path("settings/",settingsPage,name="settings"),
+    path("settings/", settingsPage, name="settings"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
+    path("operatorview/",operatorPage,name="operatorPage"),
+    path("operatorview/issue/",operatorIssuePage, name="operatorIssuePage"),
+     path("operatorview/operationexception/",operatorOEPage, name="operatorOEPage"),
     path("", include("users.urls")),
     path("", include("job_manager.urls")),
+    path("", include("issue.urls")),
     path("api/", api.urls),
     path("", TemplateView.as_view(template_name="index.html")),
 ]

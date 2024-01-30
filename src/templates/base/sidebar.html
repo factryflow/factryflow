@@ -17,7 +17,7 @@
 {% partialdef _dropdown_menu_item %}
   <li x-cloak>
     <a href="{{ menu_item_url }}"
-       class="flex py-2.5 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
+       class="flex py-2 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
        x-data="{isHovered:false}"
        @click="active='{{ menu_item_id }}'"
        x-on:mouseover="isHovered = true"
@@ -26,7 +26,7 @@
       <img class="h-2 w-2"
            :class="{ 'h-2.5 w-2.5': isHovered || active == '{{ menu_item_id }}' }"
            src="{% static 'images/dot.svg' %}" />
-      <span class="ml-4 mr-24" :class="$store.sidebar.full ? 'block' : 'hidden'">{{ menu_item_name }}</span>
+      <span class="ml-4" :class="$store.sidebar.full ? 'block' : 'hidden'">{{ menu_item_name }}</span>
     </a>
   </li>
 {% endpartialdef %}
@@ -38,7 +38,7 @@
           x-cloak
           x-on:mouseover="isHovered = true"
           x-on:mouseleave="isHovered = false"
-          class="w-full flex py-2.5 pl-3 pr-4 text-sm leading-5 rounded-lg items-center"
+          class="w-full flex py-2.5 px-3 text-sm leading-5 rounded-lg items-center"
           :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter': $store.sidebar.active == '{{ menu_item_id }}' || isHovered}">
     <div class="flex items-center">
       <img src="{% static menu_item_icon %}" class="h-6 w-6" />
@@ -50,7 +50,7 @@
   </button>
 {% endpartialdef %}
 
-<div class="container overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-screen"
+<div class="container overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-auto"
      x-cloak>
   <div class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer">
     <!-- Sidebar content (links, icons, etc.) -->
@@ -112,7 +112,7 @@
         </ul>
       </div>
       <!-- Operator View menu -->
-      {% comment %} setti ng menu {% endcomment %}
+      {% comment %} setting menu {% endcomment %}
       {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='/settings'%}
       {% partial _menu_item %}
       {% endwith %}
@@ -120,6 +120,10 @@
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
       {% partial _menu_item %}
       {% endwith %}
+       {% comment %} operator menu {% endcomment %}
+       {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
+       {% partial _menu_item %}
+       {% endwith %}
       {% comment %} Logout {% endcomment %}
       {% with menu_item_id='logout' menu_item_icon='images/Dashboard.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %} 
       {% partial _menu_item %}
