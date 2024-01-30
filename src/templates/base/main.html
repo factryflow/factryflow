@@ -2,42 +2,46 @@
 
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta name="description" content="Your meta description goes here" />
+    <meta name="keywords" content="your, meta, keywords, go, here" />
+    <title>
+      {% block title %}
+        factryflow
+      {% endblock title %}
 
-<head>
-  <meta charset="UTF-8" />
-  <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <meta name="description" content="Your meta description goes here" />
-  <meta name="keywords" content="your, meta, keywords, go, here" />
-  <title>{% block title %} factryflow {% endblock title %}</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
-    integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-  {% include "base/theme.html" %} {% include "base/styles.html" %}
+    </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
+            integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    {% include "base/theme.html" %}
+    {% include "base/styles.html" %}
 
-  <style>
-    [x-cloak] { display: none !important; }
-  </style>
-</head>
+    <style>[x-cloak] { display: none !important; }</style>
+  </head>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data>
+    {% include "base/header.html" %}
 
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data >
-  {% include "base/header.html" %}
+    <div class="flex">
+      {% include "base/sidebar.html" %}
 
-  <div class="flex">
-    {% include "base/sidebar.html" %}
+      <!-- Main Content -->
+      <div class="flex h-screen flex-col flex-1 overflow-y-auto w-full bg-[#FAFAFB] border border-[#F1F1F2] rounded-t-xl ml-0 lg:ml-80 py-5 px-5 md:px-10 mt-20">
+        {% block content %}
+        {% endblock content %}
 
-    <!-- Main Content -->
-    <div
-      class="flex h-screen flex-col flex-1 overflow-y-auto w-full bg-[#FAFAFB] border border-[#F1F1F2] rounded-t-xl ml-0 lg:ml-80 py-5 px-5 md:px-10 mt-20">
-      {% block content %} {% endblock content %}  
+      </div>
     </div>
-  </div>
+    {% include "base/notifications.html" %}
 
-  {% include "base/notifications.html" %}
-</body>
-
-<script>
+  </body>
+  <script>
     function Openbar() {
       document.querySelector('.sidebar').classList.toggle('left-[-300px]')
     }
@@ -58,5 +62,5 @@
       },
     }));
   });  
-</script>
+  </script>
 </html>

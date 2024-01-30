@@ -1,5 +1,6 @@
 # views.py
 from common.utils.views import add_notification_headers
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -7,18 +8,8 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import JobForm
 from .models import Job, JobType
-
-# patch missing functions
-def job_delete(id: int):
-    pass
-
-def job_list():
-    pass
-
-def job_create_or_update(job_data: dict, job_type: JobType):
-    pass
-
-#TODO - implement these functions from JobService
+from .services import JobService
+from common.views import CRUDView
 
 # ------------------------------------------------------------------------------
 # Job Views
@@ -34,7 +25,7 @@ class JobTableView:
         """
         Initialization of the class with optional filtering parameters.
         """
-        self.jobs = job_list()
+        self.jobs = Job.objects.all()
         self.status_filter = status_filter if status_filter else "all"
         self.search_query = search_query
 
@@ -93,11 +84,11 @@ class JobTableView:
                 if job.planned_end_datetime
                 else "",
                 job.priority,
-                  f'<span class="{self.get_status_colored_text(job.job_status)} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">{job.get_job_status_display()}</span>'
+                f'<span class="{self.get_status_colored_text(job.job_status)} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">{job.get_job_status_display()}</span>',
             ]
             for job in self.filtered_jobs
         ]
-  
+
     def get_status_colored_text(self, job_status):
         """
         Method to get the colored text based on job status.
@@ -105,147 +96,18 @@ class JobTableView:
         # You can customize this part based on your specific job status and colors
         tailwind_classes = {
             "CM": "bg-haxgreen text-[#3DAD99]",
-            "NP":"bg-haxred text-[#FF4D4F]",
-            "IP":"bg-haxyellow text-[#F6C000]",
-            "CN":"bg-haxpurple text-[#7239EA]",
-            
+            "NP": "bg-haxred text-[#FF4D4F]",
+            "IP": "bg-haxyellow text-[#F6C000]",
+            "CN": "bg-haxpurple text-[#7239EA]",
         }
         return tailwind_classes.get(job_status)
-    
 
 
-def show_all_jobs(request):
-    """
-    View function to display all jobs with optional filtering.
-    """
-    job_status_filter = request.GET.get("status", "all")
-    search_query = request.GET.get("query", None)
-    table = JobTableView(status_filter=job_status_filter, search_query=search_query)
-
-    template_name = (
-        "objects/list.html#partial-table-template"
-        if "HX-Request" in request.headers
-        else "objects/list.html"
-    )
-
-    return render(
-        request,
-        template_name,
-        {
-            "headers": table.table_headers,
-            "rows": table.table_rows,
-            "show_actions": True,
-        },
-    )
-
-
-def show_job_form(request, id: int = None, edit: str = ""):
-    """
-    View function to display a form for a job. This can be used for both creating and editing a job.
-    """
-    form_action_url = "/job-create/"
-
-    if id:
-        job = get_object_or_404(Job, id=id)
-        form = JobForm(instance=job)
-        page_label = job.name
-
-        if edit != "T":
-            view_mode = True
-            form_label = "Job Details"
-            button_text = "Edit"
-            edit_url = reverse("edit_job", args=[id, "T"])
-
-            # Make all form fields read-only
-            for field in form.fields.values():
-                field.widget.attrs["readonly"] = True
-
-        else:
-            button_text = "Save"
-            form_label = "Job Details"
-            view_mode = False
-
-    else:
-        form = JobForm()
-        button_text = "Create"
-        view_mode = False
-        form_label = "New Job Details"
-        page_label = "New Job"
-
-    context = {
-        "form": form,
-        "view_mode": view_mode,
-        "form_label": form_label,
-        "button_text": button_text,
-        "form_action_url": form_action_url,
-        "id": id if id else None,
-        "edit_url": edit_url if "edit_url" in locals() else "#",
-        "page_label": page_label,
-    }
-
-    return render(
-        request,
-        "objects/details.html",
-        context,
-    )
-
-
-@require_http_methods(["POST"])
-def save_job_form(request, id: int = None):
-    """
-    Handle POST request to create or update a job using Django form and service.
-    """
-    # Get the job instance if updating, else None
-    job_instance = get_object_or_404(Job, id=id) if id else None
-
-    # Instantiate the form with POST data and optionally the job instance
-    form = JobForm(request.POST, instance=job_instance)
-    id = request.POST.get("id")
-
-    if form.is_valid():
-        # Extract data from the form
-        job_data = form.cleaned_data
-        job_data["id"] = id
-
-        # Prepare additional data for the service function, if needed
-        job_type = JobType.objects.get(id=1)
-
-        # Call the service function
-        job = job_create_or_update(job_data=job_data, job_type=job_type)
-
-        form = JobForm()
-        response = render(
-            request,
-            "objects/details.html#partial-form",
-            {"form": form, "button_text": "Add Job", "form_label": "Job Details"},
-        )
-
-        if request.htmx:
-            headers = {
-                "HX-Redirect": reverse(
-                    "job"
-                )  # This is where you want to redirect after success
-            }
-            response = HttpResponse(status=204, headers=headers)
-            add_notification_headers(response, "Job created successfully!", "success")
-            return response
-
-
-def request_job_delete(request, id: int):
-    """
-    Handle job deletion request. Deletes a job based on the given ID,
-    retrieves the updated job list, and returns a response with a notification.
-    """
-    job_delete(id=id)
-    table = JobTableView()
-    response = render(
-        request,
-        "objects/list.html#partial-table-template",
-        {
-            "headers": table.table_headers,
-            "rows": table.table_rows,
-            "show_actions": True,
-        },
-    )
-    add_notification_headers(response, "Job has been deleted.", "info")
-    return response
+JOB_VIEWS = CRUDView(
+    model=Job,
+    model_type=JobType,
+    model_name="job",
+    model_service=JobService,
+    model_form=JobForm,
+    model_table_view=JobTableView,
+)

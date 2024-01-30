@@ -10,6 +10,7 @@ class JobForm(forms.ModelForm):
             "name",
             "description",
             "customer",
+            "job_type",
             # "priority",
             "due_date",
             "job_status",
@@ -18,7 +19,8 @@ class JobForm(forms.ModelForm):
             "name": "Job Name",
             "description": "Job Description",
             "customer": "Customer",
-            # "priority" : "Priority"
+            "job_type": "Job Type",
+            # "priority": "Priority",
             "due_date": "Due Date",
             "job_status": "Job Status",
         }
@@ -42,6 +44,11 @@ class JobForm(forms.ModelForm):
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "date",
+                }
+            ),
+            "job_type": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
             "job_status": forms.Select(
