@@ -10,15 +10,14 @@ MIDDLEWARE += [
 
 
 # postgres database
-"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'DB_NAME',
-        'USER': 'POSTGRES_USER',
-        'PASSWORD': 'PASSWORD',
-        'HOST': 'localhost',  # Set to the hostname or IP address of your PostgreSQL server
-        'PORT': '5432',       # Default PostgreSQL port
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),  
+        'PORT': os.getenv("DB_PORT"),
     }
 }
-""" 
+

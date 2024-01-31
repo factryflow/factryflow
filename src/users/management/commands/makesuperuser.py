@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
+import os
+
 class Command(BaseCommand):
     """
     CUSTOM COMMAND
@@ -16,8 +18,8 @@ class Command(BaseCommand):
     help = "Command to create a superuser"
 
     def handle(self, *args, **options):
-        username = settings.SUPERUSER_USERNAME
-        password = settings.SUPERUSER_PASSWORD
+        username = str(settings.SUPERUSER_USERNAME)
+        password = str(settings.SUPERUSER_PASSWORD)
         if not User.objects.filter(username=username).exists():
             User.objects.create_superuser(
                 username=username, password=password, is_active=True
