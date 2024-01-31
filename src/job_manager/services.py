@@ -9,6 +9,7 @@ from job_manager.models import (
     Dependency,
     DependencyType,
     Job,
+    JobStatusChoices,
     JobType,
     Task,
     TaskType,
@@ -24,7 +25,6 @@ class WorkCenterService:
     def __init__(self, user) -> None:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
-
 
     def create(self, name: str, notes: str) -> WorkCenter:
         # check for permission to create work center
@@ -260,6 +260,7 @@ class JobService:
         name: str,
         due_date: datetime,
         job_type: JobType,
+        job_status: JobStatusChoices,
         customer: str = "",
         description: str = "",
         external_id: str = "",
@@ -275,6 +276,7 @@ class JobService:
             due_date=due_date,
             job_type=job_type,
             customer=customer,
+            job_status=job_status,
             external_id=external_id,
             notes=notes,
             description=description,
@@ -283,7 +285,8 @@ class JobService:
         job.full_clean()
         job.save(user=self.user)
 
-        job.update_priority(priority)
+        if priority:
+            job.update_priority(priority)
 
         return job
 
@@ -319,6 +322,7 @@ class JobService:
             raise PermissionDenied()
 
         job.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import pytest
 from factories import UserFactory
 from factories.job_manager_factories import JobFactory, JobTypeFactory
-from job_manager.models import Job
+from job_manager.models import Job, JobStatusChoices
 from job_manager.services import JobService
 
 
@@ -14,6 +14,7 @@ def test_job_create():
         "name": "test",
         "due_date": "2021-01-01",
         "priority": 1,
+        "job_status": JobStatusChoices.NOT_PLANNED.value,
         "job_type": job_type,
     }
 

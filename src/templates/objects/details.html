@@ -1,5 +1,7 @@
 {% extends 'base/main.html' %}
 
+{% load permission_tags %}
+
 {% block title %}
     Job
 {% endblock title %}
@@ -7,7 +9,10 @@
 {% load partials %}
 
 {% partialdef partial-form %}
-    <form method="post" hx-post="{{ form_action_url }}" hx-redirect="true" x-cloak>
+    <form method="post"
+          hx-post="{{ form_action_url }}"
+          hx-redirect="true"
+          x-cloak>
         {% csrf_token %}
         {% comment %} Hidden ID {% endcomment %}
         {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
@@ -33,16 +38,18 @@
             <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                 Cancel
             </button>
-            {% if view_mode %}
-                <a href="{{ edit_url }}"
-                   class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                    {{ button_text }}
-                </a>
-            {% else %}
-                <button type="submit"
-                        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                    {{ button_text }}
-                </button>
+            {% if user|can:'change_job' %}
+                {% if view_mode %}
+                    <a href="{{ edit_url }}"
+                       class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        {{ button_text }}
+                    </a>
+                {% else %}
+                    <button type="submit"
+                            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        {{ button_text }}
+                    </button>
+                {% endif %}
             {% endif %}
         </div>
     </form>
