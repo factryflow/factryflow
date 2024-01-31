@@ -1,4 +1,4 @@
-FROM python:3.11.5-slim-bookworm
+FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye
 
 # Set the working directory in the container
 WORKDIR /app
@@ -16,7 +16,6 @@ RUN apt-get update && \
 # Copy the current directory contents into the container at /app
 COPY . .
 
-# RUN poetry install --no-root
 
 # System deps:
 RUN pip install -r requirements-dev.txt

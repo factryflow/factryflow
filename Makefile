@@ -1,18 +1,18 @@
 dev:
 	@echo "Starting Development Server..."
-	poetry run python src/manage.py runserver
+	python src/manage.py runserver 0.0.0.0:8000
 
 migrate:
-	poetry run python src/manage.py migrate
+	python src/manage.py migrate
 
 migrations:
-	poetry run python src/manage.py makemigrations
+	python src/manage.py makemigrations
 
 test:
 	@cd src && pytest -W ignore
 
 superuser:
-	poetry run python src/manage.py makesuperuser
+	python src/manage.py makesuperuser
 
 sync_roles:
-	poetry run python src/manage.py sync_roles
+	python src/manage.py sync_roles
