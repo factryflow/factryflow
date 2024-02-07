@@ -117,7 +117,6 @@ class TaskService:
     @transaction.atomic
     def create(
         self,
-        *,
         name: str,
         run_time_per_unit: float,
         quantity: int,
@@ -164,7 +163,7 @@ class TaskService:
         return task
 
     @transaction.atomic
-    def update(self, *, instance: Task, data: dict) -> Task:
+    def update(self, instance: Task, data: dict) -> Task:
         # check for permission to update task
         if not self.permission_service.check_for_permission("change_task"):
             raise PermissionDenied()
@@ -193,7 +192,7 @@ class TaskService:
         return task
 
     @transaction.atomic
-    def delete(self, *, task: Task) -> None:
+    def delete(self, task: Task) -> None:
         # check for permission to delete task
         if not self.permission_service.check_for_permission("delete_task"):
             raise PermissionDenied()
@@ -386,7 +385,6 @@ class DependencyService:
     @transaction.atomic
     def create(
         self,
-        *,
         name: str,
         dependency_type: DependencyType,
         expected_close_datetime: datetime = None,
@@ -419,7 +417,7 @@ class DependencyService:
         return dependency
 
     @transaction.atomic
-    def update(self, *, instance: Dependency, data: dict) -> Dependency:
+    def update(self, instance: Dependency, data: dict) -> Dependency:
         # check for permission to update dependency
         if not self.permission_service.check_for_permission("change_dependency"):
             raise PermissionDenied()

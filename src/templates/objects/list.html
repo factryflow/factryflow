@@ -1,7 +1,7 @@
 {% extends "base/main.html" %}
 {% load permission_tags %}
 {% block title %}
-    Job
+    {{ model_name|title }}
 {% endblock title %}
 {% load partials %}
 {% load static %}
@@ -36,15 +36,15 @@
                     </div>
                     <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete?</p>
                     <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">
-                        By deleting <span class="text-[#5E6278] font-semibold">“Loreum Ipsum”</span> Job, all task inside that column
+                        By deleting <span class="text-[#5E6278] font-semibold">“Loreum Ipsum”</span> {{ model_name|title }}, all task inside that column
                         will also be deleted.
                     </p>
                 </div>
                 <!-- Buttons -->
                 <div class="px-9 py-5 flex justify-center items-center gap-3">
                     <button type="button"
-                            hx-delete="/jobs/delete/{{ row.0 }}"
-                            hx-target="#all-jobs-table"
+                            hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
+                            hx-target="#all-{{ model_name }}s-table"
                             hx-swap="outerHTML"
                             class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
                             x-on:click="showModal = false">Delete</button>
@@ -55,7 +55,9 @@
             </div>
         </div>
     </div>
-    <table class="w-full text-sm text-center" id="{{ table_id }}" x-cloak>
+    <table class="w-full text-sm text-center"
+           id="all-{{ model_name }}s-table"
+           x-cloak>
         <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
             <tr class="text-[#181C32]">
                 <th scope="col" class="p-4">
@@ -85,8 +87,8 @@
                     {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
                     {% if show_actions %}
                         <td class="flex items-center px-6 py-4">
-                            {% if user|can:'view_job' %}
-                                <a href="{% url 'view_job' id=row.0 %}">
+                            {% if user|can:'actions_rule[0]' %}
+                                <a href="{% url 'view_'|add:model_name id=row.0 %}">
                                     <button id="view-{{ row.0 }}"
                                             type="button"
                                             class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
@@ -94,8 +96,8 @@
                                     </button>
                                 </a>
                             {% endif %}
-                            {% if user|can:'change_job' %}
-                                <a href="{% url 'edit_job' id=row.0 edit='true' %}">
+                            {% if user|can:'actions_rule[2]' %}
+                                <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
                                     <button id="edit-{{ row.0 }}"
                                             type="button"
                                             class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
@@ -103,12 +105,12 @@
                                     </button>
                                 </a>
                             {% endif %}
-                            {% if user|can:'delete_job' %}
+                            {% if user|can:'actions_rule[3]' %}
                                 <button id="delete-{{ row.0 }}"
                                         type="button"
                                         class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
-                                        hx-delete="/jobs/delete/{{ row.0 }}"
-                                        hx-target="#all-jobs-table"
+                                        hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
+                                        hx-target="#all-{{ model_name }}s-table"
                                         hx-swap="outerHTML"
                                         {% comment %}
                                         hx-confirm="Are you sure?"
@@ -136,10 +138,10 @@
                  alt="image_search" />
             <!-- Search Input -->
             <input type="text"
-                   id="job_search_bar"
-                   placeholder="Search Job ID / Job Name"
-                   hx-get="{% url 'job' %}"
-                   hx-target="#all-jobs-table"
+                   id="{{ model_name }}_search_bar"
+                   placeholder="Search {{ model_name | title }} ID / {{ model_name | title }} Name"
+                   hx-get="{% url model_name %}"
+                   hx-target="#all-{{model_name}}s-table"
                    hx-trigger="keyup delayed:500ms"
                    name="query"
                    class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
@@ -173,7 +175,8 @@
                     <li>
                         <div class="flex items-center">
                             <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                            <a href="/job" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Job</a>
+                            <a href="/{{ model_name }}"
+                               class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_name | title }}</a>
                         </div>
                     </li>
                     <li aria-current="page">
@@ -185,14 +188,14 @@
                 </ol>
             </nav>
             <div>
-                <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Job Management</h1>
+                <h1 class="text-2xl font-semibold text-[#181C32] pb-5">{{ model_name | title }} Management</h1>
             </div>
         </div>
-        {% if user|can:'add_job' %}
+        {% if user|can:'actions_rule[1]' %}
             <div class="flex">
-                <a href="{% url 'job_form' %}"
+                <a href="{% url model_name|add:'_form' %}"
                    class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
-                Job</a>
+                {{ model_name | title }}</a>
             </div>
         {% endif %}
     </div>
@@ -206,26 +209,26 @@
                 <button x-on:click="activeTab = 'tab1'"
                         :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
-                <button hx-get="{% url 'job' %}?status=IP"
-                        hx-target="#ip-jobs-table"
+                <button hx-get="{% url model_name %}?status=IP"
+                        hx-target="#ip-{{ model_name }}s-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab2'"
                         :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2','text-[#7E8299]':activeTab != 'tab2'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">In Progress</button>
-                <button hx-get="{% url 'job' %}?status=NP"
-                        hx-target="#np-jobs-table"
+                <button hx-get="{% url model_name %}?status=NP"
+                        hx-target="#np-{{ model_name }}s-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab3'"
                         :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab3','text-[#7E8299]':activeTab != 'tab3'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Not Planned</button>
-                <button hx-get="{% url 'job' %}?status=CM"
-                        hx-target="#cm-jobs-table"
+                <button hx-get="{% url model_name %}?status=CM"
+                        hx-target="#cm-{{ model_name }}s-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab4'"
                         :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab4','text-[#7E8299]':activeTab != 'tab4'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Completed</button>
-                <button hx-get="{% url 'job' %}?status=CN"
-                        hx-target="#cn-jobs-table"
+                <button hx-get="{% url model_name %}?status=CN"
+                        hx-target="#cn-{{ model_name }}s-table"
                         hx-trigger="click"
                         x-on:click="activeTab = 'tab5'"
                         :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab5','text-[#7E8299]':activeTab != 'tab5'}"
@@ -239,7 +242,7 @@
                 {% partial partial-search-filter %}
                 <div class="pt-6">
                     <div class="relative overflow-x-auto table-container">
-                        {% with table_id="all-jobs-table" %}
+                        {% with table_id="all-{{ model_name }}s-table" %}
                             {% partial partial-table-template %}
                         {% endwith %}
                     </div>
@@ -249,7 +252,7 @@
                 {% partial partial-search-filter %}
                 <div class="pt-6">
                     <div class="relative overflow-x-auto table-container">
-                        {% with table_id="ip-jobs-table" %}
+                        {% with table_id="ip-{{ model_name }}s-table" %}
                             {% partial partial-table-template %}
                         {% endwith %}
                     </div>
@@ -259,7 +262,7 @@
                 {% partial partial-search-filter %}
                 <div class="pt-6">
                     <div class="relative overflow-x-auto table-container">
-                        {% with table_id="np-jobs-table" %}
+                        {% with table_id="np-{{ model_name }}s-table" %}
                             {% partial partial-table-template %}
                         {% endwith %}
                     </div>
@@ -269,7 +272,7 @@
                 {% partial partial-search-filter %}
                 <div class="pt-6">
                     <div class="relative overflow-x-auto table-container">
-                        {% with table_id="cm-jobs-table" %}
+                        {% with table_id="cm-{{ model_name }}s-table" %}
                             {% partial partial-table-template %}
                         {% endwith %}
                     </div>
@@ -279,7 +282,7 @@
                 {% partial partial-search-filter %}
                 <div class="pt-6">
                     <div class="relative overflow-x-auto table-container">
-                        {% with table_id="cn-jobs-table" %}
+                        {% with table_id="cn-{{ model_name }}s-table" %}
                             {% partial partial-table-template %}
                         {% endwith %}
                     </div>
