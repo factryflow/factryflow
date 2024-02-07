@@ -1,63 +1,59 @@
 {% extends 'base/main.html' %}
-
 {% load permission_tags %}
-
 {% block title %}
-    Job
+    {{ model_name | title }}
 {% endblock title %}
-
 {% load partials %}
-
 {% partialdef partial-form %}
-    <form method="post"
-          hx-post="{{ form_action_url }}"
-          hx-redirect="true"
-          x-cloak>
-        {% csrf_token %}
-        {% comment %} Hidden ID {% endcomment %}
-        {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
-        <div class="md:flex md:flex-wrap -mx-3">
-            {% for field in form %}
-                <div class="md:w-1/2 px-3 mb-6">
-                    <label for="{{ field.id_for_label }}"
-                           class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                        {{ field.label }}
-                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                    </label>
-                    {{ field }}
-                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-                </div>
-                {% if forloop.counter|divisibleby:2 and not forloop.last %}
-                </div>
-                <div class="md:flex md:flex-wrap -mx-3">
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div class="flex justify-left mt-6 space-x-4">
-            <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                Cancel
-            </button>
-            {% if user|can:'change_job' %}
-                {% if view_mode %}
-                    <a href="{{ edit_url }}"
-                       class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                        {{ button_text }}
-                    </a>
-                {% else %}
-                    <button type="submit"
-                            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                        {{ button_text }}
-                    </button>
-                {% endif %}
+<form method="post"
+      hx-post="{{ form_action_url }}"
+      hx-redirect="true"
+      x-cloak>
+    {% csrf_token %}
+    {% comment %} Hidden ID {% endcomment %}
+    {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
+    <div class="md:flex md:flex-wrap -mx-3">
+        {% for field in form %}
+            <div class="md:w-1/2 px-3 mb-6">
+                <label for="{{ field.id_for_label }}"
+                       class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+            </div>
+            {% if forloop.counter|divisibleby:2 and not forloop.last %}
+            </div>
+            <div class="md:flex md:flex-wrap -mx-3">
             {% endif %}
-        </div>
-    </form>
+        {% endfor %}
+    </div>
+    <div class="flex justify-left mt-6 space-x-4">
+        <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+            Cancel
+        </button>
+        {% if view_mode %}
+            {% if user|can:'actions_rule[0]' %}
+                <a href="{{ edit_url }}"
+                   class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                    {{ button_text }}
+                </a>
+            {% endif %}
+        {% else %}
+            {% if user|can:'actions_rule[1]' %}
+                <button type="submit"
+                        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                    {{ button_text }}
+                </button>
+            {% endif %}
+        {% endif %}
+    </div>
+</form>
 {% endpartialdef %}
-
 {% block content %}
     {% load static %}
-
     <div class="flex-wrap" x-cloak>
         <nav class="flex pb-4" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -70,21 +66,21 @@
                 <li>
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <a href="{% url 'job' %}"
-                           class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Job</a>
+                        <a href="{% url model_name %}"
+                           class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_name | title }}</a>
                     </div>
                 </li>
                 <li>
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <a href="{% url 'job_form' %}"
+                        <a href="{% url model_name|add:'_form' %}"
                            class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
                     </div>
                 </li>
                 <li aria-current="page">
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Job Details</span>
+                        <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">{{ model_name | title }} Details</span>
                     </div>
                 </li>
             </ol>
@@ -100,7 +96,6 @@
         {% block form %}
             {% partial partial-form %}
         {% endblock form %}
-
     </div>
     {% if button_text != "Create" %}
         <div class="mt-6" x-data="{ activeTab: 'tab1' }" x-cloak>
@@ -119,18 +114,12 @@
             <div class="bg-white pt-6 rounded-b-xl flex h-screen">
                 <div x-show="activeTab === 'tab1'" class="w-full">
                     <div class="pt-6">
-                        <div class="relative overflow-x-auto table-container">
-                            {% include "objects/list.html#partial-table-template" %}
-
-                        </div>
+                        <div class="relative overflow-x-auto table-container">{% include "objects/list.html#partial-table-template" %}</div>
                     </div>
                 </div>
                 <div x-show="activeTab === 'tab2'" class="w-full">
                     <div class="pt-6">
-                        <div class="relative overflow-x-auto table-container">
-                            {% include "objects/list.html#partial-table-template" %}
-
-                        </div>
+                        <div class="relative overflow-x-auto table-container">{% include "objects/list.html#partial-table-template" %}</div>
                     </div>
                 </div>
             </div>
