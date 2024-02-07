@@ -269,7 +269,14 @@ class CustomTableView:
         tailwind_classes,
     ):
         """
-        Initialization of the class with model, fields, and table headers.
+        Args:
+            model: The Django model class for which the table view is created.
+            model_name: The name of the model.
+            fields: List of fields to be displayed in the table.
+            headers: List of headers for the table columns.
+            status_filter_field: The field used for filtering by status.
+            search_fields_list: List of fields to be searched.
+            tailwind_classes: Dictionary mapping model statuses to Tailwind CSS classes.
         """
         self.model = model
         self.model_name = model_name
@@ -281,6 +288,9 @@ class CustomTableView:
 
     @property
     def all_instances(self):
+        """
+        Retrieve all instances of the model.
+        """
         return self.model.objects.all()
 
     def filtered_instances(
@@ -289,7 +299,14 @@ class CustomTableView:
         search_query=None,
     ):
         """
-        Property to get filtered job list based on status and search query.
+        Get filtered instances based on status and search query.
+
+        Args:
+            status_filter: Optional. The status filter to be applied.
+            search_query: Optional. The search query to be applied.
+        
+        Returns:
+            List: Filtered instances based on the provided status and search query.
         """
         all_instances = self.all_instances
         if status_filter != "all":
@@ -315,7 +332,14 @@ class CustomTableView:
         search_query=None,
     ):
         """
-        Property to get the rows of data for the table based on the model and fields.
+        Get the rows of data for the table based on the model and fields.
+
+        Args:
+            status_filter: Optional. The status filter to be applied.
+            search_query: Optional. The search query to be applied.
+
+        Returns:
+            List: Rows of data for the table based on the filtered instances.
         """
         rows = []
 
@@ -339,6 +363,12 @@ class CustomTableView:
 
     def get_status_colored_text(self, model_status):
         """
-        Method to get the colored text based on job status.
+        Get the colored text based on model status.
+
+        Args:
+            model_status: The status of the model.
+
+        Returns:
+            str: The Tailwind CSS class for the given model status.
         """
         return self.tailwind_classes.get(model_status)
