@@ -18,6 +18,8 @@ class TaskResourceAssigment(BaseModel):
     class Meta:
         db_table = "task_resource_assigment"
 
+    
+
 
 class AssigmentRule(BaseModelWithExtras):
     """
@@ -31,6 +33,10 @@ class AssigmentRule(BaseModelWithExtras):
 
     class Meta:
         db_table = "assigment_rule"
+
+    def __str__(self):
+        return self.name
+    
 
 
 class Operator(models.TextChoices):

@@ -90,8 +90,6 @@ class WorkUnitService:
         name: str,
         external_id: str = "",
         notes: str = "",
-        resources: list[Resource] = None,
-        resource_pools: list[ResourcePool] = None,
     ) -> WorkUnit:
         # check permissions for add workunit
         if not self.permission_service.check_for_permission("add_workunit"):
@@ -106,12 +104,6 @@ class WorkUnitService:
         work_unit.full_clean()
         work_unit.save(user=self.user)
 
-        if resources:
-            work_unit.resources.set(resources)
-
-        if resource_pools:
-            work_unit.resource_pools.set(resource_pools)
-
         return work_unit
 
     def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
@@ -123,8 +115,6 @@ class WorkUnitService:
             "name",
             "external_id",
             "notes",
-            "resources",
-            "resource_pools",
         ]
 
         work_unit, _ = model_update(
@@ -148,11 +138,10 @@ class ResourcePoolService:
 
     def create(
         self,
-        *,
         name: str,
         external_id: str = "",
         notes: str = "",
-        resources: list[Resource] = None,
+        parent: ResourcePool = None,
         work_units: list[WorkUnit] = None,
     ) -> ResourcePool:
         # check permissions for add resource pool
@@ -163,20 +152,18 @@ class ResourcePoolService:
             name=name,
             external_id=external_id,
             notes=notes,
+            parent=parent,
         )
 
         resource_pool.full_clean()
         resource_pool.save(user=self.user)
-
-        if resources:
-            resource_pool.resources.set(resources)
 
         if work_units:
             resource_pool.work_units.set(work_units)
 
         return resource_pool
 
-    def update(self, *, instance: ResourcePool, data: dict) -> ResourcePool:
+    def update(self, instance: ResourcePool, data: dict) -> ResourcePool:
         # check permissions for update resource pool
         if not self.permission_service.check_for_permission("change_resourcepool"):
             raise PermissionDenied()
@@ -184,7 +171,7 @@ class ResourcePoolService:
         fields = [
             "name",
             "external_id",
-            "resources",
+            "parent",
             "work_units",
             "notes",
         ]

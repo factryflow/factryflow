@@ -28,3 +28,18 @@ def add_notification_headers(
 
     response["hx-trigger"] = notification_data
     return response
+
+
+
+def convert_datetime_to_readable_string(datetime: str) -> str:
+    """
+    Converts a datetime string to a human-readable string.
+    """
+    return datetime.strftime("%B %d, %Y %I:%M %p")
+
+
+def convert_date_to_readable_string(date: str) -> str:
+    """
+    Converts a date string to a human-readable string.
+    """
+    return date.strftime("%B %d, %Y")

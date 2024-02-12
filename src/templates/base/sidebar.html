@@ -75,10 +75,10 @@
           {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="/task" %}
+          {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="/tasks" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependency" %}
+          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependencys" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
@@ -94,16 +94,16 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4">
-          {% with menu_item_id='resources' menu_item_name='Resources' %}
+          {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='RG' menu_item_name='Resources Groups' %}
+          {% with menu_item_id='RG' menu_item_name='Resources Pools' menu_item_url="/resource-pools" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' %}
+          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly_shift_templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='OE' menu_item_name='Operational Exception' %}
+          {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational_exceptions" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% with menu_item_id='AR' menu_item_name='Allocation Rules' %}

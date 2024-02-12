@@ -13,6 +13,8 @@ class JobForm(forms.ModelForm):
         fields = [
             "name",
             "description",
+            "external_id",
+            "notes",
             "customer",
             "job_type",
             # "priority",
@@ -22,6 +24,8 @@ class JobForm(forms.ModelForm):
         labels = {
             "name": "Job Name",
             "description": "Job Description",
+            "external_id": "External ID",
+            "notes": "Notes",
             "customer": "Customer",
             "job_type": "Job Type",
             # "priority": "Priority",
@@ -35,6 +39,16 @@ class JobForm(forms.ModelForm):
                 }
             ),
             "description": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
+            "external_id": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
+            "notes": forms.Textarea(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                 }
@@ -73,35 +87,33 @@ class TaskForm(forms.ModelForm):
         fields = [
             "name",
             "job",
+            "external_id",
+            "notes",
             "setup_time",
-            "run_time_per_unit",
-            "teardown_time",
             "quantity",
+            "run_time_per_unit",
             "planned_start_datetime",
-            "planned_end_datetime",
             "item",
-            "work_center",
-            "predecessors",
-            "dependencies",
             "task_type",
             "task_status",
+            "work_center",
+            "dependencies",
         ]
 
         labels = {
             "name": "Task Name",
             "job": "Job",
+            "external_id": "External ID",
+            "notes": "Notes",
             "setup_time": "Setup Time",
-            "run_time_per_unit": "Run Time Per Unit",
-            "teardown_time": "Teardown Time",
             "quantity": "Quantity",
+            "run_time_per_unit": "Run Time Per Unit",
             "planned_start_datetime": "Planned Start Date",
-            "planned_end_datetime": "Planned End Date",
             "item": "Item",
-            "work_center": "Work Center",
-            "predecessors": "Predecessors",
-            "dependencies": "Dependencies",
             "task_type": "Task Type",
             "task_status": "Task Status",
+            "work_center": "Work Center",
+            "dependencies": "Dependencies",
         }
         widgets = {
             "name": forms.TextInput(
@@ -109,19 +121,22 @@ class TaskForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
+            "job": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "external_id": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+            "notes": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
             "setup_time": forms.NumberInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "number",
-                }
-            ),
-            "run_time_per_unit": forms.NumberInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "number",
-                }
-            ),
-            "teardown_time": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "number",
@@ -133,36 +148,21 @@ class TaskForm(forms.ModelForm):
                     "type": "number",
                 }
             ),
-            "planned_start_datetime": forms.DateInput(
+            "run_time_per_unit": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "date",
+                    "type": "number",
                 }
             ),
-            "planned_end_datetime": forms.DateInput(
+            "planned_start_datetime": forms.DateTimeInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "date",
+                    "type": "datetime-local",
                 }
             ),
             "item": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "work_center": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "predecessors": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "dependencies": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
             "task_type": forms.Select(
@@ -175,7 +175,12 @@ class TaskForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "job": forms.Select(
+            "work_center": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "dependencies": forms.SelectMultiple(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
@@ -190,11 +195,12 @@ class TaskForm(forms.ModelForm):
 class DependencyForm(forms.ModelForm):
     class Meta:
         model = Dependency
-        fields = ["name", "expected_close_datetime", "actual_close_datetime", "dependency_type", "dependency_status"]
+        fields = ["name", "expected_close_datetime", "external_id", "notes", "dependency_type", "dependency_status"]
         labels = {
             "name": "Dependency Name",
             "expected_close_datetime": "Expected Close Date",
-            "actual_close_datetime": "Actual Close Date",
+            "external_id": "External ID",
+            "notes": "Notes",
             "dependency_type": "Dependency Type",
             "dependency_status": "Dependency Status",
         }
@@ -204,16 +210,20 @@ class DependencyForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
-            "expected_close_datetime": forms.DateInput(
+            "expected_close_datetime": forms.DateTimeInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "date",
+                    "type": "datetime-local",
                 }
             ),
-            "actual_close_datetime": forms.DateInput(
+            "external_id": forms.TextInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "date",
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+            "notes": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
             "dependency_type": forms.Select(

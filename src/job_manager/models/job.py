@@ -16,6 +16,10 @@ class JobType(BaseModelWithExtras):
     class Meta:
         db_table = "job_type"
 
+    def __str__(self):
+        return self.name
+    
+
 
 class JobStatusChoices(models.TextChoices):
     NOT_PLANNED = "NP", "Not Planned"
@@ -23,6 +27,16 @@ class JobStatusChoices(models.TextChoices):
     COMPLETED = "CM", "Completed"
     CANCELLED = "CN", "Cancelled"
     # TODO ON_HOLD = 'OH', 'On Hold'
+
+    @classmethod
+    def to_dict(cls):
+        """
+        Convert the JobStatusChoices class into a dictionary.
+
+        Returns:
+        - Dictionary where choice values are keys and choice descriptions are values.
+        """
+        return {choice[0]: choice[1] for choice in cls.choices}
 
 
 class Job(BaseModelWithExtras, OrderedModelBase):
@@ -58,3 +72,6 @@ class Job(BaseModelWithExtras, OrderedModelBase):
         if new_priority < 0:
             raise ValidationError("Priority must be greater or equal 0")
         self.to(new_priority)
+
+    def __str__(self):
+        return self.name

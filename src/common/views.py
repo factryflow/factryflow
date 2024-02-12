@@ -1,10 +1,12 @@
+import datetime
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-from common.utils.views import add_notification_headers
+from common.utils.views import add_notification_headers, convert_datetime_to_readable_string,   convert_date_to_readable_string
 
 
 class CRUDView:
@@ -76,6 +78,7 @@ class CRUDView:
 
         context = {
             "headers": self.table_view.table_headers,
+            "status_filter_dict": self.table_view.status_filter_dict,
             "rows": table_rows,
             "show_actions": True,
             "actions_rule": self.actions_rule,
@@ -223,15 +226,20 @@ class CRUDView:
 
         # Retrieve updated instance list
         status_filter = request.GET.get("status", "all")
-        table = self.table_View(status_filter=status_filter)
+
+        # Generate table view based on filter and search parameters
+        table_rows = self.table_view.table_rows(
+            status_filter=status_filter, search_query=search_query
+        )
 
         # Render the updated table and add notification headers
         response = render(
             request,
             f"{self.list_template_name}#partial-table-template",
             {
-                "headers": table.table_headers,
-                "rows": table.table_rows,
+                "headers": self.table_view.table_headers,
+                "status_filter_dict": self.table_view.status_filter_dict,
+                "rows": table_rows,
                 "show_actions": True,
                 "actions_rule": self.actions_rule,
                 "model_name": self.model_name,
@@ -264,9 +272,10 @@ class CustomTableView:
         model_name,
         fields,
         headers,
-        status_filter_field,
         search_fields_list,
-        tailwind_classes,
+        status_choices_class=None,
+        status_filter_field=None,
+        tailwind_classes=None,
     ):
         """
         Args:
@@ -282,6 +291,7 @@ class CustomTableView:
         self.model_name = model_name
         self.status_filter_field = status_filter_field
         self.search_fields_list = search_fields_list
+        self.status_filter_dict = status_choices_class.to_dict() if status_choices_class else {}
         self.tailwind_classes = tailwind_classes
         self.fields = fields
         self.table_headers = headers
@@ -342,7 +352,6 @@ class CustomTableView:
             List: Rows of data for the table based on the filtered instances.
         """
         rows = []
-
         for instance in self.filtered_instances(status_filter, search_query):
             row_data = []
             for field in self.fields:
@@ -352,11 +361,23 @@ class CustomTableView:
                         f'{getattr(instance, "get_" + self.model_name + "_status_display")()}</span>',
                     )
                     row_data.append(value[0])
+                
+                # if value is datetime instance convert to readable format
+                elif isinstance(getattr(instance, field), datetime.datetime):
+                    value = convert_datetime_to_readable_string(
+                        getattr(instance, field)
+                    )
+                    row_data.append(value)
+
+                # if value is date instance convert to readable format
+                elif isinstance(getattr(instance, field), datetime.date):
+                    value = convert_date_to_readable_string(getattr(instance, field))
+                    row_data.append(value)
 
                 else:
                     value = getattr(instance, field)
-                    if callable(value):
-                        value = value()
+                    # if callable(value):
+                    #     value = value()
                     row_data.append(value)
             rows.append(row_data)
         return rows
