@@ -30,12 +30,14 @@ class WeeklyShiftTemplateForm(forms.ModelForm):
 class OperationalExceptionForm(forms.ModelForm):
     class Meta:
         model = OperationalException
-        fields = ["external_id", 
-                "notes", 
-                "start_datetime", 
-                "operational_exception_type", 
-                "weekly_shift_template", 
-                "resource"]
+        fields = [
+            "resource",
+            "weekly_shift_template", 
+            "start_datetime", 
+            "operational_exception_type", 
+            "external_id", 
+            "notes", 
+            ]
         labels = {"name": "Operational Exception Name", 
                 "external_id": "External ID", 
                 "notes": "Notes", 

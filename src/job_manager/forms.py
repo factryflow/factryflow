@@ -11,15 +11,15 @@ class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = [
-            "name",
-            "description",
             "external_id",
-            "notes",
-            "customer",
+            "name",
             "job_type",
+            "description",
+            "job_status",
+            "customer",
             # "priority",
             "due_date",
-            "job_status",
+            "notes",
         ]
         labels = {
             "name": "Job Name",
@@ -71,7 +71,7 @@ class JobForm(forms.ModelForm):
             ),
             "job_status": forms.Select(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit pointer-events-none cursor-not-allowed"
                 }
             ),
         }
@@ -85,19 +85,19 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = [
+            "external_id",
             "name",
             "job",
-            "external_id",
-            "notes",
+            "task_type",
             "setup_time",
             "quantity",
             "run_time_per_unit",
             "planned_start_datetime",
             "item",
-            "task_type",
             "task_status",
             "work_center",
             "dependencies",
+            "notes",
         ]
 
         labels = {
@@ -150,13 +150,13 @@ class TaskForm(forms.ModelForm):
             ),
             "run_time_per_unit": forms.NumberInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 ",
                     "type": "number",
                 }
             ),
             "planned_start_datetime": forms.DateTimeInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "datetime-local",
                 }
             ),
@@ -172,7 +172,7 @@ class TaskForm(forms.ModelForm):
             ),
             "task_status": forms.Select(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
             "work_center": forms.Select(
@@ -195,7 +195,7 @@ class TaskForm(forms.ModelForm):
 class DependencyForm(forms.ModelForm):
     class Meta:
         model = Dependency
-        fields = ["name", "expected_close_datetime", "external_id", "notes", "dependency_type", "dependency_status"]
+        fields = ["external_id", "name", "expected_close_datetime", "dependency_type", "dependency_status", "notes"]
         labels = {
             "name": "Dependency Name",
             "expected_close_datetime": "Expected Close Date",
@@ -233,7 +233,7 @@ class DependencyForm(forms.ModelForm):
             ),
             "dependency_status": forms.Select(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
         }

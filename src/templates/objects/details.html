@@ -102,26 +102,25 @@
             <!-- Tabs -->
             <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
                 <div class="md:flex flex-wrap text-sm md:text-base">
-                    <button x-on:click="activeTab = 'tab1'"
-                            :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1'}"
-                            class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Tasks</button>
-                    <button x-on:click="activeTab = 'tab2'"
-                            :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2' }"
-                            class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Dependencies</button>
-                </div>
+                    {% for i in relations_headers %}
+                        <button 
+                            hx-get="/{{ model_name }}s/view/{{ id }}/field={{ i|lower }}"
+                            hx-target="#{{ i }}"
+                            hx-trigger="click"
+                            x-on:click="activeTab = 'tab{{ forloop.counter }}'"
+                            :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab{{ forloop.counter }}' }"
+                            class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ i }}</button>
+                    {% endfor %}
             </div>
             <!-- Tab Content -->
             <div class="bg-white pt-6 rounded-b-xl flex h-screen">
-                <div x-show="activeTab === 'tab1'" class="w-full">
-                    <div class="pt-6">
-                        <div class="relative overflow-x-auto table-container">{% include "objects/list.html#partial-table-template" %}</div>
+                {% for i in relations_headers %}
+                    <div id={{ i }} x-show="activeTab === 'tab{{ forloop.counter }}'" class="w-full">
+                        <div class="pt-6">
+                            <div class="relative overflow-x-auto table-container">{% include "objects/list.html#partial-table-template" %}</div>
+                        </div>
                     </div>
-                </div>
-                <div x-show="activeTab === 'tab2'" class="w-full">
-                    <div class="pt-6">
-                        <div class="relative overflow-x-auto table-container">{% include "objects/list.html#partial-table-template" %}</div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     {% endif %}

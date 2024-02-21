@@ -22,6 +22,7 @@ class JobTypeFactory(factory.django.DjangoModelFactory):
     notes = ""
 
 
+
 class JobFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Job

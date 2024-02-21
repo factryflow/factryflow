@@ -9,7 +9,6 @@ from resource_manager.services import ResourcePoolService
 def resource_pool_data():
     return {
         "name": "Resource pool 1",
-        "resources": ResourceFactory.create_batch(2),
         "work_units": WorkUnitFactory.create_batch(2),
     }
 
@@ -21,7 +20,6 @@ def test_can_create_resource_pool(resource_pool_data):
     resource_pool = ResourcePoolService(user=user).create(**resource_pool_data)
 
     assert resource_pool.name == resource_pool_data["name"]
-    assert resource_pool.resources.count() == 2
     assert resource_pool.work_units.count() == 2
 
 
@@ -50,19 +48,16 @@ def test_can_update_relationships(resource_pool_data):
 
     resource_pool = ResourcePoolService(user=user).create(**resource_pool_data)
 
-    new_resources = [ResourceFactory()]
     new_work_units = [WorkUnitFactory()]
 
     updated_resource_pool = ResourcePoolService(user=user).update(
         instance=resource_pool,
         data={
-            "resources": new_resources,
             "work_units": new_work_units,
         },
     )
 
     assert updated_resource_pool.id == resource_pool.id
-    assert updated_resource_pool.resources.count() == 1
     assert updated_resource_pool.work_units.count() == 1
 
 

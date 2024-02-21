@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from common.utils.views import add_notification_headers, convert_datetime_to_readable_string,   convert_date_to_readable_string
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class CRUDView:
     """
@@ -54,6 +54,7 @@ class CRUDView:
         # Dispatches the request to the appropriate view method.
         return super().dispatch(request, *args, **kwargs)
 
+
     def get_all_instances(self, request):
         """
         View function to display all instances with optional filtering.
@@ -64,10 +65,11 @@ class CRUDView:
         # Retrieve filtering and search parameters from the request
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
+        page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows = self.table_view.table_rows(
-            status_filter=status_filter, search_query=search_query
+        table_rows, paginator = self.table_view.table_rows(
+            status_filter=status_filter, search_query=search_query, page_number=page_number
         )
 
         template_name = self.list_template_name
@@ -80,14 +82,16 @@ class CRUDView:
             "headers": self.table_view.table_headers,
             "status_filter_dict": self.table_view.status_filter_dict,
             "rows": table_rows,
+            "paginator": paginator,
             "show_actions": True,
             "actions_rule": self.actions_rule,
             "model_name": self.model_name,
         }
 
         return render(request, template_name, context)
+        
 
-    def show_model_form(self, request, id: int = None, edit: str = ""):
+    def show_model_form(self, request, id: int = None, edit: str = "", field: str = ""):
         """
         View function to display a form for creating or editing a model instance.
 
@@ -101,12 +105,23 @@ class CRUDView:
         """
         # Determine form action URL based on whether editing or creating
         form_action_url = f"/{self.model_name.lower()}-create/"
+        
+        # get field param
+        field = request.GET.get('field')
+        relation_field_name = None
+        if field is None:
+            if len(self.table_view.model_relation_headers) > 0:
+                relation_field_name = self.table_view.model_relation_headers[0].lower()
+        else:
+            relation_field_name = field.lower()
 
         # Process the form based on ID and edit mode
         if id:
             instance_obj = get_object_or_404(self.model, id=id)
             form = self.model_form(instance=instance_obj)
             page_label = instance_obj.name
+
+            # self.table_view.get_all_many_to_field_instances(instance_obj)
 
             if edit != "true":
                 view_mode = True
@@ -140,6 +155,10 @@ class CRUDView:
             "edit_url": edit_url if "edit_url" in locals() else "#",
             "page_label": page_label,
             "model_name": self.model_name,
+            "show_actions": False,
+            "headers": self.table_view.model_relation_fields[relation_field_name][-2] if relation_field_name else [],
+            "relations_headers": self.table_view.model_relation_headers,
+            "rows": self.table_view.get_all_many_to_many_field_instances(instance_obj, relation_field_name, view_mode) if relation_field_name else [],
             "actions_rule": self.actions_rule,
         }
 
@@ -194,6 +213,7 @@ class CRUDView:
                     "button_text": f"Add {self.model_name.capitalize()}",
                     "form_label": f"{self.model_name.capitalize()} Details",
                     "model_name": self.model_name,
+                    "relations_headers": self.table_view.model_relation_headers,
                     "actions_rule": self.actions_rule,
                 },
             )
@@ -226,10 +246,12 @@ class CRUDView:
 
         # Retrieve updated instance list
         status_filter = request.GET.get("status", "all")
+        search_query = request.GET.get("query", "")
+        page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows = self.table_view.table_rows(
-            status_filter=status_filter, search_query=search_query
+        table_rows, paginator = self.table_view.table_rows(
+            status_filter=status_filter, search_query=search_query, page_number=page_number
         )
 
         # Render the updated table and add notification headers
@@ -240,6 +262,7 @@ class CRUDView:
                 "headers": self.table_view.table_headers,
                 "status_filter_dict": self.table_view.status_filter_dict,
                 "rows": table_rows,
+                "paginator": paginator,
                 "show_actions": True,
                 "actions_rule": self.actions_rule,
                 "model_name": self.model_name,
@@ -273,6 +296,9 @@ class CustomTableView:
         fields,
         headers,
         search_fields_list,
+        page_size=5,
+        model_relation_headers=[],
+        model_relation_fields={},
         status_choices_class=None,
         status_filter_field=None,
         tailwind_classes=None,
@@ -294,7 +320,10 @@ class CustomTableView:
         self.status_filter_dict = status_choices_class.to_dict() if status_choices_class else {}
         self.tailwind_classes = tailwind_classes
         self.fields = fields
+        self.model_relation_headers = model_relation_headers
+        self.model_relation_fields = model_relation_fields
         self.table_headers = headers
+        self.page_size = page_size
 
     @property
     def all_instances(self):
@@ -302,6 +331,39 @@ class CustomTableView:
         Retrieve all instances of the model.
         """
         return self.model.objects.all()
+    
+    def get_all_many_to_many_field_instances(self, obj_instance, field_name=None, view_mode=False):
+        # if field is none, get for first header
+        rows = []
+        if field_name:
+            if len(self.model_relation_fields[field_name]) == 4:
+                data = self.model_relation_fields[field_name][0].objects.filter(**{self.model_relation_fields[field_name][1]: obj_instance})
+
+            elif len(self.model_relation_fields[field_name]) == 3:
+                data = getattr(obj_instance, self.model_relation_fields[field_name][0]).all()
+            
+            for instance in data:
+                row_data = []
+                for field in self.model_relation_fields[field_name][-1]:
+                    if "status" in field:
+                        value = (
+                            f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
+                            f'{getattr(instance, "get_" + field + "_display")()}</span>',
+                        )
+                        row_data.append(value[0])
+                    elif isinstance(getattr(instance, field), datetime.datetime):
+                        value = convert_datetime_to_readable_string(getattr(instance, field))
+                        row_data.append(value)
+                    elif isinstance(getattr(instance, field), datetime.date):
+                        value = convert_date_to_readable_string(getattr(instance, field))
+                        row_data.append(value)
+                    else:
+                        value = getattr(instance, field)
+                        row_data.append(value)
+                rows.append(row_data)
+        
+        return rows
+
 
     def filtered_instances(
         self,
@@ -335,11 +397,37 @@ class CustomTableView:
                 )
             ]
         return all_instances
+    
+
+    def get_paginated_instances(self, page_number, status_filter=None, search_query=None):
+        """
+        Get paginated instances based on the page number and filtering.
+
+        Args:
+            page_number: The page number for paginating the instances.
+            status_filter: Optional. The status filter to be applied.
+            search_query: Optional. The search query to be applied.
+
+        Returns:
+            List: Paginated instances based on the provided page number and filtering.
+        """
+        instances = self.filtered_instances(status_filter, search_query)
+        paginator = Paginator(instances, self.page_size)
+        try:
+            paginated_instances = paginator.page(page_number)
+        except PageNotAnInteger:
+            paginated_instances = paginator.page(1)
+        except EmptyPage:
+            paginated_instances = paginator.page(paginator.num_pages)
+        return paginated_instances
+
 
     def table_rows(
         self,
+        page_number,
         status_filter=None,
         search_query=None,
+
     ):
         """
         Get the rows of data for the table based on the model and fields.
@@ -351,8 +439,10 @@ class CustomTableView:
         Returns:
             List: Rows of data for the table based on the filtered instances.
         """
+        paginated_data = self.get_paginated_instances(page_number, status_filter, search_query)
+
         rows = []
-        for instance in self.filtered_instances(status_filter, search_query):
+        for instance in paginated_data.object_list:
             row_data = []
             for field in self.fields:
                 if "status" in field:
@@ -361,26 +451,19 @@ class CustomTableView:
                         f'{getattr(instance, "get_" + self.model_name + "_status_display")()}</span>',
                     )
                     row_data.append(value[0])
-                
-                # if value is datetime instance convert to readable format
                 elif isinstance(getattr(instance, field), datetime.datetime):
-                    value = convert_datetime_to_readable_string(
-                        getattr(instance, field)
-                    )
+                    value = convert_datetime_to_readable_string(getattr(instance, field))
                     row_data.append(value)
-
-                # if value is date instance convert to readable format
                 elif isinstance(getattr(instance, field), datetime.date):
                     value = convert_date_to_readable_string(getattr(instance, field))
                     row_data.append(value)
-
                 else:
                     value = getattr(instance, field)
-                    # if callable(value):
-                    #     value = value()
                     row_data.append(value)
+            
             rows.append(row_data)
-        return rows
+        
+        return rows, paginated_data
 
     def get_status_colored_text(self, model_status):
         """
