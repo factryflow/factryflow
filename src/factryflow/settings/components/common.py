@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "resource_assigner",
     "api",
     "rolepermissions",
+    "scheduler",
 ]
 
 MIDDLEWARE = [
