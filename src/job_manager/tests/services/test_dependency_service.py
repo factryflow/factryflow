@@ -11,8 +11,6 @@ def dependency_data():
     data = {
         "name": "test",
         "dependency_type": DependencyTypeFactory(),
-        "tasks": [TaskFactory(), TaskFactory()],
-        "jobs": [JobFactory(), JobFactory()],
         "expected_close_datetime": datetime.now(),
     }
     return data
@@ -30,9 +28,6 @@ def test_can_create_dependency(dependency_data):
         dependency.expected_close_datetime == dependency_data["expected_close_datetime"]
     )
 
-    assert dependency.tasks.count() == len(dependency_data["tasks"])
-    assert dependency.jobs.count() == len(dependency_data["jobs"])
-
 
 @pytest.mark.django_db
 def test_can_update_dependency(dependency_data):
@@ -48,26 +43,6 @@ def test_can_update_dependency(dependency_data):
 
     assert updated_dependency.id == dependency.id
     assert updated_dependency.name == updated_data["name"]
-
-
-@pytest.mark.django_db
-def test_can_update_m2m_fields(dependency_data):
-    user = UserFactory()
-
-    dependency = DependencyService(user=user).create(**dependency_data)
-
-    updated_data = {
-        "tasks": [TaskFactory()],
-        "jobs": [JobFactory()],
-    }
-
-    updated_dependency = DependencyService(user=user).update(
-        instance=dependency, data=updated_data
-    )
-
-    assert updated_dependency.id == dependency.id
-    assert updated_dependency.tasks.count() == len(updated_data["tasks"])
-    assert updated_dependency.jobs.count() == len(updated_data["jobs"])
 
 
 @pytest.mark.django_db

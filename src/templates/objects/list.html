@@ -9,30 +9,30 @@
 <div x-data="{showModal:false}">
     <!-- Modal -->
     <div x-show="showModal"
-         x-cloak
-         x-on:keydown.escape.prevent.stop="showModal = false"
-         role="dialog"
-         aria-modal="true"
-         class="fixed inset-0 z-10 overflow-y-auto">
+        x-cloak
+        x-on:keydown.escape.prevent.stop="showModal = false"
+        role="dialog"
+        aria-modal="true"
+        class="fixed inset-0 z-10 overflow-y-auto">
         <!-- Overlay -->
         <div x-show="showModal"
-             x-transition:enter="transition-opacity ease-in duration-150"
-             x-transition:leave="transition-opacity ease-out duration-150"
-             class="fixed inset-0 bg-black bg-opacity-50"></div>
+            x-transition:enter="transition-opacity ease-in duration-150"
+            x-transition:leave="transition-opacity ease-out duration-150"
+            class="fixed inset-0 bg-black bg-opacity-50"></div>
         <!-- Panel -->
         <div x-show="showModal"
-             x-transition:enter="transition-transform ease-out duration-150"
-             x-transition:leave="transition-transform ease-in duration-150"
-             x-on:click="showModal = false"
-             class="relative flex min-h-screen items-center justify-center p-4">
+            x-transition:enter="transition-transform ease-out duration-150"
+            x-transition:leave="transition-transform ease-in duration-150"
+            x-on:click="showModal = false"
+            class="relative flex min-h-screen items-center justify-center p-4">
             <div x-on:click.stop
-                 class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
+                class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
                 <!-- Title -->
                 <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
                     <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
                         <img class="h-14 w-14"
-                             src="{% static 'images/delete.svg' %}"
-                             alt="Delete Icon">
+                            src="{% static 'images/delete.svg' %}"
+                            alt="Delete Icon">
                     </div>
                     <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete?</p>
                     <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">
@@ -55,109 +55,115 @@
             </div>
         </div>
     </div>
-    <table class="w-full text-sm text-center"
-           id="all-{{ model_name }}s-table"
-           x-cloak>
-        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
-            <tr class="text-[#181C32]">
-                <th scope="col" class="p-4">
-                    <div class="flex items-center">
-                        <input id="checkbox-all-search"
-                               type="checkbox"
-                               class="w-7 h-7 rounded-md bg-[#F1F1F2]">
-                    </div>
-                </th>
-                {% for header in headers %}
-                    <th scope="col"
-                        class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
-                {% endfor %}
-                {% if show_actions %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in rows %}
-                <tr class="bg-white border-b">
-                    <td class="w-4 p-4">
+    {% if rows %}
+        <table class="w-full text-sm text-center"
+            id="all-{{ model_name }}s-table"
+            x-cloak>
+            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
+                <tr class="text-[#181C32]">
+                    <th scope="col" class="p-4">
                         <div class="flex items-center">
-                            <input id="checkbox-table-search-1"
-                                   type="checkbox"
-                                   class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                            <input id="checkbox-all-search"
+                                type="checkbox"
+                                class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                         </div>
-                    </td>
-                    {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
-                    {% if show_actions %}
-                        <td class="flex items-center px-6 py-4">
-                            {% if user|can:'actions_rule[0]' %}
-                                <a href="{% url 'view_'|add:model_name id=row.0 %}">
-                                    <button id="view-{{ row.0 }}"
-                                            type="button"
-                                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                        <img src="{% static 'images/visibility.svg' %}" alt="View" />
-                                    </button>
-                                </a>
-                            {% endif %}
-                            {% if user|can:'actions_rule[2]' %}
-                                <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
-                                    <button id="edit-{{ row.0 }}"
-                                            type="button"
-                                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                        <img src="{% static 'images/edit.svg' %}" alt="Edit" />
-                                    </button>
-                                </a>
-                            {% endif %}
-                            {% if user|can:'actions_rule[3]' %}
-                                <button id="delete-{{ row.0 }}"
-                                        type="button"
-                                        class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
-                                        hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
-                                        hx-target="#all-{{ model_name }}s-table"
-                                        hx-swap="outerHTML"
-                                        {% comment %}
-                                        hx-confirm="Are you sure?"
-                                        {% endcomment %}
-                                        @click="showModal = !showModal">
-                                    <img src="{% static 'images/delete.svg' %}" alt="Delete" />
-                                </button>
-                            {% endif %}
-                        </td>
-                    {% endif %}
+                    </th>
+                    {% for header in headers %}
+                        <th scope="col"
+                            class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
+                    {% endfor %}
+                    {% if show_actions %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr class="bg-white border-b">
+                        <td class="w-4 p-4">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1"
+                                    type="checkbox"
+                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                            </div>
+                        </td>
+                        {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
+                        {% if show_actions %}
+                            <td class="flex items-center px-6 py-4">
+                                {% if user|can:'actions_rule[0]' %}
+                                    <a href="{% url 'view_'|add:model_name id=row.0 %}">
+                                        <button id="view-{{ row.0 }}"
+                                                type="button"
+                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                            <img src="{% static 'images/visibility.svg' %}" alt="View" />
+                                        </button>
+                                    </a>
+                                {% endif %}
+                                {% if user|can:'actions_rule[2]' %}
+                                    <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
+                                        <button id="edit-{{ row.0 }}"
+                                                type="button"
+                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                        </button>
+                                    </a>
+                                {% endif %}
+                                {% if user|can:'actions_rule[3]' %}
+                                    <button id="delete-{{ row.0 }}"
+                                            type="button"
+                                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
+                                            hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
+                                            hx-target="#all-{{ model_name }}s-table"
+                                            hx-swap="outerHTML"
+                                            {% comment %}
+                                            hx-confirm="Are you sure?"
+                                            {% endcomment %}
+                                            @click="showModal = !showModal">
+                                        <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                    </button>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+    <div class="flex justify-center items-center h-[300px]">
+        <p class="text-[#7E8299] font-normal text-lg">No {{ model_name | title }} Data found</p>
+    </div>
+    {% endif %}
 </div>
 {% endpartialdef %}
 {% partialdef partial-search-filter %}
-<div class="flex flex-col md:flex-row md:justify-between md:items-center px-7"
-     x-cloak>
-    <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
-        <div class="relative w-full md:w-[600px]">
-            <!-- Inline SVG Icon -->
-            <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
-                 src="{% static 'images/search.svg' %}"
-                 alt="image_search" />
-            <!-- Search Input -->
-            <input type="text"
-                   id="{{ model_name }}_search_bar"
-                   placeholder="Search {{ model_name | title }} ID / {{ model_name | title }} Name"
-                   hx-get="{% url model_name %}"
-                   hx-target="#all-{{model_name}}s-table"
-                   hx-trigger="keyup delayed:500ms"
-                   name="query"
-                   class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7"
+        x-cloak>
+        <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
+            <div class="relative w-full md:w-[600px]">
+                <!-- Inline SVG Icon -->
+                <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+                    src="{% static 'images/search.svg' %}"
+                    alt="image_search" />
+                <!-- Search Input -->
+                <input type="text"
+                    id="all_search_bar"
+                    placeholder="Search {{ model_name | title }} ID / {{ model_name | title }} Name"
+                    hx-get="{% url model_name %}"
+                    hx-target="#all-{{ model_name }}s-table"
+                    hx-trigger="keyup delayed:500ms"
+                    name="query"
+                    class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
+            </div>
+        </div>
+        <div class="flex flex-nowrap gap-x-5">
+            <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
+                <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
+                <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
+            </div>
+            <div class="flex bg-[#00B4D8] py-3.5 px-4 md:px-6 rounded-md">
+                <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
+                <span class="text-base font-semibold text-white">Filter</span>
+            </div>
         </div>
     </div>
-    <div class="flex flex-nowrap gap-x-5">
-        <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
-            <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
-            <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
-        </div>
-        <div class="flex bg-[#00B4D8] py-3.5 px-4 md:px-6 rounded-md">
-            <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
-            <span class="text-base font-semibold text-white">Filter</span>
-        </div>
-    </div>
-</div>
 {% endpartialdef %}
 {% block content %}
     {% load static %}
@@ -168,7 +174,7 @@
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
                         <a href="/"
-                           class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                            class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
                             <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
                         </a>
                     </li>
@@ -176,7 +182,7 @@
                         <div class="flex items-center">
                             <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
                             <a href="/{{ model_name }}"
-                               class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_name | title }}</a>
+                                class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_name | title }}</a>
                         </div>
                     </li>
                     <li aria-current="page">
@@ -194,95 +200,42 @@
         {% if user|can:'actions_rule[1]' %}
             <div class="flex">
                 <a href="{% url model_name|add:'_form' %}"
-                   class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+                    class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
                 {{ model_name | title }}</a>
             </div>
         {% endif %}
     </div>
     <!-- Tabs -->
     <div x-data="{ activeTab: 'tab1' }"
-         class="border-x border-y border-[#e1e3ea80] rounded-xl"
-         x-cloak>
+        class="border-x border-y border-[#e1e3ea80] rounded-xl"
+        x-cloak>
         <!-- Tabs -->
         <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
             <div class="md:flex flex-wrap text-sm md:text-base">
                 <button x-on:click="activeTab = 'tab1'"
+                        hx-get="{% url model_name %}"
+                        hx-target="#all-{{ model_name }}s-table"
+                        hx-trigger="click"
                         :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
                         class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
-                <button hx-get="{% url model_name %}?status=IP"
-                        hx-target="#ip-{{ model_name }}s-table"
-                        hx-trigger="click"
-                        x-on:click="activeTab = 'tab2'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab2','text-[#7E8299]':activeTab != 'tab2'}"
-                        class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">In Progress</button>
-                <button hx-get="{% url model_name %}?status=NP"
-                        hx-target="#np-{{ model_name }}s-table"
-                        hx-trigger="click"
-                        x-on:click="activeTab = 'tab3'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab3','text-[#7E8299]':activeTab != 'tab3'}"
-                        class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Not Planned</button>
-                <button hx-get="{% url model_name %}?status=CM"
-                        hx-target="#cm-{{ model_name }}s-table"
-                        hx-trigger="click"
-                        x-on:click="activeTab = 'tab4'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab4','text-[#7E8299]':activeTab != 'tab4'}"
-                        class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Completed</button>
-                <button hx-get="{% url model_name %}?status=CN"
-                        hx-target="#cn-{{ model_name }}s-table"
-                        hx-trigger="click"
-                        x-on:click="activeTab = 'tab5'"
-                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab5','text-[#7E8299]':activeTab != 'tab5'}"
-                        class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Cancelled</button>
+                {% for status_code, status_label in status_filter_dict.items %}
+                    <button hx-get="{% url model_name %}?status={{ status_code }}"
+                            hx-target="#all-{{ model_name }}s-table"
+                            hx-trigger="click"
+                            x-on:click="activeTab = '{{ status_code|lower }}'"
+                            :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
+                            class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
+                {% endfor %}
             </div>
         </div>
+
         <!-- Tab Content -->
         <div class="bg-white pt-6 rounded-b-xl flex h-screen">
-            <div x-show="activeTab === 'tab1'" class="w-full">
-                <!-- Tab 1 content goes here -->
+            <div class="w-full"> <!-- x-show="activeTab === 'tab1'" -->
                 {% partial partial-search-filter %}
                 <div class="pt-6">
                     <div class="relative overflow-x-auto table-container">
                         {% with table_id="all-{{ model_name }}s-table" %}
-                            {% partial partial-table-template %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-            <div x-show="activeTab === 'tab2'" class="w-full">
-                {% partial partial-search-filter %}
-                <div class="pt-6">
-                    <div class="relative overflow-x-auto table-container">
-                        {% with table_id="ip-{{ model_name }}s-table" %}
-                            {% partial partial-table-template %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-            <div x-show="activeTab === 'tab3'" class="w-full">
-                {% partial partial-search-filter %}
-                <div class="pt-6">
-                    <div class="relative overflow-x-auto table-container">
-                        {% with table_id="np-{{ model_name }}s-table" %}
-                            {% partial partial-table-template %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-            <div x-show="activeTab === 'tab4'" class="w-full">
-                {% partial partial-search-filter %}
-                <div class="pt-6">
-                    <div class="relative overflow-x-auto table-container">
-                        {% with table_id="cm-{{ model_name }}s-table" %}
-                            {% partial partial-table-template %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-            <div x-show="activeTab === 'tab5'" class="w-full">
-                {% partial partial-search-filter %}
-                <div class="pt-6">
-                    <div class="relative overflow-x-auto table-container">
-                        {% with table_id="cn-{{ model_name }}s-table" %}
                             {% partial partial-table-template %}
                         {% endwith %}
                     </div>
@@ -293,41 +246,70 @@
     <div class="">
         <div class="flex items-center justify-between pt-7">
             <div class="flex flex-1 justify-between sm:hidden">
-                <a href="#"
-                   class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-                <a href="#"
-                   class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+                {% if paginator.has_previous %}
+                    <a 
+                        hx-get="{% url model_name %}"
+                        hx-target="#all-{{ model_name }}s-table"
+                        hx-trigger="keyup delayed:500ms"
+                        name="page_number"
+                        value="{{ paginator.previous_page_number }}"
+                        class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous
+                    </a>
+                {% endif %}
+
+                {% if paginator.has_next %}
+                    <a 
+                        hx-get="{% url model_name %}"
+                        hx-target="#all-{{ model_name }}s-table"
+                        hx-trigger="keyup delayed:500ms"
+                        name="page_number"
+                        value="{{ paginator.next_page_number }}"
+                        class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next
+                    </a>
+                {% endif %}
             </div>
             <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                     <p class="text-base text-[#181C32] font-normal">
                         Showing
-                        <span class="font-medium">1</span>
+                        <span class="font-medium">{{ paginator.start_index }}</span>
                         to
-                        <span class="font-medium">10</span>
+                        <span class="font-medium">{{ paginator.end_index }}</span>
                         of
-                        <span class="font-medium">5</span>
+                        <span class="font-medium">{{ paginator.count }}</span>
                         entries
                     </p>
                 </div>
                 <div class="flex">
-                    <a href="#"
-                       class="relative inline-flex items-center rounded-full px-5 py-3 mr-3.5 border border-[#E1E3EA80] bg-white">
-                        <span class="sr-only">Previous</span>
-                        <img class="h-5 w-1.5" src="{% static 'images/left-arrow.svg' %}" />
-                    </a>
+                    {% if paginator.has_previous %}
+                        <a  
+                            href="{% url model_name %}?page={{ paginator.previous_page_number }}"
+                            hx-get="{% url model_name %}?page={{ paginator.previous_page_number }}"
+                            hx-target="#all-{{ model_name }}s-table"
+                            hx-trigger="click"
+                            class="relative inline-flex items-center rounded-full px-5 py-3 mr-3.5 border border-[#E1E3EA80] bg-white">
+                            <span class="sr-only">Previous</span>
+                            <img class="h-5 w-1.5" src="{% static 'images/left-arrow.svg' %}" alt="Previous" />
+                        </a>
+                    {% endif %}
+
                     <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Page</span>
                     <a href="#"
-                       aria-current="page"
-                       class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
-                        1
+                        aria-current="page"
+                        class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
+                        {{ paginator.number }}
                     </a>
-                    <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of 5</span>
-                    <a href="#"
-                       class="relative inline-flex items-center rounded-full px-5 py-3 ml-3.5 border border-[#E1E3EA80] bg-white">
-                        <span class="sr-only">Next</span>
-                        <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" />
-                    </a>
+                    <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of {{ paginator.num_pages }}</span>
+                    {% if paginator.has_next %}
+                        <a href="{% url model_name %}?page={{ paginator.next_page_number }}"
+                        hx-get="{% url model_name %}?page={{ paginator.next_page_number }}"
+                        hx-target="#all-{{ model_name }}s-table"
+                        hx-trigger="click"
+                        class="relative inline-flex items-center rounded-full px-5 py-3 ml-3.5 border border-[#E1E3EA80] bg-white">
+                            <span class="sr-only">Next</span>
+                            <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" alt="Next" />
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

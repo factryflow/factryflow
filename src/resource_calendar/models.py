@@ -16,6 +16,9 @@ class WeeklyShiftTemplate(BaseModelWithExtras):
     class Meta:
         db_table = "weekly_shift_template"
 
+    def __str__(self):
+        return self.name
+
 
 class WeeklyShiftTemplateDetail(BaseModel):
     day_of_week = models.IntegerField()
@@ -59,6 +62,9 @@ class OperationalExceptionType(BaseModelWithExtras):
 
     class Meta:
         db_table = "operational_exception_type"
+
+    def __str__(self):
+        return self.name
 
 
 class OperationalException(BaseModelWithExtras):

@@ -26,12 +26,12 @@ class WorkCenterService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-    def create(self, name: str, notes: str) -> WorkCenter:
+    def create(self, name: str, notes: str = "", external_id: str = "") -> WorkCenter:
         # check for permission to create work center
         if not self.permission_service.check_for_permission("add_workcenter"):
             raise PermissionDenied()
 
-        work_center = WorkCenter.objects.create(name=name, notes=notes)
+        work_center = WorkCenter.objects.create(name=name, notes=notes, external_id=external_id)
         work_center.full_clean()
         work_center.save(user=self.user)
 
@@ -45,6 +45,7 @@ class WorkCenterService:
         fields = [
             "name",
             "notes",
+            "external_id"
         ]
 
         work_center, _ = model_update(
@@ -71,12 +72,12 @@ class TaskTypeService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-    def create(self, name: str) -> TaskType:
+    def create(self, name: str, notes: str, external_id: str = "") -> TaskType:
         # check for permission to create task type
         if not self.permission_service.check_for_permission("add_tasktype"):
             raise PermissionDenied()
 
-        task_type = TaskType.objects.create(name=name)
+        task_type = TaskType.objects.create(name=name, notes=notes, external_id=external_id)
         task_type.full_clean()
         task_type.save(user=self.user)
 
@@ -89,6 +90,8 @@ class TaskTypeService:
 
         fields = [
             "name",
+            "notes",
+            "external_id"
         ]
 
         task_type, _ = model_update(
@@ -118,13 +121,15 @@ class TaskService:
     def create(
         self,
         name: str,
-        run_time_per_unit: float,
         quantity: int,
         task_type: TaskType,
-        setup_time: float = 0,
-        teardown_time: float = 0,
+        run_time_per_unit: int = 1,
+        setup_time: int = 0,
+        teardown_time: int = 0,
         external_id: str = "",
         notes="",
+        item: str = "",
+        task_status: str = "NS",
         work_center: WorkCenter = None,
         job: Job = None,
         dependencies: list[Dependency] = None,
@@ -138,9 +143,11 @@ class TaskService:
         task = Task.objects.create(
             name=name,
             external_id=external_id,
+            run_time_per_unit=run_time_per_unit,
             notes=notes,
             setup_time=setup_time,
-            run_time_per_unit=run_time_per_unit,
+            item=item,
+            task_status=task_status,
             teardown_time=teardown_time,
             quantity=quantity,
             task_type=task_type,
@@ -173,8 +180,8 @@ class TaskService:
             "external_id",
             "notes",
             "setup_time",
-            "run_time_per_unit",
             "teardown_time",
+            "run_time_per_unit",
             "quantity",
             "item",
             "task_type",
@@ -260,6 +267,7 @@ class JobService:
         due_date: datetime,
         job_type: JobType,
         job_status: JobStatusChoices,
+        dependencies: list[Dependency] = None,
         customer: str = "",
         description: str = "",
         external_id: str = "",
@@ -287,6 +295,9 @@ class JobService:
         if priority:
             job.update_priority(priority)
 
+        if dependencies:
+            job.dependencies.set(dependencies)
+            
         return job
 
     @transaction.atomic
@@ -387,11 +398,10 @@ class DependencyService:
         self,
         name: str,
         dependency_type: DependencyType,
+        dependency_status: str = "PD",
         expected_close_datetime: datetime = None,
         notes: str = "",
         external_id: str = "",
-        tasks: list[Task] = None,
-        jobs: list[Job] = None,
     ) -> Dependency:
         # check for permission to create dependency
         if not self.permission_service.check_for_permission("add_dependency"):
@@ -402,17 +412,12 @@ class DependencyService:
             dependency_type=dependency_type,
             expected_close_datetime=expected_close_datetime,
             notes=notes,
+            dependency_status=dependency_status,
             external_id=external_id,
         )
 
         dependency.full_clean()
         dependency.save(user=self.user)
-
-        if tasks:
-            dependency.tasks.set(tasks)
-
-        if jobs:
-            dependency.jobs.set(jobs)
 
         return dependency
 
@@ -425,11 +430,11 @@ class DependencyService:
         fields = [
             "name",
             "dependency_type",
+            "dependency_status",
             "expected_close_datetime",
+            "actual_close_datetime",
             "notes",
             "external_id",
-            "tasks",
-            "jobs",
         ]
 
         dependency, _ = model_update(

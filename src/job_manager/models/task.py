@@ -13,6 +13,9 @@ class WorkCenter(BaseModelWithExtras):
     class Meta:
         db_table = "work_center"
 
+    def __str__(self):
+        return self.name
+
 
 class TaskType(BaseModelWithExtras):
     name = models.CharField(max_length=150)
@@ -22,11 +25,25 @@ class TaskType(BaseModelWithExtras):
     class Meta:
         db_table = "task_type"
 
+    def __str__(self):
+        return self.name
+
 
 class TaskStatusChoices(models.TextChoices):
     NOT_STARTED = "NS", "Not Started"
     IN_PROGRESS = "IP", "In Progress"
     COMPLETED = "CM", "Completed"
+
+    @classmethod
+    def to_dict(cls):
+        """
+        Convert the TaskStatusChoices class into a dictionary.
+
+        Returns:
+        - Dictionary where choice values are keys and choice descriptions are values.
+        """
+        return {choice[0]: choice[1] for choice in cls.choices}
+
 
 
 class Task(BaseModelWithExtras):
@@ -34,7 +51,7 @@ class Task(BaseModelWithExtras):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150)
     setup_time = models.IntegerField()
-    run_time_per_unit = models.IntegerField()
+    run_time_per_unit = models.IntegerField(null=True, blank=True)
     teardown_time = models.IntegerField()
     quantity = models.IntegerField()
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
@@ -66,3 +83,6 @@ class Task(BaseModelWithExtras):
 
     class Meta:
         db_table = "task"
+
+    def __str__(self):
+        return self.name

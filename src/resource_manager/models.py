@@ -6,6 +6,21 @@ from resource_calendar.models import WeeklyShiftTemplate
 from simple_history.models import HistoricalRecords
 
 
+class ResourceTypeChoices(models.TextChoices):
+    MACHINE = "M", "Machine"
+    OPERATOR = "O", "Operator"
+
+    @classmethod
+    def to_dict(cls):
+        """
+        Convert the RESOURCE_TYPES class into a dictionary.
+
+        Returns:
+        - Dictionary where choice values are keys and choice descriptions are values.
+        """
+        return {choice[0]: choice[1] for choice in cls.choices}
+
+
 class Resource(BaseModelWithExtras):
     """
     The Resource model represents a resource that can be either a machine or an operator.
@@ -13,14 +28,12 @@ class Resource(BaseModelWithExtras):
     A resource can be part of multiple work units and resource pools, and can be operated by multiple users.
     """
 
-    RESOURCE_TYPES = [
-        ("M", "Machine"),
-        ("O", "Operator"),
-    ]
-
     name = models.CharField(max_length=100)
     resource_type = models.CharField(
-        max_length=1, choices=RESOURCE_TYPES, blank=True, null=True
+        max_length=1, 
+        choices=ResourceTypeChoices.choices,
+        blank=True, 
+        null=True
     )
     history = HistoricalRecords(table_name="resource_history")
 
@@ -49,6 +62,9 @@ class Resource(BaseModelWithExtras):
     def work_unit_id_list(self):
         return list(self.work_units.values_list("id", flat=True))
 
+    def __str__(self):
+        return self.name
+
 
 class WorkUnit(BaseModelWithExtras):
     """
@@ -69,6 +85,9 @@ class WorkUnit(BaseModelWithExtras):
     @property
     def resource_pool_id_list(self):
         return list(self.resource_pools.values_list("id", flat=True))
+    
+    def __str__(self):
+        return self.name
 
 
 class ResourcePool(BaseModelWithExtras):
@@ -92,10 +111,13 @@ class ResourcePool(BaseModelWithExtras):
     class Meta:
         db_table = "resource_pool"
 
-    @property
-    def resource_id_list(self):
-        return list(self.resources.values_list("id", flat=True))
+    # @property
+    # def resource_id_list(self):
+    #     return list(self.resources.values_list("id", flat=True))
 
     @property
     def work_unit_id_list(self):
         return list(self.work_units.values_list("id", flat=True))
+
+    def __str__(self):
+        return self.name
