@@ -126,6 +126,7 @@ class TaskService:
         run_time_per_unit: int = 1,
         setup_time: int = 0,
         teardown_time: int = 0,
+        duration: int = 0,
         external_id: str = "",
         notes="",
         item: str = "",
@@ -147,6 +148,7 @@ class TaskService:
             notes=notes,
             setup_time=setup_time,
             item=item,
+            duration=duration,
             task_status=task_status,
             teardown_time=teardown_time,
             quantity=quantity,
@@ -181,6 +183,7 @@ class TaskService:
             "notes",
             "setup_time",
             "teardown_time",
+            "duration",
             "run_time_per_unit",
             "quantity",
             "item",
@@ -278,11 +281,16 @@ class JobService:
         if not self.permission_service.check_for_permission("add_job"):
             raise PermissionDenied()
 
+        # get last job and update priority by 1 from last job priority
+        last_job = Job.objects.order_by('id').last()
+        priority = last_job.priority + 1 if last_job else 1
+
         job = Job.objects.create(
             name=name,
             due_date=due_date,
             job_type=job_type,
             customer=customer,
+            priority=priority,
             job_status=job_status,
             external_id=external_id,
             notes=notes,

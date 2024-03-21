@@ -2,9 +2,63 @@
 
 from common.views import CRUDView, CustomTableView
 
-from .forms import JobForm, TaskForm, DependencyForm
-from .models import Job, JobType, JobStatusChoices, Task, TaskType, TaskStatusChoices, Dependency, DependencyType, DependencyStatusChoices
-from .services import JobService, TaskService, DependencyService
+from .forms import *
+from .models import *
+from .services import *
+
+from resource_assigner.models import AssigmentRule
+
+
+# ------------------------------------------------------------------------------
+# WorkCenter Views
+# ------------------------------------------------------------------------------
+
+WORK_CENTER_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
+WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
+WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "External ID", "Notes"]
+
+WorkCenterTableView = CustomTableView(
+    model=WorkCenter,
+    model_name="work_center",
+    fields=WORK_CENTER_MODEL_FIELDS,
+    headers=WORK_CENTER_TABLE_HEADERS,
+    search_fields_list=WORK_CENTER_SEARCH_FIELDS,
+)
+
+WORK_CENTER_VIEWS = CRUDView(
+    model=WorkCenter,
+    model_name="work_center",
+    model_service=WorkCenterService,
+    model_form=WorkCenterForm,
+    model_table_view=WorkCenterTableView,
+)
+
+
+# ------------------------------------------------------------------------------
+# Job Type Views
+# ------------------------------------------------------------------------------
+
+JOB_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
+
+JOB_TYPE_TABLE_HEADERS = ["ID", "External ID", "Job Type Name", "Notes"]
+JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+
+JOB_TYPE_TABLE_VIEW = CustomTableView(
+    model=JobType,
+    model_name="job_type",
+    fields=JOB_TYPE_MODEL_FIELDS,
+    headers=JOB_TYPE_TABLE_HEADERS,
+    search_fields_list=JOB_TYPE_SEARCH_FIELDS,
+)
+
+JOB_TYPE_VIEWS = CRUDView(
+    model=JobType,
+    model_name="job_type",
+    model_service=JobTypeService,
+    model_form=JobTypeForm,
+    model_table_view=JOB_TYPE_TABLE_VIEW,
+)
+
 
 # ------------------------------------------------------------------------------
 # Job Views
@@ -77,6 +131,33 @@ JOB_VIEWS = CRUDView(
 
 
 # ------------------------------------------------------------------------------
+# TaskType Views
+# ------------------------------------------------------------------------------
+
+
+TASK_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
+TASK_TABLE_HEADERS = ["ID", "External ID", "Task Type Name", "Notes"]
+
+TASK_SEARCH_FIELDS = ["name", "notes", "external_id"]
+
+TASK_TABLE_VIEW = CustomTableView(
+    model=TaskType,
+    model_name="task_type",
+    fields=TASK_TYPE_MODEL_FIELDS,
+    headers=TASK_TABLE_HEADERS,
+    search_fields_list=TASK_SEARCH_FIELDS,
+)
+
+TASK_TYPE_VIEWS = CRUDView(
+    model=TaskType,
+    model_name="task_type",
+    model_service=TaskTypeService,
+    model_form=TaskTypeForm,
+    model_table_view=TASK_TABLE_VIEW,
+)
+
+
+# ------------------------------------------------------------------------------
 # Task Views
 # ------------------------------------------------------------------------------
 
@@ -116,10 +197,10 @@ TASK_TABLE_HEADERS = [
     "Status",
 ]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "Assignment Rules"]
+TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "predecessors"]
 TASK_MODEL_RELATION_FIELDS = {
-
     "dependencies": ["dependencies", ["Dependency Name", "Expected Close", "Actual Close", "Type", "Status"], ["name", "expected_close_datetime", "actual_close_datetime", "dependency_type", "dependency_status"]],
+    "predecessors": ["predecessors", ["Predecessor Name", "Item", "Quantity", "Run Time", "Planned Start", "Planned End", "Task Type", "Status"], ["name", "item", "quantity", "run_time_per_unit", "planned_start_datetime", "planned_end_datetime", "task_type", "task_status"]],
 }
 
 
@@ -145,6 +226,32 @@ TASK_VIEWS = CRUDView(
     model_table_view=TaskTableView,
 )
 
+
+
+# ------------------------------------------------------------------------------
+# Dependecy Type Views
+# ------------------------------------------------------------------------------
+
+DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
+DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "External ID", "Dependency Type Name", "notes"]
+
+DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+
+DEPENDENCY_TYPE_TABLE_VIEW = CustomTableView(
+    model=DependencyType,
+    model_name="dependency_type",
+    fields=DEPENDENCY_TYPE_MODEL_FIELDS,
+    headers=DEPENDENCY_TYPE_TABLE_HEADERS,
+    search_fields_list=DEPENDENCY_TYPE_SEARCH_FIELDS,
+)
+
+DEPENDENCY_TYPE_VIEWS = CRUDView(
+    model=DependencyType,
+    model_name="dependency_type",
+    model_service=DependencyTypeService,
+    model_form=DependencyTypeForm,
+    model_table_view=DEPENDENCY_TYPE_TABLE_VIEW,
+)
 
 
 # ------------------------------------------------------------------------------
@@ -190,7 +297,7 @@ DependencyTableView = CustomTableView(
     model_name="dependency",
     fields=DEPENDENCY_MODEL_FIELDS,
     status_choices_class=DependencyStatusChoices,
-    model_relation_fields=DEPENDENCY_MODEL_FIELDS,
+    model_relation_fields=DEPENDENCY_MODEL_RELATION_FIELDS,
     model_relation_headers=DEPENDENCY_MODEL_RELATION_HEADERS,
     headers=DEPENDENCY_TABLE_HEADERS,
     status_filter_field=DEPENDENCY_STATUS_FILTER_FIELD,

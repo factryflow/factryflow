@@ -36,7 +36,6 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create(
         self,
-        *,
         day_of_week: int,
         start_time: str | time,
         end_time: str | time,
@@ -64,7 +63,6 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create_bulk(
         self,
-        *,
         weekly_shift_template: WeeklyShiftTemplate,
         details: list[dict],
     ) -> None:
@@ -82,6 +80,34 @@ class WeeklyShiftTemplateDetailService:
                 end_time=detail_data["end_time"],
                 weekly_shift_template=weekly_shift_template,
             )
+
+    @transaction.atomic
+    def update(
+        self,
+        instance: WeeklyShiftTemplateDetail,
+        data: dict,
+    ) -> WeeklyShiftTemplateDetail:
+        """
+        Update a WeeklyShiftTemplateDetail.
+        """
+        # check for permissions for change weekly shift template detail
+        if not self.permission_service.check_for_permission("change_weeklyshifttemplatedetail"):
+            raise PermissionDenied()
+
+        fields = [
+            "day_of_week",
+            "start_time",
+            "end_time",
+        ]
+
+        weekly_shift_template_detail, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+
+        weekly_shift_template_detail.full_clean()
+        weekly_shift_template_detail.save(user=self.user)
+
+        return weekly_shift_template_detail
 
     @transaction.atomic
     def delete(self, instance: WeeklyShiftTemplateDetail) -> None:
@@ -179,7 +205,7 @@ class WeeklyShiftTemplateService:
         name: str,
         external_id: str = "",
         notes: str = "",
-        details: list[dict],
+        details: list[dict] = None,
     ) -> WeeklyShiftTemplate:
         """
         Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
@@ -188,7 +214,9 @@ class WeeklyShiftTemplateService:
         if not self.permission_service.check_for_permission("add_weeklyshifttemplate"):
             raise PermissionDenied()
 
-        self._validate_details_fields(details)
+        if details:
+            # Validate details
+            self._validate_details_fields(details)
 
         # Create WeeklyShiftTemplate
         template = WeeklyShiftTemplate.objects.create(
@@ -196,12 +224,13 @@ class WeeklyShiftTemplateService:
         )
 
         # Create WeeklyShiftTemplateDetails
-        self.weeklyshifttemplatedetailservice.create_bulk(
-            weekly_shift_template=template, details=details
-        )
+        if details:
+            self.weeklyshifttemplatedetailservice.create_bulk(
+                weekly_shift_template=template, details=details
+            )
 
-        # Check for overlapping details
-        self._check_no_overlapping_details(template)
+            # Check for overlapping details
+            self._check_no_overlapping_details(template)
 
         template.full_clean()
         template.save(user=self.user)
@@ -320,12 +349,11 @@ class OperationalExceptionService:
 
     @transaction.atomic
     def create(
-        *,
         self,
         resource: Resource,
         start_datetime: datetime,
         end_datetime: datetime,
-        exception_type: OperationalExceptionType,
+        operational_exception_type: OperationalExceptionType,
         weekly_shift_template: WeeklyShiftTemplate = None,
         external_id: str = "",
         notes="",
@@ -338,7 +366,7 @@ class OperationalExceptionService:
             resource=resource,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
-            operational_exception_type=exception_type,
+            operational_exception_type=operational_exception_type,
             weekly_shift_template=weekly_shift_template,
             external_id=external_id,
             notes=notes,

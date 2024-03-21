@@ -8,12 +8,19 @@ from resource_manager.models import Resource, ResourcePool, WorkUnit
 
 
 class TaskResourceAssigment(BaseModel):
+    
     """
     Represents the assignment of resources to tasks.
     """
 
     task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
+    # resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
+    assigment_rule = models.ForeignKey(
+        "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
+    )
+    resource_pool = models.ManyToManyField(ResourcePool, blank=True)
+    resource_count = models.PositiveIntegerField(default=1)
+    use_all_resources = models.BooleanField(default=False)
 
     class Meta:
         db_table = "task_resource_assigment"
@@ -54,6 +61,7 @@ class AssigmentRuleCriteria(BaseModel):
     This model represents the criteria for filtering tasks.
     """
 
+    id = models.AutoField(primary_key=True)
     assigment_rule = models.ForeignKey(
         AssigmentRule, on_delete=models.CASCADE, related_name="criteria"
     )
@@ -73,6 +81,7 @@ class AssignmentConstraint(BaseModel):
     Can be applied to each task to get dynamic assignemnts.
     """
 
+    id = models.AutoField(primary_key=True)
     task = models.ForeignKey(
         Task,
         blank=True,
@@ -117,10 +126,12 @@ class AssignmentConstraint(BaseModel):
     def work_unit_id_list(self):
         return list(self.work_units.values_list("id", flat=True))
 
-    def clean(self):
+    def clean(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        
         resource_pool_set = self.resource_pool_id is not None
-        resources_set = self.resources.exists()
-        work_units_set = self.work_units.exists()
+        resources_set = self.resources is not None
+        work_units_set = self.work_units is not None
 
         if resource_pool_set and (resources_set or work_units_set):
             raise ValidationError(

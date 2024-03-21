@@ -50,6 +50,7 @@ class Task(BaseModelWithExtras):
     # core fields
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150)
+    duration = models.IntegerField()
     setup_time = models.IntegerField()
     run_time_per_unit = models.IntegerField(null=True, blank=True)
     teardown_time = models.IntegerField()

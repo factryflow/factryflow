@@ -6,55 +6,102 @@
 {% load partials %}
 {% load static %}
 {% partialdef partial-table-template %}
-<div x-data="{showModal:false}">
+<div x-data="{runSchedulerDialog: false, showModal:false}">
     <!-- Modal -->
-    <div x-show="showModal"
+    {% if not view_only %}
+        <div x-show="showModal"
+            x-cloak
+            x-on:keydown.escape.prevent.stop="showModal = false"
+            role="dialog"
+            aria-modal="true"
+            class="fixed inset-0 z-10 overflow-y-auto">
+            <!-- Overlay -->
+            <div x-show="showModal"
+                x-transition:enter="transition-opacity ease-in duration-150"
+                x-transition:leave="transition-opacity ease-out duration-150"
+                class="fixed inset-0 bg-black bg-opacity-50"></div>
+            <!-- Panel -->
+            <div x-show="showModal"
+                x-transition:enter="transition-transform ease-out duration-150"
+                x-transition:leave="transition-transform ease-in duration-150"
+                x-on:click="showModal = false"
+                class="relative flex min-h-screen items-center justify-center p-4">
+                <div x-on:click.stop
+                    class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
+                    <!-- Title -->
+                    <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
+                        <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
+                            <img class="h-14 w-14"
+                                src="{% static 'images/delete.svg' %}"
+                                alt="Delete Icon">
+                        </div>
+                        <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete?</p>
+                        <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">
+                            By deleting <span class="text-[#5E6278] font-semibold">“Loreum Ipsum”</span> {{ model_name|title }}, all task inside that column
+                            will also be deleted.
+                        </p>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="px-9 py-5 flex justify-center items-center gap-3">
+                        <button type="button"
+                                hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
+                                hx-target="#all-{{ model_name }}s-table"
+                                hx-swap="outerHTML"
+                                class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
+                                x-on:click="showModal = false">Delete</button>
+                        <button type="button"
+                                x-on:click="showModal = false"
+                                class="rounded-md bg-[#F9F9F9] py-4 px-10 text-[#7E8299]">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+        
+    <div x-show="runSchedulerDialog"
         x-cloak
-        x-on:keydown.escape.prevent.stop="showModal = false"
+        x-on:keydown.escape.prevent.stop="runSchedulerDialog = false"
         role="dialog"
         aria-modal="true"
         class="fixed inset-0 z-10 overflow-y-auto">
         <!-- Overlay -->
-        <div x-show="showModal"
+        <div x-show="runSchedulerDialog"
             x-transition:enter="transition-opacity ease-in duration-150"
             x-transition:leave="transition-opacity ease-out duration-150"
             class="fixed inset-0 bg-black bg-opacity-50"></div>
         <!-- Panel -->
-        <div x-show="showModal"
+        <div x-show="runSchedulerDialog"
             x-transition:enter="transition-transform ease-out duration-150"
             x-transition:leave="transition-transform ease-in duration-150"
-            x-on:click="showModal = false"
+            x-on:click="runSchedulerDialog = false"
             class="relative flex min-h-screen items-center justify-center p-4">
             <div x-on:click.stop
                 class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
                 <!-- Title -->
                 <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
-                    <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
+                    {% comment %} <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
                         <img class="h-14 w-14"
                             src="{% static 'images/delete.svg' %}"
                             alt="Delete Icon">
-                    </div>
-                    <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete?</p>
+                    </div> {% endcomment %}
+                    <p class="text-[#5E6278] font-semibold text-xl">Scheduler has been started</p>
                     <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">
-                        By deleting <span class="text-[#5E6278] font-semibold">“Loreum Ipsum”</span> {{ model_name|title }}, all task inside that column
-                        will also be deleted.
+                        Come after some time and check the result on the same page.
                     </p>
                 </div>
-                <!-- Buttons -->
+                <!-- Button -->
                 <div class="px-9 py-5 flex justify-center items-center gap-3">
                     <button type="button"
-                            hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
-                            hx-target="#all-{{ model_name }}s-table"
-                            hx-swap="outerHTML"
-                            class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
-                            x-on:click="showModal = false">Delete</button>
-                    <button type="button"
-                            x-on:click="showModal = false"
-                            class="rounded-md bg-[#F9F9F9] py-4 px-10 text-[#7E8299]">Cancel</button>
+                            x-on:click="runSchedulerDialog = false"
+                            class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white">Ok</button>
                 </div>
             </div>
         </div>
     </div>
+
+
+
+
     {% if rows %}
         <table class="w-full text-sm text-center"
             id="all-{{ model_name }}s-table"
@@ -97,28 +144,30 @@
                                         </button>
                                     </a>
                                 {% endif %}
-                                {% if user|can:'actions_rule[2]' %}
-                                    <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
-                                        <button id="edit-{{ row.0 }}"
+                                {% if not view_only %}
+                                    {% if user|can:'actions_rule[2]' %}
+                                        <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
+                                            <button id="edit-{{ row.0 }}"
+                                                    type="button"
+                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                                <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    {% if user|can:'actions_rule[3]' %}
+                                        <button id="delete-{{ row.0 }}"
                                                 type="button"
-                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
+                                                hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
+                                                hx-target="#all-{{ model_name }}s-table"
+                                                hx-swap="outerHTML"
+                                                {% comment %}
+                                                hx-confirm="Are you sure?"
+                                                {% endcomment %}
+                                                @click="showModal = !showModal">
+                                            <img src="{% static 'images/delete.svg' %}" alt="Delete" />
                                         </button>
-                                    </a>
-                                {% endif %}
-                                {% if user|can:'actions_rule[3]' %}
-                                    <button id="delete-{{ row.0 }}"
-                                            type="button"
-                                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
-                                            hx-delete="/{{ model_name }}s/delete/{{ row.0 }}"
-                                            hx-target="#all-{{ model_name }}s-table"
-                                            hx-swap="outerHTML"
-                                            {% comment %}
-                                            hx-confirm="Are you sure?"
-                                            {% endcomment %}
-                                            @click="showModal = !showModal">
-                                        <img src="{% static 'images/delete.svg' %}" alt="Delete" />
-                                    </button>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                         {% endif %}
@@ -153,7 +202,7 @@
                     class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
             </div>
         </div>
-        <div class="flex flex-nowrap gap-x-5">
+        {% comment %} <div class="flex flex-nowrap gap-x-5">
             <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
                 <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
                 <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
@@ -162,7 +211,7 @@
                 <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
                 <span class="text-base font-semibold text-white">Filter</span>
             </div>
-        </div>
+        </div> {% endcomment %}
     </div>
 {% endpartialdef %}
 {% block content %}
@@ -197,12 +246,26 @@
                 <h1 class="text-2xl font-semibold text-[#181C32] pb-5">{{ model_name | title }} Management</h1>
             </div>
         </div>
-        {% if user|can:'actions_rule[1]' %}
+        {% if view_only %}
+            <!--write a button with button text and hit post request using htmx-->
             <div class="flex">
-                <a href="{% url model_name|add:'_form' %}"
-                    class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
-                {{ model_name | title }}</a>
+                <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
+                        hx-post={% url 'start_scheduler_run' %}
+                        type="button"
+                        hx-confirm="Are you sure you want to start the scheduler?"
+                        @click="runSchedulerDialog = !runSchedulerDialog"
+                >{{ button_text }}</button>
             </div>
+            
+
+        {% else %}
+            {% if user|can:'actions_rule[1]' %}
+                <div class="flex">
+                    <a href="{% url model_name|add:'_form' %}"
+                        class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+                    {{ model_name | title }}</a>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
     <!-- Tabs -->

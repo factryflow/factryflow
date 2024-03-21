@@ -14,7 +14,6 @@ class ResourceService:
 
     def create(
         self,
-        *,
         name: str,
         external_id: str = "",
         notes: str = "",
@@ -50,7 +49,7 @@ class ResourceService:
 
         return resource
 
-    def update(self, *, instance: Resource, data: dict) -> Resource:
+    def update(self, instance: Resource, data: dict) -> Resource:
         # check permissions for update resource
         if not self.permission_service.check_for_permission("change_resource"):
             raise PermissionDenied()
@@ -86,7 +85,6 @@ class WorkUnitService:
 
     def create(
         self,
-        *,
         name: str,
         external_id: str = "",
         notes: str = "",
@@ -106,7 +104,7 @@ class WorkUnitService:
 
         return work_unit
 
-    def update(self, *, instance: WorkUnit, data: dict) -> WorkUnit:
+    def update(self, instance: WorkUnit, data: dict) -> WorkUnit:
         # check permissions for update work unit
         if not self.permission_service.check_for_permission("change_workunit"):
             raise PermissionDenied()
@@ -142,6 +140,7 @@ class ResourcePoolService:
         external_id: str = "",
         notes: str = "",
         parent: ResourcePool = None,
+        resources: list[Resource] = None,
         work_units: list[WorkUnit] = None,
     ) -> ResourcePool:
         # check permissions for add resource pool
@@ -160,6 +159,9 @@ class ResourcePoolService:
 
         if work_units:
             resource_pool.work_units.set(work_units)
+        
+        if resources:
+            resource_pool.resources.set(resources)
 
         return resource_pool
 
@@ -173,6 +175,7 @@ class ResourcePoolService:
             "external_id",
             "parent",
             "work_units",
+            "resources",
             "notes",
         ]
 

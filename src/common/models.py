@@ -46,17 +46,24 @@ class BaseModelWithExtras(BaseModel):
         abstract = True
 
 
-class FieldType:
-    TEXT = "text"
-    NUMBER = "number"
-    DATE = "date"
+class FieldType(models.TextChoices):
+    TEXT = "text", "Text"
+    INTEGER = "integer", "Integer"
+    DATE = "date", "Date"
+    TIME = "time", "Time"
+    DATETIME = "datetime", "Datetime"
+    # Add more field types here if required
 
-    CHOICES = [
-        (TEXT, "Text"),
-        (NUMBER, "Number"),
-        (DATE, "Date"),
-        # Add other types as needed
-    ]
+    @classmethod
+    def to_dict(cls):
+        """
+        Convert the RESOURCE_TYPES class into a dictionary.
+
+        Returns:
+        - Dictionary where choice values are keys and choice descriptions are values.
+        """
+        return {choice[0]: choice[1] for choice in cls.choices}
+
 
 
 class CustomField(BaseModel):
@@ -66,7 +73,7 @@ class CustomField(BaseModel):
     name = models.CharField(max_length=150)
     label = models.CharField(max_length=150)
     description = models.TextField(blank=True)
-    field_type = models.CharField(max_length=10, choices=FieldType.CHOICES)
+    field_type = models.CharField(max_length=10, choices=FieldType.choices)
     is_required = models.BooleanField(default=False)
 
     history = HistoricalRecords(table_name="custom_field_history")
@@ -80,5 +87,5 @@ class CustomField(BaseModel):
         self._validate_custom_field_name(self.name)
 
     def _validate_custom_field_name(self, value):
-        if not re.match(r"^custom_[a-z]+(?:_[a-z]+)*$", value):
+        if not re.match(r"^[a-z]+(?:_[a-z]+)*$", value):
             raise ValidationError("Field name must be snake_case. Example: my_field")

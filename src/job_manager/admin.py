@@ -35,7 +35,7 @@ class JobType(admin.ModelAdmin):
 
 @admin.register(Job)
 class Job(admin.ModelAdmin):
-    list_display = ['name', 'job_type' ,'external_id','job_status','due_date', 'created_at', 'created_by']
+    list_display = ['name', 'job_type', 'priority' ,'external_id','job_status','due_date', 'created_at', 'created_by']
     list_filter = ['job_type','job_status', 'created_at', 'created_by']
     search_fields = ['name',]
 

@@ -58,7 +58,10 @@ urlpatterns = [
     path("", include("job_manager.urls")),
     path("", include("resource_manager.urls")),
     path("", include("resource_calendar.urls")),
+    path("", include("resource_assigner.urls")),
     path("", include("issue.urls")),
+    path("", include("scheduler.urls")),
+    path("", include("common.urls")),
     path("api/", api.urls),
     path("", TemplateView.as_view(template_name="index.html")),
 ]

@@ -28,6 +28,7 @@ class Resource(BaseModelWithExtras):
     A resource can be part of multiple work units and resource pools, and can be operated by multiple users.
     """
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     resource_type = models.CharField(
         max_length=1, 
@@ -47,9 +48,9 @@ class Resource(BaseModelWithExtras):
     )
 
     # many to many fields
-    work_units = models.ManyToManyField("WorkUnit", related_name="resources")
-    resource_pools = models.ManyToManyField("ResourcePool", related_name="resources")
-    users = models.ManyToManyField(User, related_name="operators")
+    work_units = models.ManyToManyField("WorkUnit", related_name="resources", blank=True)
+    # resource_pools = models.ManyToManyField("ResourcePool", related_name="resources")
+    users = models.ManyToManyField(User, related_name="operators", blank=True)
 
     class Meta:
         db_table = "resource"
@@ -72,6 +73,7 @@ class WorkUnit(BaseModelWithExtras):
     Each work unit has a name and can be associated with multiple resources and resource pools.
     """
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     history = HistoricalRecords(table_name="work_unit_history")
 
@@ -97,6 +99,7 @@ class ResourcePool(BaseModelWithExtras):
     A resource pool can have a parent resource pool, allowing for a hierarchy of resource pools.
     """
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     parent = models.ForeignKey(
         "self",
@@ -105,8 +108,9 @@ class ResourcePool(BaseModelWithExtras):
         blank=True,
         related_name="children",
     )
-    work_units = models.ManyToManyField(WorkUnit, related_name="resource_pools")
-    history = HistoricalRecords(table_name="resource_pool_history")
+    resources = models.ManyToManyField(Resource, related_name="related_resources")
+    work_units = models.ManyToManyField(WorkUnit, related_name="related_work_units")
+    history = HistoricalRecords(table_name="related_history")
 
     class Meta:
         db_table = "resource_pool"

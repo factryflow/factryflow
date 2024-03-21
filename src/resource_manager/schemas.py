@@ -22,7 +22,7 @@ class ResourcePoolOut(ModelSchema):
 
 
 class ResourceIn(ModelSchema):
-    resource_pools: list[int] = Field(None, alias="resource_pool_ids")
+    # resource_pools: list[int] = Field(None, alias="resource_pool_ids")
     users: list[int] = Field(None, alias="user_ids")
     work_units: list[int] = Field(None, alias="work_unit_ids")
 
@@ -32,13 +32,13 @@ class ResourceIn(ModelSchema):
 
 
 class ResourceOut(ModelSchema):
-    resource_pool_ids: list[int] = Field([], alias="resource_pool_id_list")
+    # resource_pool_ids: list[int] = Field([], alias="resource_pool_id_list")
     user_ids: list[int] = Field([], alias="user_id_list")
     work_unit_ids: list[int] = Field([], alias="work_unit_id_list")
 
     class Meta:
         model = Resource
-        exclude = ["resource_pools", "users", "work_units"]
+        exclude = ["users", "work_units"]
 
 
 class WorkUnitIn(ModelSchema):

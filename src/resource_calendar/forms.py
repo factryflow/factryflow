@@ -1,13 +1,69 @@
 from django import forms
 
-from .models import WeeklyShiftTemplate, OperationalException
+from .models import *
 
 
 class WeeklyShiftTemplateForm(forms.ModelForm):
     class Meta:
         model = WeeklyShiftTemplate
         fields = ["name", "external_id", "notes"]
-        labels = {"name": "Weekly Shift Template Name", "external_id": "External ID", "notes": "Notes", "details": "Details"}
+        labels = {"name": "Weekly Shift Template Name", "external_id": "External ID", "notes": "Notes"}
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+            "external_id": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+            "notes": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+        }
+
+
+class WeeklyShiftTemplateDetailForm(forms.ModelForm):
+    class Meta:
+        model = WeeklyShiftTemplateDetail
+        fields = ["day_of_week", "start_time", "end_time", "weekly_shift_template"]
+        labels = {"day_of_week": "Day of Week", "start_time": "Start Time", "end_time": "End Time", "weekly_shift_template": "Weekly Shift Template"}
+        widgets = {
+            "day_of_week": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "number",
+                }
+            ),
+            "start_time": forms.TimeInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "time",
+                }
+            ),
+            "end_time": forms.TimeInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "time",
+                }
+            ),
+            "weekly_shift_template": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+        }
+
+
+class OperationalExceptionTypeForm(forms.ModelForm):
+    class Meta:
+        model = OperationalExceptionType
+        fields = ["name", "external_id", "notes"]
+        labels = {"name": "Operational Exception Type Name", "external_id": "External ID", "notes": "Notes"}
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -31,17 +87,19 @@ class OperationalExceptionForm(forms.ModelForm):
     class Meta:
         model = OperationalException
         fields = [
+            "external_id",
             "resource",
             "weekly_shift_template", 
             "start_datetime", 
+            "end_datetime",
             "operational_exception_type", 
-            "external_id", 
             "notes", 
             ]
         labels = {"name": "Operational Exception Name", 
                 "external_id": "External ID", 
                 "notes": "Notes", 
                 "start_datetime": "Start Datetime",
+                "end_datetime": "End Datetime",
                 "operational_exception_type": "Operational Exception Type",
                 "weekly_shift_template": "Weekly Shift Template",
                 "resource": "Resource"
@@ -63,6 +121,12 @@ class OperationalExceptionForm(forms.ModelForm):
                 }
             ),
             "start_datetime": forms.DateTimeInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "datetime-local",
+                }
+            ),
+            "end_datetime": forms.DateTimeInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "datetime-local",

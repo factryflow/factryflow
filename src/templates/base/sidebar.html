@@ -61,12 +61,14 @@
   <nav class="text-[#5E6278] ml-2.5">
     <ul class="space-y-5 font-semibold">
       {% comment %} dashboard menu {% endcomment %}
-      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_item_url='#' %}
-      {% partial _menu_item %}
+      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' %}
+        {% partial _menu_item %}
       {% endwith %}
+
+
       {% comment %} Production Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='Production' menu_item_icon='images/Production.svg' menu_item_name='Production' %}
+        {% with menu_item_id='Production' menu_item_icon='images/Rm.svg' menu_item_name='Production' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -81,11 +83,16 @@
           {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependencys" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          {% with menu_item_id='workcenters' menu_item_name='WorkCenter' menu_item_url="/work-centers" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
           {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
       </div>
+
+
       {% comment %} Resource Management Menu {% endcomment %}
       <div x-data="dropdown">
         {% with menu_item_id='RM' menu_item_icon='images/Rm.svg' menu_item_name='Resource Management' %}
@@ -103,14 +110,84 @@
           {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly_shift_templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          {% with menu_item_id='WSTD' menu_item_name='Weekly Shift Template Details' menu_item_url="/weekly_shift_template_details" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
           {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational_exceptions" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='AR' menu_item_name='Allocation Rules' %}
+          {% with menu_item_id='AR' menu_item_name='Allocation Rules' menu_item_url="/assigment-rules" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %} 
+          {% with menu_item_id='WU' menu_item_name='Work Units' menu_item_url="/work_units" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
       </div>
+
+      {% comment %} Resource Assigner Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='RA' menu_item_icon='images/Rm.svg' menu_item_name='Resource Assigner' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4">
+          {% with menu_item_id='resources-assignment' menu_item_name='Resources Assignment' menu_item_url="/task-resource-assigments" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='AR' menu_item_name='Assignment Rule' menu_item_url="/assigment-rules" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='ARC' menu_item_name='Assignment Rule Criteria' menu_item_url="/assigment-rule-criteria" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='AC' menu_item_name='Assignment Constraints' menu_item_url="/assignment-constraints" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+        </ul>
+      </div>
+
+      <!-- Scheduler View Menu -->
+      <div x-data="dropdown">
+        {% with menu_item_id='SS' menu_item_icon='images/Rm.svg' menu_item_name='Scheduler' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4">
+          {% with menu_item_id='scheduler_runs' menu_item_name='Scheduler History' menu_item_url="/scheduler-runs" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+        </ul>
+      </div>
+
+      {% comment %} Types Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='datatype' menu_item_icon='images/Rm.svg' menu_item_name='Data Type & Custom fields' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4">
+          {% with menu_item_id='job-type' menu_item_name='Job Type' menu_item_url="/job-types" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='task-type' menu_item_name='Task Types' menu_item_url="/task-types" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='dependency-type' menu_item_name='Dependency Type' menu_item_url="/dependency-types" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='operational-exception-type' menu_item_name='Operational Exception Type' menu_item_url="/operational-exception-types/" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='custom-field' menu_item_name='Custom Field' menu_item_url="/custom-fields" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+        </ul>
+      </div>
+
       <!-- Operator View menu -->
       {% comment %} setting menu {% endcomment %}
       {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='/settings'%}

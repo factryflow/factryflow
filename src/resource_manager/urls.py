@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RESOURCE_VIEWS, RESOURCE_POOL_VIEWS
+from .views import *
 
 urlpatterns = [
     # resources urls
@@ -37,5 +37,24 @@ urlpatterns = [
         "resource_pools/view/<int:id>/edit=<str:edit>",
         RESOURCE_POOL_VIEWS.show_model_form,
         name="edit_resource_pool",
+    ),
+    path(
+        "resource-pools/view/<int:id>/field=<str:field>",
+        RESOURCE_POOL_VIEWS.show_model_form,
+        name="resource_pool_dependencies",
+    ),
+
+    # work unit urls
+    path("work_units/new/", WORK_UNIT_VIEWS.show_model_form, name="work_unit_form"),
+    path(
+        "work_unit-create/", WORK_UNIT_VIEWS.create_or_update_model_instance, name="work_unit_create"
+    ),
+    path("work_units/", WORK_UNIT_VIEWS.get_all_instances, name="work_unit"),
+    path("work_units/delete/<int:id>/", WORK_UNIT_VIEWS.delete_obj_instance, name="delete_work_unit"),
+    path("work_units/view/<int:id>/", WORK_UNIT_VIEWS.show_model_form, name="view_work_unit"),
+    path(
+        "work_units/view/<int:id>/edit=<str:edit>",
+        WORK_UNIT_VIEWS.show_model_form,
+        name="edit_work_unit",
     ),
 ]

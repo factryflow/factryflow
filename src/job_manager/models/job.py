@@ -56,7 +56,7 @@ class Job(BaseModelWithExtras, OrderedModelBase):
     dependencies = models.ManyToManyField("Dependency", related_name="jobs")
 
     # Utility fields
-    priority = models.PositiveIntegerField(db_index=True, editable=False)
+    priority = models.PositiveIntegerField(db_index=True)
     planned_start_datetime = models.DateTimeField(null=True, blank=True)
     planned_end_datetime = models.DateTimeField(null=True, blank=True)
 

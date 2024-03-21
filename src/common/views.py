@@ -9,6 +9,14 @@ from django.views.decorators.csrf import csrf_exempt
 from common.utils.views import add_notification_headers, convert_datetime_to_readable_string,   convert_date_to_readable_string
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from .models import CustomField, FieldType
+from .forms import CustomFieldForm
+from .services import CustomFieldService
+
+# ------------------------------------------------------------------------------
+# Custom CRUDView
+# ------------------------------------------------------------------------------
+
 class CRUDView:
     """
     A generic CRUD (Create, Read, Update, Delete) view for handling various models.
@@ -32,9 +40,13 @@ class CRUDView:
         model_form,
         model_table_view,
         model_type=None,
+        view_only=False,
+        button_text="Add",
+        cud_actions_rule=True,
     ):
         self.model = model
         self.model_type = model_type
+        self.view_only = view_only
         self.model_name = model_name
         self.model_service = model_service
         self.model_form = model_form
@@ -42,12 +54,14 @@ class CRUDView:
         self.model_type = model_type
         self.list_template_name = "objects/list.html"
         self.detail_template_name = "objects/details.html"
+        self.cud_actions_rule = cud_actions_rule
         self.actions_rule = [
             f"view_{model_name.lower()}",
             f"add_{model_name.lower()}",
             f"change_{model_name.lower()}",
             f"delete_{model_name.lower()}",
         ]
+        self.button_text = button_text
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -86,6 +100,8 @@ class CRUDView:
             "show_actions": True,
             "actions_rule": self.actions_rule,
             "model_name": self.model_name,
+            "view_only": self.view_only,
+            "button_text": self.button_text,
         }
 
         return render(request, template_name, context)
@@ -106,28 +122,30 @@ class CRUDView:
         # Determine form action URL based on whether editing or creating
         form_action_url = f"/{self.model_name.lower()}-create/"
         
-        # get field param
-        field = request.GET.get('field')
         relation_field_name = None
-        if field is None:
-            if len(self.table_view.model_relation_headers) > 0:
-                relation_field_name = self.table_view.model_relation_headers[0].lower()
-        else:
+        # get field parameter
+        if len(self.table_view.model_relation_headers) > 0:
+            relation_field_name = self.table_view.model_relation_headers[0].lower().replace(" ", "_")
+            
+        if field:
             relation_field_name = field.lower()
 
         # Process the form based on ID and edit mode
+        rows = []
         if id:
             instance_obj = get_object_or_404(self.model, id=id)
             form = self.model_form(instance=instance_obj)
-            page_label = instance_obj.name
+            if "name" in instance_obj.__dict__:
+                page_label = instance_obj.name
+            else:
+                page_label = f"{self.model_name.capitalize()} Details"
 
             # self.table_view.get_all_many_to_field_instances(instance_obj)
-
             if edit != "true":
                 view_mode = True
                 form_label = f"{self.model_name.capitalize()} Details"
                 button_text = "Edit"
-                edit_url = reverse(f"edit_{self.model_name.lower()}", args=[id, "true"])
+                edit_url = reverse(f"edit_{self.model_name.lower()}", args=[id, "true"]) if self.cud_actions_rule else "#"
 
                 # Make all form fields read-only
                 for field in form.fields.values():
@@ -137,6 +155,8 @@ class CRUDView:
                 button_text = "Save"
                 form_label = f"{self.model_name.capitalize()} Details"
                 view_mode = False
+
+            rows = self.table_view.get_all_many_to_many_field_instances(instance_obj, relation_field_name, view_mode) if relation_field_name else []
 
         else:
             form = self.model_form()
@@ -148,6 +168,7 @@ class CRUDView:
         context = {
             "form": form,
             "view_mode": view_mode,
+            "view_only": self.view_only,
             "form_label": form_label,
             "button_text": button_text,
             "form_action_url": form_action_url,
@@ -155,12 +176,20 @@ class CRUDView:
             "edit_url": edit_url if "edit_url" in locals() else "#",
             "page_label": page_label,
             "model_name": self.model_name,
+            "field_url": self.model_name.replace("_", "-"),
             "show_actions": False,
             "headers": self.table_view.model_relation_fields[relation_field_name][-2] if relation_field_name else [],
             "relations_headers": self.table_view.model_relation_headers,
-            "rows": self.table_view.get_all_many_to_many_field_instances(instance_obj, relation_field_name, view_mode) if relation_field_name else [],
+            "rows": rows,
             "actions_rule": self.actions_rule,
         }
+
+        if "HX-Request" in request.headers:
+            return render(
+                request,
+                f"{self.list_template_name}#partial-table-template",
+                context,
+            )
 
         return render(
             request,
@@ -205,6 +234,7 @@ class CRUDView:
 
             # Render the form with success message and handle HX-Request
             form = self.model_form()
+            
             response = render(
                 request,
                 f"{self.detail_template_name}#partial-form",
@@ -284,6 +314,10 @@ class CRUDView:
         return response
 
 
+# ------------------------------------------------------------------------------
+# CustomTableView for any model
+# ------------------------------------------------------------------------------
+
 class CustomTableView:
     """
     Class representing a custom view for displaying tables in a generic format.
@@ -302,6 +336,7 @@ class CustomTableView:
         status_choices_class=None,
         status_filter_field=None,
         tailwind_classes=None,
+        status_classes={},
     ):
         """
         Args:
@@ -324,6 +359,7 @@ class CustomTableView:
         self.model_relation_fields = model_relation_fields
         self.table_headers = headers
         self.page_size = page_size
+        self.status_classes = status_classes
 
     @property
     def all_instances(self):
@@ -341,6 +377,7 @@ class CustomTableView:
 
             elif len(self.model_relation_fields[field_name]) == 3:
                 data = getattr(obj_instance, self.model_relation_fields[field_name][0]).all()
+            
             
             for instance in data:
                 row_data = []
@@ -448,8 +485,9 @@ class CustomTableView:
                 if "status" in field:
                     value = (
                         f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
-                        f'{getattr(instance, "get_" + self.model_name + "_status_display")()}</span>',
+                        f'{getattr(instance, "get_" + self.model_name + "_status_display")() if hasattr(instance, "get_" + self.model_name + "_status_display") else self.status_classes.get(getattr(instance, field))}</span>',
                     )
+                    # value = getattr(instance, field)
                     row_data.append(value[0])
                 elif isinstance(getattr(instance, field), datetime.datetime):
                     value = convert_datetime_to_readable_string(getattr(instance, field))
@@ -476,3 +514,50 @@ class CustomTableView:
             str: The Tailwind CSS class for the given model status.
         """
         return self.tailwind_classes.get(model_status)
+
+
+
+# ------------------------------------------------------------------------------
+# Custom Field Views
+# ------------------------------------------------------------------------------
+
+CUSTOM_FIELD_MODEL_FIELDS = [
+    "id",
+    "name",
+    "label",
+    "content_type",
+    "field_type",
+    "is_required",
+    "description",
+]
+CUSTOM_FIELD_TABLE_HEADERS = [
+    "ID",
+    "Field Name",
+    "Label",
+    "Content Type",
+    "Field Type",
+    "Is Required",
+    "Description",
+]
+
+CUSTOM_FIELD_SEARCH_FIELDS = ["name", "field_type", "label", "description"]
+
+CUSTOM_FIELD_STATUS_FILTER_FIELD = "field_type"
+
+CustomFieldTableView = CustomTableView(
+    model=CustomField,
+    model_name="custom_field",
+    fields=CUSTOM_FIELD_MODEL_FIELDS,
+    headers=CUSTOM_FIELD_TABLE_HEADERS,
+    status_filter_field=CUSTOM_FIELD_STATUS_FILTER_FIELD,
+    status_choices_class=FieldType,
+    search_fields_list=CUSTOM_FIELD_SEARCH_FIELDS,
+)
+
+CUSTOM_FIELD_VIEWS = CRUDView(
+    model=CustomField,
+    model_name="custom_field",
+    model_service=CustomFieldService,
+    model_form=CustomFieldForm,
+    model_table_view=CustomFieldTableView,
+)
