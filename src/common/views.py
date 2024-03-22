@@ -216,6 +216,16 @@ class CRUDView:
         form = self.model_form(request.POST, instance=instance_obj)
         id = request.POST.get("id")
 
+        if len(form.errors) > 0:
+            errors = {f: e.get_json_data() for f, e in form.errors.items()}
+            for error in errors:
+                response = HttpResponse(status=400)
+                add_notification_headers(
+                    response, errors[error][0]["message"], "error"
+                )
+            
+            return response
+
         if form.is_valid():
             # Extract data from the form
             obj_data = form.cleaned_data
