@@ -86,9 +86,13 @@
           {% with menu_item_id='workcenters' menu_item_name='WorkCenter' menu_item_url="/work-centers" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          {% with menu_item_id='item' menu_item_name='Item' menu_item_url="/items" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
           {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          
         </ul>
       </div>
 
