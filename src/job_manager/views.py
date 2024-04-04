@@ -314,3 +314,27 @@ DEPENDENCY_VIEWS = CRUDView(
     model_table_view=DependencyTableView,
 )
 
+# ------------------------------------------------------------------------------
+# Item Views
+# ------------------------------------------------------------------------------
+
+ITEM_MODEL_FIELDS = ["id", "external_id", "name", "description", "notes"]
+ITEM_TABLE_HEADERS = ["ID", "External ID", "Item Name", "Description", "Notes"]
+
+ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
+
+ITEM_TABLE_VIEW = CustomTableView(
+    model=Item,
+    model_name="item",
+    fields=ITEM_MODEL_FIELDS,
+    headers=ITEM_TABLE_HEADERS,
+    search_fields_list=ITEM_SEARCH_FIELDS,
+)
+
+ITEM_VIEWS = CRUDView(
+    model=Item,
+    model_name="item",
+    model_service=ItemService,
+    model_form=ItemForm,
+    model_table_view=ITEM_TABLE_VIEW,
+)

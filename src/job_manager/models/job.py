@@ -53,7 +53,7 @@ class Job(BaseModelWithExtras, OrderedModelBase):
 
     # Relationship fields
     job_type = models.ForeignKey(JobType, on_delete=models.DO_NOTHING)
-    dependencies = models.ManyToManyField("Dependency", related_name="jobs")
+    dependencies = models.ManyToManyField("Dependency", related_name="jobs", blank=True)
 
     # Utility fields
     priority = models.PositiveIntegerField(db_index=True)

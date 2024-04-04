@@ -25,7 +25,7 @@ class WeeklyShiftTemplateDetailIn(Schema):
 class WeeklyShiftTemplateDetailOut(ModelSchema):
     class Meta:
         model = WeeklyShiftTemplateDetail
-        exclude = ["weekly_shift_template"]
+        fields = "__all__"
 
 
 class WeeklyShiftTemplateIn(Schema):

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import JOB_VIEWS, TASK_VIEWS, DEPENDENCY_VIEWS, JOB_TYPE_VIEWS, TASK_TYPE_VIEWS, DEPENDENCY_TYPE_VIEWS, WORK_CENTER_VIEWS
+from .views import JOB_VIEWS, TASK_VIEWS, DEPENDENCY_VIEWS, JOB_TYPE_VIEWS, TASK_TYPE_VIEWS, DEPENDENCY_TYPE_VIEWS, WORK_CENTER_VIEWS, ITEM_VIEWS
 
 urlpatterns = [
     # work center urls
@@ -171,4 +171,12 @@ urlpatterns = [
         DEPENDENCY_TYPE_VIEWS.show_model_form,
         name="edit_dependency_type",
     ),
+
+    # item urls
+    path("items/new/", ITEM_VIEWS.show_model_form, name="item_form"),
+    path("item-create/", ITEM_VIEWS.create_or_update_model_instance, name="item_create"),
+    path("items/", ITEM_VIEWS.get_all_instances, name="item"),
+    path("items/delete/<int:id>/", ITEM_VIEWS.delete_obj_instance, name="delete_item"),
+    path("items/view/<int:id>/", ITEM_VIEWS.show_model_form, name="view_item"),
+    path("items/view/<int:id>/edit=<str:edit>", ITEM_VIEWS.show_model_form, name="edit_item"),
 ]

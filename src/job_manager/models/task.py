@@ -3,7 +3,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from job_manager.models.job import Job
-
+from .item import Item
 
 class WorkCenter(BaseModelWithExtras):
     name = models.CharField(max_length=150, unique=True)
@@ -57,7 +57,7 @@ class Task(BaseModelWithExtras):
     quantity = models.IntegerField()
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
     planned_end_datetime = models.DateTimeField(blank=True, null=True)
-    item = models.CharField(max_length=250, blank=True, null=True)
+    item = models.ForeignKey(Item, on_delete=models.DO_NOTHING, related_name="tasks")
     task_status = models.CharField(
         max_length=2,
         choices=TaskStatusChoices.choices,
@@ -66,7 +66,7 @@ class Task(BaseModelWithExtras):
 
     # relationship fields
     task_type = models.ForeignKey(
-        TaskType, on_delete=models.CASCADE, related_name="tasks_type"
+        TaskType, on_delete=models.CASCADE, related_name="tasks_type", null=True, blank=True
     )
     job = models.ForeignKey(
         Job, on_delete=models.CASCADE, related_name="tasks", blank=True, null=True

@@ -209,12 +209,15 @@ class CRUDView:
         Returns:
             The response indicating success or failure of the operation.
         """
+        # get instance object id
+        id = request.POST.get("id")
+
         # Get the instance object if updating, otherwise None
         instance_obj = get_object_or_404(self.model, id=id) if id else None
 
         # Instantiate the form with POST data and optionally the instance object
         form = self.model_form(request.POST, instance=instance_obj)
-        id = request.POST.get("id")
+        
 
         if len(form.errors) > 0:
             errors = {f: e.get_json_data() for f, e in form.errors.items()}
@@ -237,10 +240,13 @@ class CRUDView:
                 self.model_service(user=request.user).update(
                     existing_instance, obj_data
                 )
+                message = f"{self.model_name.capitalize()} updated successfully!"
 
             except self.model.DoesNotExist:
                 del obj_data["id"]
                 self.model_service(user=request.user).create(**obj_data)
+                message = f"{self.model_name.capitalize()} created successfully!"
+
 
             # Render the form with success message and handle HX-Request
             form = self.model_form()
@@ -263,7 +269,7 @@ class CRUDView:
                 response = HttpResponse(status=204, headers=headers)
                 add_notification_headers(
                     response,
-                    f"{self.model_name.capitalize()} created successfully!",
+                    message,
                     "success",
                 )
                 return response
@@ -552,13 +558,22 @@ CUSTOM_FIELD_TABLE_HEADERS = [
 
 CUSTOM_FIELD_SEARCH_FIELDS = ["name", "field_type", "label", "description"]
 
+
 CUSTOM_FIELD_STATUS_FILTER_FIELD = "field_type"
+
+CUSTOM_FIELD_MODEL_RELATION_HEADERS = ["History"]
+CUSTOM_FIELD_MODEL_RELATION_FIELDS = {
+    "history": ["history", ["ID", "Name", "User", "History Date"], ["history_id", "name", "history_user", "history_date"]],
+}
+
 
 CustomFieldTableView = CustomTableView(
     model=CustomField,
     model_name="custom_field",
     fields=CUSTOM_FIELD_MODEL_FIELDS,
     headers=CUSTOM_FIELD_TABLE_HEADERS,
+    model_relation_headers=CUSTOM_FIELD_MODEL_RELATION_HEADERS,
+    model_relation_fields=CUSTOM_FIELD_MODEL_RELATION_FIELDS,
     status_filter_field=CUSTOM_FIELD_STATUS_FILTER_FIELD,
     status_choices_class=FieldType,
     search_fields_list=CUSTOM_FIELD_SEARCH_FIELDS,

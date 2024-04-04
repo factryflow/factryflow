@@ -6,8 +6,8 @@ from .models import *
 class WeeklyShiftTemplateForm(forms.ModelForm):
     class Meta:
         model = WeeklyShiftTemplate
-        fields = ["name", "external_id", "notes"]
-        labels = {"name": "Weekly Shift Template Name", "external_id": "External ID", "notes": "Notes"}
+        fields = ["name",  "external_id", "weekly_shift_template_details", "notes", "description"]
+        labels = {"name": "Weekly Shift Template Name", "external_id": "External ID", "Weekly Shift Template Details": "Weekly Shift Template Details", "notes": "Notes", "description": "Description"}
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -19,19 +19,30 @@ class WeeklyShiftTemplateForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
+            "weekly_shift_template_details": forms.SelectMultiple(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "size": 7,
+                }
+            ),
             "notes": forms.Textarea(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            )
         }
 
 
 class WeeklyShiftTemplateDetailForm(forms.ModelForm):
     class Meta:
         model = WeeklyShiftTemplateDetail
-        fields = ["day_of_week", "start_time", "end_time", "weekly_shift_template"]
-        labels = {"day_of_week": "Day of Week", "start_time": "Start Time", "end_time": "End Time", "weekly_shift_template": "Weekly Shift Template"}
+        fields = ["day_of_week", "start_time", "end_time"]
+        labels = {"day_of_week": "Day of Week", "start_time": "Start Time", "end_time": "End Time"}
         widgets = {
             "day_of_week": forms.TextInput(
                 attrs={
@@ -50,12 +61,7 @@ class WeeklyShiftTemplateDetailForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "time",
                 }
-            ),
-            "weekly_shift_template": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
+            )
         }
 
 

@@ -14,6 +14,7 @@ from job_manager.models import (
     Task,
     TaskType,
     WorkCenter,
+    Item
 )
 
 # ------------------------------------------------------------------------------
@@ -458,3 +459,52 @@ class DependencyService:
             raise PermissionDenied()
 
         instance.delete()
+
+
+# ------------------------------------------------------------------------------
+# Item Services
+# ------------------------------------------------------------------------------
+        
+class ItemService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    def create(self, name: str, description: str = "", external_id: str = "", notes: str = "") -> Item:
+        # check for permission to create item
+        if not self.permission_service.check_for_permission("add_item"):
+            raise PermissionDenied()
+
+        item = Item.objects.create(
+            name=name, description=description, external_id=external_id, notes=notes
+        )
+        item.full_clean()
+        item.save(user=self.user)
+
+        return item
+    
+    def update(self, instance: Item, data: dict) -> Item:
+        # check for permission to update item
+        if not self.permission_service.check_for_permission("change_item"):
+            raise PermissionDenied()
+
+        fields = [
+            "name",
+            "description",
+            "external_id",
+            "notes",
+        ]
+
+        item, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+
+        return item
+    
+    def delete(self, instance: Item) -> None:
+        # check for permission to delete item
+        if not self.permission_service.check_for_permission("delete_item"):
+            raise PermissionDenied()
+
+        instance.delete()
+        return True

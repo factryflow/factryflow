@@ -10,6 +10,13 @@ from simple_history.models import HistoricalRecords
 
 class WeeklyShiftTemplate(BaseModelWithExtras):
     name = models.CharField(max_length=150)
+    description = models.TextField(blank=True, null=True)
+
+    weekly_shift_template_details = models.ManyToManyField(
+        "WeeklyShiftTemplateDetail",
+        related_name="weekly_shift_template",
+        blank=True,
+    )
 
     history = HistoricalRecords(table_name="weekly_shift_template_history")
 
@@ -24,12 +31,6 @@ class WeeklyShiftTemplateDetail(BaseModel):
     day_of_week = models.IntegerField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    weekly_shift_template = models.ForeignKey(
-        WeeklyShiftTemplate,
-        on_delete=models.CASCADE,
-        related_name="details",
-    )
-
     history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
 
     def clean(self):
@@ -37,6 +38,18 @@ class WeeklyShiftTemplateDetail(BaseModel):
             raise ValidationError("Day of week must be between 0 and 6")
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be before end time")
+        
+    
+    def get_day_of_week_display(self):
+        return {
+            0: "Monday",
+            1: "Tuesday",
+            2: "Wednesday",
+            3: "Thursday",
+            4: "Friday",
+            5: "Saturday",
+            6: "Sunday",
+        }[self.day_of_week]
 
     class Meta:
         indexes = [
@@ -45,9 +58,12 @@ class WeeklyShiftTemplateDetail(BaseModel):
             )
         ]
         unique_together = [
-            ["day_of_week", "weekly_shift_template", "start_time", "end_time"]
+            ["day_of_week", "start_time", "end_time"]
         ]
-        db_table = "weekly_shift_template_detail"
+        db_table = "weekly_shift_template_detail" 
+
+    def __str__(self):
+        return f"{self.get_day_of_week_display()} {self.start_time} - {self.end_time}"                      
 
 
 # ------------------------------------------------------------------------------

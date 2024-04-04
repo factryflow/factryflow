@@ -127,6 +127,9 @@ class CustomFieldService:
         if not self.permission_service.check_for_permission("add_customfield"):
             raise PermissionDenied()
 
+        if not name.startswith("custom_"):
+            name = self._add_prefix_to_name(name)
+
         name = self._add_prefix_to_name(name)
         custom_field = CustomField.objects.create(
             content_type=content_type,
@@ -147,7 +150,7 @@ class CustomFieldService:
             raise PermissionDenied()
 
         # add prefix to name
-        if "name" in data:
+        if "name" in data and not data["name"].startswith("custom_"):
             data["name"] = self._add_prefix_to_name(data["name"])
 
         fields = ["name", "label", "description", "is_required", "field_type", "content_type"]

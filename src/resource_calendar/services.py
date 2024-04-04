@@ -39,7 +39,6 @@ class WeeklyShiftTemplateDetailService:
         day_of_week: int,
         start_time: str | time,
         end_time: str | time,
-        weekly_shift_template: WeeklyShiftTemplate,
     ) -> WeeklyShiftTemplateDetail:
         """
         Create a WeeklyShiftTemplateDetail.
@@ -52,7 +51,6 @@ class WeeklyShiftTemplateDetailService:
             day_of_week=day_of_week,
             start_time=self._parse_time(start_time),
             end_time=self._parse_time(end_time),
-            weekly_shift_template=weekly_shift_template,
         )
 
         weekly_shift_template_detail.full_clean()
@@ -63,7 +61,6 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create_bulk(
         self,
-        weekly_shift_template: WeeklyShiftTemplate,
         details: list[dict],
     ) -> None:
         """
@@ -78,7 +75,7 @@ class WeeklyShiftTemplateDetailService:
                 day_of_week=detail_data["day_of_week"],
                 start_time=detail_data["start_time"],
                 end_time=detail_data["end_time"],
-                weekly_shift_template=weekly_shift_template,
+
             )
 
     @transaction.atomic
@@ -201,11 +198,12 @@ class WeeklyShiftTemplateService:
     @transaction.atomic
     def create(
         self,
-        *,
         name: str,
         external_id: str = "",
         notes: str = "",
+        description: str = "",
         details: list[dict] = None,
+        weekly_shift_template_details: list[WeeklyShiftTemplateDetail] = None,
     ) -> WeeklyShiftTemplate:
         """
         Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
@@ -220,7 +218,7 @@ class WeeklyShiftTemplateService:
 
         # Create WeeklyShiftTemplate
         template = WeeklyShiftTemplate.objects.create(
-            name=name, external_id=external_id, notes=notes
+            name=name, external_id=external_id, notes=notes, description=description, weekly_shift_template_details=weekly_shift_template_details
         )
 
         # Create WeeklyShiftTemplateDetails
@@ -231,6 +229,11 @@ class WeeklyShiftTemplateService:
 
             # Check for overlapping details
             self._check_no_overlapping_details(template)
+
+
+        if weekly_shift_template_details:
+            template.details.set(weekly_shift_template_details)
+
 
         template.full_clean()
         template.save(user=self.user)
@@ -254,6 +257,8 @@ class WeeklyShiftTemplateService:
             "name",
             "external_id",
             "notes",
+            "description",
+            "weekly_shift_template_details"
         ]
 
         template, _ = model_update(
