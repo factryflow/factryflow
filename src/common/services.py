@@ -165,3 +165,5 @@ class CustomFieldService:
             raise PermissionDenied()
 
         instance.delete()
+
+        return True

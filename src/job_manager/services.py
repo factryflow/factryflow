@@ -61,6 +61,7 @@ class WorkCenterService:
             raise PermissionDenied()
 
         work_center.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -106,6 +107,7 @@ class TaskTypeService:
             raise PermissionDenied()
 
         task_type.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -209,6 +211,7 @@ class TaskService:
             raise PermissionDenied()
 
         task.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -257,6 +260,7 @@ class JobTypeService:
             raise PermissionDenied()
 
         job_type.delete()
+        return True
 
 
 class JobService:
@@ -395,6 +399,7 @@ class DependencyTypeService:
             raise PermissionDenied()
 
         dependency_type.delete()
+        return True
 
 
 class DependencyService:
@@ -459,6 +464,7 @@ class DependencyService:
             raise PermissionDenied()
 
         instance.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------

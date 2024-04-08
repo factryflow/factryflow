@@ -318,7 +318,7 @@ class CRUDView:
         # Add notification based on deletion success or failure
         if deletion_successful:
             add_notification_headers(
-                response, f"{self.model_name.capitalize()} has been deleted.", "info"
+                response, f"{self.model_name.capitalize()} has been deleted.", "success"
             )
         else:
             add_notification_headers(

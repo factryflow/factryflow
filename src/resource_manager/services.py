@@ -76,6 +76,7 @@ class ResourceService:
             raise PermissionDenied()
 
         instance.delete()
+        return True
 
 
 class WorkUnitService:
@@ -127,6 +128,7 @@ class WorkUnitService:
             raise PermissionDenied()
 
         instance.delete()
+        return True
 
 
 class ResourcePoolService:
@@ -189,3 +191,4 @@ class ResourcePoolService:
             raise PermissionDenied()
 
         instance.delete()
+        return True

@@ -72,6 +72,7 @@ class TaskResourceAssigmentService:
             raise PermissionDenied()
         
         instance.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -143,7 +144,8 @@ class AssignmentConstraintService:
         if not self.permission_service.check_for_permission("delete_assignmentconstraint"):
             raise PermissionDenied()
         
-        instance.delete()
+        instance
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -205,7 +207,7 @@ class AssigmentRuleCriteriaService:
             raise PermissionDenied()
 
         instance.delete()
-
+        return True
 
 class AssigmentRuleService:
     def __init__(self, user):
@@ -355,3 +357,4 @@ class AssigmentRuleService:
             raise PermissionDenied()
 
         instance.delete()
+        return True

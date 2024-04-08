@@ -116,6 +116,7 @@ class WeeklyShiftTemplateDetailService:
             raise PermissionDenied()
 
         instance.delete()
+        return True
 
 
 class WeeklyShiftTemplateService:
@@ -292,6 +293,7 @@ class WeeklyShiftTemplateService:
             raise PermissionDenied()
 
         template.delete()
+        return True
 
 
 class OperationalExceptionTypeService:
@@ -345,6 +347,7 @@ class OperationalExceptionTypeService:
             raise PermissionDenied()
 
         exception_type.delete()
+        return True
 
 
 class OperationalExceptionService:
@@ -416,3 +419,4 @@ class OperationalExceptionService:
             raise PermissionDenied()
 
         exception.delete()
+        return True

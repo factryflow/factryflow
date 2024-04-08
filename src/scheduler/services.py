@@ -101,6 +101,7 @@ class ResourceIntervalsService(AbstractPermissionService):
         
         resource_interval = self.resource_intervals.objects.get(id=id)
         resource_interval.delete()
+        return True
 
 
 
@@ -179,6 +180,7 @@ class ResourceAllocationsService(AbstractPermissionService):
         
         resource_allocation = self.resource_allocations.objects.get(id=id)
         resource_allocation.delete()
+        return True
 
 
 
@@ -256,6 +258,7 @@ class SchedulerRunsService(AbstractPermissionService):
         
         scheduler_run = self.scheduler_runs.objects.get(id=id)
         scheduler_run.delete()
+        return True
 
 
 
