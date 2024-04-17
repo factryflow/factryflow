@@ -10,6 +10,7 @@ from job_manager.models import (
     Task,
     TaskType,
     WorkCenter,
+    Item,
 )
 
 
@@ -55,6 +56,17 @@ class JobFactory(factory.django.DjangoModelFactory):
                 lambda x: x.planned_start_datetime + timedelta(hours=10)
             ),
         )
+
+
+class ItemFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Item
+
+    name = factory.lazy_attribute(lambda _: faker.unique.word())
+    description = "radom description"
+    external_id = "EXTERNAL_ID_1"
+    notes = "random notes"
+
 
 
 class DependencyTypeFactory(factory.django.DjangoModelFactory):
@@ -106,6 +118,8 @@ class TaskFactory(factory.django.DjangoModelFactory):
     quantity = 1
     setup_time = 0
     teardown_time = 0
+    item = factory.SubFactory(ItemFactory)
+    duration = 1 
     run_time_per_unit = 1
     job = None
     external_id = ""

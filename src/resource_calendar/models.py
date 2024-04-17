@@ -25,31 +25,30 @@ class WeeklyShiftTemplate(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
+    
+
+
+class DaysOfWeek(models.TextChoices):
+    MONDAY = "Monday", "Monday"
+    TUESDAY = "Tuesday", "Tuesday"
+    WEDNESDAY = "Wednesday", "Wednesday"
+    THURSDAY = "Thursday", "Thursday"
+    FRIDAY = "Friday", "Friday"
+    SATURDAY = "Saturday", "Saturday"
+    SUNDAY = "Sunday", "Sunday"
+
 
 
 class WeeklyShiftTemplateDetail(BaseModel):
-    day_of_week = models.IntegerField()
+    day_of_week = models.TextField(choices=DaysOfWeek.choices)
     start_time = models.TimeField()
     end_time = models.TimeField()
     history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
 
     def clean(self):
-        if self.day_of_week < 0 or self.day_of_week > 6:
-            raise ValidationError("Day of week must be between 0 and 6")
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be before end time")
         
-    
-    def get_day_of_week_display(self):
-        return {
-            0: "Monday",
-            1: "Tuesday",
-            2: "Wednesday",
-            3: "Thursday",
-            4: "Friday",
-            5: "Saturday",
-            6: "Sunday",
-        }[self.day_of_week]
 
     class Meta:
         indexes = [
@@ -63,7 +62,7 @@ class WeeklyShiftTemplateDetail(BaseModel):
         db_table = "weekly_shift_template_detail" 
 
     def __str__(self):
-        return f"{self.get_day_of_week_display()} {self.start_time} - {self.end_time}"                      
+        return f"{self.day_of_week} {self.start_time} - {self.end_time}"                      
 
 
 # ------------------------------------------------------------------------------

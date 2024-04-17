@@ -44,10 +44,9 @@ class WeeklyShiftTemplateDetailForm(forms.ModelForm):
         fields = ["day_of_week", "start_time", "end_time"]
         labels = {"day_of_week": "Day of Week", "start_time": "Start Time", "end_time": "End Time"}
         widgets = {
-            "day_of_week": forms.TextInput(
+            "day_of_week": forms.Select(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "type": "number",
                 }
             ),
             "start_time": forms.TimeInput(

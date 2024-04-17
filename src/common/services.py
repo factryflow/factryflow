@@ -130,7 +130,6 @@ class CustomFieldService:
         if not name.startswith("custom_"):
             name = self._add_prefix_to_name(name)
 
-        name = self._add_prefix_to_name(name)
         custom_field = CustomField.objects.create(
             content_type=content_type,
             name=name,

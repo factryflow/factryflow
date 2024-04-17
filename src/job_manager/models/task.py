@@ -77,7 +77,7 @@ class Task(BaseModelWithExtras):
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
-    dependencies = models.ManyToManyField("Dependency", related_name="tasks")
+    dependencies = models.ManyToManyField("Dependency", blank=True, related_name="tasks")
 
     # special fields
     history = HistoricalRecords(table_name="task_history")

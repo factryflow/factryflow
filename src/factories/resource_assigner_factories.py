@@ -16,14 +16,6 @@ from .resource_manager_factories import (
 )
 
 
-class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = TaskResourceAssigment
-
-    task = factory.SubFactory(TaskFactory)
-    resource = factory.SubFactory(ResourceFactory)
-
-
 class AssigmentRuleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AssigmentRule
@@ -44,6 +36,8 @@ class AssigmentRuleCriteriaFactory(factory.django.DjangoModelFactory):
     operator = Operator.EQUALS
     value = factory.lazy_attribute(lambda _: faker.unique.catch_phrase())
     field = "name"
+    external_id = ""
+    notes = ""
 
 
 class AssigmentConstraintFactory(factory.django.DjangoModelFactory):
@@ -63,12 +57,29 @@ class AssigmentConstraintFactory(factory.django.DjangoModelFactory):
         with_assignment_rule = factory.Trait(
             assignment_rule=factory.SubFactory(AssigmentRuleFactory)
         )
-        with_resource_pool = factory.Trait(
-            resource_pool=factory.SubFactory(ResourcePoolFactory)
-        )
+        # with_resource_pool = factory.Trait(
+        #     resource_pool=factory.lazy_attribute()
+        # )
         with_resources = factory.Trait(
             resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
         )
         with_work_units = factory.Trait(
             work_units=factory.lazy_attribute(lambda _: WorkUnitFactory.create_batch(2))
+        )
+
+
+class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TaskResourceAssigment
+
+    task = factory.SubFactory(TaskFactory)
+    assigment_rule = factory.SubFactory(AssigmentRuleFactory)
+    resource_pool = None
+    resource_count = 1
+    use_all_resources = False
+
+
+    class Params:
+        with_resource_pool = factory.Trait(
+            resource_pool=factory.SubFactory(ResourcePoolFactory)
         )

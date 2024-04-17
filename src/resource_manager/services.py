@@ -19,7 +19,6 @@ class ResourceService:
         notes: str = "",
         resource_type: str = None,
         work_units: list[WorkUnit] = None,
-        resource_pools: list[ResourcePool] = None,
         users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
@@ -37,9 +36,6 @@ class ResourceService:
 
         if work_units:
             resource.work_units.set(work_units)
-
-        if resource_pools:
-            resource.resource_pools.set(resource_pools)
 
         if users:
             resource.users.set(users)
@@ -59,7 +55,6 @@ class ResourceService:
             "external_id",
             "notes",
             "work_units",
-            "resource_pools",
             "users",
             "weekly_shift_template",
         ]

@@ -17,11 +17,6 @@ class ResourceFactory(factory.django.DjangoModelFactory):
     weekly_shift_template = factory.SubFactory(WeeklyShiftTemplateFactory)
 
     class Params:
-        with_resource_pools = factory.Trait(
-            resource_pools=factory.lazy_attribute(
-                lambda _: ResourcePoolFactory.create_batch(2)
-            )
-        )
         with_work_units = factory.Trait(
             work_units=factory.lazy_attribute(lambda _: WorkUnitFactory.create_batch(2))
         )

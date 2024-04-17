@@ -132,7 +132,7 @@ class TaskService:
         duration: int = 0,
         external_id: str = "",
         notes="",
-        item: str = "",
+        item: Item = None,
         task_status: str = "NS",
         work_center: WorkCenter = None,
         job: Job = None,

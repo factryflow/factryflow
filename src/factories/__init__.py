@@ -6,6 +6,7 @@ from .job_manager_factories import (
     TaskFactory,
     TaskTypeFactory,
     WorkCenterFactory,
+    ItemFactory,
 )
 from .resource_assigner_factories import (
     AssigmentConstraintFactory,

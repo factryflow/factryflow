@@ -6,6 +6,7 @@ from factories import (
     TaskTypeFactory,
     UserFactory,
     WorkCenterFactory,
+    ItemFactory,
 )
 from job_manager.models import Task, WorkCenter
 from job_manager.services import TaskService, WorkCenterService
@@ -20,6 +21,7 @@ def task_data():
         "task_type": TaskTypeFactory(),
         "work_center": WorkCenterFactory(),
         "job": JobFactory(),
+        "item": ItemFactory(),
         "predecessors": [TaskFactory()],
         "successors": [TaskFactory()],
         "dependencies": [DependencyFactory()],
@@ -82,6 +84,7 @@ def test_can_create_task(task_data):
     assert task.name == task_data["name"]
     assert task.run_time_per_unit == task_data["run_time_per_unit"]
     assert task.quantity == task_data["quantity"]
+    assert task.item == task_data["item"]
     assert task.task_type == task_data["task_type"]
     assert task.work_center == task_data["work_center"]
     assert task.predecessors.count() == len(task_data["predecessors"])

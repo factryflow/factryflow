@@ -15,12 +15,21 @@ WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
 WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id"]
 WEEKLY_SHIFT_TEMPLATE_TABLE_HEADERS = ["ID", "Weekly Shift Template Name", "External ID", "Notes"]
 
+WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS = ["WEEKLY SHIFT TEMPLATE DETAILS"]
+
+WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
+    "weekly_shift_template_details": ["weekly_shift_template_details", ["ID", "Day of Week", "Start Time", "End Time"], ["id", "day_of_week", "start_time", "end_time"]],
+}
+
+
 WeeklyShiftTemplateTableView = CustomTableView(
     model=WeeklyShiftTemplate,
     model_name="weekly_shift_template",
     fields=WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS,
     headers=WEEKLY_SHIFT_TEMPLATE_TABLE_HEADERS,
     search_fields_list=WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS,
+    model_relation_headers=WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS,
+    model_relation_fields=WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS,
 )
 
 WEEKLY_SHIFT_TEMPLATE_VIEWS = CRUDView(

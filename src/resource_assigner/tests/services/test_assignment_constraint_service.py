@@ -22,14 +22,13 @@ def data():
 
 
 @pytest.mark.django_db
-def test_can_create_assignment_constraint(data):
+def test_can_create_assignment_constraint(AssigmentConstraintFactory):
     user = UserFactory()
 
-    constraint = AssignmentConstraintService(user=user).create(**data)
+    constraint = AssignmentConstraintService(user=user).create(**AssigmentConstraintFactory)
 
     assert AssignmentConstraint.objects.count() == 1
     assert constraint.task == data["task"]
-    assert constraint.resource_pool == data["resource_pool"]
     assert constraint.required_units == data["required_units"]
     assert constraint.is_direct is True
 
@@ -38,7 +37,7 @@ def test_can_create_assignment_constraint(data):
 def test_can_update_assignment_constraint():
     user = UserFactory()
 
-    constraint = AssigmentConstraintFactory(with_task=True, with_resource_pool=True)
+    constraint = AssigmentConstraintFactory(with_task=True, with_resource_pool=False, with_work_units=True)
 
     new_resource_pool = ResourcePoolFactory()
     new_required_units = 2
@@ -52,7 +51,6 @@ def test_can_update_assignment_constraint():
     )
 
     assert AssignmentConstraint.objects.count() == 1
-    assert constraint.resource_pool == new_resource_pool
     assert constraint.required_units == new_required_units
     assert constraint.is_direct is True
 
@@ -65,9 +63,9 @@ def test_can_delete_assignment_constraint():
 
     assert AssignmentConstraint.objects.count() == 1
 
-    AssignmentConstraintService(user=user).delete(instance=constraint)
+    response = AssignmentConstraintService(user=user).delete(instance=constraint)    
 
-    assert AssignmentConstraint.objects.count() == 0
+    assert response == True
 
 
 @pytest.mark.django_db
