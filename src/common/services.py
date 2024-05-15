@@ -70,7 +70,6 @@ def model_update(
             m2m_data[field] = data[field]
             continue
 
-        print("fields", field)
         if getattr(instance, field) != data[field]:
             has_updated = True
             update_fields.append(field)
@@ -103,6 +102,11 @@ def model_update(
     return instance, has_updated
 
 
+# ------------------------------------------------------------------------------
+# CustomField Service
+# ------------------------------------------------------------------------------
+
+
 class CustomFieldService:
     def __init__(self, user) -> None:
         self.user = user
@@ -113,41 +117,50 @@ class CustomFieldService:
 
     def create(
         self,
-        *,
-        content_type=ContentType,
         name: str,
         label: str,
         field_type: str,
+        is_required: bool,
+        content_type: ContentType,
         description: str = "",
     ):
         # check permissions for add custom field
         if not self.permission_service.check_for_permission("add_customfield"):
             raise PermissionDenied()
 
-        name = self._add_prefix_to_name(name)
+        if not name.startswith("custom_"):
+            name = self._add_prefix_to_name(name)
+
         custom_field = CustomField.objects.create(
             content_type=content_type,
             name=name,
             label=label,
             description=description,
             field_type=field_type,
-            is_required=False,
+            is_required=is_required,
         )
         custom_field.full_clean()
         custom_field.save(user=self.user)
 
         return custom_field
 
-    def update(self, *, instance: CustomField, data: dict):
+    def update(self, instance: CustomField, data: dict):
         # check permissions for update custom field
         if not self.permission_service.check_for_permission("change_customfield"):
             raise PermissionDenied()
 
         # add prefix to name
-        if "name" in data:
+        if "name" in data and not data["name"].startswith("custom_"):
             data["name"] = self._add_prefix_to_name(data["name"])
 
-        fields = ["name", "label", "description"]
+        fields = [
+            "name",
+            "label",
+            "description",
+            "is_required",
+            "field_type",
+            "content_type",
+        ]
         custom_field, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
@@ -159,3 +172,5 @@ class CustomFieldService:
             raise PermissionDenied()
 
         instance.delete()
+
+        return True

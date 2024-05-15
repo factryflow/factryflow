@@ -1,21 +1,22 @@
 from api.utils import CRUDModelViewSet
 from ninja import Router
 
-from resource_manager.models import Resource, ResourcePool, WorkUnit
+from resource_manager.models import Resource, ResourceGroup
 from resource_manager.services import (
-    ResourcePoolService,
+    ResourceGroupService,
     ResourceService,
-    WorkUnitService,
 )
 
 from .schemas import (
     ResourceIn,
     ResourceOut,
-    ResourcePoolIn,
-    ResourcePoolOut,
-    WorkUnitIn,
-    WorkUnitOut,
+    ResourceGroupIn,
+    ResourceGroupOut,
 )
+
+# ------------------------------------------------------------------------------
+# Resource Manager API
+# ------------------------------------------------------------------------------
 
 resource_manager_router = Router()
 
@@ -31,26 +32,19 @@ resource_viewset = CRUDModelViewSet(
 resource_router = resource_viewset.router
 resource_manager_router.add_router("", resource_router)
 
-work_unit_viewset = CRUDModelViewSet(
-    model=WorkUnit,
-    path="/work-units",
-    service=WorkUnitService,
-    input_schema=WorkUnitIn,
-    output_schema=WorkUnitOut,
-    tags=["Work Units"],
-)
 
-work_unit_router = work_unit_viewset.router
-resource_manager_router.add_router("", work_unit_router)
+# ------------------------------------------------------------------------------
+# Resource Group API
+# ------------------------------------------------------------------------------
 
-resource_pool_viewset = CRUDModelViewSet(
-    model=ResourcePool,
+resource_group_viewset = CRUDModelViewSet(
+    model=ResourceGroup,
     path="/resource-pools",
-    service=ResourcePoolService,
-    input_schema=ResourcePoolIn,
-    output_schema=ResourcePoolOut,
+    service=ResourceGroupService,
+    input_schema=ResourceGroupIn,
+    output_schema=ResourceGroupOut,
     tags=["Resource Pools"],
 )
 
-resource_pool_router = resource_pool_viewset.router
-resource_manager_router.add_router("", resource_pool_router)
+resource_group_router = resource_group_viewset.router
+resource_manager_router.add_router("", resource_group_router)

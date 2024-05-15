@@ -3,6 +3,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from job_manager.models.job import Job
+from .item import Item
 
 
 class WorkCenter(BaseModelWithExtras):
@@ -45,18 +46,18 @@ class TaskStatusChoices(models.TextChoices):
         return {choice[0]: choice[1] for choice in cls.choices}
 
 
-
 class Task(BaseModelWithExtras):
     # core fields
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150)
+    duration = models.IntegerField()
     setup_time = models.IntegerField()
     run_time_per_unit = models.IntegerField(null=True, blank=True)
     teardown_time = models.IntegerField()
     quantity = models.IntegerField()
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
     planned_end_datetime = models.DateTimeField(blank=True, null=True)
-    item = models.CharField(max_length=250, blank=True, null=True)
+    item = models.ForeignKey(Item, on_delete=models.DO_NOTHING, related_name="tasks")
     task_status = models.CharField(
         max_length=2,
         choices=TaskStatusChoices.choices,
@@ -65,7 +66,11 @@ class Task(BaseModelWithExtras):
 
     # relationship fields
     task_type = models.ForeignKey(
-        TaskType, on_delete=models.CASCADE, related_name="tasks_type"
+        TaskType,
+        on_delete=models.CASCADE,
+        related_name="tasks_type",
+        null=True,
+        blank=True,
     )
     job = models.ForeignKey(
         Job, on_delete=models.CASCADE, related_name="tasks", blank=True, null=True
@@ -76,7 +81,9 @@ class Task(BaseModelWithExtras):
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
-    dependencies = models.ManyToManyField("Dependency", related_name="tasks")
+    dependencies = models.ManyToManyField(
+        "Dependency", blank=True, related_name="tasks"
+    )
 
     # special fields
     history = HistoricalRecords(table_name="task_history")

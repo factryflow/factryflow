@@ -17,6 +17,10 @@ from .schemas import (
     AssignmentConstraintOut,
 )
 
+# ------------------------------------------------------------------------------
+# Resource Assigner API
+# ------------------------------------------------------------------------------
+
 resource_assigner_router = Router()
 
 task_resource_assigment_viewset = CRUDModelViewSet(
@@ -31,6 +35,9 @@ task_resource_assigment_viewset = CRUDModelViewSet(
 task_resource_assigment_router = task_resource_assigment_viewset.router
 resource_assigner_router.add_router("", task_resource_assigment_router)
 
+# ------------------------------------------------------------------------------
+# Assigment Rule API
+# ------------------------------------------------------------------------------
 
 assigment_rule_viewset = CRUDModelViewSet(
     model=AssigmentRule,

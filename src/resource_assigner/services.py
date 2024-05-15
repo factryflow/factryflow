@@ -6,7 +6,7 @@ from common.utils import get_object
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from job_manager.models import Task, WorkCenter
-from resource_manager.models import Resource, ResourcePool, WorkUnit
+from resource_manager.models import Resource, ResourceGroup
 
 from resource_assigner.models import (
     AssigmentRule,
@@ -19,26 +19,36 @@ from resource_assigner.models import (
 # Task Resource Assignment Services
 # ------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# Task Resource Assignment Services
-# ------------------------------------------------------------------------------
 
 class TaskResourceAssigmentService:
     def __init__(self, user) -> None:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-
     @transaction.atomic
-    def create(self, *, task: Task, resource: Resource) -> TaskResourceAssigment:
+    def create(
+        self,
+        task: Task,
+        assigment_rule: AssigmentRule,
+        resource_count: int,
+        resource_group: list[ResourceGroup] = None,
+        use_all_resources: bool = False,
+    ) -> TaskResourceAssigment:
         # check permissions for create task resource assignment
-        if not self.permission_service.check_for_permission("add_taskresourceassigment"):
+        if not self.permission_service.check_for_permission(
+            "add_taskresourceassigment"
+        ):
             raise PermissionDenied()
 
         instance = TaskResourceAssigment.objects.create(
             task=task,
-            resource=resource,
+            assigment_rule=assigment_rule,
+            resource_count=resource_count,
+            use_all_resources=use_all_resources,
         )
+
+        if resource_group:
+            instance.resource_group.set(resource_group)
 
         instance.full_clean()
         instance.save(user=self.user)
@@ -50,23 +60,34 @@ class TaskResourceAssigmentService:
         self, *, instance: TaskResourceAssigment, data: dict
     ) -> TaskResourceAssigment:
         # check permissions for update task resource assignment
-        if not self.permission_service.check_for_permission("change_taskresourceassigment"):    
+        if not self.permission_service.check_for_permission(
+            "change_taskresourceassigment"
+        ):
             raise PermissionDenied()
 
         fields = [
             "task",
+            "assigment_rule",
+            "resource_group",
+            "resource_count",
+            "use_all_resources",
             "resource",
         ]
-        instance, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
+        instance, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
         return instance
 
     @transaction.atomic
     def delete(self, *, instance: TaskResourceAssigment) -> None:
         # check permissions for delete task resource assignment
-        if not self.permission_service.check_for_permission("delete_taskresourceassigment"):
+        if not self.permission_service.check_for_permission(
+            "delete_taskresourceassigment"
+        ):
             raise PermissionDenied()
-        
+
         instance.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -79,17 +100,14 @@ class AssignmentConstraintService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-
     @transaction.atomic
     def create(
         self,
         *,
         task: Task = None,
         assignment_rule: AssigmentRule = None,
-        resource_pool: ResourcePool = None,
+        resource_group: ResourceGroup = None,
         resources: list[Resource] = None,
-        work_units: list[WorkUnit] = None,
-        required_units: int = 1,
         is_direct: bool = True,
     ) -> AssignmentConstraint:
         # check permissions for create assignment constraint
@@ -99,16 +117,12 @@ class AssignmentConstraintService:
         instance = AssignmentConstraint.objects.create(
             task=task,
             assignment_rule=assignment_rule,
-            resource_pool=resource_pool,
-            required_units=required_units,
+            resource_group=resource_group,
             is_direct=is_direct,
         )
 
         if resources:
             instance.resources.set(resources)
-
-        if work_units:
-            instance.work_units.set(work_units)
 
         instance.full_clean()
         instance.save(user=self.user)
@@ -120,25 +134,30 @@ class AssignmentConstraintService:
         self, *, instance: AssignmentConstraint, data: dict
     ) -> AssignmentConstraint:
         # check permissions for update assignment constraint
-        if not self.permission_service.check_for_permission("change_assignmentconstraint"):
+        if not self.permission_service.check_for_permission(
+            "change_assignmentconstraint"
+        ):
             raise PermissionDenied()
 
         fields = [
-            "resource_pool",
+            "resource_group",
             "resources",
-            "work_units",
-            "required_units",
         ]
-        instance, _ = model_update(instance=instance, fields=fields, data=data, user=self.user)
+        instance, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
         return instance
 
     @transaction.atomic
     def delete(self, *, instance: AssignmentConstraint) -> None:
         # check permissions for delete assignment constraint
-        if not self.permission_service.check_for_permission("delete_assignmentconstraint"):
+        if not self.permission_service.check_for_permission(
+            "delete_assignmentconstraint"
+        ):
             raise PermissionDenied()
-        
-        instance.delete()
+
+        instance
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -154,14 +173,15 @@ class AssigmentRuleCriteriaService:
     @transaction.atomic
     def create(
         self,
-        *,
         assigment_rule: AssigmentRule,
         field: str,
         operator: str,
         value: str,
     ) -> AssigmentRuleCriteria:
         # check permissions for create assigment rule criteria
-        if not self.permission_service.check_for_permission("add_assigmentrulecriteria"):
+        if not self.permission_service.check_for_permission(
+            "add_assigmentrulecriteria"
+        ):
             raise PermissionDenied()
 
         instance = AssigmentRuleCriteria.objects.create(
@@ -178,10 +198,12 @@ class AssigmentRuleCriteriaService:
 
     @transaction.atomic
     def update(
-        self, *, instance: AssigmentRuleCriteria, data: dict
+        self, instance: AssigmentRuleCriteria, data: dict
     ) -> AssigmentRuleCriteria:
         # check permissions for update assigment rule criteria
-        if not self.permission_service.check_for_permission("change_assigmentrulecriteria"):
+        if not self.permission_service.check_for_permission(
+            "change_assigmentrulecriteria"
+        ):
             raise PermissionDenied()
 
         fields = [
@@ -195,12 +217,15 @@ class AssigmentRuleCriteriaService:
         return instance
 
     @transaction.atomic
-    def delete(self, *, instance: AssigmentRuleCriteria) -> None:
+    def delete(self, instance: AssigmentRuleCriteria) -> None:
         # check permissions for delete assigment rule criteria
-        if not self.permission_service.check_for_permission("delete_assigmentrulecriteria"):
+        if not self.permission_service.check_for_permission(
+            "delete_assigmentrulecriteria"
+        ):
             raise PermissionDenied()
 
         instance.delete()
+        return True
 
 
 class AssigmentRuleService:
@@ -269,9 +294,11 @@ class AssigmentRuleService:
     @transaction.atomic
     def create(
         self,
-        *,
+        external_id: str,
+        notes: str,
         name: str,
         description: str,
+        is_active: bool,
         work_center: WorkCenter,
         assignment_constraints: list[dict] = [],
         criteria: list[dict] = [],
@@ -279,11 +306,14 @@ class AssigmentRuleService:
         # check permissions for create assigment rule
         if not self.permission_service.check_for_permission("add_assigmentrule"):
             raise PermissionDenied()
-      
+
         self._validate_criteria_keys_throw_validation_error(criteria=criteria)
 
         instance = AssigmentRule.objects.create(
             name=name,
+            external_id=external_id,
+            notes=notes,
+            is_active=is_active,
             description=description,
             work_center=work_center,
         )
@@ -316,6 +346,9 @@ class AssigmentRuleService:
 
         fields = [
             "name",
+            "external_id",
+            "notes",
+            "is_active",
             "description",
             "resource_group",
             "work_center",
@@ -343,3 +376,4 @@ class AssigmentRuleService:
             raise PermissionDenied()
 
         instance.delete()
+        return True

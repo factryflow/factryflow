@@ -10,6 +10,13 @@ from simple_history.models import HistoricalRecords
 
 class WeeklyShiftTemplate(BaseModelWithExtras):
     name = models.CharField(max_length=150)
+    description = models.TextField(blank=True, null=True)
+
+    weekly_shift_template_details = models.ManyToManyField(
+        "WeeklyShiftTemplateDetail",
+        related_name="weekly_shift_template",
+        blank=True,
+    )
 
     history = HistoricalRecords(table_name="weekly_shift_template_history")
 
@@ -20,21 +27,23 @@ class WeeklyShiftTemplate(BaseModelWithExtras):
         return self.name
 
 
+class DaysOfWeek(models.TextChoices):
+    MONDAY = "Monday", "Monday"
+    TUESDAY = "Tuesday", "Tuesday"
+    WEDNESDAY = "Wednesday", "Wednesday"
+    THURSDAY = "Thursday", "Thursday"
+    FRIDAY = "Friday", "Friday"
+    SATURDAY = "Saturday", "Saturday"
+    SUNDAY = "Sunday", "Sunday"
+
+
 class WeeklyShiftTemplateDetail(BaseModel):
-    day_of_week = models.IntegerField()
+    day_of_week = models.TextField(choices=DaysOfWeek.choices)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    weekly_shift_template = models.ForeignKey(
-        WeeklyShiftTemplate,
-        on_delete=models.CASCADE,
-        related_name="details",
-    )
-
     history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
 
     def clean(self):
-        if self.day_of_week < 0 or self.day_of_week > 6:
-            raise ValidationError("Day of week must be between 0 and 6")
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be before end time")
 
@@ -44,10 +53,11 @@ class WeeklyShiftTemplateDetail(BaseModel):
                 fields=["day_of_week"],
             )
         ]
-        unique_together = [
-            ["day_of_week", "weekly_shift_template", "start_time", "end_time"]
-        ]
+        unique_together = [["day_of_week", "start_time", "end_time"]]
         db_table = "weekly_shift_template_detail"
+
+    def __str__(self):
+        return f"{self.day_of_week} {self.start_time} - {self.end_time}"
 
 
 # ------------------------------------------------------------------------------

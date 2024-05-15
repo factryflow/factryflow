@@ -1,7 +1,15 @@
 from api.utils import CRUDModelViewSet
 from ninja import Router
 
-from job_manager.models import WorkCenter, Dependency, DependencyType, Job, JobType, Task, TaskType
+from job_manager.models import (
+    WorkCenter,
+    Dependency,
+    DependencyType,
+    Job,
+    JobType,
+    Task,
+    TaskType,
+)
 from job_manager.services import (
     DependencyService,
     DependencyTypeService,
@@ -33,9 +41,9 @@ from job_manager.schemas import (
 job_manager_router = Router()
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # WorkCenter APIs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 work_center_viewset = CRUDModelViewSet(
     model=WorkCenter,
@@ -50,9 +58,9 @@ work_center_router = work_center_viewset.router
 job_manager_router.add_router("", work_center_router)
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Dependency APIs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 dependency_type_viewset = CRUDModelViewSet(
     model=DependencyType,
@@ -67,9 +75,9 @@ dependency_type_viewset = CRUDModelViewSet(
 dependency_type_router = dependency_type_viewset.router
 job_manager_router.add_router("", dependency_type_router)
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # dependency APIs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 dependency_viewset = CRUDModelViewSet(
     model=Dependency,
@@ -84,9 +92,9 @@ dependency_router = dependency_viewset.router
 job_manager_router.add_router("", dependency_router)
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Job APIs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 job_type_viewset = CRUDModelViewSet(
     model=JobType,
@@ -114,9 +122,9 @@ job_router = job_viewset.router
 job_manager_router.add_router("", job_router)
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Task APIs
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 task_type_viewset = CRUDModelViewSet(

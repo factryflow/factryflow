@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("job_manager", "0004_remove_historicaljob_note_remove_job_note_and_more"),
     ]

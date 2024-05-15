@@ -1,6 +1,6 @@
 import pytest
 from factories import (
-    ResourceFactory,
+    AssigmentRuleFactory,
     TaskFactory,
     TaskResourceAssigmentFactory,
     UserFactory,
@@ -13,7 +13,8 @@ from resource_assigner.services import TaskResourceAssigmentService
 def data():
     return {
         "task": TaskFactory(),
-        "resource": ResourceFactory(),
+        "assigment_rule": AssigmentRuleFactory(),
+        "resource_count": 1,
     }
 
 
@@ -25,7 +26,8 @@ def test_can_create_task_resource_assignment(data):
 
     assert TaskResourceAssigment.objects.count() == 1
     assert assignment.task == data["task"]
-    assert assignment.resource == data["resource"]
+    assert assignment.assigment_rule == data["assigment_rule"]
+    assert assignment.resource_count == data["resource_count"]
 
 
 @pytest.mark.django_db
@@ -35,19 +37,16 @@ def test_can_update_task_resource_assignment():
     assignment = TaskResourceAssigmentFactory()
 
     new_task = TaskFactory()
-    new_resource = ResourceFactory()
 
     TaskResourceAssigmentService(user=user).update(
         instance=assignment,
         data={
             "task": new_task,
-            "resource": new_resource,
         },
     )
 
     assert TaskResourceAssigment.objects.count() == 1
     assert assignment.task == new_task
-    assert assignment.resource == new_resource
 
 
 @pytest.mark.django_db

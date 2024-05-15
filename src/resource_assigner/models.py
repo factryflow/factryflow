@@ -2,8 +2,7 @@ from common.models import BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
-from resource_manager.models import Resource, ResourcePool, WorkUnit
-
+from resource_manager.models import Resource, ResourceGroup
 # Create your models here.
 
 
@@ -13,12 +12,16 @@ class TaskResourceAssigment(BaseModel):
     """
 
     task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
+    # resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
+    assigment_rule = models.ForeignKey(
+        "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
+    )
+    resource_group = models.ManyToManyField(ResourceGroup, blank=True)
+    resource_count = models.PositiveIntegerField(default=1)
+    use_all_resources = models.BooleanField(default=False)
 
     class Meta:
         db_table = "task_resource_assigment"
-
-    
 
 
 class AssigmentRule(BaseModelWithExtras):
@@ -36,7 +39,6 @@ class AssigmentRule(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
-    
 
 
 class Operator(models.TextChoices):
@@ -54,6 +56,7 @@ class AssigmentRuleCriteria(BaseModel):
     This model represents the criteria for filtering tasks.
     """
 
+    id = models.AutoField(primary_key=True)
     assigment_rule = models.ForeignKey(
         AssigmentRule, on_delete=models.CASCADE, related_name="criteria"
     )
@@ -73,6 +76,7 @@ class AssignmentConstraint(BaseModel):
     Can be applied to each task to get dynamic assignemnts.
     """
 
+    id = models.AutoField(primary_key=True)
     task = models.ForeignKey(
         Task,
         blank=True,
@@ -87,18 +91,14 @@ class AssignmentConstraint(BaseModel):
         on_delete=models.DO_NOTHING,
         related_name="constraints",
     )
-    resource_pool = models.ForeignKey(
-        ResourcePool,
+    resource_group = models.ForeignKey(
+        ResourceGroup,
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
         related_name="constraints",
     )
     resources = models.ManyToManyField(Resource, blank=True, related_name="constraints")
-    work_units = models.ManyToManyField(
-        WorkUnit, blank=True, related_name="constraints"
-    )
-    required_units = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
     is_direct = models.BooleanField(default=True)
 
@@ -113,23 +113,18 @@ class AssignmentConstraint(BaseModel):
     def resource_id_list(self):
         return list(self.resources.values_list("id", flat=True))
 
-    @property
-    def work_unit_id_list(self):
-        return list(self.work_units.values_list("id", flat=True))
+    def clean(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
-    def clean(self):
-        resource_pool_set = self.resource_pool_id is not None
-        resources_set = self.resources.exists()
-        work_units_set = self.work_units.exists()
+        resource_group_set = self.resource_group is not None
+        resources_set = self.resources.count() > 0
 
-        if resource_pool_set and (resources_set or work_units_set):
+        if resource_group_set and resources_set:
             raise ValidationError(
-                "You cannot set both resource_pool and resources or work_units. Choose one."
+                "You cannot set both resource_pool and resources. Choose one."
             )
-        elif not resource_pool_set and not (resources_set or work_units_set):
-            raise ValidationError(
-                "You must set either resource_pool or resources or work_units."
-            )
+        elif not resource_group_set and not resources_set:
+            raise ValidationError("You must set either resource_pool or resources.")
 
         # ensure that either task or assignment_rule is set
         if not (self.task) and not (self.assignment_rule):

@@ -3,31 +3,56 @@ from datetime import time
 import pytest
 from django.core.exceptions import ValidationError
 from factories import UserFactory
-from factories.resource_calendar_factories import WeeklyShiftTemplateFactory
+
 from resource_calendar.services import WeeklyShiftTemplateDetailService
+
+from resource_calendar.models import DaysOfWeek
 
 
 @pytest.fixture
 def detail_data():
     return {
-        "day_of_week": 0,
+        "day_of_week": DaysOfWeek.MONDAY.value,
         "start_time": "05:00",
         "end_time": "12:00",
     }
+
+
+@pytest.fixture
+def multiple_detail_data():
+    data_list = [
+        {
+            "day_of_week": DaysOfWeek.MONDAY.value,
+            "start_time": "05:00",
+            "end_time": "12:00",
+        },
+        {
+            "day_of_week": DaysOfWeek.TUESDAY.value,
+            "start_time": "05:00",
+            "end_time": "12:00",
+        },
+        {
+            "day_of_week": DaysOfWeek.WEDNESDAY.value,
+            "start_time": "05:00",
+            "end_time": "12:00",
+        },
+        {
+            "day_of_week": DaysOfWeek.THURSDAY.value,
+            "start_time": "05:00",
+            "end_time": "12:00",
+        },
+    ]
+
+    return data_list
 
 
 @pytest.mark.django_db
 def test_can_create_template_detail(detail_data):
     user = UserFactory()
 
-    template = WeeklyShiftTemplateFactory()
-
-    detail = WeeklyShiftTemplateDetailService(user=user).create(
-        **detail_data, weekly_shift_template=template
-    )
+    detail = WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
 
     assert detail.id is not None
-    assert detail.weekly_shift_template == template
     assert detail.day_of_week == detail_data["day_of_week"]
     assert detail.start_time == time(hour=5)
     assert detail.end_time == time(hour=12)
@@ -38,25 +63,19 @@ def test_wrong_time_format(detail_data):
     user = UserFactory()
 
     detail_data["start_time"] = "05:00:00"
-    template = WeeklyShiftTemplateFactory()
 
     with pytest.raises(ValidationError):
-        WeeklyShiftTemplateDetailService(user=user).create(
-            **detail_data, weekly_shift_template=template
-        )
+        WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
 
 
 @pytest.mark.django_db
 def test_wrong_day_of_week(detail_data):
     user = UserFactory()
 
-    detail_data["day_of_week"] = 7
-    template = WeeklyShiftTemplateFactory()
+    detail_data["day_of_week"] = "MON"
 
     with pytest.raises(ValidationError):
-        WeeklyShiftTemplateDetailService(user=user).create(
-            **detail_data, weekly_shift_template=template
-        )
+        WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
 
 
 @pytest.mark.django_db
@@ -64,43 +83,26 @@ def test_start_time_after_end_time(detail_data):
     user = UserFactory()
 
     detail_data["start_time"] = "13:00"
-    template = WeeklyShiftTemplateFactory()
 
     with pytest.raises(ValidationError):
-        WeeklyShiftTemplateDetailService(user=user).create(
-            **detail_data, weekly_shift_template=template
-        )
+        WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
 
 
 @pytest.mark.django_db
-def test_can_create_bulk(detail_data):
+def test_can_create_bulk(multiple_detail_data):
     user = UserFactory()
 
-    template = WeeklyShiftTemplateFactory()
+    WeeklyShiftTemplateDetailService(user=user).create_bulk(multiple_detail_data)
 
-    detail_1 = {k: (1 if k == "day_of_week" else v) for k, v in detail_data.items()}
-    detail_2 = {k: (2 if k == "day_of_week" else v) for k, v in detail_data.items()}
-    detail_3 = {k: (3 if k == "day_of_week" else v) for k, v in detail_data.items()}
-
-    details = [detail_1, detail_2, detail_3]
-
-    WeeklyShiftTemplateDetailService(user=user).create_bulk(
-        weekly_shift_template=template, details=details
-    )
-
-    assert template.details.count() == 3
+    assert len() == 3
 
 
 @pytest.mark.django_db
 def test_can_delete_detail(detail_data):
     user = UserFactory()
 
-    template = WeeklyShiftTemplateFactory()
+    detail = WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
 
-    detail = WeeklyShiftTemplateDetailService(user=user).create(
-        **detail_data, weekly_shift_template=template
-    )
+    response = WeeklyShiftTemplateDetailService(user=user).delete(detail)
 
-    WeeklyShiftTemplateDetailService(user=user).delete(detail)
-
-    assert template.details.count() == 0
+    assert response == True

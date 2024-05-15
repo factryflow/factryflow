@@ -16,3 +16,9 @@ superuser:
 
 sync_roles:
 	python src/manage.py sync_roles
+
+create_user:
+	python src/manage.py createuser
+
+add_data:
+	python src/manage.py add_data

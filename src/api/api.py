@@ -8,16 +8,18 @@ from django.core.exceptions import (
     ValidationError,
 )
 from django.http import Http404
-from job_manager.api import job_manager_router
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from ninja.security import APIKeyHeader
-from resource_assigner.api import resource_assigner_router
+
 
 # import and register routers
 from resource_calendar.api import resource_calendar_router
 from resource_manager.api import resource_manager_router
 from users.api import router as user_router
+from common.api import common_router
+from job_manager.api import job_manager_router
+from resource_assigner.api import resource_assigner_router
 
 
 class ApiKey(APIKeyHeader):
@@ -39,6 +41,7 @@ api.add_router("", job_manager_router)
 api.add_router("", resource_calendar_router)
 api.add_router("", resource_assigner_router)
 api.add_router("", user_router)
+api.add_router("", common_router)
 
 
 @api.exception_handler(ObjectDoesNotExist)

@@ -15,6 +15,11 @@ from .models import (
 )
 
 
+# -----------------------------------------------------------------------------
+# WeeklyShiftTemplateDetailService
+# -----------------------------------------------------------------------------
+
+
 class WeeklyShiftTemplateDetailService:
     def __init__(self, user) -> None:
         self.user = user
@@ -36,24 +41,23 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create(
         self,
-        *,
         day_of_week: int,
         start_time: str | time,
         end_time: str | time,
-        weekly_shift_template: WeeklyShiftTemplate,
     ) -> WeeklyShiftTemplateDetail:
         """
         Create a WeeklyShiftTemplateDetail.
         """
         # check for permissions for add weekly shift template detail
-        if not self.permission_service.check_for_permission("add_weeklyshifttemplatedetail"):
+        if not self.permission_service.check_for_permission(
+            "add_weeklyshifttemplatedetail"
+        ):
             raise PermissionDenied()
 
         weekly_shift_template_detail = WeeklyShiftTemplateDetail.objects.create(
             day_of_week=day_of_week,
             start_time=self._parse_time(start_time),
             end_time=self._parse_time(end_time),
-            weekly_shift_template=weekly_shift_template,
         )
 
         weekly_shift_template_detail.full_clean()
@@ -64,15 +68,15 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create_bulk(
         self,
-        *,
-        weekly_shift_template: WeeklyShiftTemplate,
         details: list[dict],
     ) -> None:
         """
         Create a list of WeeklyShiftTemplateDetails.
         """
         # check for permissions for add weekly shift template detail
-        if not self.permission_service.check_for_permission("add_weeklyshifttemplatedetail"):
+        if not self.permission_service.check_for_permission(
+            "add_weeklyshifttemplatedetail"
+        ):
             raise PermissionDenied()
 
         for detail_data in details:
@@ -80,8 +84,37 @@ class WeeklyShiftTemplateDetailService:
                 day_of_week=detail_data["day_of_week"],
                 start_time=detail_data["start_time"],
                 end_time=detail_data["end_time"],
-                weekly_shift_template=weekly_shift_template,
             )
+
+    @transaction.atomic
+    def update(
+        self,
+        instance: WeeklyShiftTemplateDetail,
+        data: dict,
+    ) -> WeeklyShiftTemplateDetail:
+        """
+        Update a WeeklyShiftTemplateDetail.
+        """
+        # check for permissions for change weekly shift template detail
+        if not self.permission_service.check_for_permission(
+            "change_weeklyshifttemplatedetail"
+        ):
+            raise PermissionDenied()
+
+        fields = [
+            "day_of_week",
+            "start_time",
+            "end_time",
+        ]
+
+        weekly_shift_template_detail, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+
+        weekly_shift_template_detail.full_clean()
+        weekly_shift_template_detail.save(user=self.user)
+
+        return weekly_shift_template_detail
 
     @transaction.atomic
     def delete(self, instance: WeeklyShiftTemplateDetail) -> None:
@@ -89,10 +122,18 @@ class WeeklyShiftTemplateDetailService:
         Delete a WeeklyShiftTemplateDetail.
         """
         # check for permissions for delete weekly shift template detail
-        if not self.permission_service.check_for_permission("delete_weeklyshifttemplatedetail"):
+        if not self.permission_service.check_for_permission(
+            "delete_weeklyshifttemplatedetail"
+        ):
             raise PermissionDenied()
 
         instance.delete()
+        return True
+
+
+# -----------------------------------------------------------------------------
+# WeeklyShiftTemplateService
+# -----------------------------------------------------------------------------
 
 
 class WeeklyShiftTemplateService:
@@ -100,7 +141,9 @@ class WeeklyShiftTemplateService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-        self.weeklyshifttemplatedetailservice = WeeklyShiftTemplateDetailService(user=user)
+        self.weeklyshifttemplatedetailservice = WeeklyShiftTemplateDetailService(
+            user=user
+        )
 
     def _process_details(
         self, template: WeeklyShiftTemplate, new_details: list[dict]
@@ -108,7 +151,7 @@ class WeeklyShiftTemplateService:
         """
         Process a list of WeeklyShiftTemplateDetails for a given WeeklyShiftTemplate.
         """
-        existing_details = template.details.all()
+        existing_details = template.weekly_shift_template_details.all()
 
         # Convert existing details to a dictionary
         existing_detail_dict = {
@@ -138,15 +181,13 @@ class WeeklyShiftTemplateService:
             self.weeklyshifttemplatedetailservice.delete(detail)
 
         # Create new details
-        self.weeklyshifttemplatedetailservice.create_bulk(
-            weekly_shift_template=template, details=details_to_create
-        )
+        self.weeklyshifttemplatedetailservice.create_bulk(details=details_to_create)
 
     def _check_no_overlapping_details(self, template: WeeklyShiftTemplate) -> None:
         details_by_day = defaultdict(list)
 
         # Group details by day of the week
-        for detail in template.details.all():
+        for detail in template.weekly_shift_template_details.all():
             details_by_day[detail.day_of_week].append(detail)
 
         # Check for overlaps within each day, but only if there's more than one detail for that day
@@ -175,11 +216,12 @@ class WeeklyShiftTemplateService:
     @transaction.atomic
     def create(
         self,
-        *,
         name: str,
         external_id: str = "",
         notes: str = "",
-        details: list[dict],
+        description: str = "",
+        details: list[dict] = None,
+        weekly_shift_template_details: list[WeeklyShiftTemplateDetail] = None,
     ) -> WeeklyShiftTemplate:
         """
         Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
@@ -188,20 +230,27 @@ class WeeklyShiftTemplateService:
         if not self.permission_service.check_for_permission("add_weeklyshifttemplate"):
             raise PermissionDenied()
 
-        self._validate_details_fields(details)
+        if details:
+            # Validate details
+            self._validate_details_fields(details)
 
         # Create WeeklyShiftTemplate
         template = WeeklyShiftTemplate.objects.create(
-            name=name, external_id=external_id, notes=notes
+            name=name,
+            external_id=external_id,
+            notes=notes,
+            description=description,
         )
 
         # Create WeeklyShiftTemplateDetails
-        self.weeklyshifttemplatedetailservice.create_bulk(
-            weekly_shift_template=template, details=details
-        )
+        if details:
+            self.weeklyshifttemplatedetailservice.create_bulk(details=details)
 
-        # Check for overlapping details
-        self._check_no_overlapping_details(template)
+            # Check for overlapping details
+            self._check_no_overlapping_details(template)
+
+        if weekly_shift_template_details:
+            template.weekly_shift_template_details.set(weekly_shift_template_details)
 
         template.full_clean()
         template.save(user=self.user)
@@ -218,13 +267,17 @@ class WeeklyShiftTemplateService:
         Update a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
         """
         # check for permissions for change weekly shift template
-        if not self.permission_service.check_for_permission("change_weeklyshifttemplate"):
+        if not self.permission_service.check_for_permission(
+            "change_weeklyshifttemplate"
+        ):
             raise PermissionDenied()
 
         fields = [
             "name",
             "external_id",
             "notes",
+            "description",
+            "weekly_shift_template_details",
         ]
 
         template, _ = model_update(
@@ -254,10 +307,18 @@ class WeeklyShiftTemplateService:
         Delete a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
         """
         # check for permissions for delete weekly shift template
-        if not self.permission_service.check_for_permission("delete_weeklyshifttemplate"):
+        if not self.permission_service.check_for_permission(
+            "delete_weeklyshifttemplate"
+        ):
             raise PermissionDenied()
 
         template.delete()
+        return True
+
+
+# -----------------------------------------------------------------------------
+# OperationalExceptionTypeService
+# -----------------------------------------------------------------------------
 
 
 class OperationalExceptionTypeService:
@@ -270,7 +331,9 @@ class OperationalExceptionTypeService:
         self, name: str, external_id: str = "", notes: str = ""
     ) -> OperationalExceptionType:
         # check for permissions for add operational exception type
-        if not self.permission_service.check_for_permission("add_operationalexceptiontype"):
+        if not self.permission_service.check_for_permission(
+            "add_operationalexceptiontype"
+        ):
             raise PermissionDenied()
 
         exception_type = OperationalExceptionType.objects.create(
@@ -286,7 +349,9 @@ class OperationalExceptionTypeService:
         self, exception_type: OperationalExceptionType, data: dict
     ) -> OperationalExceptionType:
         # check for permissions for change operational exception type
-        if not self.permission_service.check_for_permission("change_operationalexceptiontype"):
+        if not self.permission_service.check_for_permission(
+            "change_operationalexceptiontype"
+        ):
             raise PermissionDenied()
 
         fields = [
@@ -307,10 +372,13 @@ class OperationalExceptionTypeService:
     @transaction.atomic
     def delete(self, exception_type: OperationalExceptionType) -> None:
         # check for permissions for delete operational exception type
-        if not self.permission_service.check_for_permission("delete_operationalexceptiontype"):
+        if not self.permission_service.check_for_permission(
+            "delete_operationalexceptiontype"
+        ):
             raise PermissionDenied()
 
         exception_type.delete()
+        return True
 
 
 class OperationalExceptionService:
@@ -320,12 +388,11 @@ class OperationalExceptionService:
 
     @transaction.atomic
     def create(
-        *,
         self,
         resource: Resource,
         start_datetime: datetime,
         end_datetime: datetime,
-        exception_type: OperationalExceptionType,
+        operational_exception_type: OperationalExceptionType,
         weekly_shift_template: WeeklyShiftTemplate = None,
         external_id: str = "",
         notes="",
@@ -338,7 +405,7 @@ class OperationalExceptionService:
             resource=resource,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
-            operational_exception_type=exception_type,
+            operational_exception_type=operational_exception_type,
             weekly_shift_template=weekly_shift_template,
             external_id=external_id,
             notes=notes,
@@ -354,7 +421,9 @@ class OperationalExceptionService:
         self, exception: OperationalException, data: dict
     ) -> OperationalException:
         # check for permissions for change operational exception
-        if not self.permission_service.check_for_permission("change_operationalexception"):
+        if not self.permission_service.check_for_permission(
+            "change_operationalexception"
+        ):
             raise PermissionDenied()
 
         fields = [
@@ -379,7 +448,10 @@ class OperationalExceptionService:
     @transaction.atomic
     def delete(self, exception: OperationalException) -> None:
         # check for permissions for delete operational exception
-        if not self.permission_service.check_for_permission("delete_operationalexception"):
+        if not self.permission_service.check_for_permission(
+            "delete_operationalexception"
+        ):
             raise PermissionDenied()
 
         exception.delete()
+        return True
