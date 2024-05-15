@@ -94,6 +94,8 @@ def test_can_update_template(template_data_without_details):
     assert updated_template.name == updated_data["name"]
 
 
+# TODO:
+# need to update the code in order to check and create or update the details data
 # @pytest.mark.django_db
 # def test_details_overwrite_on_template_update(template_data):
 #     user = UserFactory()
