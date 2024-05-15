@@ -12,6 +12,7 @@ def custom_field_data():
     return {
         "name": "test_name",
         "field_type": "text",
+        "is_required": False,
         "label": "test_label",
         "content_type": ContentType.objects.get_for_model(Task),
     }
@@ -27,6 +28,7 @@ def test_custom_field_create(custom_field_data):
     assert CustomField.objects.count() == 1
     assert custom_field.name == "custom_" + custom_field_data["name"]
     assert custom_field.field_type == custom_field_data["field_type"]
+    assert custom_field.is_required == custom_field_data["is_required"]
     assert custom_field.content_type == custom_field_data["content_type"]
 
 
@@ -50,7 +52,7 @@ def test_custom_field_update(custom_field_data):
 
 
 @pytest.mark.django_db
-def test_cant_update_field_type(custom_field_data):
+def test_can_update_field_type(custom_field_data):
     user = UserFactory()
 
     custom_field = CustomFieldService(user=user).create(**custom_field_data)
@@ -65,7 +67,7 @@ def test_cant_update_field_type(custom_field_data):
 
     custom_field.refresh_from_db()
 
-    assert custom_field.field_type == custom_field_data["field_type"]
+    assert custom_field.field_type == new_field_type
 
 
 @pytest.mark.django_db

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from factories import DependencyTypeFactory, JobFactory, TaskFactory, UserFactory
+from factories import DependencyTypeFactory, UserFactory
 from job_manager.models import Dependency
 from job_manager.services import DependencyService
 

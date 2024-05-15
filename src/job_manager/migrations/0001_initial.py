@@ -8,7 +8,6 @@ import simple_history.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,469 +16,1356 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Dependency',
+            name="Dependency",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('external_id', models.CharField(blank=True, max_length=180, null=True)),
-                ('expected_close_datetime', models.DateTimeField(blank=True, null=True)),
-                ('actual_close_datetime', models.DateTimeField(blank=True, null=True)),
-                ('notes', models.TextField(blank=True, null=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "external_id",
+                    models.CharField(blank=True, max_length=180, null=True),
+                ),
+                (
+                    "expected_close_datetime",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                ("actual_close_datetime", models.DateTimeField(blank=True, null=True)),
+                ("notes", models.TextField(blank=True, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'dependency',
+                "db_table": "dependency",
             },
         ),
         migrations.CreateModel(
-            name='DependencyStatus',
+            name="DependencyStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'dependency_status',
+                "db_table": "dependency_status",
             },
         ),
         migrations.CreateModel(
-            name='DependencyType',
+            name="DependencyType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'dependency_type',
+                "db_table": "dependency_type",
             },
         ),
         migrations.CreateModel(
-            name='Job',
+            name="Job",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField(blank=True)),
-                ('customer', models.CharField(blank=True, max_length=250)),
-                ('due_date', models.DateField(blank=True, null=True)),
-                ('priority', models.PositiveIntegerField(db_index=True, editable=False)),
-                ('planned_start_datetime', models.DateTimeField(blank=True, null=True)),
-                ('planned_end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=150)),
-                ('note', models.CharField(blank=True, max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('dependencies', models.ManyToManyField(related_name='jobs', to='job_manager.dependency')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField(blank=True)),
+                ("customer", models.CharField(blank=True, max_length=250)),
+                ("due_date", models.DateField(blank=True, null=True)),
+                (
+                    "priority",
+                    models.PositiveIntegerField(db_index=True, editable=False),
+                ),
+                ("planned_start_datetime", models.DateTimeField(blank=True, null=True)),
+                ("planned_end_datetime", models.DateTimeField(blank=True, null=True)),
+                ("external_id", models.CharField(blank=True, max_length=150)),
+                ("note", models.CharField(blank=True, max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "dependencies",
+                    models.ManyToManyField(
+                        related_name="jobs", to="job_manager.dependency"
+                    ),
+                ),
             ],
             options={
-                'db_table': 'job',
-                'ordering': ('priority',),
+                "db_table": "job",
+                "ordering": ("priority",),
             },
         ),
         migrations.CreateModel(
-            name='WorkCenter',
+            name="WorkCenter",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150, unique=True)),
-                ('notes', models.TextField(blank=True, null=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150, unique=True)),
+                ("notes", models.TextField(blank=True, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'work_center',
+                "db_table": "work_center",
             },
         ),
         migrations.CreateModel(
-            name='TaskType',
+            name="TaskType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'task_type',
+                "db_table": "task_type",
             },
         ),
         migrations.CreateModel(
-            name='TaskStatus',
+            name="TaskStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'task_status',
+                "db_table": "task_status",
             },
         ),
         migrations.CreateModel(
-            name='Task',
+            name="Task",
             fields=[
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('external_id', models.CharField(blank=True, max_length=150)),
-                ('name', models.CharField(max_length=150)),
-                ('setup_time', models.IntegerField(blank=True, default=0, null=True)),
-                ('run_time_per_unit', models.IntegerField(blank=True, null=True)),
-                ('teardown_time', models.IntegerField(default=0)),
-                ('quantity', models.IntegerField(default=1)),
-                ('planned_start_datetime', models.DateTimeField(blank=True, null=True)),
-                ('planned_end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('item', models.CharField(blank=True, max_length=250, null=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('dependencies', models.ManyToManyField(related_name='tasks', to='job_manager.dependency')),
-                ('job', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='job_manager.job')),
-                ('predecessors', models.ManyToManyField(blank=True, related_name='successors', to='job_manager.task')),
-                ('task_status', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks_status', to='job_manager.taskstatus')),
-                ('task_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks_type', to='job_manager.tasktype')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(default=1, on_delete=django.db.models.deletion.DO_NOTHING, related_name='tasks', to='job_manager.workcenter')),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("external_id", models.CharField(blank=True, max_length=150)),
+                ("name", models.CharField(max_length=150)),
+                ("setup_time", models.IntegerField(blank=True, default=0, null=True)),
+                ("run_time_per_unit", models.IntegerField(blank=True, null=True)),
+                ("teardown_time", models.IntegerField(default=0)),
+                ("quantity", models.IntegerField(default=1)),
+                ("planned_start_datetime", models.DateTimeField(blank=True, null=True)),
+                ("planned_end_datetime", models.DateTimeField(blank=True, null=True)),
+                ("item", models.CharField(blank=True, max_length=250, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "dependencies",
+                    models.ManyToManyField(
+                        related_name="tasks", to="job_manager.dependency"
+                    ),
+                ),
+                (
+                    "job",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks",
+                        to="job_manager.job",
+                    ),
+                ),
+                (
+                    "predecessors",
+                    models.ManyToManyField(
+                        blank=True, related_name="successors", to="job_manager.task"
+                    ),
+                ),
+                (
+                    "task_status",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks_status",
+                        to="job_manager.taskstatus",
+                    ),
+                ),
+                (
+                    "task_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks_type",
+                        to="job_manager.tasktype",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        default=1,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="tasks",
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'task',
+                "db_table": "task",
             },
         ),
         migrations.CreateModel(
-            name='JobType',
+            name="JobType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'job_type',
+                "db_table": "job_type",
             },
         ),
         migrations.CreateModel(
-            name='JobStatus',
+            name="JobStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=150)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'job_status',
+                "db_table": "job_status",
             },
         ),
         migrations.AddField(
-            model_name='job',
-            name='job_status',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.jobstatus'),
+            model_name="job",
+            name="job_status",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="job_manager.jobstatus",
+            ),
         ),
         migrations.AddField(
-            model_name='job',
-            name='job_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.jobtype'),
+            model_name="job",
+            name="job_type",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING, to="job_manager.jobtype"
+            ),
         ),
         migrations.AddField(
-            model_name='job',
-            name='updated_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL),
+            model_name="job",
+            name="updated_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="updated_%(class)s_objects",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.CreateModel(
-            name='HistoricalWorkCenter',
+            name="HistoricalWorkCenter",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(db_index=True, max_length=150)),
-                ('notes', models.TextField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(db_index=True, max_length=150)),
+                ("notes", models.TextField(blank=True, null=True)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical work center',
-                'verbose_name_plural': 'historical work centers',
-                'db_table': 'work_center_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical work center",
+                "verbose_name_plural": "historical work centers",
+                "db_table": "work_center_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalTaskType',
+            name="HistoricalTaskType",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical task type',
-                'verbose_name_plural': 'historical task types',
-                'db_table': 'task_type_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical task type",
+                "verbose_name_plural": "historical task types",
+                "db_table": "task_type_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalTaskStatus',
+            name="HistoricalTaskStatus",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical task status',
-                'verbose_name_plural': 'historical task statuss',
-                'db_table': 'task_status_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical task status",
+                "verbose_name_plural": "historical task statuss",
+                "db_table": "task_status_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalTask',
+            name="HistoricalTask",
             fields=[
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('id', models.IntegerField(blank=True, db_index=True)),
-                ('external_id', models.CharField(blank=True, max_length=150)),
-                ('name', models.CharField(max_length=150)),
-                ('setup_time', models.IntegerField(blank=True, default=0, null=True)),
-                ('run_time_per_unit', models.IntegerField(blank=True, null=True)),
-                ('teardown_time', models.IntegerField(default=0)),
-                ('quantity', models.IntegerField(default=1)),
-                ('planned_start_datetime', models.DateTimeField(blank=True, null=True)),
-                ('planned_end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('item', models.CharField(blank=True, max_length=250, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('job', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.job')),
-                ('task_status', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.taskstatus')),
-                ('task_type', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.tasktype')),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(blank=True, db_constraint=False, default=1, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.workcenter')),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("id", models.IntegerField(blank=True, db_index=True)),
+                ("external_id", models.CharField(blank=True, max_length=150)),
+                ("name", models.CharField(max_length=150)),
+                ("setup_time", models.IntegerField(blank=True, default=0, null=True)),
+                ("run_time_per_unit", models.IntegerField(blank=True, null=True)),
+                ("teardown_time", models.IntegerField(default=0)),
+                ("quantity", models.IntegerField(default=1)),
+                ("planned_start_datetime", models.DateTimeField(blank=True, null=True)),
+                ("planned_end_datetime", models.DateTimeField(blank=True, null=True)),
+                ("item", models.CharField(blank=True, max_length=250, null=True)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "job",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.job",
+                    ),
+                ),
+                (
+                    "task_status",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.taskstatus",
+                    ),
+                ),
+                (
+                    "task_type",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.tasktype",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        default=1,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical task',
-                'verbose_name_plural': 'historical tasks',
-                'db_table': 'task_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical task",
+                "verbose_name_plural": "historical tasks",
+                "db_table": "task_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalJobType',
+            name="HistoricalJobType",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical job type',
-                'verbose_name_plural': 'historical job types',
-                'db_table': 'job_type_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical job type",
+                "verbose_name_plural": "historical job types",
+                "db_table": "job_type_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalJobStatus',
+            name="HistoricalJobStatus",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical job status',
-                'verbose_name_plural': 'historical job statuss',
-                'db_table': 'job_status_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical job status",
+                "verbose_name_plural": "historical job statuss",
+                "db_table": "job_status_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalJob',
+            name="HistoricalJob",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField(blank=True)),
-                ('customer', models.CharField(blank=True, max_length=250)),
-                ('due_date', models.DateField(blank=True, null=True)),
-                ('priority', models.PositiveIntegerField(db_index=True, editable=False)),
-                ('planned_start_datetime', models.DateTimeField(blank=True, null=True)),
-                ('planned_end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=150)),
-                ('note', models.CharField(blank=True, max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('job_status', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.jobstatus')),
-                ('job_type', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.jobtype')),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField(blank=True)),
+                ("customer", models.CharField(blank=True, max_length=250)),
+                ("due_date", models.DateField(blank=True, null=True)),
+                (
+                    "priority",
+                    models.PositiveIntegerField(db_index=True, editable=False),
+                ),
+                ("planned_start_datetime", models.DateTimeField(blank=True, null=True)),
+                ("planned_end_datetime", models.DateTimeField(blank=True, null=True)),
+                ("external_id", models.CharField(blank=True, max_length=150)),
+                ("note", models.CharField(blank=True, max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "job_status",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.jobstatus",
+                    ),
+                ),
+                (
+                    "job_type",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.jobtype",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical job',
-                'verbose_name_plural': 'historical jobs',
-                'db_table': 'job_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical job",
+                "verbose_name_plural": "historical jobs",
+                "db_table": "job_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalDependencyType',
+            name="HistoricalDependencyType",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical dependency type',
-                'verbose_name_plural': 'historical dependency types',
-                'db_table': 'dependency_type_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical dependency type",
+                "verbose_name_plural": "historical dependency types",
+                "db_table": "dependency_type_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalDependencyStatus',
+            name="HistoricalDependencyStatus",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical dependency status',
-                'verbose_name_plural': 'historical dependency statuss',
-                'db_table': 'dependency_status_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical dependency status",
+                "verbose_name_plural": "historical dependency statuss",
+                "db_table": "dependency_status_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalDependency',
+            name="HistoricalDependency",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=150)),
-                ('external_id', models.CharField(blank=True, max_length=180, null=True)),
-                ('expected_close_datetime', models.DateTimeField(blank=True, null=True)),
-                ('actual_close_datetime', models.DateTimeField(blank=True, null=True)),
-                ('notes', models.TextField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('dependency_status', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.dependencystatus')),
-                ('dependency_type', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.dependencytype')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "external_id",
+                    models.CharField(blank=True, max_length=180, null=True),
+                ),
+                (
+                    "expected_close_datetime",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                ("actual_close_datetime", models.DateTimeField(blank=True, null=True)),
+                ("notes", models.TextField(blank=True, null=True)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "dependency_status",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.dependencystatus",
+                    ),
+                ),
+                (
+                    "dependency_type",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.dependencytype",
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical dependency',
-                'verbose_name_plural': 'historical dependencys',
-                'db_table': 'dependency_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical dependency",
+                "verbose_name_plural": "historical dependencys",
+                "db_table": "dependency_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.AddField(
-            model_name='dependency',
-            name='dependency_status',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.dependencystatus'),
+            model_name="dependency",
+            name="dependency_status",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="job_manager.dependencystatus",
+            ),
         ),
         migrations.AddField(
-            model_name='dependency',
-            name='dependency_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.dependencytype'),
+            model_name="dependency",
+            name="dependency_type",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="job_manager.dependencytype",
+            ),
         ),
         migrations.AddField(
-            model_name='dependency',
-            name='updated_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL),
+            model_name="dependency",
+            name="updated_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="updated_%(class)s_objects",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

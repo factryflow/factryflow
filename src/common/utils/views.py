@@ -30,7 +30,6 @@ def add_notification_headers(
     return response
 
 
-
 def convert_datetime_to_readable_string(datetime: str) -> str:
     """
     Converts a datetime string to a human-readable string.

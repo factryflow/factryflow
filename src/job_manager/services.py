@@ -14,6 +14,7 @@ from job_manager.models import (
     Task,
     TaskType,
     WorkCenter,
+    Item,
 )
 
 # ------------------------------------------------------------------------------
@@ -26,12 +27,20 @@ class WorkCenterService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-    def create(self, name: str, notes: str = "", external_id: str = "") -> WorkCenter:
+    def create(
+        self,
+        name: str,
+        notes: str = "",
+        external_id: str = "",
+        custom_fields: dict = None,
+    ) -> WorkCenter:
         # check for permission to create work center
         if not self.permission_service.check_for_permission("add_workcenter"):
             raise PermissionDenied()
 
-        work_center = WorkCenter.objects.create(name=name, notes=notes, external_id=external_id)
+        work_center = WorkCenter.objects.create(
+            name=name, notes=notes, external_id=external_id, custom_fields=custom_fields
+        )
         work_center.full_clean()
         work_center.save(user=self.user)
 
@@ -42,11 +51,7 @@ class WorkCenterService:
         if not self.permission_service.check_for_permission("change_workcenter"):
             raise PermissionDenied()
 
-        fields = [
-            "name",
-            "notes",
-            "external_id"
-        ]
+        fields = ["name", "notes", "external_id", "custom_fields"]
 
         work_center, _ = model_update(
             instance=work_center, fields=fields, data=data, user=self.user
@@ -60,6 +65,7 @@ class WorkCenterService:
             raise PermissionDenied()
 
         work_center.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -72,12 +78,16 @@ class TaskTypeService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-    def create(self, name: str, notes: str, external_id: str = "") -> TaskType:
+    def create(
+        self, name: str, notes: str, external_id: str = "", custom_fields: dict = None
+    ) -> TaskType:
         # check for permission to create task type
         if not self.permission_service.check_for_permission("add_tasktype"):
             raise PermissionDenied()
 
-        task_type = TaskType.objects.create(name=name, notes=notes, external_id=external_id)
+        task_type = TaskType.objects.create(
+            name=name, notes=notes, external_id=external_id, custom_fields=custom_fields
+        )
         task_type.full_clean()
         task_type.save(user=self.user)
 
@@ -88,11 +98,7 @@ class TaskTypeService:
         if not self.permission_service.check_for_permission("change_tasktype"):
             raise PermissionDenied()
 
-        fields = [
-            "name",
-            "notes",
-            "external_id"
-        ]
+        fields = ["name", "notes", "external_id", "custom_fields"]
 
         task_type, _ = model_update(
             instance=task_type, fields=fields, data=data, user=self.user
@@ -105,6 +111,7 @@ class TaskTypeService:
             raise PermissionDenied()
 
         task_type.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -126,15 +133,17 @@ class TaskService:
         run_time_per_unit: int = 1,
         setup_time: int = 0,
         teardown_time: int = 0,
+        duration: int = 0,
         external_id: str = "",
         notes="",
-        item: str = "",
+        item: Item = None,
         task_status: str = "NS",
         work_center: WorkCenter = None,
         job: Job = None,
         dependencies: list[Dependency] = None,
         predecessors: list[Task] = None,
         successors: list[Task] = None,
+        custom_fields: dict = None,
     ) -> Task:
         # check for permission to create task
         if not self.permission_service.check_for_permission("add_task"):
@@ -147,12 +156,14 @@ class TaskService:
             notes=notes,
             setup_time=setup_time,
             item=item,
+            duration=duration,
             task_status=task_status,
             teardown_time=teardown_time,
             quantity=quantity,
             task_type=task_type,
             work_center=work_center,
             job=job,
+            custom_fields=custom_fields,
         )
 
         task.full_clean()
@@ -181,6 +192,7 @@ class TaskService:
             "notes",
             "setup_time",
             "teardown_time",
+            "duration",
             "run_time_per_unit",
             "quantity",
             "item",
@@ -190,6 +202,7 @@ class TaskService:
             "dependencies",
             "predecessors",
             "successors",
+            "custom_fields",
         ]
 
         task, _ = model_update(
@@ -205,6 +218,7 @@ class TaskService:
             raise PermissionDenied()
 
         task.delete()
+        return True
 
 
 # ------------------------------------------------------------------------------
@@ -217,13 +231,19 @@ class JobTypeService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-    def create(self, name: str, external_id: str = "", notes: str = "") -> JobType:
+    def create(
+        self,
+        name: str,
+        external_id: str = "",
+        notes: str = "",
+        custom_fields: dict = None,
+    ) -> JobType:
         # check for permission to create job type
         if not self.permission_service.check_for_permission("add_jobtype"):
             raise PermissionDenied()
 
         job_type = JobType.objects.create(
-            name=name, external_id=external_id, notes=notes
+            name=name, external_id=external_id, notes=notes, custom_fields=custom_fields
         )
         job_type.full_clean()
         job_type.save(user=self.user)
@@ -239,6 +259,7 @@ class JobTypeService:
             "name",
             "external_id",
             "notes",
+            "custom_fields",
         ]
 
         job_type, _ = model_update(
@@ -253,6 +274,7 @@ class JobTypeService:
             raise PermissionDenied()
 
         job_type.delete()
+        return True
 
 
 class JobService:
@@ -273,20 +295,27 @@ class JobService:
         external_id: str = "",
         notes: str = "",
         priority: int = None,
+        custom_fields: dict = None,
     ) -> Job:
         # check for permission to create job
         if not self.permission_service.check_for_permission("add_job"):
             raise PermissionDenied()
+
+        # get last job and update priority by 1 from last job priority
+        last_job = Job.objects.order_by("id").last()
+        priority = last_job.priority + 1 if last_job else 1
 
         job = Job.objects.create(
             name=name,
             due_date=due_date,
             job_type=job_type,
             customer=customer,
+            priority=priority,
             job_status=job_status,
             external_id=external_id,
             notes=notes,
             description=description,
+            custom_fields=custom_fields,
         )
 
         job.full_clean()
@@ -297,7 +326,7 @@ class JobService:
 
         if dependencies:
             job.dependencies.set(dependencies)
-            
+
         return job
 
     @transaction.atomic
@@ -315,6 +344,7 @@ class JobService:
             "external_id",
             "notes",
             "dependencies",
+            "custom_fields",
         ]
 
         job, _ = model_update(instance=job, fields=fields, data=data, user=self.user)
@@ -346,14 +376,18 @@ class DependencyTypeService:
         self.permission_service = AbstractPermissionService(user=user)
 
     def create(
-        self, name: str, external_id: str = "", notes: str = ""
+        self,
+        name: str,
+        external_id: str = "",
+        notes: str = "",
+        custom_fields: dict = None,
     ) -> DependencyType:
         # check for permission to create dependency type
         if not self.permission_service.check_for_permission("add_dependencytype"):
             raise PermissionDenied()
 
         dependency_type = DependencyType.objects.create(
-            name=name, external_id=external_id, notes=notes
+            name=name, external_id=external_id, notes=notes, custom_fields=custom_fields
         )
         dependency_type.full_clean()
         dependency_type.save(user=self.user)
@@ -369,6 +403,7 @@ class DependencyTypeService:
             "name",
             "external_id",
             "notes",
+            "custom_fields",
         ]
 
         dependency_type, _ = model_update(
@@ -386,6 +421,7 @@ class DependencyTypeService:
             raise PermissionDenied()
 
         dependency_type.delete()
+        return True
 
 
 class DependencyService:
@@ -402,6 +438,7 @@ class DependencyService:
         expected_close_datetime: datetime = None,
         notes: str = "",
         external_id: str = "",
+        custom_fields: dict = None,
     ) -> Dependency:
         # check for permission to create dependency
         if not self.permission_service.check_for_permission("add_dependency"):
@@ -414,6 +451,7 @@ class DependencyService:
             notes=notes,
             dependency_status=dependency_status,
             external_id=external_id,
+            custom_fields=custom_fields,
         )
 
         dependency.full_clean()
@@ -435,6 +473,7 @@ class DependencyService:
             "actual_close_datetime",
             "notes",
             "external_id",
+            "custom_fields",
         ]
 
         dependency, _ = model_update(
@@ -450,3 +489,66 @@ class DependencyService:
             raise PermissionDenied()
 
         instance.delete()
+        return True
+
+
+# ------------------------------------------------------------------------------
+# Item Services
+# ------------------------------------------------------------------------------
+
+
+class ItemService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    def create(
+        self,
+        name: str,
+        description: str = "",
+        external_id: str = "",
+        notes: str = "",
+        custom_fields: dict = None,
+    ) -> Item:
+        # check for permission to create item
+        if not self.permission_service.check_for_permission("add_item"):
+            raise PermissionDenied()
+
+        item = Item.objects.create(
+            name=name,
+            description=description,
+            external_id=external_id,
+            notes=notes,
+            custom_fields=custom_fields,
+        )
+        item.full_clean()
+        item.save(user=self.user)
+
+        return item
+
+    def update(self, instance: Item, data: dict) -> Item:
+        # check for permission to update item
+        if not self.permission_service.check_for_permission("change_item"):
+            raise PermissionDenied()
+
+        fields = [
+            "name",
+            "description",
+            "external_id",
+            "notes",
+            "custom_fields",
+        ]
+
+        item, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+
+        return item
+
+    def delete(self, instance: Item) -> None:
+        # check for permission to delete item
+        if not self.permission_service.check_for_permission("delete_item"):
+            raise PermissionDenied()
+
+        instance.delete()
+        return True

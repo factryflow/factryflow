@@ -18,7 +18,6 @@ class JobType(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
-    
 
 
 class JobStatusChoices(models.TextChoices):
@@ -53,10 +52,10 @@ class Job(BaseModelWithExtras, OrderedModelBase):
 
     # Relationship fields
     job_type = models.ForeignKey(JobType, on_delete=models.DO_NOTHING)
-    dependencies = models.ManyToManyField("Dependency", related_name="jobs")
+    dependencies = models.ManyToManyField("Dependency", related_name="jobs", blank=True)
 
     # Utility fields
-    priority = models.PositiveIntegerField(db_index=True, editable=False)
+    priority = models.PositiveIntegerField(db_index=True)
     planned_start_datetime = models.DateTimeField(null=True, blank=True)
     planned_end_datetime = models.DateTimeField(null=True, blank=True)
 

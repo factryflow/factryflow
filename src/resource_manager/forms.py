@@ -1,13 +1,13 @@
 from django import forms
 
-from .models import Resource, ResourcePool
+from .models import Resource, ResourceGroup
 
 # ------------------------------------------------------------------------------
 # Resource Forms
 # ------------------------------------------------------------------------------
 
+
 class ResourceForm(forms.ModelForm):
-    
     class Meta:
         model = Resource
         fields = [
@@ -15,18 +15,14 @@ class ResourceForm(forms.ModelForm):
             "name",
             "resource_type",
             "weekly_shift_template",
-            "work_units",
-            "resource_pools",
             "users",
-            "notes"
+            "notes",
         ]
 
         labels = {
             "name": "Resource Name",
             "resource_type": "Resource Type",
             "weekly_shift_template": "Weekly Shift Template",
-            "work_units": "Work Units",
-            "resource_pools": "Resource Pools",
             "users": "Users",
         }
 
@@ -51,16 +47,6 @@ class ResourceForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "work_units": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resource_pools": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
             "users": forms.SelectMultiple(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
@@ -74,14 +60,21 @@ class ResourceForm(forms.ModelForm):
         }
 
 
-class ResourcePoolForm(forms.ModelForm):
+# ------------------------------------------------------------------------------
+# ResourceGroup Forms
+# ------------------------------------------------------------------------------
+
+
+class ResourceGroupForm(forms.ModelForm):
     class Meta:
-        model = ResourcePool
-        fields = ["external_id", "name", "parent", "work_units", "notes"]
+        model = ResourceGroup
+        fields = ["external_id", "name", "parent", "resources", "notes"]
         labels = {
             "name": "Resource Pool Name",
+            "external_id": "External ID",
             "parent": "Select Parent Resource Pool",
-            "work_units": "Work Units",
+            "resources": "Resources",
+            "notes": "Notes",
         }
         widgets = {
             "name": forms.TextInput(
@@ -99,7 +92,7 @@ class ResourcePoolForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "work_units": forms.SelectMultiple(
+            "resources": forms.SelectMultiple(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }

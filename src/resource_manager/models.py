@@ -7,8 +7,8 @@ from simple_history.models import HistoricalRecords
 
 
 class ResourceTypeChoices(models.TextChoices):
-    MACHINE = "M", "Machine"
-    OPERATOR = "O", "Operator"
+    MACHINE = "Machine", "Machine"
+    OPERATOR = "Operator", "Operator"
 
     @classmethod
     def to_dict(cls):
@@ -28,12 +28,12 @@ class Resource(BaseModelWithExtras):
     A resource can be part of multiple work units and resource pools, and can be operated by multiple users.
     """
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     resource_type = models.CharField(
-        max_length=1, 
+        max_length=9,
         choices=ResourceTypeChoices.choices,
-        blank=True, 
-        null=True
+        default=ResourceTypeChoices.OPERATOR,
     )
     history = HistoricalRecords(table_name="resource_history")
 
@@ -47,56 +47,28 @@ class Resource(BaseModelWithExtras):
     )
 
     # many to many fields
-    work_units = models.ManyToManyField("WorkUnit", related_name="resources")
-    resource_pools = models.ManyToManyField("ResourcePool", related_name="resources")
-    users = models.ManyToManyField(User, related_name="operators")
+    # resource_pools = models.ManyToManyField("ResourceGroup", related_name="resources")
+    users = models.ManyToManyField(User, related_name="operators", blank=True)
 
     class Meta:
         db_table = "resource"
 
-    @property
-    def resource_pool_id_list(self):
-        return list(self.resource_pools.values_list("id", flat=True))
-
-    @property
-    def work_unit_id_list(self):
-        return list(self.work_units.values_list("id", flat=True))
+    # @property
+    # def resource_pool_id_list(self):
+    #     return list(self.resource_pools.values_list("id", flat=True))
 
     def __str__(self):
         return self.name
 
 
-class WorkUnit(BaseModelWithExtras):
+class ResourceGroup(BaseModelWithExtras):
     """
-    The WorkUnit model represents a team of resources.
-    Each work unit has a name and can be associated with multiple resources and resource pools.
-    """
-
-    name = models.CharField(max_length=100)
-    history = HistoricalRecords(table_name="work_unit_history")
-
-    class Meta:
-        db_table = "work_unit"
-
-    @property
-    def resource_id_list(self):
-        return list(self.resources.values_list("id", flat=True))
-
-    @property
-    def resource_pool_id_list(self):
-        return list(self.resource_pools.values_list("id", flat=True))
-    
-    def __str__(self):
-        return self.name
-
-
-class ResourcePool(BaseModelWithExtras):
-    """
-    The ResourcePool model represents a collection of resources and work units.
-    Each resource pool has a name and can be associated with multiple work units.
-    A resource pool can have a parent resource pool, allowing for a hierarchy of resource pools.
+    The ResourceGroup model represents a collection of resources.
+    Each resource group has a name.
+    A resource group can have a parent resource group, allowing for a hierarchy of resource group.
     """
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     parent = models.ForeignKey(
         "self",
@@ -105,19 +77,15 @@ class ResourcePool(BaseModelWithExtras):
         blank=True,
         related_name="children",
     )
-    work_units = models.ManyToManyField(WorkUnit, related_name="resource_pools")
-    history = HistoricalRecords(table_name="resource_pool_history")
+    resources = models.ManyToManyField(Resource, related_name="related_resources")
+    history = HistoricalRecords(table_name="resource_grp_history")
 
     class Meta:
         db_table = "resource_pool"
 
-    # @property
-    # def resource_id_list(self):
-    #     return list(self.resources.values_list("id", flat=True))
-
     @property
-    def work_unit_id_list(self):
-        return list(self.work_units.values_list("id", flat=True))
+    def resource_id_list(self):
+        return list(self.resources.values_list("id", flat=True))
 
     def __str__(self):
         return self.name

@@ -11,17 +11,8 @@ from resource_assigner.models import (
 from .job_manager_factories import TaskFactory, WorkCenterFactory
 from .resource_manager_factories import (
     ResourceFactory,
-    ResourcePoolFactory,
-    WorkUnitFactory,
+    ResourceGroupFactory,
 )
-
-
-class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = TaskResourceAssigment
-
-    task = factory.SubFactory(TaskFactory)
-    resource = factory.SubFactory(ResourceFactory)
 
 
 class AssigmentRuleFactory(factory.django.DjangoModelFactory):
@@ -52,8 +43,7 @@ class AssigmentConstraintFactory(factory.django.DjangoModelFactory):
 
     task = None
     assignment_rule = None
-    resource_pool = None
-    required_units = 1
+    resource_group = None
     is_direct = True
 
     class Params:
@@ -63,12 +53,26 @@ class AssigmentConstraintFactory(factory.django.DjangoModelFactory):
         with_assignment_rule = factory.Trait(
             assignment_rule=factory.SubFactory(AssigmentRuleFactory)
         )
-        with_resource_pool = factory.Trait(
-            resource_pool=factory.SubFactory(ResourcePoolFactory)
+        with_resource_group = factory.Trait(
+            resource_group=factory.SubFactory(ResourceGroupFactory)
         )
         with_resources = factory.Trait(
             resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
         )
-        with_work_units = factory.Trait(
-            work_units=factory.lazy_attribute(lambda _: WorkUnitFactory.create_batch(2))
+
+
+class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TaskResourceAssigment
+
+    task = factory.SubFactory(TaskFactory)
+    assigment_rule = factory.SubFactory(AssigmentRuleFactory)
+    resource_count = 1
+    use_all_resources = False
+
+    class Params:
+        with_resource_group = factory.Trait(
+            resource_group=factory.lazy_attribute(
+                lambda _: ResourceGroupFactory.create_batch(2)
+            )
         )

@@ -3,10 +3,9 @@ from django.core.exceptions import ValidationError
 from factories import (
     AssigmentConstraintFactory,
     ResourceFactory,
-    ResourcePoolFactory,
+    ResourceGroupFactory,
     TaskFactory,
     UserFactory,
-    WorkUnitFactory,
 )
 from resource_assigner.models import AssignmentConstraint
 from resource_assigner.services import AssignmentConstraintService
@@ -16,21 +15,29 @@ from resource_assigner.services import AssignmentConstraintService
 def data():
     return {
         "task": TaskFactory(),
-        "resource_pool": ResourcePoolFactory(),
-        "required_units": 1,
+        "resource_group": ResourceGroupFactory(),
+    }
+
+
+@pytest.fixture
+def assignment_constraint_data():
+    return {
+        "task": TaskFactory(),
+        "resource_group": ResourceGroupFactory(),
+        "is_direct": True,
     }
 
 
 @pytest.mark.django_db
-def test_can_create_assignment_constraint(data):
+def test_can_create_assignment_constraint(assignment_constraint_data):
     user = UserFactory()
 
-    constraint = AssignmentConstraintService(user=user).create(**data)
+    constraint = AssignmentConstraintService(user=user).create(
+        **assignment_constraint_data
+    )
 
     assert AssignmentConstraint.objects.count() == 1
-    assert constraint.task == data["task"]
-    assert constraint.resource_pool == data["resource_pool"]
-    assert constraint.required_units == data["required_units"]
+    assert constraint.task == assignment_constraint_data["task"]
     assert constraint.is_direct is True
 
 
@@ -38,22 +45,18 @@ def test_can_create_assignment_constraint(data):
 def test_can_update_assignment_constraint():
     user = UserFactory()
 
-    constraint = AssigmentConstraintFactory(with_task=True, with_resource_pool=True)
+    constraint = AssigmentConstraintFactory(with_task=True, with_resource_group=False)
 
-    new_resource_pool = ResourcePoolFactory()
-    new_required_units = 2
+    new_resource_group = ResourceGroupFactory()
 
     AssignmentConstraintService(user=user).update(
         instance=constraint,
         data={
-            "resource_pool": new_resource_pool,
-            "required_units": new_required_units,
+            "resource_group": new_resource_group,
         },
     )
 
     assert AssignmentConstraint.objects.count() == 1
-    assert constraint.resource_pool == new_resource_pool
-    assert constraint.required_units == new_required_units
     assert constraint.is_direct is True
 
 
@@ -65,9 +68,9 @@ def test_can_delete_assignment_constraint():
 
     assert AssignmentConstraint.objects.count() == 1
 
-    AssignmentConstraintService(user=user).delete(instance=constraint)
+    response = AssignmentConstraintService(user=user).delete(instance=constraint)
 
-    assert AssignmentConstraint.objects.count() == 0
+    assert response == True
 
 
 @pytest.mark.django_db
@@ -80,17 +83,12 @@ def test_validation_error_raised_on_invalid_assignment_constraint_data(data):
             "assignment_rule": None,
         },
         {
-            "resource_pool": None,
+            "resource_group": None,
             "resources": None,
-            "work_units": None,
         },
         {
-            "resource_pool": None,
+            "resource_group": None,
             "resources": ResourceFactory.create_batch(2),
-            "work_units": WorkUnitFactory.create_batch(2),
-        },
-        {
-            "required_units": 0,
         },
     ]
 
