@@ -56,17 +56,17 @@ def get_all_permissions():
         return []
 
 
-
 def is_superuser(func):
     """
     Decorator function to check if the user making the request is a superuser.
-    
+
     Args:
         func (callable): The view function to be decorated.
 
     Returns:
         callable: The decorated view function.
     """
+
     @wraps(func)
     def wrapper(request, *args, **kwargs):
         if request.user.is_superuser:
@@ -75,7 +75,6 @@ def is_superuser(func):
             raise PermissionDenied()
 
     return wrapper
-
 
 
 def get_all_avilable_permissions():

@@ -33,7 +33,6 @@ class DependencyStatusChoices(models.TextChoices):
         return {choice[0]: choice[1] for choice in cls.choices}
 
 
-
 class Dependency(BaseModelWithExtras):
     name = models.CharField(max_length=150)
     expected_close_datetime = models.DateTimeField(blank=True, null=True)

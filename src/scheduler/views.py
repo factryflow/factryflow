@@ -1,12 +1,14 @@
-from django.shortcuts import render
 from common.views import CRUDView, CustomTableView
 
 # Create your views here.
-from .models import ResourceAllocations, ResourceIntervals, SchedulerRuns, SchedulerStatusChoices
+from .models import (
+    ResourceAllocations,
+    ResourceIntervals,
+    SchedulerRuns,
+    SchedulerStatusChoices,
+)
 from .forms import ResourceIntervalsForm, SchedulerRunsForm
 from .services import ResourceIntervalsService, SchedulerRunsService
-
-
 
 
 # ------------------------------------------------------------------------------
@@ -20,7 +22,7 @@ SCHEDULER_TAILWIND_CLASSES = {
     "CN": "bg-haxpurple text-[#7239EA]",
 }
 
-SCHEDULER_STATUS =  {
+SCHEDULER_STATUS = {
     "ST": "Started",
     "CP": "Completed",
     "FL": "Failed",
@@ -47,12 +49,47 @@ SCHEDULER_TABLE_HEADERS = [
     "Status",
 ]
 
-SCHEDULER_MODEL_RELATION_HEADERS = ["RESOURCE_ALLOCATIONS", "RESOURCE_INTERVALS"]
+SCHEDULER_MODEL_RELATION_HEADERS = [
+    "RESOURCE_ALLOCATIONS",
+    "RESOURCE_INTERVALS",
+    "HISTORY",
+]
 
 SCHEDULER_MODEL_RELATION_FIELDS = {
     # model_name: [model, related_name, [headers], [fields]]
-    "resource_allocations": [ResourceAllocations, "run_id", ["Resource", "Task"], ["resource", "task"]],
-    "resource_intervals": [ResourceIntervals, "run_id", ["Resource", "Task", "Interval Start", "Interval End"], ["resource", "task", "interval_start", "interval_end"]],
+    "resource_allocations": [
+        ResourceAllocations,
+        "run_id",
+        ["Resource", "Task"],
+        ["resource", "task"],
+    ],
+    "resource_intervals": [
+        ResourceIntervals,
+        "run_id",
+        ["Resource", "Task", "Interval Start", "Interval End"],
+        ["resource", "task", "interval_start", "interval_end"],
+    ],
+    "history": [
+        "history",
+        [
+            "ID",
+            "Resource",
+            "Interval Start",
+            "Interval End",
+            "History Date",
+            "History Type",
+            "History User",
+        ],
+        [
+            "id",
+            "resource",
+            "interval_start",
+            "interval_end",
+            "history_date",
+            "history_type",
+            "history_user",
+        ],
+    ],
 }
 
 
@@ -100,11 +137,41 @@ RESOURCE_INTERVALS_TABLE_HEADERS = [
     "Interval End",
 ]
 
+RESOURCE_INTERVALS_MODELS_RELATION_HEADERS = ["HISTORY"]
+
+RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
+    "history": [
+        "history",
+        [
+            "ID",
+            "Resource",
+            "Task",
+            "Interval Start",
+            "Interval End",
+            "History Date",
+            "History Type",
+            "History User",
+        ],
+        [
+            "id",
+            "resource",
+            "task",
+            "interval_start",
+            "interval_end",
+            "history_date",
+            "history_type",
+            "history_user",
+        ],
+    ],
+}
+
 ResourceIntervalsView = CustomTableView(
     model=ResourceIntervals,
     model_name="resource_intervals",
     fields=RESOURCE_INTERVALS_MODEL_FIELDS,
     headers=RESOURCE_INTERVALS_TABLE_HEADERS,
+    model_relation_headers=RESOURCE_INTERVALS_MODELS_RELATION_HEADERS,
+    model_relation_fields=RESOURCE_INTERVALS_MODELS_RELATION_FIELDS,
     search_fields_list=RESOURCE_INTERVALS_SEARCH_FIELDS,
 )
 

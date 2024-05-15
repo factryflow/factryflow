@@ -5,12 +5,10 @@ from resource_calendar.models import (
     OperationalException,
     OperationalExceptionType,
     WeeklyShiftTemplate,
-    WeeklyShiftTemplateDetail,
 )
 from resource_calendar.services import (
     OperationalExceptionService,
     OperationalExceptionTypeService,
-    WeeklyShiftTemplateDetailService,
     WeeklyShiftTemplateService,
 )
 
@@ -19,8 +17,6 @@ from .schemas import (
     OperationalExceptionOut,
     OperationalExceptionTypeIn,
     OperationalExceptionTypeOut,
-    WeeklyShiftTemplateDetailIn,
-    WeeklyShiftTemplateDetailOut,
     WeeklyShiftTemplateIn,
     WeeklyShiftTemplateOut,
 )

@@ -9,16 +9,21 @@ from .models import (
     SchedulerRuns,
     ResourceAllocations,
     ResourceIntervals,
-    SchedulerStatusChoices
+    SchedulerStatusChoices,
 )
 
 from job_manager.models import Task
 
 
-
 # # scheduler router
 # scheduler_router = Router()
-def save_scheduler_run(scheduled_task, scheduler_details, scheduler_start_time, scheduler_end_time, scheduler_status):
+def save_scheduler_run(
+    scheduled_task,
+    scheduler_details,
+    scheduler_start_time,
+    scheduler_end_time,
+    scheduler_status,
+):
     """
     Save a new scheduler run.
     """
@@ -32,7 +37,7 @@ def save_scheduler_run(scheduled_task, scheduler_details, scheduler_start_time, 
             details=scheduler_details,
             status=scheduler_status,
         )
-        
+
         scheduler_run.save()
 
         if scheduler_status == SchedulerStatusChoices.COMPLETED:
@@ -41,24 +46,23 @@ def save_scheduler_run(scheduled_task, scheduler_details, scheduler_start_time, 
                 for resource_id in task["assigned_resource_ids"]:
                     # store resource allocations
                     ResourceAllocations.objects.create(
-                        resource_id=resource_id, task_id=task["task_id"], run_id=scheduler_run
+                        resource_id=resource_id,
+                        task_id=task["task_id"],
+                        run_id=scheduler_run,
                     )
-                
+
                     # store resource intervals
                     ResourceIntervals.objects.create(
                         resource_id=resource_id,
                         task_id=task["task_id"],
                         run_id=scheduler_run,
                         interval_start=task.get("task_start").isoformat(),
-                        interval_end=task.get("task_end").isoformat(), 
+                        interval_end=task.get("task_end").isoformat(),
                     )
 
     except Exception as e:
         # raise the error as exception
         raise e
-
-
-
 
 
 def start_scheduler_run(request):
@@ -79,15 +83,21 @@ def start_scheduler_run(request):
             scheduler_status = SchedulerStatusChoices.COMPLETED
             scheduler_details = "Scheduler run completed successfully."
 
-        save_scheduler_run(scheduled_task, scheduler_details, scheduler_start_time, scheduler_end_time, scheduler_status)
+        save_scheduler_run(
+            scheduled_task,
+            scheduler_details,
+            scheduler_start_time,
+            scheduler_end_time,
+            scheduler_status,
+        )
 
         if request.htmx:
-            headers = {"HX-Redirect": reverse(f"scheduler_runs")}
+            headers = {"HX-Redirect": reverse("scheduler_runs")}
             response = HttpResponse(status=204, headers=headers)
             return response
 
     except Exception as e:
         # raise the error as exception
         raise e
-    
+
     return {"status": "success", "message": "Scheduler run started successfully."}

@@ -2,7 +2,11 @@ from datetime import time
 
 import factory
 from common.utils.tests import faker
-from resource_calendar.models import WeeklyShiftTemplate, WeeklyShiftTemplateDetail, DaysOfWeek
+from resource_calendar.models import (
+    WeeklyShiftTemplate,
+    WeeklyShiftTemplateDetail,
+    DaysOfWeek,
+)
 
 
 class WeeklyShiftTemplateDetailFactory(factory.django.DjangoModelFactory):
@@ -22,6 +26,10 @@ class WeeklyShiftTemplateFactory(factory.django.DjangoModelFactory):
     description = factory.lazy_attribute(lambda _: faker.sentence())
     external_id = ""
     notes = ""
-    weekly_shift_template_details = factory.RelatedFactoryList(
-        WeeklyShiftTemplateDetailFactory, factory_related_name="weekly_shift_template", size=7
-    )
+
+    class Params:
+        with_weekly_shift_template_details = factory.Trait(
+            weekly_shift_template_details=factory.lazy_attribute(
+                lambda _: WeeklyShiftTemplateDetailFactory.create_batch(2)
+            )
+        )

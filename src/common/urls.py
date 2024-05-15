@@ -4,7 +4,11 @@ from .views import CUSTOM_FIELD_VIEWS
 
 urlpatterns = [
     # custom field urls
-    path("custom-fields/new/", CUSTOM_FIELD_VIEWS.show_model_form, name="custom_field_form"),
+    path(
+        "custom-fields/new/",
+        CUSTOM_FIELD_VIEWS.show_model_form,
+        name="custom_field_form",
+    ),
     path(
         "custom_field-create/",
         CUSTOM_FIELD_VIEWS.create_or_update_model_instance,

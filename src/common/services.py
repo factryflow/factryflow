@@ -106,6 +106,7 @@ def model_update(
 # CustomField Service
 # ------------------------------------------------------------------------------
 
+
 class CustomFieldService:
     def __init__(self, user) -> None:
         self.user = user
@@ -152,7 +153,14 @@ class CustomFieldService:
         if "name" in data and not data["name"].startswith("custom_"):
             data["name"] = self._add_prefix_to_name(data["name"])
 
-        fields = ["name", "label", "description", "is_required", "field_type", "content_type"]
+        fields = [
+            "name",
+            "label",
+            "description",
+            "is_required",
+            "field_type",
+            "content_type",
+        ]
         custom_field, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )

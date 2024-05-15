@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("job_manager", "0005_alter_historicaltask_run_time_per_unit_and_more"),
     ]

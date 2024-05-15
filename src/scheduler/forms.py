@@ -1,4 +1,4 @@
-from django import forms 
+from django import forms
 
 from .models import SchedulerRuns, ResourceAllocations, ResourceIntervals
 
@@ -37,7 +37,6 @@ class SchedulerRunsForm(forms.ModelForm):
         }
 
 
-
 class ResourceIntervalsForm(forms.ModelForm):
     class Meta:
         model = ResourceIntervals
@@ -70,7 +69,6 @@ class ResourceIntervalsForm(forms.ModelForm):
                 }
             ),
         }
-
 
 
 class ResourceAllocationsForm(forms.ModelForm):

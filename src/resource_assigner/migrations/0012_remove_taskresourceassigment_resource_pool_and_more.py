@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resource_manager", "0009_remove_resource_resource_pools_and_more"),
         ("resource_assigner", "0011_remove_taskresourceassigment_resource_and_more"),

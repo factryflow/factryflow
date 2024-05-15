@@ -1,13 +1,13 @@
 from django import forms
 
-from .models import Resource, ResourcePool, WorkUnit
+from .models import Resource, ResourceGroup
 
 # ------------------------------------------------------------------------------
 # Resource Forms
 # ------------------------------------------------------------------------------
 
+
 class ResourceForm(forms.ModelForm):
-    
     class Meta:
         model = Resource
         fields = [
@@ -15,16 +15,14 @@ class ResourceForm(forms.ModelForm):
             "name",
             "resource_type",
             "weekly_shift_template",
-            "work_units",
             "users",
-            "notes"
+            "notes",
         ]
 
         labels = {
             "name": "Resource Name",
             "resource_type": "Resource Type",
             "weekly_shift_template": "Weekly Shift Template",
-            "work_units": "Work Units",
             "users": "Users",
         }
 
@@ -49,11 +47,6 @@ class ResourceForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "work_units": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
             "users": forms.SelectMultiple(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
@@ -68,19 +61,19 @@ class ResourceForm(forms.ModelForm):
 
 
 # ------------------------------------------------------------------------------
-# ResourcePool Forms
+# ResourceGroup Forms
 # ------------------------------------------------------------------------------
 
-class ResourcePoolForm(forms.ModelForm):
+
+class ResourceGroupForm(forms.ModelForm):
     class Meta:
-        model = ResourcePool
-        fields = ["external_id", "name", "parent", "resources", "work_units", "notes"]
+        model = ResourceGroup
+        fields = ["external_id", "name", "parent", "resources", "notes"]
         labels = {
             "name": "Resource Pool Name",
             "external_id": "External ID",
             "parent": "Select Parent Resource Pool",
             "resources": "Resources",
-            "work_units": "Work Units",
             "notes": "Notes",
         }
         widgets = {
@@ -102,43 +95,6 @@ class ResourcePoolForm(forms.ModelForm):
             "resources": forms.SelectMultiple(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "work_units": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "notes": forms.Textarea(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-        }
-
-
-# ------------------------------------------------------------------------------
-# WorkUnit Forms
-# ------------------------------------------------------------------------------
-
-class WorkUnitForm(forms.ModelForm):
-    class Meta:
-        model = WorkUnit
-        fields = ["external_id", "name", "notes"]
-        labels = {
-            "external_id": "External ID",
-            "name": "Work Unit Name",
-            "notes": "Notes",
-        }
-        widgets = {
-            "name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "external_id": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
             "notes": forms.Textarea(

@@ -7,10 +7,18 @@ from .models import CustomField
 # CustomField FORM
 # ------------------------------------------------------------------------------
 
+
 class CustomFieldForm(forms.ModelForm):
     class Meta:
         model = CustomField
-        fields = ["name", "label", "field_type", "content_type", "description", "is_required"]
+        fields = [
+            "name",
+            "label",
+            "field_type",
+            "content_type",
+            "description",
+            "is_required",
+        ]
         labels = {
             "name": "Field Name",
             "label": "Field Label",
@@ -40,8 +48,5 @@ class CustomFieldForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
-            "is_required":forms.CheckboxInput(attrs={"class": "form-control"})
+            "is_required": forms.CheckboxInput(attrs={"class": "form-control"}),
         }
-            
-
-    

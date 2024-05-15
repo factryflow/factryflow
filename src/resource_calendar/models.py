@@ -25,7 +25,6 @@ class WeeklyShiftTemplate(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
-    
 
 
 class DaysOfWeek(models.TextChoices):
@@ -38,7 +37,6 @@ class DaysOfWeek(models.TextChoices):
     SUNDAY = "Sunday", "Sunday"
 
 
-
 class WeeklyShiftTemplateDetail(BaseModel):
     day_of_week = models.TextField(choices=DaysOfWeek.choices)
     start_time = models.TimeField()
@@ -48,7 +46,6 @@ class WeeklyShiftTemplateDetail(BaseModel):
     def clean(self):
         if self.start_time >= self.end_time:
             raise ValidationError("Start time must be before end time")
-        
 
     class Meta:
         indexes = [
@@ -56,13 +53,11 @@ class WeeklyShiftTemplateDetail(BaseModel):
                 fields=["day_of_week"],
             )
         ]
-        unique_together = [
-            ["day_of_week", "start_time", "end_time"]
-        ]
-        db_table = "weekly_shift_template_detail" 
+        unique_together = [["day_of_week", "start_time", "end_time"]]
+        db_table = "weekly_shift_template_detail"
 
     def __str__(self):
-        return f"{self.day_of_week} {self.start_time} - {self.end_time}"                      
+        return f"{self.day_of_week} {self.start_time} - {self.end_time}"
 
 
 # ------------------------------------------------------------------------------

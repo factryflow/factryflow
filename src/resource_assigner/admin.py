@@ -1,26 +1,28 @@
 from django.contrib import admin
 
-from resource_assigner.models import AssigmentRule, AssignmentConstraint, TaskResourceAssigment
+from resource_assigner.models import (
+    AssigmentRule,
+    AssignmentConstraint,
+    TaskResourceAssigment,
+)
 
 
 @admin.register(AssignmentConstraint)
 class AssignmentConstraint(admin.ModelAdmin):
     list_display = [
         "task",
-        "resource_pool",
-        "required_units",
+        "resource_group",
         "created_at",
         "created_by",
     ]
     list_filter = [
         "task",
-        "resource_pool",
+        "resource_group",
         "resources",
-        "work_units",
         "created_at",
         "created_by",
     ]
-    search_fields = ["task", "resource_pool"]
+    search_fields = ["task", "resource_group"]
 
 
 @admin.register(AssigmentRule)
@@ -49,5 +51,4 @@ class TaskResourceAssigment(admin.ModelAdmin):
         "created_at",
         "created_by",
     ]
-    search_fields = ["task", "resource_pool"]
-
+    search_fields = ["task", "resource_group"]

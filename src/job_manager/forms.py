@@ -7,11 +7,16 @@ from .models import *
 # Job Forms
 # ------------------------------------------------------------------------------
 
+
 class JobTypeForm(forms.ModelForm):
     class Meta:
         model = JobType
         fields = ["external_id", "name", "notes"]
-        labels = {"external_id": "External ID", "name": "Job Type Name", "notes": "Notes"}
+        labels = {
+            "external_id": "External ID",
+            "name": "Job Type Name",
+            "notes": "Notes",
+        }
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -29,7 +34,6 @@ class JobTypeForm(forms.ModelForm):
                 }
             ),
         }
-
 
 
 class JobForm(forms.ModelForm):
@@ -109,16 +113,20 @@ class JobForm(forms.ModelForm):
         }
 
 
-
 # -----------------------------------------------------------------------------
 # WorkCenter Forms
 # -----------------------------------------------------------------------------
+
 
 class WorkCenterForm(forms.ModelForm):
     class Meta:
         model = WorkCenter
         fields = ["external_id", "name", "notes"]
-        labels = {"external_id": "External ID", "name": "Work Center Name", "notes": "Notes"}
+        labels = {
+            "external_id": "External ID",
+            "name": "Work Center Name",
+            "notes": "Notes",
+        }
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -138,16 +146,20 @@ class WorkCenterForm(forms.ModelForm):
         }
 
 
-
 # ------------------------------------------------------------------------------
 # Task Forms
 # ------------------------------------------------------------------------------
+
 
 class TaskTypeForm(forms.ModelForm):
     class Meta:
         model = TaskType
         fields = ["external_id", "name", "notes"]
-        labels = {"external_id": "External ID", "name": "Task Type Name", "notes": "Notes"}
+        labels = {
+            "external_id": "External ID",
+            "name": "Task Type Name",
+            "notes": "Notes",
+        }
         widgets = {
             "external_id": forms.TextInput(
                 attrs={
@@ -285,11 +297,16 @@ class TaskForm(forms.ModelForm):
 # Dependency Forms
 # ------------------------------------------------------------------------------
 
+
 class DependencyTypeForm(forms.ModelForm):
     class Meta:
         model = DependencyType
         fields = ["external_id", "name", "notes"]
-        labels = {"name": "Dependency Type Name", "external_id": "External ID", "notes": "Notes"}
+        labels = {
+            "name": "Dependency Type Name",
+            "external_id": "External ID",
+            "notes": "Notes",
+        }
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -312,7 +329,14 @@ class DependencyTypeForm(forms.ModelForm):
 class DependencyForm(forms.ModelForm):
     class Meta:
         model = Dependency
-        fields = ["external_id", "name", "expected_close_datetime", "dependency_type", "dependency_status", "notes"]
+        fields = [
+            "external_id",
+            "name",
+            "expected_close_datetime",
+            "dependency_type",
+            "dependency_status",
+            "notes",
+        ]
         labels = {
             "name": "Dependency Name",
             "expected_close_datetime": "Expected Close Date",
@@ -356,16 +380,20 @@ class DependencyForm(forms.ModelForm):
         }
 
 
-
 # ------------------------------------------------------------------------------
 # Work Center Forms
 # ------------------------------------------------------------------------------
+
 
 class WorkCenterForm(forms.ModelForm):
     class Meta:
         model = WorkCenter
         fields = ["external_id", "name", "notes"]
-        labels = {"external_id": "External ID", "name": "Work Center Name", "notes": "Notes"}
+        labels = {
+            "external_id": "External ID",
+            "name": "Work Center Name",
+            "notes": "Notes",
+        }
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -388,12 +416,18 @@ class WorkCenterForm(forms.ModelForm):
 # ------------------------------------------------------------------------------
 # Item Forms
 # ------------------------------------------------------------------------------
-        
+
+
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ["external_id", "name", "description", "notes"]
-        labels = {"external_id": "External ID", "name": "Item Name", "description": "Description", "notes": "Notes"}
+        labels = {
+            "external_id": "External ID",
+            "name": "Item Name",
+            "description": "Description",
+            "notes": "Notes",
+        }
         widgets = {
             "name": forms.TextInput(
                 attrs={

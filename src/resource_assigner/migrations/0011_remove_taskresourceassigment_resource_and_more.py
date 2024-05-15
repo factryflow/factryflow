@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resource_manager", "0009_remove_resource_resource_pools_and_more"),
         ("resource_assigner", "0010_alter_assignmentconstraint_resources_and_more"),

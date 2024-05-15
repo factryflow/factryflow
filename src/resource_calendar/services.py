@@ -15,6 +15,11 @@ from .models import (
 )
 
 
+# -----------------------------------------------------------------------------
+# WeeklyShiftTemplateDetailService
+# -----------------------------------------------------------------------------
+
+
 class WeeklyShiftTemplateDetailService:
     def __init__(self, user) -> None:
         self.user = user
@@ -126,6 +131,11 @@ class WeeklyShiftTemplateDetailService:
         return True
 
 
+# -----------------------------------------------------------------------------
+# WeeklyShiftTemplateService
+# -----------------------------------------------------------------------------
+
+
 class WeeklyShiftTemplateService:
     def __init__(self, user) -> None:
         self.user = user
@@ -141,7 +151,7 @@ class WeeklyShiftTemplateService:
         """
         Process a list of WeeklyShiftTemplateDetails for a given WeeklyShiftTemplate.
         """
-        existing_details = template.details.all()
+        existing_details = template.weekly_shift_template_details.all()
 
         # Convert existing details to a dictionary
         existing_detail_dict = {
@@ -304,6 +314,11 @@ class WeeklyShiftTemplateService:
 
         template.delete()
         return True
+
+
+# -----------------------------------------------------------------------------
+# OperationalExceptionTypeService
+# -----------------------------------------------------------------------------
 
 
 class OperationalExceptionTypeService:

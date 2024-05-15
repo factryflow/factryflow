@@ -20,7 +20,13 @@ class LoginRequiredMiddleware(MiddlewareMixin):
         exempt_urls = [reverse(view_name) for view_name in exempt_view_names]
 
         # Skip middleware for exempt paths and any path starting with /api/
-        if any(request.path_info.startswith(path) for path in exempt_urls + list(exempt_paths)) or request.user.is_authenticated:
+        if (
+            any(
+                request.path_info.startswith(path)
+                for path in exempt_urls + list(exempt_paths)
+            )
+            or request.user.is_authenticated
+        ):
             return None
 
         # Use login_required for other views

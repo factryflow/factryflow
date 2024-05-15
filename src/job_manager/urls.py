@@ -1,10 +1,21 @@
 from django.urls import path
 
-from .views import JOB_VIEWS, TASK_VIEWS, DEPENDENCY_VIEWS, JOB_TYPE_VIEWS, TASK_TYPE_VIEWS, DEPENDENCY_TYPE_VIEWS, WORK_CENTER_VIEWS, ITEM_VIEWS
+from .views import (
+    JOB_VIEWS,
+    TASK_VIEWS,
+    DEPENDENCY_VIEWS,
+    JOB_TYPE_VIEWS,
+    TASK_TYPE_VIEWS,
+    DEPENDENCY_TYPE_VIEWS,
+    WORK_CENTER_VIEWS,
+    ITEM_VIEWS,
+)
 
 urlpatterns = [
     # work center urls
-    path("work-centers/new/", WORK_CENTER_VIEWS.show_model_form, name="work_center_form"),
+    path(
+        "work-centers/new/", WORK_CENTER_VIEWS.show_model_form, name="work_center_form"
+    ),
     path(
         "work_center-create/",
         WORK_CENTER_VIEWS.create_or_update_model_instance,
@@ -26,8 +37,11 @@ urlpatterns = [
         WORK_CENTER_VIEWS.show_model_form,
         name="edit_work_center",
     ),
-    
-
+    path(
+        "work-centers/view/<int:id>/field=<str:field>",
+        WORK_CENTER_VIEWS.show_model_form,
+        name="work_center_dependencies",
+    ),
     # jobs urls
     path("jobs/new/", JOB_VIEWS.show_model_form, name="job_form"),
     path("job-create/", JOB_VIEWS.create_or_update_model_instance, name="job_create"),
@@ -42,7 +56,6 @@ urlpatterns = [
         JOB_VIEWS.show_model_form,
         name="job_dependencies",
     ),
-
     # job_type urls
     path("job-types/new/", JOB_TYPE_VIEWS.show_model_form, name="job_type_form"),
     path(
@@ -66,7 +79,11 @@ urlpatterns = [
         JOB_TYPE_VIEWS.show_model_form,
         name="edit_job_type",
     ),
-
+    path(
+        "job-types/view/<int:id>/field=<str:field>",
+        JOB_TYPE_VIEWS.show_model_form,
+        name="job_type_dependencies",
+    ),
     # tasks urls
     path("tasks/new/", TASK_VIEWS.show_model_form, name="task_form"),
     path(
@@ -85,7 +102,6 @@ urlpatterns = [
         TASK_VIEWS.show_model_form,
         name="task_dependencies",
     ),
-
     # task type urls
     path("task-types/new/", TASK_TYPE_VIEWS.show_model_form, name="task_type_form"),
     path(
@@ -109,8 +125,11 @@ urlpatterns = [
         TASK_TYPE_VIEWS.show_model_form,
         name="edit_task_type",
     ),
-
-
+    path(
+        "task-types/view/<int:id>/field=<str:field>",
+        TASK_TYPE_VIEWS.show_model_form,
+        name="task_type_dependencies",
+    ),
     # dependencies urls
     path("dependencys/new/", DEPENDENCY_VIEWS.show_model_form, name="dependency_form"),
     path(
@@ -139,7 +158,6 @@ urlpatterns = [
         DEPENDENCY_VIEWS.show_model_form,
         name="dependency_dependencies",
     ),
-
     # dependency type urls
     path(
         "dependency-types/new/",
@@ -171,12 +189,27 @@ urlpatterns = [
         DEPENDENCY_TYPE_VIEWS.show_model_form,
         name="edit_dependency_type",
     ),
-
+    path(
+        "dependency-types/view/<int:id>/field=<str:field>",
+        DEPENDENCY_TYPE_VIEWS.show_model_form,
+        name="dependency_type_dependencies",
+    ),
     # item urls
     path("items/new/", ITEM_VIEWS.show_model_form, name="item_form"),
-    path("item-create/", ITEM_VIEWS.create_or_update_model_instance, name="item_create"),
+    path(
+        "item-create/", ITEM_VIEWS.create_or_update_model_instance, name="item_create"
+    ),
     path("items/", ITEM_VIEWS.get_all_instances, name="item"),
     path("items/delete/<int:id>/", ITEM_VIEWS.delete_obj_instance, name="delete_item"),
     path("items/view/<int:id>/", ITEM_VIEWS.show_model_form, name="view_item"),
-    path("items/view/<int:id>/edit=<str:edit>", ITEM_VIEWS.show_model_form, name="edit_item"),
+    path(
+        "items/view/<int:id>/edit=<str:edit>",
+        ITEM_VIEWS.show_model_form,
+        name="edit_item",
+    ),
+    path(
+        "items/view/<int:id>/field=<str:field>",
+        ITEM_VIEWS.show_model_form,
+        name="item_dependencies",
+    ),
 ]

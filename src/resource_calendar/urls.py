@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import WEEKLY_SHIFT_TEMPLATE_VIEWS, WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS, OPERATIONAL_EXCEPTION_TYPE_VIEWS, OPERATIONAL_EXCEPTION_VIEWS
+from .views import (
+    WEEKLY_SHIFT_TEMPLATE_VIEWS,
+    WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS,
+    OPERATIONAL_EXCEPTION_TYPE_VIEWS,
+    OPERATIONAL_EXCEPTION_VIEWS,
+)
 
 urlpatterns = [
     # weekly shift template urls
@@ -34,7 +39,11 @@ urlpatterns = [
         WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
         name="edit_weekly_shift_template",
     ),
-    
+    path(
+        "weekly_shift_templates/view/<int:id>/field=<str:field>",
+        WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
+        name="weekly_shift_template_dependencies",
+    ),
     # weekly shift template detail urls
     path(
         "weekly_shift_template_details/new/",
@@ -66,7 +75,11 @@ urlpatterns = [
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
         name="edit_weekly_shift_template_detail",
     ),
-
+    path(
+        "weekly_shift_template_details/view/<int:id>/field=<str:field>",
+        WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
+        name="weekly_shift_template_detail_dependencies",
+    ),
     # operational exception type urls
     path(
         "operational_exception_types/new/",
@@ -98,8 +111,11 @@ urlpatterns = [
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.show_model_form,
         name="edit_operational_exception_type",
     ),
-
-
+    path(
+        "operational_exception_types/view/<int:id>/field=<str:field>",
+        OPERATIONAL_EXCEPTION_TYPE_VIEWS.show_model_form,
+        name="operational_exception_type_dependencies",
+    ),
     # operational exception urls
     path(
         "operational_exceptions/new/",
@@ -130,5 +146,10 @@ urlpatterns = [
         "operational_exceptions/view/<int:id>/edit=<str:edit>",
         OPERATIONAL_EXCEPTION_VIEWS.show_model_form,
         name="edit_operational_exception",
+    ),
+    path(
+        "operational_exceptions/view/<int:id>/field=<str:field>",
+        OPERATIONAL_EXCEPTION_VIEWS.show_model_form,
+        name="operational_exception_dependencies",
     ),
 ]

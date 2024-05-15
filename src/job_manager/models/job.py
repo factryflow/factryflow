@@ -18,7 +18,6 @@ class JobType(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
-    
 
 
 class JobStatusChoices(models.TextChoices):

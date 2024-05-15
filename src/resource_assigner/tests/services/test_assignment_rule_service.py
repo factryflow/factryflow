@@ -10,6 +10,9 @@ def assignment_rule_data():
         "name": "test",
         "description": "test",
         "work_center": WorkCenterFactory(),
+        "external_id": "test",
+        "notes": "description",
+        "is_active": True,
         "criteria": [
             {
                 "field": "test",

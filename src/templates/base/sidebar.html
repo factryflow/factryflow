@@ -107,9 +107,20 @@
           {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='RG' menu_item_name='Resources Pools' menu_item_url="/resource-pools" %}
+          {% with menu_item_id='RG' menu_item_name='Resources Group' menu_item_url="/resource-pools" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+        </ul>
+      </div>
+
+      {% comment %} Resource Calender Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='RC' menu_item_icon='images/Rm.svg' menu_item_name='Resource Calender' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4">
           {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly_shift_templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -117,12 +128,6 @@
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational_exceptions" %}
-            {% partial _dropdown_menu_item %}
-          {% endwith %}
-          {% with menu_item_id='AR' menu_item_name='Allocation Rules' menu_item_url="/assigment-rules" %}
-            {% partial _dropdown_menu_item %}
-          {% endwith %} 
-          {% with menu_item_id='WU' menu_item_name='Work Units' menu_item_url="/work_units" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>

@@ -5,6 +5,7 @@ from simple_history.models import HistoricalRecords
 from job_manager.models.job import Job
 from .item import Item
 
+
 class WorkCenter(BaseModelWithExtras):
     name = models.CharField(max_length=150, unique=True)
 
@@ -45,7 +46,6 @@ class TaskStatusChoices(models.TextChoices):
         return {choice[0]: choice[1] for choice in cls.choices}
 
 
-
 class Task(BaseModelWithExtras):
     # core fields
     id = models.AutoField(primary_key=True)
@@ -66,7 +66,11 @@ class Task(BaseModelWithExtras):
 
     # relationship fields
     task_type = models.ForeignKey(
-        TaskType, on_delete=models.CASCADE, related_name="tasks_type", null=True, blank=True
+        TaskType,
+        on_delete=models.CASCADE,
+        related_name="tasks_type",
+        null=True,
+        blank=True,
     )
     job = models.ForeignKey(
         Job, on_delete=models.CASCADE, related_name="tasks", blank=True, null=True
@@ -77,7 +81,9 @@ class Task(BaseModelWithExtras):
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
-    dependencies = models.ManyToManyField("Dependency", blank=True, related_name="tasks")
+    dependencies = models.ManyToManyField(
+        "Dependency", blank=True, related_name="tasks"
+    )
 
     # special fields
     history = HistoricalRecords(table_name="task_history")

@@ -23,7 +23,6 @@ class JobTypeFactory(factory.django.DjangoModelFactory):
     notes = ""
 
 
-
 class JobFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Job
@@ -66,7 +65,6 @@ class ItemFactory(factory.django.DjangoModelFactory):
     description = "radom description"
     external_id = "EXTERNAL_ID_1"
     notes = "random notes"
-
 
 
 class DependencyTypeFactory(factory.django.DjangoModelFactory):
@@ -119,7 +117,7 @@ class TaskFactory(factory.django.DjangoModelFactory):
     setup_time = 0
     teardown_time = 0
     item = factory.SubFactory(ItemFactory)
-    duration = 1 
+    duration = 1
     run_time_per_unit = 1
     job = None
     external_id = ""

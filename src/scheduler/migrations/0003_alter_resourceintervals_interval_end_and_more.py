@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("scheduler", "0002_resourceallocations_run_id_resourceintervals_run_id"),
     ]

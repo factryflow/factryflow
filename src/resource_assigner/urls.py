@@ -39,7 +39,6 @@ urlpatterns = [
         TASK_RESOURCE_ASSIGNMENT_VIEWS.show_model_form,
         name="task_resource_assigment_dependencies",
     ),
-
     # assigment_rule urls
     path(
         "assigment-rules/new/",
@@ -71,7 +70,6 @@ urlpatterns = [
         ASSIGMENT_RULE_VIEWS.show_model_form,
         name="edit_assigment_rule",
     ),
-
     # assigment_rule_criteria urls
     path(
         "assigment-rule-criteria/new/",
@@ -103,7 +101,6 @@ urlpatterns = [
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
         name="edit_assigment_rule_criteria",
     ),
-
     # assignment_constraint urls
     path(
         "assignment-constraints/new/",

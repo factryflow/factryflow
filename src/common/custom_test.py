@@ -1,6 +1,7 @@
 import json
 import pytest
 
+
 class APICRUDTEST:
     """A class for dynamically testing CRUD operations for API endpoints.
 
@@ -12,7 +13,9 @@ class APICRUDTEST:
         update_payload (dict): A dictionary containing fields to update for testing PUT requests.
     """
 
-    def __init__(self, api_client, endpoint, model_factory, payload_factory, update_payload):
+    def __init__(
+        self, api_client, endpoint, model_factory, payload_factory, update_payload
+    ):
         self.api_client = api_client
         self.endpoint = endpoint
         self.model_factory = model_factory

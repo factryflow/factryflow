@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resource_assigner", "0007_assignmentconstraint_resource_pool_and_more"),
     ]

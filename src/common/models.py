@@ -25,6 +25,8 @@ class BaseModel(models.Model):
         null=True,
         blank=True,
     )
+    # add jsonb field for storing extra data - create a reatable variable named extras
+    custom_fields = models.JSONField(default=dict, blank=True)
 
     class Meta:
         abstract = True
@@ -48,7 +50,7 @@ class BaseModelWithExtras(BaseModel):
 
 class FieldType(models.TextChoices):
     TEXT = "text", "Text"
-    INTEGER = "integer", "Integer"
+    NUMBER = "number", "number"
     DATE = "date", "Date"
     TIME = "time", "Time"
     DATETIME = "datetime", "Datetime"
@@ -63,7 +65,6 @@ class FieldType(models.TextChoices):
         - Dictionary where choice values are keys and choice descriptions are values.
         """
         return {choice[0]: choice[1] for choice in cls.choices}
-
 
 
 class CustomField(BaseModel):

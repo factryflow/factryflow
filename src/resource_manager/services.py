@@ -4,7 +4,12 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from resource_calendar.models import WeeklyShiftTemplate
 
-from resource_manager.models import Resource, ResourcePool, WorkUnit
+from resource_manager.models import Resource, ResourceGroup
+
+
+# ------------------------------------------------------------------------------
+# Resource Service
+# ------------------------------------------------------------------------------
 
 
 class ResourceService:
@@ -18,7 +23,6 @@ class ResourceService:
         external_id: str = "",
         notes: str = "",
         resource_type: str = None,
-        work_units: list[WorkUnit] = None,
         users: list[User] = None,
         weekly_shift_template: WeeklyShiftTemplate = None,
     ) -> Resource:
@@ -33,9 +37,6 @@ class ResourceService:
             resource_type=resource_type,
             notes=notes,
         )
-
-        if work_units:
-            resource.work_units.set(work_units)
 
         if users:
             resource.users.set(users)
@@ -54,7 +55,6 @@ class ResourceService:
             "name",
             "external_id",
             "notes",
-            "work_units",
             "users",
             "weekly_shift_template",
         ]
@@ -74,7 +74,12 @@ class ResourceService:
         return True
 
 
-class WorkUnitService:
+# ------------------------------------------------------------------------------
+# ResourceGroup Service
+# ------------------------------------------------------------------------------
+
+
+class ResourceGroupService:
     def __init__(self, user) -> None:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
@@ -84,105 +89,48 @@ class WorkUnitService:
         name: str,
         external_id: str = "",
         notes: str = "",
-    ) -> WorkUnit:
-        # check permissions for add workunit
-        if not self.permission_service.check_for_permission("add_workunit"):
-            raise PermissionDenied()
-
-        work_unit = WorkUnit.objects.create(
-            name=name,
-            external_id=external_id,
-            notes=notes,
-        )
-
-        work_unit.full_clean()
-        work_unit.save(user=self.user)
-
-        return work_unit
-
-    def update(self, instance: WorkUnit, data: dict) -> WorkUnit:
-        # check permissions for update work unit
-        if not self.permission_service.check_for_permission("change_workunit"):
-            raise PermissionDenied()
-
-        fields = [
-            "name",
-            "external_id",
-            "notes",
-        ]
-
-        work_unit, _ = model_update(
-            instance=instance, fields=fields, data=data, user=self.user
-        )
-
-        return work_unit
-
-    def delete(self, instance: WorkUnit) -> None:
-        # check permission for delete work unit
-        if not self.permission_service.check_for_permission("delete_workunit"):
-            raise PermissionDenied()
-
-        instance.delete()
-        return True
-
-
-class ResourcePoolService:
-    def __init__(self, user) -> None:
-        self.user = user
-        self.permission_service = AbstractPermissionService(user=user)
-
-    def create(
-        self,
-        name: str,
-        external_id: str = "",
-        notes: str = "",
-        parent: ResourcePool = None,
+        parent: ResourceGroup = None,
         resources: list[Resource] = None,
-        work_units: list[WorkUnit] = None,
-    ) -> ResourcePool:
+    ) -> ResourceGroup:
         # check permissions for add resource pool
-        if not self.permission_service.check_for_permission("add_resourcepool"):
+        if not self.permission_service.check_for_permission("add_resourcegroup"):
             raise PermissionDenied()
 
-        resource_pool = ResourcePool.objects.create(
+        resource_group = ResourceGroup.objects.create(
             name=name,
             external_id=external_id,
             notes=notes,
             parent=parent,
         )
 
-        resource_pool.full_clean()
-        resource_pool.save(user=self.user)
+        resource_group.full_clean()
+        resource_group.save(user=self.user)
 
-        if work_units:
-            resource_pool.work_units.set(work_units)
-        
         if resources:
-            resource_pool.resources.set(resources)
+            resource_group.resources.set(resources)
 
-        return resource_pool
+        return resource_group
 
-    def update(self, instance: ResourcePool, data: dict) -> ResourcePool:
+    def update(self, instance: ResourceGroup, data: dict) -> ResourceGroup:
         # check permissions for update resource pool
-        if not self.permission_service.check_for_permission("change_resourcepool"):
+        if not self.permission_service.check_for_permission("change_resourcegroup"):
             raise PermissionDenied()
 
         fields = [
             "name",
             "external_id",
             "parent",
-            "work_units",
             "resources",
             "notes",
         ]
 
-        resource_pool, _ = model_update(instance=instance, fields=fields, data=data)
+        resource_group, _ = model_update(instance=instance, fields=fields, data=data)
 
-        return resource_pool
+        return resource_group
 
-    def delete(self, instance: ResourcePool) -> None:
+    def delete(self, instance: ResourceGroup) -> None:
         # check permissions for delete resource pool
-        if not self.permission_service.check_for_permission("delete_resourcepool"):
+        if not self.permission_service.check_for_permission("delete_resourcegroup"):
             raise PermissionDenied()
 
         instance.delete()

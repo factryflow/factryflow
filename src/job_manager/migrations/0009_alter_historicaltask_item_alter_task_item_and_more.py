@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("job_manager", "0008_alter_job_dependencies_item"),
     ]

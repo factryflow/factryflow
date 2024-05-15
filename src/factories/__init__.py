@@ -20,7 +20,6 @@ from .resource_calendar_factories import (
 )
 from .resource_manager_factories import (
     ResourceFactory,
-    ResourcePoolFactory,
-    WorkUnitFactory,
+    ResourceGroupFactory,
 )
 from .user_factories import UserFactory

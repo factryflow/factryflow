@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from common.views import CRUDView, CustomTableView
 # Create your views here.
 
@@ -60,8 +58,24 @@ TASK_RESOURCE_ASSIGNMENT_VIEWS = CRUDView(
 # AssigmentRule Views
 # ------------------------------------------------------------------------------
 
-ASSIGMENT_RULE_MODEL_FIELDS = ["id", "external_id", "notes", "name", "description", "work_center", "is_active"]
-ASSIGMENT_RULE_TABLE_HEADERS = ["ID", "External ID", "Notes", "Name", "Description", "Work Center", "Is Active"]
+ASSIGMENT_RULE_MODEL_FIELDS = [
+    "id",
+    "external_id",
+    "notes",
+    "name",
+    "description",
+    "work_center",
+    "is_active",
+]
+ASSIGMENT_RULE_TABLE_HEADERS = [
+    "ID",
+    "External ID",
+    "Notes",
+    "Name",
+    "Description",
+    "Work Center",
+    "Is Active",
+]
 
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
@@ -82,13 +96,24 @@ ASSIGMENT_RULE_VIEWS = CRUDView(
 )
 
 
-
 # ------------------------------------------------------------------------------
 # AssigmentRuleCriteria Views
 # ------------------------------------------------------------------------------
 
-ASSIGMENT_RULE_CRITERIA_MODEL_FIELDS = ["id", "assigment_rule", "field", "operator", "value"]
-ASSIGMENT_RULE_CRITERIA_TABLE_HEADERS = ["ID", "Assigment Rule", "Field", "Operator", "Value"]
+ASSIGMENT_RULE_CRITERIA_MODEL_FIELDS = [
+    "id",
+    "assigment_rule",
+    "field",
+    "operator",
+    "value",
+]
+ASSIGMENT_RULE_CRITERIA_TABLE_HEADERS = [
+    "ID",
+    "Assigment Rule",
+    "Field",
+    "Operator",
+    "Value",
+]
 
 ASSIGMENT_RULE_CRITERIA_SEARCH_FIELDS = ["assigment_rule", "field", "operator", "value"]
 
@@ -179,4 +204,3 @@ ASSIGNMENT_CONSTRAINT_VIEWS = CRUDView(
     model_form=AssignmentConstraintForm,
     model_table_view=ASSIGNMENT_CONSTRAINT_TABLE_VIEW,
 )
-

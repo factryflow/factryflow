@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("job_manager", "0006_historicaltask_duration_task_duration"),
     ]

@@ -10,26 +10,23 @@ from resource_assigner.models import (
 
 class AssignmentConstraintIn(ModelSchema):
     resources: list[int] = Field(None, alias="resource_ids")
-    work_units: list[int] = Field(None, alias="work_unit_ids")
 
     class Meta:
         model = AssignmentConstraint
         fields = [
             "task",
             "assignment_rule",
-            "resource_pool",
-            "required_units",
+            "resource_group",
             "is_direct",
         ]
 
 
 class AssignmentConstraintOut(ModelSchema):
     resource_ids: list[int] = Field([], alias="resource_id_list")
-    work_unit_ids: list[int] = Field([], alias="work_unit_id_list")
 
     class Meta:
         model = AssignmentConstraint
-        exclude = ["resources", "work_units"]
+        exclude = ["resources"]
 
 
 class AssigmentRuleCriteriaIn(ModelSchema):

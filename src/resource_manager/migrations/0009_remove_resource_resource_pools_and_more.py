@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resource_manager", "0008_alter_historicalresource_id_and_more"),
     ]
