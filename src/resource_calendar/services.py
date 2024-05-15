@@ -79,12 +79,17 @@ class WeeklyShiftTemplateDetailService:
         ):
             raise PermissionDenied()
 
+        list_of_details = []
+
         for detail_data in details:
-            self.create(
+            detail = self.create(
                 day_of_week=detail_data["day_of_week"],
                 start_time=detail_data["start_time"],
                 end_time=detail_data["end_time"],
             )
+            list_of_details.append(detail)
+
+        return list_of_details
 
     @transaction.atomic
     def update(
@@ -181,7 +186,9 @@ class WeeklyShiftTemplateService:
             self.weeklyshifttemplatedetailservice.delete(detail)
 
         # Create new details
-        self.weeklyshifttemplatedetailservice.create_bulk(details=details_to_create)
+        list_of_details = self.weeklyshifttemplatedetailservice.create_bulk(details=details_to_create)
+
+        return list_of_details
 
     def _check_no_overlapping_details(self, template: WeeklyShiftTemplate) -> None:
         details_by_day = defaultdict(list)
@@ -221,7 +228,7 @@ class WeeklyShiftTemplateService:
         notes: str = "",
         description: str = "",
         details: list[dict] = None,
-        weekly_shift_template_details: list[WeeklyShiftTemplateDetail] = None,
+        # weekly_shift_template_details: list[WeeklyShiftTemplateDetail] = None,
     ) -> WeeklyShiftTemplate:
         """
         Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
@@ -243,14 +250,14 @@ class WeeklyShiftTemplateService:
         )
 
         # Create WeeklyShiftTemplateDetails
+        weekly_shift_details = None
         if details:
-            self.weeklyshifttemplatedetailservice.create_bulk(details=details)
-
+            weekly_shift_details = self.weeklyshifttemplatedetailservice.create_bulk(details=details)
             # Check for overlapping details
             self._check_no_overlapping_details(template)
 
-        if weekly_shift_template_details:
-            template.weekly_shift_template_details.set(weekly_shift_template_details)
+        if weekly_shift_details:
+            template.weekly_shift_template_details.set(weekly_shift_details)
 
         template.full_clean()
         template.save(user=self.user)
@@ -280,11 +287,15 @@ class WeeklyShiftTemplateService:
             "weekly_shift_template_details",
         ]
 
+        # details = data.pop("weekly_shift_template_details", [])
+
         template, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
 
-        details = data.get("details", [])
+        details = data.get("weekly_shift_template_details")
+
+        
 
         if details:
             # Validate details

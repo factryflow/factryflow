@@ -52,11 +52,11 @@ def test_custom_field_update(custom_field_data):
 
 
 @pytest.mark.django_db
-def test_cant_update_field_type(custom_field_data):
+def test_can_update_field_type(custom_field_data):
     user = UserFactory()
 
     custom_field = CustomFieldService(user=user).create(**custom_field_data)
-    new_field_type = "integer"
+    new_field_type = "number"
 
     CustomFieldService(user=user).update(
         instance=custom_field,

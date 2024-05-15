@@ -16,6 +16,7 @@ from common.utils.views import (
 from .forms import CustomFieldForm
 from .models import CustomField, FieldType
 from .services import CustomFieldService
+from django.contrib.contenttypes.models import ContentType
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -74,7 +75,7 @@ class CRUDView:
         # Dispatches the request to the appropriate view method.
         return super().dispatch(request, *args, **kwargs)
 
-    def get_custom_field_json_data(self, instance=None):
+    def get_custom_field_json_data(self, content_type, instance=None):
         # to get custom field json data
         data = []
         id = 0
@@ -89,7 +90,7 @@ class CRUDView:
                 field_info = [id, field_name, field_label, field_type, value]
                 data.append(field_info)
         else:
-            custom_fields = CustomField.objects.all()
+            custom_fields = CustomField.objects.filter(content_type=content_type)
             for custom_field in custom_fields:
                 id += 1
                 field_name = custom_field.name
@@ -156,6 +157,12 @@ class CRUDView:
         form_action_url = f"/{self.model_name.lower()}-create/"
 
         relation_field_name = None
+
+        # get content type using self.model
+        model_content_type = ContentType.objects.get_for_model(self.model)
+        print(model_content_type)
+
+
         # get field parameter
         if len(self.table_view.model_relation_headers) > 0:
             relation_field_name = (
@@ -175,7 +182,7 @@ class CRUDView:
             else:
                 page_label = f"{self.model_title} Details"
 
-            custom_field_data = self.get_custom_field_json_data(instance_obj)
+            custom_field_data = self.get_custom_field_json_data(model_content_type, instance_obj)
 
             # self.table_view.get_all_many_to_field_instances(instance_obj)
             if edit != "true":
@@ -212,7 +219,7 @@ class CRUDView:
             form_label = f"New {self.model_title} Details"
             page_label = f"New {self.model_title}"
 
-            custom_field_data = self.get_custom_field_json_data()
+            custom_field_data = self.get_custom_field_json_data(content_type=model_content_type)
 
         relation_table_headers = (
             ["ID", "Name", "Label", "Type", "Value"]
@@ -459,7 +466,7 @@ class CustomTableView:
         """
         return self.model.objects.all()
 
-    def get_custom_field_json_data(self, instance):
+    def get_custom_field_json_data(self, instance=None):
         # get custom field json data in two rows one is headers which are keys(convert in captilize and replace "_" with " ", and values as data)
         # each model has extras_field as a custom field
         custom_field_data = instance.custom_fields

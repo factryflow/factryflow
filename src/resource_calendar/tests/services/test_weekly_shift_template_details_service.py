@@ -6,7 +6,7 @@ from factories import UserFactory
 
 from resource_calendar.services import WeeklyShiftTemplateDetailService
 
-from resource_calendar.models import DaysOfWeek
+from resource_calendar.models import DaysOfWeek, WeeklyShiftTemplateDetail
 
 
 @pytest.fixture
@@ -94,7 +94,7 @@ def test_can_create_bulk(multiple_detail_data):
 
     WeeklyShiftTemplateDetailService(user=user).create_bulk(multiple_detail_data)
 
-    assert len() == 3
+    assert WeeklyShiftTemplateDetail.objects.count() == len(multiple_detail_data)
 
 
 @pytest.mark.django_db

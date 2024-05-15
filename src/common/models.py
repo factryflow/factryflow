@@ -26,7 +26,7 @@ class BaseModel(models.Model):
         blank=True,
     )
     # add jsonb field for storing extra data - create a reatable variable named extras
-    custom_fields = models.JSONField(default=dict, blank=True)
+    custom_fields = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:
         abstract = True
