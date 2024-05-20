@@ -1,12 +1,13 @@
+from django.core.management.base import BaseCommand
+from data_seeding_scripts.utils.get_data_from_csv import add_data_from_csv
+
 from job_manager.models import JobType, TaskType, WorkCenter, Item
-from resource_manager.models import Resource, ResourceGroup
 from resource_calendar.models import (
     WeeklyShiftTemplate,
     WeeklyShiftTemplateDetail,
-    OperationalException,
+    OperationalExceptionType,
 )
-from django.core.management.base import BaseCommand
-from data_seeding_scripts.utils.get_data_from_csv import add_data_from_csv
+
 
 
 # models_details - list of dictionaries containing model_name, model, and file_name
@@ -15,26 +16,20 @@ models_details = [
     {"model_name": "TaskType", "model": TaskType, "file_name": "task_type.csv"},
     {"model_name": "WorkCenter", "model": WorkCenter, "file_name": "work_center.csv"},
     {"model_name": "Item", "model": Item, "file_name": "item.csv"},
-    {"model_name": "Resource", "model": Resource, "file_name": "resource.csv"},
-    {
-        "model_name": "ResourceGroup",
-        "model": ResourceGroup,
-        "file_name": "resource_group.csv",
-    },
     {
         "model_name": "WeeklyShiftTemplate",
         "model": WeeklyShiftTemplate,
-        "file_name": "weekly_shift_template.csv",
+        "file_name": "shift_template.csv",
     },
     {
         "model_name": "WeeklyShiftTemplateDetail",
         "model": WeeklyShiftTemplateDetail,
-        "file_name": "weekly_shift_template_detail.csv",
+        "file_name": "shift_details.csv",
     },
     {
-        "model_name": "OperationalException",
-        "model": OperationalException,
-        "file_name": "operational_exception.csv",
+        "model_name": "OperationalExceptionType",
+        "model": OperationalExceptionType,
+        "file_name": "exception_type.csv",
     },
 ]
 

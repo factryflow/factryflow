@@ -38,7 +38,7 @@ urlpatterns = [
         name="edit_work_center",
     ),
     path(
-        "work-centers/view/<int:id>/field=<str:field>",
+        "work_centers/view/<int:id>/field=<str:field>",
         WORK_CENTER_VIEWS.show_model_form,
         name="work_center_dependencies",
     ),

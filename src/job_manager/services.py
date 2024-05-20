@@ -250,6 +250,7 @@ class JobTypeService:
 
         return job_type
 
+    @transaction.atomic
     def update(self, job_type: JobType, data: dict) -> JobType:
         # check for permission to update job type
         if not self.permission_service.check_for_permission("change_jobtype"):
@@ -268,6 +269,7 @@ class JobTypeService:
 
         return job_type
 
+    @transaction.atomic
     def delete(self, job_type: JobType) -> None:
         # check for permission to delete job type
         if not self.permission_service.check_for_permission("delete_jobtype"):
@@ -394,6 +396,7 @@ class DependencyTypeService:
 
         return dependency_type
 
+    @transaction.atomic
     def update(self, dependency_type: DependencyType, data: dict) -> DependencyType:
         # check for permission to update dependency type
         if not self.permission_service.check_for_permission("change_dependencytype"):
@@ -415,6 +418,7 @@ class DependencyTypeService:
 
         return dependency_type
 
+    @transaction.atomic
     def delete(self, dependency_type: DependencyType) -> None:
         # check for permission to delete dependency type
         if not self.permission_service.check_for_permission("delete_dependencytype"):
@@ -526,6 +530,7 @@ class ItemService:
 
         return item
 
+    @transaction.atomic
     def update(self, instance: Item, data: dict) -> Item:
         # check for permission to update item
         if not self.permission_service.check_for_permission("change_item"):
@@ -545,6 +550,7 @@ class ItemService:
 
         return item
 
+    @transaction.atomic
     def delete(self, instance: Item) -> None:
         # check for permission to delete item
         if not self.permission_service.check_for_permission("delete_item"):
