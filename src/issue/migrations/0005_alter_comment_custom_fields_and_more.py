@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("issue", "0004_alter_comment_custom_fields_and_more"),
     ]

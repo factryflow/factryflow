@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resource_assigner", "0018_alter_assigmentrule_custom_fields_and_more"),
     ]

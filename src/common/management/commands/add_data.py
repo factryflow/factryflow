@@ -9,7 +9,6 @@ from resource_calendar.models import (
 )
 
 
-
 # models_details - list of dictionaries containing model_name, model, and file_name
 models_details = [
     {"model_name": "JobType", "model": JobType, "file_name": "job_type.csv"},

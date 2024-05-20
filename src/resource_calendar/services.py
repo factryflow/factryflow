@@ -186,7 +186,9 @@ class WeeklyShiftTemplateService:
             self.weeklyshifttemplatedetailservice.delete(detail)
 
         # Create new details
-        list_of_details = self.weeklyshifttemplatedetailservice.create_bulk(details=details_to_create)
+        list_of_details = self.weeklyshifttemplatedetailservice.create_bulk(
+            details=details_to_create
+        )
 
         return list_of_details
 
@@ -252,7 +254,9 @@ class WeeklyShiftTemplateService:
         # Create WeeklyShiftTemplateDetails
         weekly_shift_details = None
         if details:
-            weekly_shift_details = self.weeklyshifttemplatedetailservice.create_bulk(details=details)
+            weekly_shift_details = self.weeklyshifttemplatedetailservice.create_bulk(
+                details=details
+            )
             # Check for overlapping details
             self._check_no_overlapping_details(template)
 
@@ -294,8 +298,6 @@ class WeeklyShiftTemplateService:
         )
 
         details = data.get("weekly_shift_template_details")
-
-        
 
         if details:
             # Validate details

@@ -162,7 +162,6 @@ class CRUDView:
         model_content_type = ContentType.objects.get_for_model(self.model)
         print(model_content_type)
 
-
         # get field parameter
         if len(self.table_view.model_relation_headers) > 0:
             relation_field_name = (
@@ -182,7 +181,9 @@ class CRUDView:
             else:
                 page_label = f"{self.model_title} Details"
 
-            custom_field_data = self.get_custom_field_json_data(model_content_type, instance_obj)
+            custom_field_data = self.get_custom_field_json_data(
+                model_content_type, instance_obj
+            )
 
             # self.table_view.get_all_many_to_field_instances(instance_obj)
             if edit != "true":
@@ -219,7 +220,9 @@ class CRUDView:
             form_label = f"New {self.model_title} Details"
             page_label = f"New {self.model_title}"
 
-            custom_field_data = self.get_custom_field_json_data(content_type=model_content_type)
+            custom_field_data = self.get_custom_field_json_data(
+                content_type=model_content_type
+            )
 
         relation_table_headers = (
             ["ID", "Name", "Label", "Type", "Value"]
