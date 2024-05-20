@@ -302,7 +302,8 @@ class CRUDView:
         if form.is_valid():
             # Extract data from the form
             obj_data = form.cleaned_data
-            obj_data["custom_fields"] = custom_fields_data
+            if custom_fields_data != {}:
+                obj_data["custom_fields"] = custom_fields_data
 
             # Call the service function to create or update the instance
             obj_data["id"] = id
@@ -315,7 +316,8 @@ class CRUDView:
 
             except self.model.DoesNotExist:
                 del obj_data["id"]
-                obj_data["custom_fields"] = custom_fields_data
+                if custom_fields_data != {}:
+                    obj_data["custom_fields"] = custom_fields_data
 
                 self.model_service(user=request.user).create(**obj_data)
                 message = f"{self.model_title} created successfully!"
