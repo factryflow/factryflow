@@ -243,7 +243,7 @@ class CRUDView:
             "model_name": self.model_name,
             "model_title": self.model_title,
             "field_url": self.model_name,
-            "custom_field_data": custom_field_data,
+            "custom_field_data": custom_field_data if custom_field_data else None,
             "show_actions": False,
             "headers": relation_table_headers if relation_field_name else [],
             "relations_headers": self.table_view.model_relation_headers,

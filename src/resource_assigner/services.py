@@ -33,6 +33,7 @@ class TaskResourceAssigmentService:
         resource_count: int,
         resource_group: list[ResourceGroup] = None,
         use_all_resources: bool = False,
+        custom_fields: dict = None,
     ) -> TaskResourceAssigment:
         # check permissions for create task resource assignment
         if not self.permission_service.check_for_permission(
@@ -45,6 +46,7 @@ class TaskResourceAssigmentService:
             assigment_rule=assigment_rule,
             resource_count=resource_count,
             use_all_resources=use_all_resources,
+            custom_fields=custom_fields,
         )
 
         if resource_group:
@@ -72,6 +74,7 @@ class TaskResourceAssigmentService:
             "resource_count",
             "use_all_resources",
             "resource",
+            "custom_fields",
         ]
         instance, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
@@ -109,6 +112,7 @@ class AssignmentConstraintService:
         resource_group: ResourceGroup = None,
         resources: list[Resource] = None,
         is_direct: bool = True,
+        custom_fields: dict = None,
     ) -> AssignmentConstraint:
         # check permissions for create assignment constraint
         if not self.permission_service.check_for_permission("add_assignmentconstraint"):
@@ -119,6 +123,7 @@ class AssignmentConstraintService:
             assignment_rule=assignment_rule,
             resource_group=resource_group,
             is_direct=is_direct,
+            custom_fields=custom_fields,
         )
 
         if resources:
@@ -142,6 +147,7 @@ class AssignmentConstraintService:
         fields = [
             "resource_group",
             "resources",
+            "custom_fields",
         ]
         instance, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
@@ -156,7 +162,7 @@ class AssignmentConstraintService:
         ):
             raise PermissionDenied()
 
-        instance
+        instance.delete()
         return True
 
 
@@ -177,6 +183,7 @@ class AssigmentRuleCriteriaService:
         field: str,
         operator: str,
         value: str,
+        custom_fields: dict = None,
     ) -> AssigmentRuleCriteria:
         # check permissions for create assigment rule criteria
         if not self.permission_service.check_for_permission(
@@ -189,6 +196,7 @@ class AssigmentRuleCriteriaService:
             field=field,
             operator=operator,
             value=value,
+            custom_fields=custom_fields,
         )
 
         instance.full_clean()
@@ -210,6 +218,7 @@ class AssigmentRuleCriteriaService:
             "field",
             "operator",
             "value",
+            "custom_fields",
         ]
         instance, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
@@ -302,6 +311,7 @@ class AssigmentRuleService:
         work_center: WorkCenter,
         assignment_constraints: list[dict] = [],
         criteria: list[dict] = [],
+        custom_fields: dict = None,
     ) -> AssigmentRule:
         # check permissions for create assigment rule
         if not self.permission_service.check_for_permission("add_assigmentrule"):
@@ -316,6 +326,7 @@ class AssigmentRuleService:
             is_active=is_active,
             description=description,
             work_center=work_center,
+            custom_fields=custom_fields,
         )
 
         instance.full_clean()
@@ -327,6 +338,7 @@ class AssigmentRuleService:
                 assignment_rule=instance,
                 **assignment_constraint_dict,
                 is_direct=False,
+                custom_fields=custom_fields,
             )
 
         # Create criteria
@@ -334,6 +346,7 @@ class AssigmentRuleService:
             self.assigment_rule_criteria_service.create(
                 assigment_rule=instance,
                 **criteria_dict,
+                custom_fields=custom_fields,
             )
 
         return instance
@@ -352,6 +365,7 @@ class AssigmentRuleService:
             "description",
             "resource_group",
             "work_center",
+            "custom_fields",
         ]
         instance, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
