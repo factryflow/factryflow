@@ -14,7 +14,6 @@ from .models import (
     WeeklyShiftTemplateDetail,
 )
 
-
 # -----------------------------------------------------------------------------
 # WeeklyShiftTemplateDetailService
 # -----------------------------------------------------------------------------
@@ -44,6 +43,7 @@ class WeeklyShiftTemplateDetailService:
         day_of_week: int,
         start_time: str | time,
         end_time: str | time,
+        custom_fields: dict = None,
     ) -> WeeklyShiftTemplateDetail:
         """
         Create a WeeklyShiftTemplateDetail.
@@ -58,6 +58,7 @@ class WeeklyShiftTemplateDetailService:
             day_of_week=day_of_week,
             start_time=self._parse_time(start_time),
             end_time=self._parse_time(end_time),
+            custom_fields=custom_fields,
         )
 
         weekly_shift_template_detail.full_clean()
@@ -110,6 +111,7 @@ class WeeklyShiftTemplateDetailService:
             "day_of_week",
             "start_time",
             "end_time",
+            "custom_fields",
         ]
 
         weekly_shift_template_detail, _ = model_update(
@@ -230,7 +232,7 @@ class WeeklyShiftTemplateService:
         notes: str = "",
         description: str = "",
         details: list[dict] = None,
-        # weekly_shift_template_details: list[WeeklyShiftTemplateDetail] = None,
+        custom_fields: dict = None,
     ) -> WeeklyShiftTemplate:
         """
         Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
@@ -249,6 +251,7 @@ class WeeklyShiftTemplateService:
             external_id=external_id,
             notes=notes,
             description=description,
+            custom_fields=custom_fields,
         )
 
         # Create WeeklyShiftTemplateDetails
@@ -289,6 +292,7 @@ class WeeklyShiftTemplateService:
             "notes",
             "description",
             "weekly_shift_template_details",
+            "custom_fields",
         ]
 
         # details = data.pop("weekly_shift_template_details", [])
@@ -341,7 +345,11 @@ class OperationalExceptionTypeService:
 
     @transaction.atomic
     def create(
-        self, name: str, external_id: str = "", notes: str = ""
+        self,
+        name: str,
+        external_id: str = "",
+        notes: str = "",
+        custom_fields: dict = None,
     ) -> OperationalExceptionType:
         # check for permissions for add operational exception type
         if not self.permission_service.check_for_permission(
@@ -350,7 +358,7 @@ class OperationalExceptionTypeService:
             raise PermissionDenied()
 
         exception_type = OperationalExceptionType.objects.create(
-            name=name, external_id=external_id, notes=notes
+            name=name, external_id=external_id, notes=notes, custom_fields=custom_fields
         )
         exception_type.full_clean()
         exception_type.save(user=self.user)
@@ -371,6 +379,7 @@ class OperationalExceptionTypeService:
             "name",
             "external_id",
             "notes",
+            "custom_fields",
         ]
 
         exception_type, _ = model_update(
@@ -409,6 +418,7 @@ class OperationalExceptionService:
         weekly_shift_template: WeeklyShiftTemplate = None,
         external_id: str = "",
         notes="",
+        custom_fields: dict = None,
     ) -> OperationalException:
         # check for permissions for add operational exception
         if not self.permission_service.check_for_permission("add_operationalexception"):
@@ -422,6 +432,7 @@ class OperationalExceptionService:
             weekly_shift_template=weekly_shift_template,
             external_id=external_id,
             notes=notes,
+            custom_fields=custom_fields,
         )
 
         exception.full_clean()
@@ -447,6 +458,7 @@ class OperationalExceptionService:
             "weekly_shift_template",
             "external_id",
             "notes",
+            "custom_fields",
         ]
 
         exception, _ = model_update(
