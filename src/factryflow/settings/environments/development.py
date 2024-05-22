@@ -8,15 +8,14 @@ AUTH_MIDDEWARE = [
     "users.middleware.LoginRequiredMiddleware",
 ]
 
+DISABLE_AUTH = os.getenv("DISABLE_AUTH") == "TRUE"
 
-DISABLE_AUTH = os.getenv("DISABLE_AUTH")
-
-if not (DEBUG == "TRUE" and DISABLE_AUTH == "TRUE"):
+if not (DEBUG and DISABLE_AUTH):
     MIDDLEWARE += AUTH_MIDDEWARE
 
 
 # Settings for Debug Toolbar
-if DEBUG == "TRUE":
+if DEBUG:
     INSTALLED_APPS += [
         "debug_toolbar",
     ]

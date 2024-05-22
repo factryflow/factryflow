@@ -15,8 +15,7 @@ apt-get install -y make
 # install dependencies
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
-COPY ./requirements-dev.txt .
-RUN pip install -r requirements-dev.txt
+RUN pip install -r requirements.txt
 
 COPY ./entrypoint.sh .
 RUN sed -i 's/\r$//g' /app/entrypoint.sh
