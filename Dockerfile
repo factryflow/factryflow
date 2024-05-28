@@ -27,5 +27,6 @@ COPY src/ .
 WORKDIR /app/src
 
 RUN mkdir staticfiles
+COPY ./Makefile .
 
 ENTRYPOINT ["/app/entrypoint.sh"]

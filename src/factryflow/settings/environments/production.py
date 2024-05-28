@@ -25,10 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 STATIC_URL = "/static/"
 STATIC_ROOT = "/app/src/staticfiles"
 
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO','https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+DEBUG = False
 
 ALLOWED_HOSTS=["localhost", "127.0.0.1", "0.0.0.0"]
-CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1', 'https://*.localhost', 'http://*localhost']
-
-# , "http://*.localhost:1337"
+CSRF_TRUSTED_ORIGINS = [
+    'http://*.127.0.0.1',
+    'https://*.localhost',
+    'http://localhost:1337'
+]
