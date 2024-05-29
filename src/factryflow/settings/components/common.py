@@ -27,9 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS=["localhost", "127.0.0.1", "0.0.0.0"]
 
 LOGIN_URL = "/accounts/login/"
 
@@ -88,7 +90,7 @@ ROOT_URLCONF = "factryflow.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, "src/templates"],
+        "DIRS": [BASE_DIR, "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

@@ -21,22 +21,37 @@ services:
       - redis-data:/var/lib/redis
 
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    build:
+        context: .
+        dockerfile: Dockerfile.prod
+    command: gunicorn factryflow.wsgi:application --bind 0.0.0.0:8000 --log-file -
     volumes:
       - .:/app
+      - static-volume:/app/staticfiles
     depends_on:
       db:
         condition: service_started
       redis:
         condition: service_started
-    ports:
-      - 8000:8000
+    expose:
+      - 8000
     env_file:
       - ./.env
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+    volumes:
+      - static-volume:/app/staticfiles
 
 volumes:
   postgresql-data:
     driver: local
+  static-volume:
+    driver: local
   redis-data:
     driver: local
+  
