@@ -27,7 +27,7 @@ services:
     command: gunicorn factryflow.wsgi:application --bind 0.0.0.0:8000 --log-file -
     volumes:
       - .:/app
-      - static-volume:/app/staticfiles
+      - static-volume:/app/src/staticfiles
     depends_on:
       db:
         condition: service_started
@@ -45,7 +45,7 @@ services:
     depends_on:
       - web
     volumes:
-      - static-volume:/app/staticfiles
+      - static-volume:/app/src/staticfiles
 
 volumes:
   postgresql-data:
