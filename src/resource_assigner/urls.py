@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import *
+from .views import (
+    TASK_RESOURCE_ASSIGNMENT_VIEWS,
+    ASSIGMENT_RULE_VIEWS,
+    ASSIGMENT_RULE_CRITERIA_VIEWS,
+    ASSIGNMENT_CONSTRAINT_VIEWS,
+)
 
 urlpatterns = [
     # task_resource_assigment urls
@@ -69,6 +74,11 @@ urlpatterns = [
         "assigment-rules/view/<int:id>/edit=<str:edit>",
         ASSIGMENT_RULE_VIEWS.show_model_form,
         name="edit_assigment_rule",
+    ),
+    path(
+        "assigment_rules/view/<int:id>/field=<str:field>",
+        ASSIGMENT_RULE_VIEWS.show_model_form,
+        name="assigment_rule_relationships",
     ),
     # assigment_rule_criteria urls
     path(

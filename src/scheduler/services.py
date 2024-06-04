@@ -1,27 +1,31 @@
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta, timezone
 
-from django.db.models import Q
-
+import numpy as np
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from resource_manager.models import Resource
-from resource_assigner.models import TaskResourceAssigment, AssignmentConstraint
-from resource_calendar.models import OperationalException, WeeklyShiftTemplateDetail
-
-from .models import SchedulerRuns, ResourceIntervals, ResourceAllocations
-
-import numpy as np
+from django.db.models import Q
 from factryengine import Resource as SchedulerResource
-from factryengine import Scheduler, Assignment as SchedulerAssignment
+from factryengine import Scheduler, Assignment, ResourceGroup
 from factryengine import Task as SchedulerTask
-from factryengine import ResourceGroup as SchedulerResourceGroup
 from job_manager.models import Task
-from resource_calendar.models import WeeklyShiftTemplate
+from resource_assigner.models import (
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    AssignmentConstraint,
+    Operator,
+    TaskResourceAssigment,
+)
+from resource_calendar.models import OperationalException, WeeklyShiftTemplate
+from resource_manager.models import Resource
 
 from .constants import DAY_IN_MINUTES, WEEK_IN_MINUTES
-from datetime import timedelta
+from .models import ResourceAllocations, ResourceIntervals, SchedulerRuns
+
+# --------------------------------------------------------
+# Resource Intervals Service
+# --------------------------------------------------------
 
 
 class ResourceIntervalsService(AbstractPermissionService):
@@ -103,6 +107,11 @@ class ResourceIntervalsService(AbstractPermissionService):
         resource_interval = self.resource_intervals.objects.get(id=id)
         resource_interval.delete()
         return True
+
+
+# --------------------------------------------------------
+# Resource Allocations Service
+# --------------------------------------------------------
 
 
 class ResourceAllocationsService(AbstractPermissionService):
@@ -190,6 +199,11 @@ class ResourceAllocationsService(AbstractPermissionService):
         return True
 
 
+# --------------------------------------------------------
+# Scheduler Runs Service
+# --------------------------------------------------------
+
+
 class SchedulerRunsService(AbstractPermissionService):
     def __init__(self, user):
         self.user = user
@@ -263,6 +277,11 @@ class SchedulerRunsService(AbstractPermissionService):
         return True
 
 
+# --------------------------------------------------------
+# Scheduling Service
+# --------------------------------------------------------
+
+
 class SchedulingService:
     def __init__(
         self,
@@ -330,11 +349,15 @@ class SchedulingService:
             if len(predecessor_ids) > 0:
                 scheduler_task_dict["predecessor_ids"] = predecessor_ids
 
+            # get constraints related to task if there are any
             constraints = self._get_task_constraints(task)
 
             if len(constraints) > 0:
                 # add constraints to dictionary
                 scheduler_task_dict["constraints"] = constraints
+
+            # match assignments rules with matching task
+            matching_rules = self._get_matching_assignments_rules_with_tasks(task)
 
             resource_assigment = TaskResourceAssigment.objects.filter(task=task).first()
 
@@ -343,7 +366,7 @@ class SchedulingService:
                 resource_count = resource_assigment.resource_count
                 scheduler_group_list = []
 
-                for resource_group in resource_assigment.resource_pool.all():
+                for resource_group in resource_assigment.resource_group.all():
                     group_resources = []
                     for resource in resource_group.resources.all():
                         available_windows = (
@@ -353,24 +376,21 @@ class SchedulingService:
                         )
                         resource_data = SchedulerResource(
                             id=resource.id,
-                            name=resource.name,
                             available_windows=available_windows,
                         )
                         group_resources.append(resource_data)
 
-                    scheduler_resource_group = SchedulerResourceGroup(
-                        resources=group_resources
-                    )
+                    scheduler_resource_group = ResourceGroup(resources=group_resources)
                     scheduler_group_list.append(scheduler_resource_group)
 
                 if resource_count > 0 and not resource_assigment.use_all_resources:
-                    scheduler_assignment = SchedulerAssignment(
+                    scheduler_assignment = Assignment(
                         resource_groups=[scheduler_resource_group],
                         resource_count=resource_count,
                     )
 
                 if resource_assigment.use_all_resources:
-                    scheduler_assignment = SchedulerAssignment(
+                    scheduler_assignment = Assignment(
                         resource_groups=[scheduler_resource_group],
                         use_all_resources=resource_assigment.use_all_resources,
                     )
@@ -400,15 +420,64 @@ class SchedulingService:
                 available_windows = self.weekly_shift_templates_windows_dict.get(
                     resource.weekly_shift_template.id, []
                 )
+
                 resource_data = SchedulerResource(
                     id=resource.id,
-                    name=resource.name,
                     available_windows=available_windows,
                 )
 
                 constraints.append(resource_data)
 
         return constraints
+
+    def _get_matching_assignments_rules_with_tasks(self, task):
+        # get all assignment rules with rule criteria matching task
+        matching_rules = []
+
+        # get all assignment rules
+        assignment_rules = AssigmentRule.objects.filter(work_center=task.work_center)
+
+        for rule in assignment_rules:
+            # get all rule criteria for the rule
+            rule_criteria = AssigmentRuleCriteria.objects.filter(assigment_rule=rule)
+
+            # check if any rule criteria matches the task
+            for criteria in rule_criteria:
+                if self._check_criteria_match(task, criteria):
+                    # if criteria match store it in the TaskResourceAssigment model
+                    TaskResourceAssigment.objects.create(
+                        task=task,
+                        assigment_rule=rule,
+                    )
+
+                    matching_rules.append(rule)
+                    break
+
+        return matching_rules
+
+    def _check_criteria_match(self, task, criteria):
+        # check if the criteria matches the task
+        field = criteria.field
+        operator = criteria.operator
+        value = criteria.value
+
+        # get task value
+        task_value = str(getattr(task, field))
+
+        if operator == Operator.EQUALS:
+            return task_value == value
+        elif operator == Operator.CONTAINS:
+            return value in task_value
+        elif operator == Operator.STARTS_WITH:
+            return task_value.startswith(value)
+        elif operator == Operator.ENDS_WITH:
+            return task_value.endswith(value)
+        elif operator == Operator.GREATER_THAN:
+            return task_value > value
+        elif operator == Operator.LESS_THAN:
+            return task_value < value
+
+        return False
 
     # Convert periods to time
     def _int_to_datetime(self, num):
@@ -478,9 +547,7 @@ class SchedulingService:
     def _weekly_shift_template_to_windows(
         self, weekly_shift_template: WeeklyShiftTemplate
     ):
-        details = WeeklyShiftTemplateDetail.objects.filter(
-            weekly_shift_template=weekly_shift_template
-        ).all()
+        details = weekly_shift_template.weekly_shift_template_details.all()
 
         weekly_windows = [self._detail_to_minutes(detail) for detail in details]
         windows = self._calculate_windows(weekly_windows)
@@ -508,7 +575,8 @@ class SchedulingService:
     def _detail_to_minutes(self, detail):
         start_time_minutes = self._time_to_minutes(detail.start_time)
         end_time_minutes = self._time_to_minutes(detail.end_time)
-        week_offset_minutes = detail.day_of_week * DAY_IN_MINUTES
+        week_offset_minutes = detail.get_day_of_week_number() * DAY_IN_MINUTES
+
         return (
             start_time_minutes + week_offset_minutes,
             end_time_minutes + week_offset_minutes,
