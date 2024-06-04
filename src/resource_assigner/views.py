@@ -1,9 +1,24 @@
 from common.views import CRUDView, CustomTableView
 
 # Create your views here.
-from .forms import *
-from .models import *
-from .services import *
+from .forms import (
+    AssigmentRuleCriteriaForm,
+    AssigmentRuleForm,
+    AssignmentConstraintForm,
+    TaskResourceAssigmentForm,
+)
+from .models import (
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    AssignmentConstraint,
+    TaskResourceAssigment,
+)
+from .services import (
+    AssigmentRuleCriteriaService,
+    AssigmentRuleService,
+    AssignmentConstraintService,
+    TaskResourceAssigmentService,
+)
 
 # ------------------------------------------------------------------------------
 # Task Resource Assignement Views
@@ -78,11 +93,24 @@ ASSIGMENT_RULE_TABLE_HEADERS = [
 
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
-ASSIGMENT_RULE_MODEL_RELATION_HEADERS = ["ASSIGMENT_RULE_CRITERIA", "TASK_RESOURCE_ASSIGNMENT"]
+ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
+    "ASSIGMENT_RULE_CRITERIA",
+    "TASK_RESOURCE_ASSIGNMENT",
+]
 
 ASSIGMENT_RULE_RELATION_FIELDS = {
-    "assigment_rule_criteria": [AssigmentRuleCriteria, "assigment_rule", ["ID", "field", "operator", "value"], ["id", "field", "operator", "value"]],
-    "task_resource_assignment": [TaskResourceAssigment, "assigment_rule", ["ID", "Task", "Resource Count", "Use All Resources"], ["id", "task", "resource_count", "use_all_resources"]],
+    "assigment_rule_criteria": [
+        AssigmentRuleCriteria,
+        "assigment_rule",
+        ["ID", "field", "operator", "value"],
+        ["id", "field", "operator", "value"],
+    ],
+    "task_resource_assignment": [
+        TaskResourceAssigment,
+        "assigment_rule",
+        ["ID", "Task", "Resource Count", "Use All Resources"],
+        ["id", "task", "resource_count", "use_all_resources"],
+    ],
 }
 
 ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(

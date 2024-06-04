@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("job_manager", "0014_alter_dependency_custom_fields_and_more"),
         ("resource_manager", "0017_alter_historicalresource_custom_fields_and_more"),

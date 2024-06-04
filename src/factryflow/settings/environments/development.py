@@ -1,7 +1,12 @@
 # All settings related to development environment goes here.
 import os
 
-from factryflow.settings.components.common import DEBUG, MIDDLEWARE, INSTALLED_APPS, BASE_DIR
+from factryflow.settings.components.common import (
+    DEBUG,
+    MIDDLEWARE,
+    INSTALLED_APPS,
+    BASE_DIR,
+)
 
 # CUSTOM AUTH MIDDLEWARE SETTINGS
 AUTH_MIDDEWARE = [

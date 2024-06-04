@@ -28,7 +28,7 @@ class TaskResourceAssigment(BaseModel):
 
     def __str__(self):
         return f"{self.task} - {self.resource}"
-    
+
 
 class AssigmentRule(BaseModelWithExtras):
     """

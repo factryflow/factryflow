@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import *
+from .views import (
+    TASK_RESOURCE_ASSIGNMENT_VIEWS,
+    ASSIGMENT_RULE_VIEWS,
+    ASSIGMENT_RULE_CRITERIA_VIEWS,
+    ASSIGNMENT_CONSTRAINT_VIEWS,
+)
 
 urlpatterns = [
     # task_resource_assigment urls

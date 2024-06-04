@@ -295,23 +295,9 @@ class WeeklyShiftTemplateService:
             "custom_fields",
         ]
 
-        # details = data.pop("weekly_shift_template_details", [])
-
         template, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
-
-        # details = data.get("weekly_shift_template_details")
-
-        # if details:
-        #     # Validate details
-        #     self._validate_details_fields(details)
-
-        #     # Process details
-        #     self._process_details(template, details)
-
-        #     # Check for overlapping details
-        #     self._check_no_overlapping_details(template)
 
         template.full_clean()
         template.save(user=self.user)
@@ -331,7 +317,6 @@ class WeeklyShiftTemplateService:
 
         template.delete()
         return True
-
 
 
 # -----------------------------------------------------------------------------

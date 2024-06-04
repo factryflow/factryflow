@@ -1,6 +1,11 @@
 from django import forms
 
-from resource_assigner.models import *
+from resource_assigner.models import (
+    TaskResourceAssigment,
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    AssignmentConstraint,
+)
 from resource_assigner.utils import get_model_fields
 
 # ------------------------------------------------------------------------------
@@ -150,25 +155,27 @@ class AssigmentRuleCriteriaForm(forms.ModelForm):
         }
         widgets = {
             "assigment_rule": forms.Select(
-            attrs={
-                "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-            }
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
             ),
             "field": forms.Select(
-            choices=get_model_fields("Task", "job_manager", ["item", "task_type", "job", "work_center"]),
-            attrs={
-                "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-            }
+                choices=get_model_fields(
+                    "Task", "job_manager", ["item", "task_type", "job", "work_center"]
+                ),
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                },
             ),
             "operator": forms.Select(
-            attrs={
-                "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-            }
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
             ),
             "value": forms.TextInput(
-            attrs={
-                "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-            }
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
             ),
         }
 

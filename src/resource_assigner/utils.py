@@ -28,8 +28,8 @@ def get_related_fields(model, related_field_name):
     fields = [
         field.name
         for field in related_model._meta.get_fields()
-        if not isinstance(field, ManyToOneRel) 
-        and field.name not in NOT_REQUIRED_FIELDS_IN_FORM  
+        if not isinstance(field, ManyToOneRel)
+        and field.name not in NOT_REQUIRED_FIELDS_IN_FORM
     ]
 
     return fields

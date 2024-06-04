@@ -380,9 +380,7 @@ class SchedulingService:
                         )
                         group_resources.append(resource_data)
 
-                    scheduler_resource_group = ResourceGroup(
-                        resources=group_resources
-                    )
+                    scheduler_resource_group = ResourceGroup(resources=group_resources)
                     scheduler_group_list.append(scheduler_resource_group)
 
                 if resource_count > 0 and not resource_assigment.use_all_resources:
@@ -451,7 +449,7 @@ class SchedulingService:
                         task=task,
                         assigment_rule=rule,
                     )
-                        
+
                     matching_rules.append(rule)
                     break
 

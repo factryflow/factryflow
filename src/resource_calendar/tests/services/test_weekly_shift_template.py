@@ -1,4 +1,3 @@
-
 import pytest
 from django.core.exceptions import ValidationError
 from factories import UserFactory
