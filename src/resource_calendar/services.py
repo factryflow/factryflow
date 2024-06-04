@@ -14,7 +14,6 @@ from .models import (
     WeeklyShiftTemplateDetail,
 )
 
-
 # -----------------------------------------------------------------------------
 # WeeklyShiftTemplateDetailService
 # -----------------------------------------------------------------------------
@@ -347,7 +346,11 @@ class OperationalExceptionTypeService:
 
     @transaction.atomic
     def create(
-        self, name: str, external_id: str = "", notes: str = "", custom_fields: dict = None
+        self,
+        name: str,
+        external_id: str = "",
+        notes: str = "",
+        custom_fields: dict = None,
     ) -> OperationalExceptionType:
         # check for permissions for add operational exception type
         if not self.permission_service.check_for_permission(

@@ -1,22 +1,22 @@
 # All settings related to development environment goes here.
 import os
 
-from factryflow.settings.components.common import DEBUG, MIDDLEWARE, INSTALLED_APPS
+from factryflow.settings.components.common import DEBUG, MIDDLEWARE, INSTALLED_APPS, BASE_DIR
 
 # CUSTOM AUTH MIDDLEWARE SETTINGS
 AUTH_MIDDEWARE = [
     "users.middleware.LoginRequiredMiddleware",
 ]
 
+DEBUG = os.getenv("DEBUG") == "TRUE"
+DISABLE_AUTH = os.getenv("DISABLE_AUTH") == "TRUE"
 
-DISABLE_AUTH = os.getenv("DISABLE_AUTH")
-
-if not (DEBUG == "TRUE" and DISABLE_AUTH == "TRUE"):
+if not (DEBUG and DISABLE_AUTH):
     MIDDLEWARE += AUTH_MIDDEWARE
 
 
 # Settings for Debug Toolbar
-if DEBUG == "TRUE":
+if DEBUG:
     INSTALLED_APPS += [
         "debug_toolbar",
     ]
@@ -28,3 +28,32 @@ if DEBUG == "TRUE":
     DEBUG_TOOLBAR_CONFIG = {
         "INTERCEPT_REDIRECTS": False,
     }
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR, "templates", "src/templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+            "builtins": ["template_partials.templatetags.partials"],
+        },
+    },
+]
+
+# postgres database
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
+    }
+}
