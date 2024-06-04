@@ -1,10 +1,9 @@
 from common.views import CRUDView, CustomTableView
-# Create your views here.
 
+# Create your views here.
 from .forms import *
 from .models import *
 from .services import *
-
 
 # ------------------------------------------------------------------------------
 # Task Resource Assignement Views
@@ -29,11 +28,11 @@ TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS = [
 TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
 
 TASK_RESOURCE_ASSIGNMENT_RELATION_HEADERS = [
-    "Resource Pool",
+    "Resource Group",
 ]
 
 TASK_RESOURCE_ASSIGNMENT_RELATION_FIELDS = {
-    "resource_pool": ["resource_pool", ["ID", "Resource Pool Name"], ["id", "name"]],
+    "resource_group": ["resource_group", ["ID", "Resource Group Name"], ["id", "name"]],
 }
 
 TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW = CustomTableView(
@@ -79,11 +78,20 @@ ASSIGMENT_RULE_TABLE_HEADERS = [
 
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
+ASSIGMENT_RULE_MODEL_RELATION_HEADERS = ["ASSIGMENT_RULE_CRITERIA", "TASK_RESOURCE_ASSIGNMENT"]
+
+ASSIGMENT_RULE_RELATION_FIELDS = {
+    "assigment_rule_criteria": [AssigmentRuleCriteria, "assigment_rule", ["ID", "field", "operator", "value"], ["id", "field", "operator", "value"]],
+    "task_resource_assignment": [TaskResourceAssigment, "assigment_rule", ["ID", "Task", "Resource Count", "Use All Resources"], ["id", "task", "resource_count", "use_all_resources"]],
+}
+
 ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
     model=AssigmentRule,
     model_name="assigment_rule",
     fields=ASSIGMENT_RULE_MODEL_FIELDS,
     headers=ASSIGMENT_RULE_TABLE_HEADERS,
+    model_relation_headers=ASSIGMENT_RULE_MODEL_RELATION_HEADERS,
+    model_relation_fields=ASSIGMENT_RULE_RELATION_FIELDS,
     search_fields_list=ASSIGMENT_RULE_SEARCH_FIELDS,
 )
 
@@ -145,10 +153,8 @@ ASSIGNMENT_CONSTRAINT_MODEL_FIELDS = [
     "id",
     "task",
     "assignment_rule",
-    "resource_pool",
+    "resource_group",
     "resources",
-    "work_units",
-    "required_units",
     "is_active",
     "is_direct",
 ]
@@ -157,10 +163,8 @@ ASSIGNMENT_CONSTRAINT_TABLE_HEADERS = [
     "ID",
     "Task",
     "Assignment Rule",
-    "Resource Pool",
+    "Resource Group",
     "Resources",
-    "Work Units",
-    "Required Units",
     "Is Active",
     "Is Direct",
 ]
@@ -168,22 +172,18 @@ ASSIGNMENT_CONSTRAINT_TABLE_HEADERS = [
 ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS = [
     "task",
     "assignment_rule",
-    "resource_pool",
+    "resource_group",
     "resources",
-    "work_units",
-    "required_units",
     "is_active",
     "is_direct",
 ]
 
 ASSIGNMENT_CONSTRAINT_RELATION_HEADERS = [
     "Resources",
-    "Work_Units",
 ]
 
 ASSIGNMENT_CONSTRAINT_RELATION_FIELDS = {
     "resources": ["resources", ["ID", "Resource Name"], ["id", "name"]],
-    "work_units": ["work_units", ["ID", "Work Unit Name"], ["id", "name"]],
 }
 
 

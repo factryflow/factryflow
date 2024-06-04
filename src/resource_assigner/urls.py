@@ -70,6 +70,11 @@ urlpatterns = [
         ASSIGMENT_RULE_VIEWS.show_model_form,
         name="edit_assigment_rule",
     ),
+    path(
+        "assigment_rules/view/<int:id>/field=<str:field>",
+        ASSIGMENT_RULE_VIEWS.show_model_form,
+        name="assigment_rule_relationships",
+    ),
     # assigment_rule_criteria urls
     path(
         "assigment-rule-criteria/new/",

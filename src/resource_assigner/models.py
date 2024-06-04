@@ -16,6 +16,9 @@ class TaskResourceAssigment(BaseModel):
     assigment_rule = models.ForeignKey(
         "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
     )
+    resource = models.ForeignKey(
+        Resource, on_delete=models.DO_NOTHING, blank=True, null=True
+    )
     resource_group = models.ManyToManyField(ResourceGroup, blank=True)
     resource_count = models.PositiveIntegerField(default=1)
     use_all_resources = models.BooleanField(default=False)
@@ -23,6 +26,9 @@ class TaskResourceAssigment(BaseModel):
     class Meta:
         db_table = "task_resource_assigment"
 
+    def __str__(self):
+        return f"{self.task} - {self.resource}"
+    
 
 class AssigmentRule(BaseModelWithExtras):
     """
@@ -30,9 +36,9 @@ class AssigmentRule(BaseModelWithExtras):
     """
 
     name = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
     work_center = models.ForeignKey(WorkCenter, on_delete=models.DO_NOTHING)
     is_active = models.BooleanField(default=True)
+    description = models.TextField(blank=True)
 
     class Meta:
         db_table = "assigment_rule"
@@ -121,10 +127,10 @@ class AssignmentConstraint(BaseModel):
 
         if resource_group_set and resources_set:
             raise ValidationError(
-                "You cannot set both resource_pool and resources. Choose one."
+                "You cannot set both resource_group and resources. Choose one."
             )
         elif not resource_group_set and not resources_set:
-            raise ValidationError("You must set either resource_pool or resources.")
+            raise ValidationError("You must set either resource_group or resources.")
 
         # ensure that either task or assignment_rule is set
         if not (self.task) and not (self.assignment_rule):

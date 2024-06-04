@@ -302,17 +302,17 @@ class WeeklyShiftTemplateService:
             instance=instance, fields=fields, data=data, user=self.user
         )
 
-        details = data.get("weekly_shift_template_details")
+        # details = data.get("weekly_shift_template_details")
 
-        if details:
-            # Validate details
-            self._validate_details_fields(details)
+        # if details:
+        #     # Validate details
+        #     self._validate_details_fields(details)
 
-            # Process details
-            self._process_details(template, details)
+        #     # Process details
+        #     self._process_details(template, details)
 
-            # Check for overlapping details
-            self._check_no_overlapping_details(template)
+        #     # Check for overlapping details
+        #     self._check_no_overlapping_details(template)
 
         template.full_clean()
         template.save(user=self.user)
