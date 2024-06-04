@@ -59,6 +59,19 @@ class WeeklyShiftTemplateDetail(BaseModel):
     def __str__(self):
         return f"{self.day_of_week} {self.start_time} - {self.end_time}"
 
+    def get_day_of_week_number(self):
+        # get the number of day by self.day_of_week
+        day_of_week = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+        return day_of_week.index(self.day_of_week) + 1
+
 
 # ------------------------------------------------------------------------------
 # Operational Exception Models

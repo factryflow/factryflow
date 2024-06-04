@@ -31,8 +31,13 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1",
-                 "0.0.0.0", "factryflow-stg.azurewebsites.net", "factryflow-comp-stg.azurewebsites.net"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "factryflow-stg.azurewebsites.net",
+    "factryflow-comp-stg.azurewebsites.net"
+]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1',

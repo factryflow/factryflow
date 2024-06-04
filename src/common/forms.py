@@ -48,5 +48,14 @@ class CustomFieldForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
-            "is_required": forms.CheckboxInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
+            "is_required": forms.CheckboxInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-1/4 p-3"
+                }
+            ),
         }

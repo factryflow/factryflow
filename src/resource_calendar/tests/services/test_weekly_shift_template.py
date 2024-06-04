@@ -1,8 +1,6 @@
-from datetime import time
-
 import pytest
 from django.core.exceptions import ValidationError
-from factories import UserFactory, WeeklyShiftTemplateDetailFactory
+from factories import UserFactory
 from resource_calendar.models import DaysOfWeek
 from resource_calendar.services import (
     WeeklyShiftTemplateService,

@@ -81,14 +81,15 @@ class CRUDView:
         id = 0
         if instance:
             custom_field_data = instance.custom_fields
-            for key, value in custom_field_data.items():
-                id += 1
-                custom_field_instance = CustomField.objects.get(name=key)
-                field_name = custom_field_instance.name
-                field_label = custom_field_instance.label
-                field_type = custom_field_instance.field_type
-                field_info = [id, field_name, field_label, field_type, value]
-                data.append(field_info)
+            if custom_field_data:
+                for key, value in custom_field_data.items():
+                    id += 1
+                    custom_field_instance = CustomField.objects.get(name=key)
+                    field_name = custom_field_instance.name
+                    field_label = custom_field_instance.label
+                    field_type = custom_field_instance.field_type
+                    field_info = [id, field_name, field_label, field_type, value]
+                    data.append(field_info)
         else:
             custom_fields = CustomField.objects.filter(content_type=content_type)
             for custom_field in custom_fields:
@@ -477,14 +478,15 @@ class CustomTableView:
         custom_field_data = instance.custom_fields
         data = []
         id = 0
-        for key, value in custom_field_data.items():
-            id += 1
-            custom_field_instance = CustomField.objects.get(name=key)
-            field_name = custom_field_instance.name
-            field_label = custom_field_instance.label
-            field_type = custom_field_instance.field_type
-            field_info = [id, field_name, field_label, field_type, value]
-            data.append(field_info)
+        if custom_field_data:
+            for key, value in custom_field_data.items():
+                id += 1
+                custom_field_instance = CustomField.objects.get(name=key)
+                field_name = custom_field_instance.name
+                field_label = custom_field_instance.label
+                field_type = custom_field_instance.field_type
+                field_info = [id, field_name, field_label, field_type, value]
+                data.append(field_info)
         return data
 
     def get_all_many_to_many_field_instances(
