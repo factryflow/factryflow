@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
-# Create your models here.
 
 
 class TaskResourceAssigment(BaseModel):
@@ -11,17 +10,13 @@ class TaskResourceAssigment(BaseModel):
     Represents the assignment of resources to tasks.
     """
 
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    # resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
+    task = models.OneToOneField(Task, on_delete=models.DO_NOTHING)
     assigment_rule = models.ForeignKey(
         "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
     )
     resource = models.ForeignKey(
         Resource, on_delete=models.DO_NOTHING, blank=True, null=True
     )
-    resource_group = models.ManyToManyField(ResourceGroup, blank=True)
-    resource_count = models.PositiveIntegerField(default=1)
-    use_all_resources = models.BooleanField(default=False)
 
     class Meta:
         db_table = "task_resource_assigment"
@@ -83,19 +78,17 @@ class AssignmentConstraint(BaseModel):
     """
 
     id = models.AutoField(primary_key=True)
-    task = models.ForeignKey(
+    task = models.OneToOneField(
         Task,
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
-        related_name="constraints",
     )
-    assignment_rule = models.ForeignKey(
+    assignment_rule = models.OneToOneField(
         AssigmentRule,
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
-        related_name="constraints",
     )
     resource_group = models.ForeignKey(
         ResourceGroup,
@@ -105,8 +98,8 @@ class AssignmentConstraint(BaseModel):
         related_name="constraints",
     )
     resources = models.ManyToManyField(Resource, blank=True, related_name="constraints")
-    is_active = models.BooleanField(default=True)
-    is_direct = models.BooleanField(default=True)
+    resource_count = models.PositiveIntegerField(default=1)
+    use_all_resources = models.BooleanField(default=False)
 
     class Meta:
         db_table = "assignment_constraint"
@@ -136,7 +129,7 @@ class AssignmentConstraint(BaseModel):
         if not (self.task) and not (self.assignment_rule):
             raise ValidationError("task or assignment_rule must be set.")
 
-        if self.is_direct and self.assignment_rule:
+        if self.task and self.assignment_rule:
             raise ValidationError(
                 "Direct assignment constraints cannot have assignment rules."
             )

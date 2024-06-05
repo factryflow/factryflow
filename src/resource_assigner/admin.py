@@ -41,8 +41,6 @@ class AssigmentRule(admin.ModelAdmin):
 class TaskResourceAssigment(admin.ModelAdmin):
     list_display = [
         "task",
-        "resource_count",
-        "use_all_resources",
         "created_at",
         "created_by",
     ]
@@ -51,4 +49,4 @@ class TaskResourceAssigment(admin.ModelAdmin):
         "created_at",
         "created_by",
     ]
-    search_fields = ["task", "resource_group"]
+    search_fields = ["task"]

@@ -30,10 +30,7 @@ class TaskResourceAssigmentService:
         self,
         task: Task,
         assigment_rule: AssigmentRule,
-        resource_count: int,
         resource: Resource = None,
-        resource_group: list[ResourceGroup] = None,
-        use_all_resources: bool = False,
         custom_fields: dict = None,
     ) -> TaskResourceAssigment:
         # check permissions for create task resource assignment
@@ -45,14 +42,9 @@ class TaskResourceAssigmentService:
         instance = TaskResourceAssigment.objects.create(
             task=task,
             assigment_rule=assigment_rule,
-            resource_count=resource_count,
             resource=resource,
-            use_all_resources=use_all_resources,
             custom_fields=custom_fields,
         )
-
-        if resource_group:
-            instance.resource_group.set(resource_group)
 
         instance.full_clean()
         instance.save(user=self.user)
@@ -72,10 +64,6 @@ class TaskResourceAssigmentService:
         fields = [
             "task",
             "assigment_rule",
-            "resource_group",
-            "resource_count",
-            "resource",
-            "use_all_resources",
             "resource",
             "custom_fields",
         ]
@@ -113,8 +101,8 @@ class AssignmentConstraintService:
         assignment_rule: AssigmentRule = None,
         resource_group: ResourceGroup = None,
         resources: list[Resource] = None,
-        is_active: bool = True,
-        is_direct: bool = True,
+        use_all_resources: bool = True,
+        resource_count: int = 1,
         custom_fields: dict = None,
     ) -> AssignmentConstraint:
         # check permissions for create assignment constraint
@@ -125,8 +113,8 @@ class AssignmentConstraintService:
             task=task,
             assignment_rule=assignment_rule,
             resource_group=resource_group,
-            is_direct=is_direct,
-            is_active=is_active,
+            use_all_resources=use_all_resources,
+            resource_count=resource_count,
             custom_fields=custom_fields,
         )
 
@@ -153,9 +141,9 @@ class AssignmentConstraintService:
             "resources",
             "task",
             "assignment_rule",
+            "use_all_resources",
+            "resource_count",
             "custom_fields",
-            "is_active",
-            "is_direct",
         ]
         instance, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
@@ -310,7 +298,6 @@ class AssigmentRuleService:
                 self.assignment_constraint_service.create(
                     assignment_rule=instance,
                     **assignment_constraint_dict,
-                    is_direct=False,
                 )
 
     @transaction.atomic
@@ -350,7 +337,6 @@ class AssigmentRuleService:
             self.assignment_constraint_service.create(
                 assignment_rule=instance,
                 **assignment_constraint_dict,
-                is_direct=False,
                 custom_fields=custom_fields,
             )
 
