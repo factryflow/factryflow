@@ -14,7 +14,6 @@ def data():
     return {
         "task": TaskFactory(),
         "assigment_rule": AssigmentRuleFactory(),
-        "resource_count": 1,
     }
 
 
@@ -27,7 +26,6 @@ def test_can_create_task_resource_assignment(data):
     assert TaskResourceAssigment.objects.count() == 1
     assert assignment.task == data["task"]
     assert assignment.assigment_rule == data["assigment_rule"]
-    assert assignment.resource_count == data["resource_count"]
 
 
 @pytest.mark.django_db

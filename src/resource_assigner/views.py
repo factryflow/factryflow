@@ -28,16 +28,12 @@ TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS = [
     "id",
     "task",
     "assigment_rule",
-    "resource_count",
-    "use_all_resources",
 ]
 
 TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS = [
     "ID",
     "Task",
     "Assigment Rule",
-    "Resource Count",
-    "Use All Resources",
 ]
 
 TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
@@ -183,8 +179,8 @@ ASSIGNMENT_CONSTRAINT_MODEL_FIELDS = [
     "assignment_rule",
     "resource_group",
     "resources",
-    "is_active",
-    "is_direct",
+    "resource_count",
+    "use_all_resources",
 ]
 
 ASSIGNMENT_CONSTRAINT_TABLE_HEADERS = [
@@ -193,8 +189,8 @@ ASSIGNMENT_CONSTRAINT_TABLE_HEADERS = [
     "Assignment Rule",
     "Resource Group",
     "Resources",
-    "Is Active",
-    "Is Direct",
+    "Resource Count",
+    "Use All Resources",
 ]
 
 ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS = [
@@ -202,8 +198,8 @@ ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS = [
     "assignment_rule",
     "resource_group",
     "resources",
-    "is_active",
-    "is_direct",
+    "resource_count",
+    "use_all_resources",
 ]
 
 ASSIGNMENT_CONSTRAINT_RELATION_HEADERS = [

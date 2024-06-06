@@ -1,10 +1,10 @@
 from django import forms
 
 from resource_assigner.models import (
-    TaskResourceAssigment,
     AssigmentRule,
     AssigmentRuleCriteria,
     AssignmentConstraint,
+    TaskResourceAssigment,
 )
 from resource_assigner.utils import get_model_fields
 
@@ -28,9 +28,6 @@ class TaskResourceAssigmentForm(forms.ModelForm):
             "task": "Task",
             "assigment_rule": "Assigment Rule",
             "resource": "Resource",
-            "resource_group": "Resource Group",
-            "resource_count": "Resource Count",
-            "use_all_resources": "Use All Resources",
         }
         widgets = {
             "task": forms.Select(
@@ -44,21 +41,6 @@ class TaskResourceAssigmentForm(forms.ModelForm):
                 }
             ),
             "resource": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resource_group": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resource_count": forms.NumberInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "use_all_resources": forms.CheckboxInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
@@ -201,8 +183,8 @@ class AssignmentConstraintForm(forms.ModelForm):
             "assignment_rule": "Assignment Rule",
             "resource_group": "Resource Group",
             "resources": "Resources",
-            "is_active": "Is Active",
-            "is_direct": "Is Direct",
+            "resource_count": "Resource Count",
+            "use_all_resources": "Use All Resources",
         }
         widgets = {
             "task": forms.Select(
@@ -225,12 +207,12 @@ class AssignmentConstraintForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "is_active": forms.CheckboxInput(
+            "resource_count": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "is_direct": forms.CheckboxInput(
+            "use_all_resources": forms.CheckboxInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }

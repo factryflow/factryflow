@@ -19,26 +19,14 @@ def data():
     }
 
 
-@pytest.fixture
-def assignment_constraint_data():
-    return {
-        "task": TaskFactory(),
-        "resource_group": ResourceGroupFactory(),
-        "is_direct": True,
-    }
-
-
 @pytest.mark.django_db
-def test_can_create_assignment_constraint(assignment_constraint_data):
+def test_can_create_assignment_constraint(data):
     user = UserFactory()
 
-    constraint = AssignmentConstraintService(user=user).create(
-        **assignment_constraint_data
-    )
+    constraint = AssignmentConstraintService(user=user).create(**data)
 
     assert AssignmentConstraint.objects.count() == 1
-    assert constraint.task == assignment_constraint_data["task"]
-    assert constraint.is_direct is True
+    assert constraint.task == data["task"]
 
 
 @pytest.mark.django_db
@@ -57,7 +45,6 @@ def test_can_update_assignment_constraint():
     )
 
     assert AssignmentConstraint.objects.count() == 1
-    assert constraint.is_direct is True
 
 
 @pytest.mark.django_db

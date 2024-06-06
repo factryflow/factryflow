@@ -1,5 +1,6 @@
 # All settings related to productions environment goes here.
 from pathlib import Path
+
 from factryflow.settings.components.common import MIDDLEWARE
 
 # Login Middleware

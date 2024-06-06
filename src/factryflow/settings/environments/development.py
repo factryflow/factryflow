@@ -2,10 +2,10 @@
 import os
 
 from factryflow.settings.components.common import (
-    DEBUG,
-    MIDDLEWARE,
-    INSTALLED_APPS,
     BASE_DIR,
+    DEBUG,
+    INSTALLED_APPS,
+    MIDDLEWARE,
 )
 
 # CUSTOM AUTH MIDDLEWARE SETTINGS

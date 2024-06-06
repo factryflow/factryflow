@@ -17,7 +17,9 @@ class AssignmentConstraintIn(ModelSchema):
             "task",
             "assignment_rule",
             "resource_group",
-            "is_direct",
+            "resources",
+            "resource_count",
+            "use_all_resources",
         ]
 
 
