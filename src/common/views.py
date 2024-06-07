@@ -161,7 +161,6 @@ class CRUDView:
 
         # get content type using self.model
         model_content_type = ContentType.objects.get_for_model(self.model)
-        print(model_content_type)
 
         # get field parameter
         if len(self.table_view.model_relation_headers) > 0:
@@ -470,8 +469,7 @@ class CustomTableView:
         """
         Retrieve all instances of the model.
         """
-        return self.model.objects.all().order_by('id')
-
+        return self.model.objects.all().order_by("id")
 
     def get_custom_field_json_data(self, instance=None):
         # get custom field json data in two rows one is headers which are keys(convert in captilize and replace "_" with " ", and values as data)
