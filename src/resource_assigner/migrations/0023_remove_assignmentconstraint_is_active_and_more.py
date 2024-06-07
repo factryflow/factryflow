@@ -5,56 +5,67 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('job_manager', '0014_alter_dependency_custom_fields_and_more'),
-        ('resource_assigner', '0022_taskresourceassigment_resource'),
+        ("job_manager", "0014_alter_dependency_custom_fields_and_more"),
+        ("resource_assigner", "0022_taskresourceassigment_resource"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='assignmentconstraint',
-            name='is_active',
+            model_name="assignmentconstraint",
+            name="is_active",
         ),
         migrations.RemoveField(
-            model_name='assignmentconstraint',
-            name='is_direct',
+            model_name="assignmentconstraint",
+            name="is_direct",
         ),
         migrations.RemoveField(
-            model_name='taskresourceassigment',
-            name='resource_count',
+            model_name="taskresourceassigment",
+            name="resource_count",
         ),
         migrations.RemoveField(
-            model_name='taskresourceassigment',
-            name='resource_group',
+            model_name="taskresourceassigment",
+            name="resource_group",
         ),
         migrations.RemoveField(
-            model_name='taskresourceassigment',
-            name='use_all_resources',
+            model_name="taskresourceassigment",
+            name="use_all_resources",
         ),
         migrations.AddField(
-            model_name='assignmentconstraint',
-            name='resource_count',
+            model_name="assignmentconstraint",
+            name="resource_count",
             field=models.PositiveIntegerField(default=1),
         ),
         migrations.AddField(
-            model_name='assignmentconstraint',
-            name='use_all_resources',
+            model_name="assignmentconstraint",
+            name="use_all_resources",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='assignmentconstraint',
-            name='assignment_rule',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='resource_assigner.assigmentrule'),
+            model_name="assignmentconstraint",
+            name="assignment_rule",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="resource_assigner.assigmentrule",
+            ),
         ),
         migrations.AlterField(
-            model_name='assignmentconstraint',
-            name='task',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.task'),
+            model_name="assignmentconstraint",
+            name="task",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="job_manager.task",
+            ),
         ),
         migrations.AlterField(
-            model_name='taskresourceassigment',
-            name='task',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.task'),
+            model_name="taskresourceassigment",
+            name="task",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.DO_NOTHING, to="job_manager.task"
+            ),
         ),
     ]
