@@ -161,7 +161,6 @@ class CRUDView:
 
         # get content type using self.model
         model_content_type = ContentType.objects.get_for_model(self.model)
-        print(model_content_type)
 
         # get field parameter
         if len(self.table_view.model_relation_headers) > 0:
