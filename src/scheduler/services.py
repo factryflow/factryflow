@@ -6,8 +6,8 @@ from common.services import model_update
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
+from factryengine import Assignment, ResourceGroup, Scheduler
 from factryengine import Resource as SchedulerResource
-from factryengine import Scheduler, Assignment, ResourceGroup
 from factryengine import Task as SchedulerTask
 from job_manager.models import Task
 from resource_assigner.models import (
@@ -357,7 +357,7 @@ class SchedulingService:
                 scheduler_task_dict["constraints"] = constraints
 
             # match assignments rules with matching task
-            matching_rules = self._get_matching_assignments_rules_with_tasks(task)
+            self._create_matching_assignments_rules_with_tasks(task)
 
             resource_assigment = TaskResourceAssigment.objects.filter(task=task).first()
 
@@ -430,7 +430,7 @@ class SchedulingService:
 
         return constraints
 
-    def _get_matching_assignments_rules_with_tasks(self, task):
+    def _create_matching_assignments_rules_with_tasks(self, task):
         # get all assignment rules with rule criteria matching task
         matching_rules = []
 

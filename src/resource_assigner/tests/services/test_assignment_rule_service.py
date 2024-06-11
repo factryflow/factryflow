@@ -66,8 +66,9 @@ def test_can_update_criteria(assignment_rule_data):
     updated_criteria_data = {
         "criteria": [
             {
-                "id": 1,
                 "field": "test3",
+                "operator": "starts_with",
+                "value": "test3",
             },
             {
                 "field": "test4",
@@ -81,8 +82,8 @@ def test_can_update_criteria(assignment_rule_data):
     )
 
     assert updated_assignment_rule.id == assignment_rule.id
-    assert updated_assignment_rule.criteria.count() == 3
-    assert updated_assignment_rule.criteria.first().field == "test3"
+    assert updated_assignment_rule.criteria.count() == 4
+    assert updated_assignment_rule.criteria.first().field == "test"
 
 
 @pytest.mark.django_db
