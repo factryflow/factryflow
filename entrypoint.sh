@@ -1,26 +1,28 @@
 #!/bin/bash
 
-# set -e
+set -e  # Exit immediately if a command exits with a non-zero status
 
-# echo "${0}: running migrations."
-# python manage.py migrate --noinput
+echo "Starting entrypoint script..."
 
-# python manage.py runserver 0.0.0.0:8000
-
+# Check if the database is Postgres and wait for it to be available
 if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for postgres..."
 
-    while ! nc -z $DB_HOST $DB_PORT; do
+    while ! nc -z "$DB_HOST" "$DB_PORT"; do
       sleep 0.1
     done
 
     echo "PostgreSQL started"
 fi
 
-# python manage.py flush --no-input
+# Run Django management commands
+echo "Running migrations..."
 python manage.py migrate
-python manage.py collectstatic
+echo "Collecting static files..."
+python manage.py collectstatic --no-input
+echo "Creating superuser..."
 python manage.py makesuperuser
 
-exec "$@"
+echo "Starting Gunicorn..."
+exec gunicorn factryflow.wsgi:application --bind 0.0.0.0:80 --log-file -

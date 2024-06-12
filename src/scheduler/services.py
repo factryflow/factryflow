@@ -11,10 +11,7 @@ from factryengine import Scheduler, Assignment, ResourceGroup
 from factryengine import Task as SchedulerTask
 from job_manager.models import Task
 from resource_assigner.models import (
-    AssigmentRule,
-    AssigmentRuleCriteria,
     AssignmentConstraint,
-    Operator,
     TaskResourceAssigment,
 )
 from resource_calendar.models import OperationalException, WeeklyShiftTemplate
@@ -366,9 +363,6 @@ class SchedulingService:
                 # add constraints to dictionary
                 scheduler_task_dict["constraints"] = constraints
 
-            # match assignments rules with matching task
-            matching_rules = self._get_matching_assignments_rules_with_tasks(task)
-
             resource_assigment = TaskResourceAssigment.objects.filter(task=task).first()
 
             if resource_assigment and len(constraints) == 0:
@@ -439,55 +433,6 @@ class SchedulingService:
                 constraints.append(resource_data)
 
         return constraints
-
-    def _get_matching_assignments_rules_with_tasks(self, task):
-        # get all assignment rules with rule criteria matching task
-        matching_rules = []
-
-        # get all assignment rules
-        assignment_rules = AssigmentRule.objects.filter(work_center=task.work_center)
-
-        for rule in assignment_rules:
-            # get all rule criteria for the rule
-            rule_criteria = AssigmentRuleCriteria.objects.filter(assigment_rule=rule)
-
-            # check if any rule criteria matches the task
-            for criteria in rule_criteria:
-                if self._check_criteria_match(task, criteria):
-                    # if criteria match store it in the TaskResourceAssigment model
-                    TaskResourceAssigment.objects.create(
-                        task=task,
-                        assigment_rule=rule,
-                    )
-
-                    matching_rules.append(rule)
-                    break
-
-        return matching_rules
-
-    def _check_criteria_match(self, task, criteria):
-        # check if the criteria matches the task
-        field = criteria.field
-        operator = criteria.operator
-        value = criteria.value
-
-        # get task value
-        task_value = str(getattr(task, field))
-
-        if operator == Operator.EQUALS:
-            return task_value == value
-        elif operator == Operator.CONTAINS:
-            return value in task_value
-        elif operator == Operator.STARTS_WITH:
-            return task_value.startswith(value)
-        elif operator == Operator.ENDS_WITH:
-            return task_value.endswith(value)
-        elif operator == Operator.GREATER_THAN:
-            return task_value > value
-        elif operator == Operator.LESS_THAN:
-            return task_value < value
-
-        return False
 
     # Convert periods to time
     def _int_to_datetime(self, num):

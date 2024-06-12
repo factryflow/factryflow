@@ -5,6 +5,7 @@ from .views import (
     ASSIGMENT_RULE_VIEWS,
     ASSIGMENT_RULE_CRITERIA_VIEWS,
     ASSIGNMENT_CONSTRAINT_VIEWS,
+    match_rules_with_tasks,
 )
 
 urlpatterns = [
@@ -146,5 +147,11 @@ urlpatterns = [
         "assignment-constraints/view/<int:id>/field=<str:field>",
         ASSIGNMENT_CONSTRAINT_VIEWS.show_model_form,
         name="assignment_constraint_dependencies",
+    ),
+    # match rules with tasks
+    path(
+        "match-rules-with-tasks/",
+        match_rules_with_tasks,
+        name="match_rules_with_tasks",
     ),
 ]
