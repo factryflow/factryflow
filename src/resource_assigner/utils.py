@@ -1,6 +1,15 @@
 from django.apps import apps
 from django.db.models.fields.reverse_related import ManyToOneRel
 
+
+from resource_assigner.models import (
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    Operator,
+    TaskResourceAssigment,
+)
+
+
 # Fields that are not required in the form
 NOT_REQUIRED_FIELDS_IN_FORM = [
     "created_at",
@@ -73,3 +82,54 @@ def get_model_fields(model_name, app_name, related_field_names):
         )
 
     return fields
+
+
+def check_criteria_match(self, task, criteria):
+    # check if the criteria matches the task
+    field = criteria.field
+    operator = criteria.operator
+    value = criteria.value
+
+    # get task value for the field
+    task_value = str(getattr(task, field))
+
+    # check if the task value matches the criteria value
+    if operator == Operator.EQUALS:
+        return task_value == value
+    elif operator == Operator.CONTAINS:
+        return value in task_value
+    elif operator == Operator.STARTS_WITH:
+        return task_value.startswith(value)
+    elif operator == Operator.ENDS_WITH:
+        return task_value.endswith(value)
+    elif operator == Operator.GREATER_THAN:
+        return task_value > value
+    elif operator == Operator.LESS_THAN:
+        return task_value < value
+
+    return False
+
+
+def get_matching_assignment_rules_with_tasks(task) -> list:
+    # check if task is already matched with another rules
+    if TaskResourceAssigment.objects.filter(task=task).exists():
+        return False
+
+    # get all assignment rules
+    assignment_rules = AssigmentRule.objects.filter(work_center=task.work_center)
+
+    for rule in assignment_rules:
+        # get all rule criteria for the rule
+        rule_criteria = AssigmentRuleCriteria.objects.filter(assigment_rule=rule)
+
+        # check if any rule criteria matches the task
+        for criteria in rule_criteria:
+            if check_criteria_match(task, criteria):
+                # if criteria match store it in the TaskResourceAssigment model
+                TaskResourceAssigment.objects.create(
+                    task=task,
+                    assigment_rule=rule,
+                )
+                break
+
+    return True

@@ -1,4 +1,7 @@
+from django.http import HttpResponse
+
 from common.views import CRUDView, CustomTableView
+from common.utils.views import add_notification_headers
 
 # Create your views here.
 from .forms import (
@@ -19,6 +22,9 @@ from .services import (
     AssignmentConstraintService,
     TaskResourceAssigmentService,
 )
+
+from job_manager.models import Task
+from .utils import get_matching_assignment_rules_with_tasks
 
 # ------------------------------------------------------------------------------
 # Task Resource Assignement Views
@@ -232,3 +238,24 @@ ASSIGNMENT_CONSTRAINT_VIEWS = CRUDView(
     model_form=AssignmentConstraintForm,
     model_table_view=ASSIGNMENT_CONSTRAINT_TABLE_VIEW,
 )
+
+# ------------------------------------------------------------------------------
+# Matching Rule API
+# ------------------------------------------------------------------------------
+
+def match_rules_with_tasks(request):
+    """
+    Match rules with tasks.
+    """
+    tasks = Task.objects.filter(job__isnull=False)
+
+    for task in tasks:
+        get_matching_assignment_rules_with_tasks(task)
+
+    response = HttpResponse(status=204)
+    add_notification_headers(
+        response,
+        "Assignment rules matched with tasks successfully.",
+        "success",
+    )
+    return response
