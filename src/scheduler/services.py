@@ -40,7 +40,7 @@ class ResourceIntervalsService(AbstractPermissionService):
                 "You do not have permission to view resource intervals"
             )
 
-        return self.resource_intervals.objects.all()
+        return ResourceIntervals.objects.all()
 
     def get_resource_intervals_by_id(
         self, interval_id=None, resource_id=None, task_id=None
@@ -60,19 +60,27 @@ class ResourceIntervalsService(AbstractPermissionService):
             filters &= Q(task_id=task_id)
 
         # Apply filters to the queryset
-        queryset = self.resource_intervals.objects.filter(filters)
+        queryset = ResourceIntervals.objects.filter(filters)
 
         return queryset
 
     @transaction.atomic
-    def create_resource_intervals(self, resource, task, interval_start, interval_end):
+    def create(
+        self,
+        scheduler_run: SchedulerRuns,
+        resource: Resource,
+        task: Task,
+        interval_start,
+        interval_end,
+    ):
         # check permissions
-        if not self.permission_service.check_for_permission("add_resourcentervals"):
+        if not self.permission_service.check_for_permission("add_resourceintervals"):
             raise PermissionDenied(
                 "You do not have permission to add resource intervals"
             )
 
         resource_interval = ResourceIntervals.objects.create(
+            run_id=scheduler_run,
             resource=resource,
             task=task,
             interval_start=interval_start,
@@ -84,13 +92,13 @@ class ResourceIntervalsService(AbstractPermissionService):
         return resource_interval
 
     @transaction.atomic
-    def update_resource_intervals(self, instance: ResourceIntervals, data: dict):
-        if self.permission_service.check_for_permission("change_resourcentervals"):
+    def update(self, instance: ResourceIntervals, data: dict):
+        if not self.permission_service.check_for_permission("change_resourceintervals"):
             raise PermissionDenied(
                 "You do not have permission to change resource intervals"
             )
 
-        fields = ["resource", "task", "interval_start", "interval_end"]
+        fields = ["run_id", "resource", "task", "interval_start", "interval_end"]
         resource_interval = model_update(
             instance=instance, data=data, fields=fields, user=self.user
         )
@@ -98,14 +106,13 @@ class ResourceIntervalsService(AbstractPermissionService):
         return resource_interval
 
     @transaction.atomic
-    def delete_resource_intervals(self, id):
-        if not self.permission_service.check_for_permission("delete_resourcentervals"):
+    def delete(self, instance: ResourceIntervals):
+        if not self.permission_service.check_for_permission("delete_resourceintervals"):
             raise PermissionDenied(
                 "You do not have permission to delete resource intervals"
             )
 
-        resource_interval = self.resource_intervals.objects.get(id=id)
-        resource_interval.delete()
+        instance.delete()
         return True
 
 
@@ -126,11 +133,9 @@ class ResourceAllocationsService(AbstractPermissionService):
                 "You do not have permission to view resource allocations"
             )
 
-        return self.resource_allocations.objects.all()
+        return ResourceAllocations.objects.all()
 
-    def get_resource_allocations_by_id(
-        self, allocation_id=None, resource_id=None, task_id=None
-    ):
+    def get_resource_allocations_by_id(self, resource_id=None, task_id=None):
         # Check permission
         if not self.permission_service.check_for_permission("view_resourceallocations"):
             raise PermissionDenied(
@@ -138,21 +143,22 @@ class ResourceAllocationsService(AbstractPermissionService):
             )
 
         filters = Q()
-        if allocation_id:
-            filters &= Q(id=allocation_id)
         if resource_id:
             filters &= Q(resource_id=resource_id)
         if task_id:
             filters &= Q(task_id=task_id)
 
         # Apply filters to the queryset
-        queryset = self.resource_allocations.objects.filter(filters)
+        queryset = ResourceAllocations.objects.filter(filters)
 
         return queryset
 
     @transaction.atomic
-    def create_resource_allocations(
-        self, resource, task, start_datetime=None, end_datetime=None
+    def create(
+        self,
+        scheduler_run: SchedulerRuns,
+        resource: Resource,
+        task: Task,
     ):
         # check permissions
         if not self.permission_service.check_for_permission("add_resourceallocations"):
@@ -161,10 +167,9 @@ class ResourceAllocationsService(AbstractPermissionService):
             )
 
         resource_allocation = ResourceAllocations.objects.create(
+            run_id=scheduler_run,
             resource=resource,
             task=task,
-            start_datetime=start_datetime,
-            end_datetime=end_datetime,
         )
 
         resource_allocation.full_clean()
@@ -172,13 +177,15 @@ class ResourceAllocationsService(AbstractPermissionService):
         return resource_allocation
 
     @transaction.atomic
-    def update_resource_allocations(self, instance: ResourceAllocations, data: dict):
-        if self.permission_service.check_for_permission("change_resourceallocations"):
+    def update(self, instance: ResourceAllocations, data: dict):
+        if not self.permission_service.check_for_permission(
+            "change_resourceallocations"
+        ):
             raise PermissionDenied(
                 "You do not have permission to change resource allocations"
             )
 
-        fields = ["resource", "task", "start_datetime", "end_datetime"]
+        fields = ["run_id", "resource", "task"]
         resource_allocation = model_update(
             instance=instance, data=data, fields=fields, user=self.user
         )
@@ -186,7 +193,7 @@ class ResourceAllocationsService(AbstractPermissionService):
         return resource_allocation
 
     @transaction.atomic
-    def delete_resource_allocations(self, id):
+    def delete(self, instance: ResourceAllocations):
         if not self.permission_service.check_for_permission(
             "delete_resourceallocations"
         ):
@@ -194,8 +201,7 @@ class ResourceAllocationsService(AbstractPermissionService):
                 "You do not have permission to delete resource allocations"
             )
 
-        resource_allocation = self.resource_allocations.objects.get(id=id)
-        resource_allocation.delete()
+        instance.delete()
         return True
 
 
@@ -232,8 +238,13 @@ class SchedulerRunsService(AbstractPermissionService):
         return queryset
 
     @transaction.atomic
-    def create_scheduler_runs(
-        self, start_time, end_time=None, run_duration=None, details=None, status=None
+    def create(
+        self,
+        start_time,
+        status,
+        end_time=None,
+        run_duration=None,
+        details=None,
     ):
         # check permissions
         if not self.permission_service.check_for_permission("add_schedulerruns"):
@@ -252,8 +263,8 @@ class SchedulerRunsService(AbstractPermissionService):
         return scheduler_run
 
     @transaction.atomic
-    def update_scheduler_runs(self, instance: SchedulerRuns, data: dict):
-        if self.permission_service.check_for_permission("change_schedulerruns"):
+    def update(self, instance: SchedulerRuns, data: dict):
+        if not self.permission_service.check_for_permission("change_schedulerruns"):
             raise PermissionDenied(
                 "You do not have permission to change scheduler runs"
             )
@@ -266,14 +277,13 @@ class SchedulerRunsService(AbstractPermissionService):
         return scheduler_run
 
     @transaction.atomic
-    def delete_scheduler_runs(self, id):
+    def delete(self, instance: SchedulerRuns):
         if not self.permission_service.check_for_permission("delete_schedulerruns"):
             raise PermissionDenied(
                 "You do not have permission to delete scheduler runs"
             )
 
-        scheduler_run = self.scheduler_runs.objects.get(id=id)
-        scheduler_run.delete()
+        instance.delete()
         return True
 
 
