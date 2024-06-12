@@ -283,6 +283,9 @@ class AssigmentRuleService:
                     data=criteria_dict,
                 )
             else:
+                # remove id if it does not exist
+                criteria_dict.pop("id", None)
+
                 # validate criteria keys
                 self._validate_criteria_keys_throw_validation_error(
                     criteria=[criteria_dict]
@@ -386,13 +389,15 @@ class AssigmentRuleService:
 
         criteria = data.get("criteria", [])
 
-        self._create_or_update_criteria(criteria=criteria, instance=instance)
+        if criteria:
+            self._create_or_update_criteria(criteria=criteria, instance=instance)
 
         assignment_constraints = data.get("assignment_constraints", [])
 
-        self._create_or_update_constraints(
-            assignment_constraints=assignment_constraints, instance=instance
-        )
+        if assignment_constraints:
+            self._create_or_update_constraints(
+                assignment_constraints=assignment_constraints, instance=instance
+            )
 
         return instance
 
