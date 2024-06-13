@@ -9,6 +9,8 @@ from resource_assigner.models import (
     TaskResourceAssigment,
 )
 
+from job_manager.models import TaskStatusChoices, JobStatusChoices
+
 
 # Fields that are not required in the form
 NOT_REQUIRED_FIELDS_IN_FORM = [
@@ -140,6 +142,15 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                                         task=task,
                                         assigment_rule=rule,
                                     )
+
+                                    # update the task status to IN_PROGRESS
+                                    task.task_status = TaskStatusChoices.IN_PROGRESS
+                                    task.save()
+
+                                    # update the job status to IN_PROGRESS
+                                    task.job.job_status = JobStatusChoices.IN_PROGRESS
+                                    task.job.save()
+
                                     matching_task_count += 1
                                     break
 

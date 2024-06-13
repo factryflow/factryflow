@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db.models import Q
 
 from common.views import CRUDView, CustomTableView
 from common.utils.views import add_notification_headers
@@ -23,7 +24,7 @@ from .services import (
     TaskResourceAssigmentService,
 )
 
-from job_manager.models import Task
+from job_manager.models import Task, TaskStatusChoices, JobStatusChoices
 from .utils import get_matching_assignment_rules_with_tasks
 
 # ------------------------------------------------------------------------------
@@ -245,9 +246,15 @@ def match_rules_with_tasks(request):
     Match rules with tasks.
     """
     try:
-        tasks = Task.objects.filter(job__isnull=False)
+        condition_one = Q(task_status=TaskStatusChoices.NOT_STARTED)  # check if the task is not started
+        condition_two = Q(job__job_status=JobStatusChoices.IN_PROGRESS) | Q(job__job_status=JobStatusChoices.NOT_PLANNED) # check if the job is in progress or not planned
+
+        query_filters = condition_one & condition_two
+
+        tasks = Task.objects.filter(query_filters)
+
         if tasks.count() == 0:
-            raise Exception("No tasks found")
+            raise Exception("Tasks not found!")
 
         result = get_matching_assignment_rules_with_tasks(tasks)
 
