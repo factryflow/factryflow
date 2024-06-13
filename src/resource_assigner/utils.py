@@ -143,14 +143,6 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                                         assigment_rule=rule,
                                     )
 
-                                    # update the task status to IN_PROGRESS
-                                    task.task_status = TaskStatusChoices.IN_PROGRESS
-                                    task.save()
-
-                                    # update the job status to IN_PROGRESS
-                                    task.job.job_status = JobStatusChoices.IN_PROGRESS
-                                    task.job.save()
-
                                     matching_task_count += 1
                                     break
 
