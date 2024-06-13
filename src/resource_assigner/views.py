@@ -23,7 +23,7 @@ from .services import (
     TaskResourceAssigmentService,
 )
 
-from job_manager.models import Task
+from job_manager.models import Task, TaskStatusChoices, JobStatusChoices
 from .utils import get_matching_assignment_rules_with_tasks
 
 # ------------------------------------------------------------------------------
@@ -244,15 +244,32 @@ def match_rules_with_tasks(request):
     """
     Match rules with tasks.
     """
-    tasks = Task.objects.filter(job__isnull=False)
+    try:
+        tasks = Task.objects.filter(
+            task_status=TaskStatusChoices.NOT_STARTED,
+            job__job_status__in=[
+                JobStatusChoices.IN_PROGRESS,
+                JobStatusChoices.NOT_PLANNED,
+            ],
+        )
 
-    for task in tasks:
-        get_matching_assignment_rules_with_tasks(task)
+        if tasks.count() == 0:
+            raise Exception("Tasks not found!")
 
-    response = HttpResponse(status=204)
-    add_notification_headers(
-        response,
-        "Assignment rules matched with tasks successfully.",
-        "success",
-    )
-    return response
+        result = get_matching_assignment_rules_with_tasks(tasks)
+
+        response = HttpResponse(status=204)
+        add_notification_headers(
+            response,
+            result["message"],
+            result["status"],
+        )
+        return response
+    except Exception as e:
+        response = HttpResponse(status=500)
+        add_notification_headers(
+            response,
+            str(e),
+            "error",
+        )
+        return response
