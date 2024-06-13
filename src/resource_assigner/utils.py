@@ -9,8 +9,6 @@ from resource_assigner.models import (
     TaskResourceAssigment,
 )
 
-from job_manager.models import TaskStatusChoices, JobStatusChoices
-
 
 # Fields that are not required in the form
 NOT_REQUIRED_FIELDS_IN_FORM = [

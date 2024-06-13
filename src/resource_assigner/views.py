@@ -246,8 +246,12 @@ def match_rules_with_tasks(request):
     Match rules with tasks.
     """
     try:
-        condition_one = Q(task_status=TaskStatusChoices.NOT_STARTED)  # check if the task is not started
-        condition_two = Q(job__job_status=JobStatusChoices.IN_PROGRESS) | Q(job__job_status=JobStatusChoices.NOT_PLANNED) # check if the job is in progress or not planned
+        condition_one = Q(
+            task_status=TaskStatusChoices.NOT_STARTED
+        )  # check if the task is not started
+        condition_two = Q(job__job_status=JobStatusChoices.IN_PROGRESS) | Q(
+            job__job_status=JobStatusChoices.NOT_PLANNED
+        )  # check if the job is in progress or not planned
 
         query_filters = condition_one & condition_two
 
