@@ -244,15 +244,25 @@ def match_rules_with_tasks(request):
     """
     Match rules with tasks.
     """
-    tasks = Task.objects.filter(job__isnull=False)
+    try:
+        tasks = Task.objects.filter(job__isnull=False)
+        if tasks.count() == 0:
+            raise Exception("No tasks found")
 
-    for task in tasks:
-        get_matching_assignment_rules_with_tasks(task)
+        result = get_matching_assignment_rules_with_tasks(tasks)
 
-    response = HttpResponse(status=204)
-    add_notification_headers(
-        response,
-        "Assignment rules matched with tasks successfully.",
-        "success",
-    )
-    return response
+        response = HttpResponse(status=204)
+        add_notification_headers(
+            response,
+            result["message"],
+            result["status"],
+        )
+        return response
+    except Exception as e:
+        response = HttpResponse(status=500)
+        add_notification_headers(
+            response,
+            str(e),
+            "error",
+        )
+        return response
