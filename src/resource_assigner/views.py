@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.db.models import Q
 
 from common.views import CRUDView, CustomTableView
 from common.utils.views import add_notification_headers
@@ -246,16 +245,13 @@ def match_rules_with_tasks(request):
     Match rules with tasks.
     """
     try:
-        condition_one = Q(
-            task_status=TaskStatusChoices.NOT_STARTED
-        )  # check if the task is not started
-        condition_two = Q(job__job_status=JobStatusChoices.IN_PROGRESS) | Q(
-            job__job_status=JobStatusChoices.NOT_PLANNED
-        )  # check if the job is in progress or not planned
-
-        query_filters = condition_one & condition_two
-
-        tasks = Task.objects.filter(query_filters)
+        tasks = Task.objects.filter(
+            task_status=TaskStatusChoices.NOT_STARTED,
+            job__job_status__in=[
+                JobStatusChoices.IN_PROGRESS,
+                JobStatusChoices.NOT_PLANNED,
+            ],
+        )
 
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
