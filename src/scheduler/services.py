@@ -6,8 +6,8 @@ from common.services import model_update
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
+from factryengine import Assignment, ResourceGroup, Scheduler
 from factryengine import Resource as SchedulerResource
-from factryengine import Scheduler, Assignment, ResourceGroup
 from factryengine import Task as SchedulerTask
 from job_manager.models import Task
 from resource_assigner.models import (

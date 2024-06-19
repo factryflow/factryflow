@@ -1,18 +1,18 @@
 import datetime
-from django.urls import reverse
-from django.http import HttpResponse
 
+from django.http import HttpResponse
+from django.urls import reverse
+from job_manager.models import Task
+
+from .models import (
+    ResourceAllocations,
+    ResourceIntervals,
+    SchedulerRuns,
+    SchedulerStatusChoices,
+)
 from .services import (
     SchedulingService,
 )
-from .models import (
-    SchedulerRuns,
-    ResourceAllocations,
-    ResourceIntervals,
-    SchedulerStatusChoices,
-)
-
-from job_manager.models import Task
 
 
 # # scheduler router
@@ -69,10 +69,10 @@ def start_scheduler_run(request):
     """
     Start a new scheduler run in background.
     """
-    scheduler_start_time = datetime.datetime.now()
+    scheduler_start_time = datetime.datetime.now(datetime.timezone.utc)
     try:
         scheduled_task = SchedulingService(horizon_weeks=5).run()
-        scheduler_end_time = datetime.datetime.now()
+        scheduler_end_time = datetime.datetime.now(datetime.timezone.utc)
 
         # check if the scheduleed task has error key
         if "error" in scheduled_task:
