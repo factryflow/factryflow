@@ -240,5 +240,5 @@ class AssignmentConstraintForm(forms.ModelForm):
 
         if self.cleaned_data.get("task") and self.cleaned_data.get("assignment_rule"):
             raise forms.ValidationError(
-                "Direct assignment constraints cannot have assignment rules."
+                "Assignment constraints directly assigned to tasks cannot have assignment rules."
             )
