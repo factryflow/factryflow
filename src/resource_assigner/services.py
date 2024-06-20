@@ -388,7 +388,7 @@ class AssigmentRuleService:
         return instance
 
     @transaction.atomic
-    def delete(self, *, instance: AssigmentRule) -> None:
+    def delete(self, instance: AssigmentRule) -> None:
         # check permissions for delete assigment rule
         if not self.permission_service.check_for_permission("delete_assigmentrule"):
             raise PermissionDenied()
