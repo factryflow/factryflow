@@ -218,3 +218,27 @@ class AssignmentConstraintForm(forms.ModelForm):
                 }
             ),
         }
+
+    def clean(self, *args, **kwargs):
+        resource_group_set = self.cleaned_data.get("resource_group") is not None
+        resources_set = self.cleaned_data.get("resources").count() > 0
+
+        if resource_group_set and resources_set:
+            raise forms.ValidationError(
+                "You cannot set both resource_group and resources. Choose one."
+            )
+        elif not resource_group_set and not resources_set:
+            raise forms.ValidationError(
+                "You must set either resource_group or resources."
+            )
+
+        # ensure that either task or assignment_rule is set
+        if not (self.cleaned_data.get("task")) and not (
+            self.cleaned_data.get("assignment_rule")
+        ):
+            raise forms.ValidationError("task or assignment_rule must be set.")
+
+        if self.cleaned_data.get("task") and self.cleaned_data.get("assignment_rule"):
+            raise forms.ValidationError(
+                "Assignment constraints directly assigned to tasks cannot have assignment rules."
+            )
