@@ -1,6 +1,11 @@
 from django import forms
 
-from .models import *
+from .models import (
+    OperationalException,
+    OperationalExceptionType,
+    WeeklyShiftTemplate,
+    WeeklyShiftTemplateDetail,
+)
 
 
 class WeeklyShiftTemplateForm(forms.ModelForm):

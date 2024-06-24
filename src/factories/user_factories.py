@@ -1,12 +1,12 @@
 import factory
 from common.utils.tests import faker
-from django.contrib.auth.models import User
+from django.conf import settings
 from rolepermissions.roles import assign_role
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = User
+        model = settings.AUTH_USER_MODEL
 
     username = factory.lazy_attribute(lambda _: faker.unique.user_name())
     email = factory.lazy_attribute(lambda _: faker.unique.email())
