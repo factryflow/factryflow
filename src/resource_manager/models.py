@@ -1,6 +1,6 @@
 # Create your models here.
 from common.models import BaseModelWithExtras
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from resource_calendar.models import WeeklyShiftTemplate
 from simple_history.models import HistoricalRecords
@@ -48,7 +48,9 @@ class Resource(BaseModelWithExtras):
 
     # many to many fields
     # resource_pools = models.ManyToManyField("ResourceGroup", related_name="resources")
-    users = models.ManyToManyField(User, related_name="operators", blank=True)
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="operators", blank=True
+    )
 
     class Meta:
         db_table = "resource"

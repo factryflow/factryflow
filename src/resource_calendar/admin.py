@@ -1,10 +1,10 @@
 from django.contrib import admin
 
 from resource_calendar.models import (
+    OperationalException,
+    OperationalExceptionType,
     WeeklyShiftTemplate,
     WeeklyShiftTemplateDetail,
-    OperationalExceptionType,
-    OperationalException,
 )
 
 
