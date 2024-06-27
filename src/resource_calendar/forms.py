@@ -9,14 +9,12 @@ class WeeklyShiftTemplateForm(forms.ModelForm):
         fields = [
             "name",
             "external_id",
-            "weekly_shift_template_details",
             "notes",
             "description",
         ]
         labels = {
             "name": "Weekly Shift Template Name",
             "external_id": "External ID",
-            "Weekly Shift Template Details": "Weekly Shift Template Details",
             "notes": "Notes",
             "description": "Description",
         }
@@ -29,12 +27,6 @@ class WeeklyShiftTemplateForm(forms.ModelForm):
             "external_id": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "weekly_shift_template_details": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "size": 7,
                 }
             ),
             "notes": forms.Textarea(
@@ -55,11 +47,17 @@ class WeeklyShiftTemplateDetailForm(forms.ModelForm):
         model = WeeklyShiftTemplateDetail
         fields = ["day_of_week", "start_time", "end_time"]
         labels = {
+            "weekly_shift_template": "Weekly Shift Template",
             "day_of_week": "Day of Week",
             "start_time": "Start Time",
             "end_time": "End Time",
         }
         widgets = {
+            "weekly_shift_template": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                }
+            ),
             "day_of_week": forms.Select(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",

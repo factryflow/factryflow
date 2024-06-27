@@ -1,5 +1,4 @@
 from common.models import BaseModel, BaseModelWithExtras
-from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
@@ -111,25 +110,3 @@ class AssignmentConstraint(BaseModel):
     @property
     def resource_id_list(self):
         return list(self.resources.values_list("id", flat=True))
-
-    def clean(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        resource_group_set = self.resource_group is not None
-        resources_set = self.resources.count() > 0
-
-        if resource_group_set and resources_set:
-            raise ValidationError(
-                "You cannot set both resource_group and resources. Choose one."
-            )
-        elif not resource_group_set and not resources_set:
-            raise ValidationError("You must set either resource_group or resources.")
-
-        # ensure that either task or assignment_rule is set
-        if not (self.task) and not (self.assignment_rule):
-            raise ValidationError("task or assignment_rule must be set.")
-
-        if self.task and self.assignment_rule:
-            raise ValidationError(
-                "Direct assignment constraints cannot have assignment rules."
-            )

@@ -6,9 +6,10 @@
 {% load partials %}
 {% partialdef partial-form %}
 <form method="post"
-      hx-post="{{ form_action_url }}"
-      hx-redirect="true"
-      x-cloak>
+    hx-post="{{ form_action_url }}"
+    hx-redirect="true"
+    hx-trigger="submit once"
+    x-cloak>
     {% csrf_token %}
     {% comment %} Hidden ID {% endcomment %}
     {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
@@ -16,7 +17,7 @@
         {% for field in form %}
             <div class="md:w-1/2 px-3 mb-6">
                 <label for="{{ field.id_for_label }}"
-                       class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                     {{ field.label }}
                     {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                 </label>
@@ -29,9 +30,54 @@
             <div class="md:flex md:flex-wrap -mx-3">
             {% endif %}
         {% endfor %}
+        
+        {% if button_text == "Create"  %}
+            {% if formset_form %}
+                <div id="new-row-formset" class="flex-auto">
+                    <!-- Management form fields for the formset -->
+                    {{ formset_form.management_form }}
+                    
+                    <h2 class="ms-1 text-xl font-bold text-[#A1A5B7] md:ms-2 mb-2">Add {{ formset_title }} </h2>
+                    <div class="flex flex-wrap overflow-x-auto h-80">
+                                {% for formset in formset_form %}
+                                    <div class="md:w-1/2 px-3 mb-6">
+                                        <label for="{{ formset.id_for_label }}"
+                                            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                            {{ formset.label }}
+                                            {% if formset.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                        </label>
+                                        {{ formset }}
+                                        {% if formset.help_text %}<p class="text-gray-600 text-xs italic">{{ formset.help_text }}</p>{% endif %}
+                                        {% for error in formset.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                                        <a class="removeButton text-red-500 bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base p-3 text-center ms-1"
+                                        href="{{ remove_formset_url }}"
+                                        hx-get="{{ remove_formset_url }}"
+                                        hx-swap="outerHTML"
+                                        hx-target="body">
+                                            Remove
+                                        </a>
+                                    </div>
+                                {% if forloop.counter|divisibleby:2 and not forloop.last %} 
+                            {% endif %} 
+                        {% endfor %}
+                    </div>
+                    <div class="flex-auto flex items-center">
+                        <a class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1"
+                            href="{{ add_formset_url }}"
+                            hx-get="{{ add_formset_url }}"
+                            hx-swap="outerHTML"
+                            hx-target="body">
+                            Add
+                        </a>
+                    </div>
+            </div>
+        </div>  
+            {% endif %}
+    {% endif %}
+
         {% if custom_field_data %}
             {% if button_text == "Create" %}
-                <div class="md:w-1/2 px-3 mb-6">
+                <div class="md:w-1/2 px-3 mb-6 ">
                     <label for="custom-field"
                         class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Custom Field</label>
                         <div id="field-input" class="overflow-y-auto" style="height: 200px;">
@@ -54,13 +100,16 @@
                                             onclick="removeField(this)">Delete</button>
                                 </div>
                             </div>
-                            <div id="new-row"></div>
+                            <div id="new-row-custom-field"></div>
                         </div>
                         
                     <div class="flex-auto flex items-center">
                         <button id="addButton"
-                                class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1">
-                            Add Custom field
+                            class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1"
+                            hx-post="{{ add_formset_url }}"
+                            hx-swap="outerHTML"
+                            hx-target="#new-row-formset">
+                            Add
                         </button>
                     </div>
                 </div>
@@ -78,7 +127,7 @@
             {% if view_mode %}
                 {% if user|can:'actions_rule[0]' %}
                     <a href="{{ edit_url }}"
-                       class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                    class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                         {{ button_text }}
                     </a>
                 {% endif %}
@@ -101,7 +150,7 @@
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                 <li class="inline-flex items-center">
                     <a href="/"
-                       class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                    class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
                         <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
                     </a>
                 </li>
@@ -109,7 +158,7 @@
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
                         <a href="{% url model_name %}"
-                           class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
+                        class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                     </div>
                 </li>
                 <li>
@@ -117,7 +166,7 @@
                         <div class="flex items-center">
                             <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
                             <a href="{% url model_name|add:'_form' %}"
-                               class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
+                            class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
                         </div>
                     {% endif %}
                 </li>
@@ -203,33 +252,39 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('new-row').appendChild(newRow);
+                    document.getElementById('new-row-custom-field').appendChild(newRow);
                 });
             });
 
-        function removeField(button) {
-            button.parentNode.parentNode.remove();
-        }
+            function removeFormsetForm(button) {
+                // update form count
+                document.getElementById('id_criteria-TOTAL_FORMS').value = parseInt(document.getElementById('id_criteria-TOTAL_FORMS').value) - 1;
 
-        function changeFieldType(select) {
-            
-            const input = select.nextElementSibling;
-            const optionValue = select.value;
-            const fieldType = getFieldDataType(optionValue);
-            input.type = fieldType;
-        }
+                button.parentNode.parentNode.remove();
+            };
 
-        function getFieldDataType(optionValue) {
-            console.log(optionValue);
-            const customFieldData = {{ custom_field_data|safe }};
-            for (let i = 0; i < customFieldData.length; i++) {
-                if (customFieldData[i][1] === optionValue) {
-                    console.log(customFieldData[i][3]);
-                    return customFieldData[i][3];
+            function removeField(button) {
+                button.parentNode.parentNode.remove();
+            };
+
+            function changeFieldType(select) {
+                const input = select.nextElementSibling;
+                const optionValue = select.value;
+                const fieldType = getFieldDataType(optionValue);
+                input.type = fieldType;
+            };
+
+            function getFieldDataType(optionValue) {
+                console.log(optionValue);
+                const customFieldData = {{ custom_field_data|safe }};
+                for (let i = 0; i < customFieldData.length; i++) {
+                    if (customFieldData[i][1] === optionValue) {
+                        console.log(customFieldData[i][3]);
+                        return customFieldData[i][3];
+                    }
                 }
-            }
-            return "text";
-        }
+                return "text";
+            };
 
 
         </script>

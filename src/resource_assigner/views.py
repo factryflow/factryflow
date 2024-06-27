@@ -94,7 +94,7 @@ ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
     "TASK_RESOURCE_ASSIGNMENT",
 ]
 
-ASSIGMENT_RULE_RELATION_FIELDS = {
+ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
     "assigment_rule_criteria": [
         AssigmentRuleCriteria,
         "assigment_rule",
@@ -109,13 +109,22 @@ ASSIGMENT_RULE_RELATION_FIELDS = {
     ],
 }
 
+ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS = ["field", "operator", "value"]
+
+ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS = [
+    AssigmentRuleCriteria,
+    AssigmentRuleCriteriaForm,
+    "criteria",
+    ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS,
+]
+
 ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
     model=AssigmentRule,
     model_name="assigment_rule",
     fields=ASSIGMENT_RULE_MODEL_FIELDS,
     headers=ASSIGMENT_RULE_TABLE_HEADERS,
     model_relation_headers=ASSIGMENT_RULE_MODEL_RELATION_HEADERS,
-    model_relation_fields=ASSIGMENT_RULE_RELATION_FIELDS,
+    model_relation_fields=ASSIGMENT_RULE_MODEL_RELATION_FIELDS,
     search_fields_list=ASSIGMENT_RULE_SEARCH_FIELDS,
 )
 
@@ -125,6 +134,7 @@ ASSIGMENT_RULE_VIEWS = CRUDView(
     model_service=AssigmentRuleService,
     model_form=AssigmentRuleForm,
     model_table_view=ASSIGMENT_RULE_TABLE_VIEW,
+    formset_options=ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS,
 )
 
 
