@@ -29,48 +29,9 @@
             <div class="md:flex md:flex-wrap -mx-3">
             {% endif %}
         {% endfor %}
-        {% if custom_field_data %}
-            {% if button_text == "Create" %}
-                <div class="md:w-1/2 px-3 mb-6">
-                    <label for="custom-field"
-                           class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                        Custom Field
-                    </label>
-                    <div id="field-input" class="overflow-y-auto" style="height: 200px;">
-                        <div id="custom-field-input" class="flex-row items-center">
-                            <div class="flex items-center custom-field">
-                                <select class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                                        name="key[]"
-                                        onchange="changeFieldType(this)">
-                                    {% for field_data in custom_field_data %}<option value="{{ field_data.1 }}">{{ field_data.2 }}</option>{% endfor %}
-                                </select>
-                                <input id="field-input-1"
-                                       class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                                       type="{{ custom_field_data.0.3 }}"
-                                       name="value[]"
-                                       value="">
-                                <button type="button"
-                                        class="removeButton text-red-500 bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1"
-                                        onclick="removeField(this)">Delete</button>
-                            </div>
-                        </div>
-                        <div id="new-row"></div>
-                    </div>
-                    <div class="flex-auto flex items-center">
-                        <button id="addButton"
-                                class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1">
-                            Add Custom field
-                        </button>
-                    </div>
-                </div>
-            {% endif %}
-        {% endif %}
     </div>
     {% if not view_only %}
         <div class="flex justify-left mt-6 space-x-4">
-            <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                TESTING {{ view_only }}
-            </button>
             <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                 Cancel
             </button>
@@ -167,61 +128,16 @@
             </div>
         {% endif %}
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const addButton = document.getElementById('addButton');
-                addButton.addEventListener('click', function(event) {
-                    event.preventDefault(); 
-                    const customFields = document.querySelectorAll('.custom-field');
-                    const customFieldDataLength = {{ custom_field_data|length }};
-                    
-                    if (customFields.length >= customFieldDataLength) {
-                        return;
-                    }
-
-                    const newRow = document.createElement('div');
-                    newRow.id = 'custom-field-input';
-                    newRow.className = 'flex-row items-center';
-                    newRow.innerHTML = `
-                        <div id="custom-field-input" class="flex-row items-center">
-                            <div class="flex items-center custom-field">
-                                <select class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1" name="key[]" onchange="changeFieldType(this)">
-                                    {% for field_data in custom_field_data %}
-                                        <option value="{{ field_data.1 }}">{{ field_data.2 }}</option>
-                                    {% endfor %}
-                                </select>
-                                <input id="field-input-1" class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1" type="{{ custom_field_data.1.3 }}" name="value[]" value="">
-                                <button type="button" class="removeButton text-red-500 bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1" onclick="removeField(this)">Delete</button>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('new-row').appendChild(newRow);
-                });
-            });
-
-        function removeField(button) {
-            button.parentNode.parentNode.remove();
-        }
-
-        function changeFieldType(select) {
-            
-            const input = select.nextElementSibling;
-            const optionValue = select.value;
-            const fieldType = getFieldDataType(optionValue);
-            input.type = fieldType;
-        }
-
-        function getFieldDataType(optionValue) {
-            console.log(optionValue);
-            const customFieldData = {{ custom_field_data|safe }};
-            for (let i = 0; i < customFieldData.length; i++) {
-                if (customFieldData[i][1] === optionValue) {
-                    console.log(customFieldData[i][3]);
-                    return customFieldData[i][3];
-                }
+            function removeField(button) {
+                button.parentNode.parentNode.remove();
             }
-            return "text";
-        }
 
-
+            function changeFieldType(select) {
+                
+                const input = select.nextElementSibling;
+                const optionValue = select.value;
+                const fieldType = getFieldDataType(optionValue);
+                input.type = fieldType;
+            }
         </script>
     {% endblock content %}
