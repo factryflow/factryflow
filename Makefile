@@ -1,6 +1,6 @@
 dev:
 	@echo "Starting Development Server..."
-	python src/manage.py runserver 0.0.0.0:8000
+	sudo python src/manage.py runserver 0.0.0.0:8000
 
 migrate:
 	python src/manage.py migrate
