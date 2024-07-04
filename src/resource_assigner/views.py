@@ -15,6 +15,7 @@ from .models import (
     AssigmentRuleCriteria,
     AssignmentConstraint,
     TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 from .services import (
     AssigmentRuleCriteriaService,
@@ -97,7 +98,7 @@ ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
 ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
     "ASSIGMENT_RULE_CRITERIA",
-    "TASK_RESOURCE_ASSIGNMENT",
+    "TASK",
 ]
 
 ASSIGMENT_RULE_RELATION_FIELDS = {
@@ -107,11 +108,11 @@ ASSIGMENT_RULE_RELATION_FIELDS = {
         ["ID", "field", "operator", "value"],
         ["id", "field", "operator", "value"],
     ],
-    "task_resource_assignment": [
-        TaskResourceAssigment,
+    "task": [
+        TaskRuleAssignment,
         "assigment_rule",
-        ["ID", "Task", "Resource Count", "Use All Resources"],
-        ["id", "task", "resource_count", "use_all_resources"],
+        ["ID", "Task", "Applied Rule"],
+        ["id", "task", "is_applied"],
     ],
 }
 

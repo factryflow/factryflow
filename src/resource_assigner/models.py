@@ -111,3 +111,22 @@ class AssignmentConstraint(BaseModel):
     @property
     def resource_id_list(self):
         return list(self.resources.values_list("id", flat=True))
+
+
+class TaskRuleAssignment(BaseModel):
+    """
+    Represents the assignment rules to tasks.
+    one task can have multiple rules.
+    """
+    
+    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
+    assigment_rule = models.ForeignKey(
+        AssigmentRule, on_delete=models.DO_NOTHING, blank=True, null=True
+    )
+    is_applied = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "task_rule_assignment"
+
+    def __str__(self):
+        return f"{self.task} - {self.assigment_rule}"

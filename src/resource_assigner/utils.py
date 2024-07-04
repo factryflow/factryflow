@@ -6,7 +6,7 @@ from resource_assigner.models import (
     AssigmentRule,
     AssigmentRuleCriteria,
     Operator,
-    TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 
 
@@ -117,11 +117,11 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
         matching_task_count = 0
 
         for task in tasks:
-            # check if task is already matched with another rules
-            if not TaskResourceAssigment.objects.filter(task=task).exists():
+            # # check if task is already matched with another rules
+            if not TaskRuleAssignment.objects.filter(task=task).exists():
                 # get all assignment rules
                 assignment_rules = AssigmentRule.objects.filter(
-                    work_center=task.work_center
+                    work_center=task.work_center, is_active=True
                 )
 
                 if assignment_rules:
@@ -135,8 +135,8 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                             # check if any rule criteria matches the task
                             for criteria in rule_criteria:
                                 if check_criteria_match(task, criteria):
-                                    # if criteria match store it in the TaskResourceAssigment model
-                                    TaskResourceAssigment.objects.create(
+                                    # if criteria match store it in the TaskRuleAssignment model
+                                    TaskRuleAssignment.objects.create(
                                         task=task,
                                         assigment_rule=rule,
                                     )

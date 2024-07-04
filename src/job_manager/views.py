@@ -2,9 +2,41 @@
 
 from common.views import CRUDView, CustomTableView
 
-from .forms import *
-from .models import *
-from .services import *
+from .forms import (
+    DependencyForm,
+    DependencyTypeForm,
+    ItemForm,
+    JobForm,
+    TaskForm,
+    TaskTypeForm,
+    WorkCenterForm,
+    JobTypeForm,
+)
+from .models import (
+    Dependency,
+    DependencyType,
+    Item,
+    Job,
+    Task,
+    TaskType,
+    WorkCenter,
+    JobType,
+    TaskStatusChoices,
+    JobStatusChoices,
+    DependencyStatusChoices
+)
+from .services import (
+    DependencyService,
+    DependencyTypeService,
+    ItemService,
+    JobService,
+    TaskService,
+    TaskTypeService,
+    WorkCenterService,
+    JobTypeService,
+)
+
+from resource_assigner.models import TaskRuleAssignment
 
 
 # ------------------------------------------------------------------------------
@@ -290,7 +322,7 @@ TASK_TABLE_HEADERS = [
     "Status",
 ]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "predecessors", "HISTORY"]
+TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "RULES"]
 TASK_MODEL_RELATION_FIELDS = {
     "dependencies": [
         "dependencies",
@@ -359,6 +391,12 @@ TASK_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
+    ],
+    "rules": [
+        TaskRuleAssignment,
+        "task",
+        ["ID", "Assignment Rule", "Is Applied"],
+        ["id", "assigment_rule", "is_applied"],
     ],
 }
 
