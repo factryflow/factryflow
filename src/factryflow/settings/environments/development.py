@@ -21,18 +21,18 @@ if not (DEBUG and DISABLE_AUTH):
 
 
 # Settings for Debug Toolbar
-# if DEBUG:
-#     INSTALLED_APPS += [
-#         "debug_toolbar",
-#     ]
+if DEBUG:
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
 
-#     # django-toolbar middleware
-#     MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+    # django-toolbar middleware
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
-#     INTERNAL_IPS = ["127.0.0.1"]
-#     DEBUG_TOOLBAR_CONFIG = {
-#         "INTERCEPT_REDIRECTS": False,
-#     }
+    INTERNAL_IPS = ["127.0.0.1"]
+    DEBUG_TOOLBAR_CONFIG = {
+        "INTERCEPT_REDIRECTS": False,
+    }
 
 TEMPLATES = [
     {
@@ -52,13 +52,13 @@ TEMPLATES = [
 ]
 
 # postgres database
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("DB_NAME"),
+#         "USER": os.getenv("DB_USER"),
+#         "PASSWORD": os.getenv("DB_PASSWORD"),
+#         "HOST": os.getenv("DB_HOST"),
+#         "PORT": os.getenv("DB_PORT"),
+#     }
+# }
