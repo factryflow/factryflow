@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Resource, ResourceGroup
+from resource_manager.models import Resource, ResourceGroup
 
 # ------------------------------------------------------------------------------
 # Resource Forms

@@ -1,6 +1,6 @@
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
-from django.contrib.auth.models import User
+from users.models import User
 from django.core.exceptions import PermissionDenied
 from resource_calendar.models import WeeklyShiftTemplate
 

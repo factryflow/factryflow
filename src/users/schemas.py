@@ -1,12 +1,5 @@
-from enum import Enum
 from ninja import Schema
-
-
-class RoleChoices(str, Enum):
-    Admin = "admin"
-    Operator = "operator"
-    Planner = "planner"
-    ReadOnly = "read_only"
+from users.enums import RoleChoices
 
 
 class RoleIn(Schema):

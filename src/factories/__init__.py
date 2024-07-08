@@ -23,3 +23,10 @@ from .resource_manager_factories import (
     ResourceGroupFactory,
 )
 from .user_factories import UserFactory
+
+from .scheduler_factories import (
+    SchedulerRunsFactory,
+    ResourceIntervalsFactory,
+    ResourceAllocationsFactory,
+    SchedulerStatusChoices,
+)

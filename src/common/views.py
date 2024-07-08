@@ -220,7 +220,7 @@ class CRUDView:
 
                 # Make all form fields read-only
                 for field in form.fields.values():
-                    field.widget.attrs["readonly"] = True
+                    field.widget.attrs["disabled"] = True
 
             else:
                 button_text = "Save"

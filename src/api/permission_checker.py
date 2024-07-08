@@ -1,8 +1,8 @@
 from functools import wraps
 
-from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from rolepermissions.checkers import has_permission
+from users.models import User
 
 
 def has_permission_decorator(operation_id):

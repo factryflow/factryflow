@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from rolepermissions.roles import assign_role, remove_role
@@ -30,7 +30,7 @@ def assign_role_to_user(request, payload: RoleIn):
     -------
         HTTPException: If the user is not found or if there is an error assigning the role.
     """
-    user = get_object_or_404(User, id=payload.user_id)
+    user = get_object_or_404(settings.AUTH_USER_MODEL, id=payload.user_id)
     try:
         assign_role(user, payload.name)
         return {"message": f"{payload.name.name} Role assigned"}
@@ -59,7 +59,7 @@ def remove_role_from_user(request, payload: RoleIn):
     -------
         HTTPException: If the user is not found or if there is an error removing the role.
     """
-    user = get_object_or_404(User, id=payload.user_id)
+    user = get_object_or_404(settings.AUTH_USER_MODEL, id=payload.user_id)
     try:
         remove_role(user, payload.name)
         return {"message": "Role removed"}
