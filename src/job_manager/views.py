@@ -23,7 +23,7 @@ from .models import (
     JobType,
     TaskStatusChoices,
     JobStatusChoices,
-    DependencyStatusChoices
+    DependencyStatusChoices,
 )
 from .services import (
     DependencyService,

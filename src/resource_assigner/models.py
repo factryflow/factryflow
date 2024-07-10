@@ -1,5 +1,4 @@
 from common.models import BaseModel, BaseModelWithExtras
-from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
@@ -118,15 +117,21 @@ class TaskRuleAssignment(BaseModel):
     Represents the assignment rules to tasks.
     one task can have multiple rules.
     """
-    
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    assigment_rule = models.ForeignKey(
-        AssigmentRule, on_delete=models.DO_NOTHING, blank=True, null=True
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.CASCADE)
+    assigment_rule_criteria = models.ManyToManyField(
+        AssigmentRuleCriteria, blank=True, related_name="task_rule_assignments"
     )
     is_applied = models.BooleanField(default=False)
 
     class Meta:
         db_table = "task_rule_assignment"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["task", "assigment_rule"], name="unique_task_assigment_rule"
+            )
+        ]
 
     def __str__(self):
         return f"{self.task} - {self.assigment_rule}"

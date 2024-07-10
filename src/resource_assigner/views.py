@@ -111,7 +111,7 @@ ASSIGMENT_RULE_RELATION_FIELDS = {
     "task": [
         TaskRuleAssignment,
         "assigment_rule",
-        ["ID", "Task", "Applied Rule"],
+        ["ID", "Task", "Rule Applied"],
         ["id", "task", "is_applied"],
     ],
 }

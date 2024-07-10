@@ -5,21 +5,33 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_calendar', '0002_weeklyshifttemplate_weekly_shift_template_details'),
-        ('resource_manager', '0001_initial'),
+        ("resource_calendar", "0002_weeklyshifttemplate_weekly_shift_template_details"),
+        ("resource_manager", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='historicalresource',
-            name='weekly_shift_template',
-            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='resource_calendar.weeklyshifttemplate'),
+            model_name="historicalresource",
+            name="weekly_shift_template",
+            field=models.ForeignKey(
+                blank=True,
+                db_constraint=False,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="+",
+                to="resource_calendar.weeklyshifttemplate",
+            ),
         ),
         migrations.AddField(
-            model_name='resource',
-            name='weekly_shift_template',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='resources', to='resource_calendar.weeklyshifttemplate'),
+            model_name="resource",
+            name="weekly_shift_template",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="resources",
+                to="resource_calendar.weeklyshifttemplate",
+            ),
         ),
     ]

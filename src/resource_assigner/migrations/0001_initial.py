@@ -7,89 +7,289 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('job_manager', '0001_initial'),
-        ('resource_manager', '__first__'),
+        ("job_manager", "0001_initial"),
+        ("resource_manager", "__first__"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AssigmentRule',
+            name="AssigmentRule",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=50)),
-                ('notes', models.TextField(blank=True)),
-                ('name', models.CharField(max_length=150)),
-                ('is_active', models.BooleanField(default=True)),
-                ('description', models.TextField(blank=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.workcenter')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("external_id", models.CharField(blank=True, max_length=50)),
+                ("notes", models.TextField(blank=True)),
+                ("name", models.CharField(max_length=150)),
+                ("is_active", models.BooleanField(default=True)),
+                ("description", models.TextField(blank=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'assigment_rule',
+                "db_table": "assigment_rule",
             },
         ),
         migrations.CreateModel(
-            name='TaskResourceAssigment',
+            name="TaskResourceAssigment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('assigment_rule', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='resource_assigner.assigmentrule')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('resource', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='resource_manager.resource')),
-                ('task', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.task')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                (
+                    "assigment_rule",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="resource_assigner.assigmentrule",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "resource",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="resource_manager.resource",
+                    ),
+                ),
+                (
+                    "task",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="job_manager.task",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'task_resource_assigment',
+                "db_table": "task_resource_assigment",
             },
         ),
         migrations.CreateModel(
-            name='AssignmentConstraint',
+            name="AssignmentConstraint",
             fields=[
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('resource_count', models.PositiveIntegerField(default=1)),
-                ('use_all_resources', models.BooleanField(default=False)),
-                ('assignment_rule', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='resource_assigner.assigmentrule')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('resource_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='constraints', to='resource_manager.resourcegroup')),
-                ('resources', models.ManyToManyField(blank=True, related_name='constraints', to='resource_manager.resource')),
-                ('task', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.task')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("resource_count", models.PositiveIntegerField(default=1)),
+                ("use_all_resources", models.BooleanField(default=False)),
+                (
+                    "assignment_rule",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="resource_assigner.assigmentrule",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "resource_group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="constraints",
+                        to="resource_manager.resourcegroup",
+                    ),
+                ),
+                (
+                    "resources",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="constraints",
+                        to="resource_manager.resource",
+                    ),
+                ),
+                (
+                    "task",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="job_manager.task",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'assignment_constraint',
+                "db_table": "assignment_constraint",
             },
         ),
         migrations.CreateModel(
-            name='AssigmentRuleCriteria',
+            name="AssigmentRuleCriteria",
             fields=[
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('field', models.CharField(max_length=100)),
-                ('operator', models.CharField(choices=[('equals', 'Equals'), ('contains', 'Contains'), ('starts_with', 'Starts With'), ('ends_with', 'Ends With'), ('gt', 'Greater Than'), ('lt', 'Less Than')], default='equals', max_length=20)),
-                ('value', models.CharField(blank=True, max_length=254, null=True)),
-                ('assigment_rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='criteria', to='resource_assigner.assigmentrule')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("field", models.CharField(max_length=100)),
+                (
+                    "operator",
+                    models.CharField(
+                        choices=[
+                            ("equals", "Equals"),
+                            ("contains", "Contains"),
+                            ("starts_with", "Starts With"),
+                            ("ends_with", "Ends With"),
+                            ("gt", "Greater Than"),
+                            ("lt", "Less Than"),
+                        ],
+                        default="equals",
+                        max_length=20,
+                    ),
+                ),
+                ("value", models.CharField(blank=True, max_length=254, null=True)),
+                (
+                    "assigment_rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="criteria",
+                        to="resource_assigner.assigmentrule",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'assigment_rule_criteria',
+                "db_table": "assigment_rule_criteria",
             },
         ),
     ]
