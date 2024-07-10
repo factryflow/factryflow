@@ -1,8 +1,9 @@
 from common.models import BaseModel, BaseModelWithExtras
+from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
-from pydantic import ValidationError
+
 
 class TaskResourceAssigment(BaseModel):
     """
@@ -110,6 +111,12 @@ class AssignmentConstraint(BaseModel):
     @property
     def resource_id_list(self):
         return list(self.resources.values_list("id", flat=True))
+
+    def clean(self, *args, **kwargs):
+        # ensure that either task or assignment_rule is set
+        if not (self.task) and not (self.assignment_rule):
+            raise ValidationError("task or assignment_rule must be set.")
+
     
 
 class TaskRuleAssignment(BaseModel):
