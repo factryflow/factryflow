@@ -2,7 +2,7 @@ from common.models import BaseModel, BaseModelWithExtras
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
-
+from pydantic import ValidationError
 
 class TaskResourceAssigment(BaseModel):
     """
@@ -110,7 +110,7 @@ class AssignmentConstraint(BaseModel):
     @property
     def resource_id_list(self):
         return list(self.resources.values_list("id", flat=True))
-
+    
 
 class TaskRuleAssignment(BaseModel):
     """
@@ -120,9 +120,6 @@ class TaskRuleAssignment(BaseModel):
 
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.CASCADE)
-    assigment_rule_criteria = models.ManyToManyField(
-        AssigmentRuleCriteria, blank=True, related_name="task_rule_assignments"
-    )
     is_applied = models.BooleanField(default=False)
 
     class Meta:
@@ -135,3 +132,8 @@ class TaskRuleAssignment(BaseModel):
 
     def __str__(self):
         return f"{self.task} - {self.assigment_rule}"
+    
+    def clean(self, *args, **kwargs):
+        # ensure that either task or assignment_rule is set
+        if not (self.task) and not (self.assignment_rule):
+            raise ValidationError("task or assignment_rule must be set.")
