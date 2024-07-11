@@ -51,7 +51,7 @@ class CRUDView:
         model_type=None,
         view_only=False,
         button_text="Add",
-        cud_actions_rule=True,
+        user_rule_permission=True,
     ):
         self.model = model
         self.model_type = model_type
@@ -64,8 +64,8 @@ class CRUDView:
         self.model_type = model_type
         self.list_template_name = "objects/list.html"
         self.detail_template_name = "objects/details.html"
-        self.cud_actions_rule = cud_actions_rule
-        self.actions_rule = [
+        self.user_rule_permission = user_rule_permission
+        self.crud_action_rules = [
             f"view_{model_name.lower()}",
             f"add_{model_name.lower()}",
             f"change_{model_name.lower()}",
@@ -137,8 +137,8 @@ class CRUDView:
             "status_filter_dict": self.table_view.status_filter_dict,
             "rows": table_rows,
             "paginator": paginator,
-            "show_actions": True,
-            "actions_rule": self.actions_rule,
+            "show_actions": True and self.user_rule_permission,
+            "crud_action_rules": self.crud_action_rules,
             "model_name": self.model_name,
             "model_title": self.model_title,
             "view_only": self.view_only,
@@ -214,7 +214,7 @@ class CRUDView:
                 button_text = "Edit"
                 edit_url = (
                     reverse(f"edit_{self.model_name.lower()}", args=[id, "true"])
-                    if self.cud_actions_rule
+                    if self.user_rule_permission
                     else "#"
                 )
 
@@ -259,7 +259,7 @@ class CRUDView:
                     f"{self.model_name.lower()}_formset",
                     args=[formset_count + 1],
                 )
-                if self.cud_actions_rule
+                if self.user_rule_permission
                 else "#"
             )
 
@@ -268,7 +268,7 @@ class CRUDView:
                     f"{self.model_name.lower()}_formset",
                     args=[formset_count - 1],
                 )
-                if self.cud_actions_rule
+                if self.user_rule_permission
                 else "#"
             )
 
@@ -298,7 +298,7 @@ class CRUDView:
             "headers": relation_table_headers if relation_field_name else [],
             "relations_headers": self.table_view.model_relation_headers,
             "rows": rows,
-            "actions_rule": self.actions_rule,
+            "crud_action_rules": self.crud_action_rules,
         }
 
         if "HX-Request" in request.headers:
@@ -372,9 +372,9 @@ class CRUDView:
 
             if total_formset_forms > 0:
                 # errors handling
-                sform = self.model_formset(request.POST or None)
+                inline_model_form = self.model_formset(request.POST or None)
 
-                for inline_form in sform:
+                for inline_form in inline_model_form:
                     if inline_form.errors:
                         errors = {
                             f: e.get_json_data() for f, e in inline_form.errors.items()
@@ -386,9 +386,9 @@ class CRUDView:
 
                         return response
 
-                    if sform.is_valid():
+                    if inline_model_form.is_valid():
                         # if inline form is valid, get the form data
-                        for inline_form in sform:
+                        for inline_form in inline_model_form:
                             data_dict = {}
                             form_data = inline_form.cleaned_data
                             for key, value in form_data.items():
@@ -435,7 +435,7 @@ class CRUDView:
                     "model_name": self.model_name,
                     "model_title": self.model_title,
                     "relations_headers": self.table_view.model_relation_headers,
-                    "actions_rule": self.actions_rule,
+                    "crud_action_rules": self.crud_action_rules,
                 },
             )
 
@@ -486,8 +486,8 @@ class CRUDView:
                 "status_filter_dict": self.table_view.status_filter_dict,
                 "rows": table_rows,
                 "paginator": paginator,
-                "show_actions": True,
-                "actions_rule": self.actions_rule,
+                "show_actions": True and self.user_rule_permission,
+                "crud_action_rules": self.crud_action_rules,
                 "model_name": self.model_name,
                 "model_title": self.model_title,
             },

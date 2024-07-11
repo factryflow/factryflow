@@ -114,7 +114,7 @@ SchedulerRuns_VIEWS = CRUDView(
     model_table_view=SchedulerRunsView,
     view_only=True,
     button_text="Run Scheduler",
-    cud_actions_rule=False,
+    user_rule_permission=False,
 )
 
 
@@ -182,5 +182,5 @@ ResourceIntervals_VIEWS = CRUDView(
     model_form=ResourceIntervalsForm,
     model_service=ResourceIntervalsService,
     model_table_view=ResourceIntervalsView,
-    cud_actions_rule=False,
+    user_rule_permission=False,
 )
