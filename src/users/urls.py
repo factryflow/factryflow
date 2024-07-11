@@ -5,19 +5,16 @@ from users.views.detail_view import (
     USER_VIEWS,
 )
 
+app_name = "users"
+
 urlpatterns = [
     # users urls
     path("users/new/", USER_VIEWS.show_model_form, name="users_form"),
-    path("users/", USER_VIEWS.get_all_instances, name="users"),
+    path("users/", USER_VIEWS.get_all_instances, name="list"),
     path(
-        "users-create/",
+        "users/write/",
         USER_VIEWS.create_or_update_model_instance,
         name="users_write",
-    ),
-    path(
-        "users/delete/<int:id>/",
-        USER_VIEWS.delete_obj_instance,
-        name="delete_users",
     ),
     path("users/view/<int:id>/", USER_VIEWS.show_model_form, name="view_users"),
     path(

@@ -5,14 +5,12 @@ from common.utils.views import (
     convert_date_to_readable_string,
     convert_datetime_to_readable_string,
 )
-from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
 from users.forms import UserForm
 from users.models import User
 from users.services import UserService
@@ -64,9 +62,7 @@ class UserDetailView:
         self.cud_actions_rule = cud_actions_rule
         self.actions_rule = [
             f"view_{model_name.lower()}",
-            f"add_{model_name.lower()}",
             f"change_{model_name.lower()}",
-            f"delete_{model_name.lower()}",
         ]
         self.button_text = button_text
 
@@ -135,13 +131,7 @@ class UserDetailView:
             for instance in data:
                 row_data = []
                 for field in self.model_relation_fields[field_name][-1]:
-                    if "status" in field:
-                        value = (
-                            f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
-                            f'{getattr(instance, "get_" + field + "_display")()}</span>',
-                        )
-                        row_data.append(value[0])
-                    elif isinstance(getattr(instance, field), datetime.datetime):
+                    if isinstance(getattr(instance, field), datetime.datetime):
                         value = convert_datetime_to_readable_string(
                             getattr(instance, field)
                         )
@@ -171,66 +161,34 @@ class UserDetailView:
             The rendered response displaying the model form.
         """
         # Determine form action URL based on whether editing or creating
-        form_action_url = f"/{self.model_name.lower()}-create/"
-
-        relation_field_name = None
-
-        # get content type using self.model
-        model_content_type = ContentType.objects.get_for_model(self.model)
-
-        # get field parameter
-        if len(self.table_view.model_relation_headers) > 0:
-            relation_field_name = (
-                self.table_view.model_relation_headers[0].lower().replace(" ", "_")
-            )
-
-        if field:
-            relation_field_name = field.lower()
+        form_action_url = "/users/write/"
 
         # Process the form based on ID and edit mode
-        rows = []
-        if id:
-            instance_obj = get_object_or_404(self.model, id=id)
-            form = self.model_form(instance=instance_obj)
-            if "name" in instance_obj.__dict__:
-                page_label = instance_obj.name.capitalize().replace("_", " ")
-            else:
-                page_label = f"{self.model_title} Details"
+        instance_obj = get_object_or_404(self.model, id=id)
+        form = self.model_form(instance=instance_obj)
+        if "name" in instance_obj.__dict__:
+            page_label = instance_obj.name.capitalize().replace("_", " ")
+        else:
+            page_label = f"{self.model_title} Details"
 
-            self.table_view.get_all_many_to_many_field_instances(instance_obj)
-            if edit != "true":
-                view_mode = True
-                form_label = f"{self.model_title} Details"
-                button_text = "Edit"
-                edit_url = (
-                    reverse(f"edit_{self.model_name.lower()}", args=[id, "true"])
-                    if self.cud_actions_rule
-                    else "#"
-                )
-
-                # Make all form fields read-only
-                for field in form.fields.values():
-                    field.widget.attrs["disabled"] = True
-
-            else:
-                button_text = "Save"
-                form_label = f"{self.model_title} Details"
-                view_mode = False
-
-            rows = (
-                self.table_view.get_all_many_to_many_field_instances(
-                    instance_obj, relation_field_name, view_mode
-                )
-                if relation_field_name
-                else []
+        if edit != "true":
+            view_mode = True
+            form_label = f"{self.model_title} Details"
+            button_text = "Edit"
+            edit_url = (
+                reverse(f"users:edit_{self.model_name.lower()}", args=[id, "true"])
+                if self.cud_actions_rule
+                else "#"
             )
 
+            # Make all form fields read-only
+            for field in form.fields.values():
+                field.widget.attrs["disabled"] = True
+
         else:
-            form = self.model_form()
-            button_text = "Create"
+            button_text = "Save"
+            form_label = f"{self.model_title} Details"
             view_mode = False
-            form_label = f"New {self.model_title} Details"
-            page_label = f"New {self.model_title}"
 
         context = {
             "form": form,
@@ -245,10 +203,6 @@ class UserDetailView:
             "model_name": self.model_name,
             "model_title": self.model_title,
             "field_url": self.model_name,
-            "show_actions": False,
-            "headers": [],
-            "relations_headers": self.table_view.model_relation_headers,
-            "rows": rows,
             "actions_rule": self.actions_rule,
         }
 
@@ -325,13 +279,12 @@ class UserDetailView:
                     "form_label": f"{self.model_title} Details",
                     "model_name": self.model_name,
                     "model_title": self.model_title,
-                    "relations_headers": self.table_view.model_relation_headers,
                     "actions_rule": self.actions_rule,
                 },
             )
 
             if request.htmx:
-                headers = {"HX-Redirect": reverse(f"{self.model_name.lower()}")}
+                headers = {"HX-Redirect": reverse("users:list")}
                 response = HttpResponse(status=204, headers=headers)
                 add_notification_headers(
                     response,
@@ -339,71 +292,6 @@ class UserDetailView:
                     "success",
                 )
                 return response
-
-    def delete_obj_instance(self, request, id):
-        """
-        Handle model instance deletion request.
-
-        Args:
-            request: The HTTP request object.
-            id: The ID of the model instance to be deleted.
-
-        Returns:
-            The response indicating success or failure of the deletion operation.
-        """
-        obj = get_object_or_404(self.model, id=id)
-
-        # Delete the instance and check if deletion was successful
-        deletion_successful = self.model_service(user=request.user).delete(obj)
-
-        # Retrieve updated instance list
-        status_filter = request.GET.get("status", "all")
-        search_query = request.GET.get("query", "")
-        page_number = request.GET.get("page", 1)
-
-        # Generate table view based on filter and search parameters
-        table_rows, paginator = self.table_view.table_rows(
-            status_filter=status_filter,
-            search_query=search_query,
-            page_number=page_number,
-        )
-
-        # Render the updated table and add notification headers
-        response = render(
-            request,
-            f"{self.list_template_name}#partial-table-template",
-            {
-                "headers": self.table_view.table_headers,
-                "status_filter_dict": self.table_view.status_filter_dict,
-                "rows": table_rows,
-                "paginator": paginator,
-                "show_actions": True,
-                "actions_rule": self.actions_rule,
-                "model_name": self.model_name,
-                "model_title": self.model_title,
-            },
-        )
-
-        # Add notification based on deletion success or failure
-        if deletion_successful:
-            add_notification_headers(
-                response,
-                f"{self.model_title} has been deleted.",
-                "success",
-            )
-        else:
-            add_notification_headers(
-                response,
-                f"Failed to delete the {self.model_title}.",
-                "error",
-            )
-
-        return response
-
-
-# ------------------------------------------------------------------------------
-# CustomTableView for any model
-# ------------------------------------------------------------------------------
 
 
 class UserTableView:
@@ -419,12 +307,9 @@ class UserTableView:
         headers,
         search_fields_list,
         page_size=5,
-        model_relation_headers=[],
-        model_relation_fields={},
         status_choices_class=None,
         status_filter_field=None,
         tailwind_classes=None,
-        status_classes={},
     ):
         """
         Args:
@@ -445,11 +330,9 @@ class UserTableView:
         )
         self.tailwind_classes = tailwind_classes
         self.fields = fields
-        self.model_relation_headers = model_relation_headers
-        self.model_relation_fields = model_relation_fields
         self.table_headers = headers
         self.page_size = page_size
-        self.status_classes = status_classes
+        # self.status_classes = status_classes
 
     @property
     def all_instances(self):
