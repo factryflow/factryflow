@@ -5,7 +5,6 @@ from common.utils.views import (
     convert_datetime_to_readable_string,
 )
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-
 from users.models import User
 
 
@@ -16,14 +15,10 @@ class UserTableView:
 
     def __init__(
         self,
-        model,
-        model_name,
         fields,
         headers,
         search_fields_list,
         page_size=5,
-        model_relation_headers=[],
-        model_relation_fields={},
         status_choices_class=None,
         status_filter_field=None,
         tailwind_classes=None,
@@ -39,8 +34,8 @@ class UserTableView:
             search_fields_list: List of fields to be searched.
             tailwind_classes: Dictionary mapping model statuses to Tailwind CSS classes.
         """
-        self.model = model
-        self.model_name = model_name
+        self.model = User
+        self.model_name = "users"
         self.status_filter_field = status_filter_field
         self.search_fields_list = search_fields_list
         self.status_filter_dict = (
@@ -48,8 +43,6 @@ class UserTableView:
         )
         self.tailwind_classes = tailwind_classes
         self.fields = fields
-        self.model_relation_headers = model_relation_headers
-        self.model_relation_fields = model_relation_fields
         self.table_headers = headers
         self.page_size = page_size
         self.status_classes = status_classes
@@ -59,53 +52,7 @@ class UserTableView:
         """
         Retrieve all instances of the model.
         """
-        return self.model.objects.all().order_by("id")
-
-    def test_func(self):
-        return self.request.user.groups.filter(name="admin").exists()
-
-    def get_all_many_to_many_field_instances(
-        self, obj_instance, field_name=None, view_mode=False
-    ):
-        # if field is none, get for first header
-        rows = []
-
-        if field_name:
-            if len(self.model_relation_fields[field_name]) == 4:
-                data = self.model_relation_fields[field_name][0].objects.filter(
-                    **{self.model_relation_fields[field_name][1]: obj_instance}
-                )
-
-            elif len(self.model_relation_fields[field_name]) == 3:
-                data = getattr(
-                    obj_instance, self.model_relation_fields[field_name][0]
-                ).all()
-
-            for instance in data:
-                row_data = []
-                for field in self.model_relation_fields[field_name][-1]:
-                    if "status" in field:
-                        value = (
-                            f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
-                            f'{getattr(instance, "get_" + field + "_display")()}</span>',
-                        )
-                        row_data.append(value[0])
-                    elif isinstance(getattr(instance, field), datetime.datetime):
-                        value = convert_datetime_to_readable_string(
-                            getattr(instance, field)
-                        )
-                        row_data.append(value)
-                    elif isinstance(getattr(instance, field), datetime.date):
-                        value = convert_date_to_readable_string(
-                            getattr(instance, field)
-                        )
-                        row_data.append(value)
-                    else:
-                        value = getattr(instance, field)
-                        row_data.append(value)
-                rows.append(row_data)
-
-        return rows
+        return User.objects.all().order_by("id")
 
     def filtered_instances(
         self,
@@ -188,14 +135,7 @@ class UserTableView:
         for instance in paginated_data.object_list:
             row_data = []
             for field in self.fields:
-                if "status" in field:
-                    value = (
-                        f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
-                        f'{getattr(instance, "get_" + self.model_name + "_status_display")() if hasattr(instance, "get_" + self.model_name + "_status_display") else self.status_classes.get(getattr(instance, field))}</span>',
-                    )
-                    # value = getattr(instance, field)
-                    row_data.append(value[0])
-                elif isinstance(getattr(instance, field), datetime.datetime):
+                if isinstance(getattr(instance, field), datetime.datetime):
                     value = convert_datetime_to_readable_string(
                         getattr(instance, field)
                     )
@@ -211,18 +151,6 @@ class UserTableView:
 
         return rows, paginated_data
 
-    def get_status_colored_text(self, model_status):
-        """
-        Get the colored text based on model status.
-
-        Args:
-            model_status: The status of the model.
-
-        Returns:
-            str: The Tailwind CSS class for the given model status.
-        """
-        return self.tailwind_classes.get(model_status)
-
 
 USER_MODEL_FIELDS = ["id", "email", "first_name", "last_name", "is_active"]
 
@@ -230,8 +158,6 @@ USER_SEARCH_FIELDS = ["email", "first_name", "last_name", "is_active"]
 USER_TABLE_HEADERS = ["ID", "E-mail", "First Name", "Last Name", "Active"]
 
 USER_TABLE_VIEW = UserTableView(
-    model=User,
-    model_name="users",
     fields=USER_MODEL_FIELDS,
     headers=USER_TABLE_HEADERS,
     search_fields_list=USER_SEARCH_FIELDS,
