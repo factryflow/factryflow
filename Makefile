@@ -21,4 +21,4 @@ create_user:
 	python src/manage.py createuser
 
 add_data:
-	python src/manage.py add_data
+	python src/manage.py loaddata src/fixtures/initial_test_data.json

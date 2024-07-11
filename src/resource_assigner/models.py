@@ -116,3 +116,31 @@ class AssignmentConstraint(BaseModel):
         # ensure that either task or assignment_rule is set
         if not (self.task) and not (self.assignment_rule):
             raise ValidationError("task or assignment_rule must be set.")
+
+    
+
+class TaskRuleAssignment(BaseModel):
+    """
+    Represents the assignment rules to tasks.
+    one task can have multiple rules.
+    """
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.CASCADE)
+    is_applied = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "task_rule_assignment"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["task", "assigment_rule"], name="unique_task_assigment_rule"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.task} - {self.assigment_rule}"
+    
+    def clean(self, *args, **kwargs):
+        # ensure that either task or assignment_rule is set
+        if not (self.task) and not (self.assignment_rule):
+            raise ValidationError("task or assignment_rule must be set.")
