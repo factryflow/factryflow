@@ -1,5 +1,5 @@
-from common.models import BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
+from common.models import BaseModel, BaseModelWithExtras
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
@@ -117,7 +117,6 @@ class AssignmentConstraint(BaseModel):
         if not (self.task) and not (self.assignment_rule):
             raise ValidationError("task or assignment_rule must be set.")
 
-    
 
 class TaskRuleAssignment(BaseModel):
     """
@@ -139,7 +138,7 @@ class TaskRuleAssignment(BaseModel):
 
     def __str__(self):
         return f"{self.task} - {self.assigment_rule}"
-    
+
     def clean(self, *args, **kwargs):
         # ensure that either task or assignment_rule is set
         if not (self.task) and not (self.assignment_rule):

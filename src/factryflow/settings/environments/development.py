@@ -51,6 +51,7 @@ TEMPLATES = [
     },
 ]
 
+
 if os.getenv("DATABASE") == "postgres":
     DATABASES = {
         "default": {

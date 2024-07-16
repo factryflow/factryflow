@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.contenttypes.models import ContentType
+from django.forms import inlineformset_factory
 
 from common.utils.views import (
     add_notification_headers,
@@ -16,7 +18,7 @@ from common.utils.views import (
 from .forms import CustomFieldForm
 from .models import CustomField, FieldType
 from .services import CustomFieldService
-from django.contrib.contenttypes.models import ContentType
+
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -45,10 +47,11 @@ class CRUDView:
         model_service,
         model_form,
         model_table_view,
+        formset_options=[],
         model_type=None,
         view_only=False,
         button_text="Add",
-        cud_actions_rule=True,
+        user_rule_permission=True,
     ):
         self.model = model
         self.model_type = model_type
@@ -61,14 +64,16 @@ class CRUDView:
         self.model_type = model_type
         self.list_template_name = "objects/list.html"
         self.detail_template_name = "objects/details.html"
-        self.cud_actions_rule = cud_actions_rule
-        self.actions_rule = [
+        self.user_rule_permission = user_rule_permission
+        self.crud_action_rules = [
             f"view_{model_name.lower()}",
             f"add_{model_name.lower()}",
             f"change_{model_name.lower()}",
             f"delete_{model_name.lower()}",
         ]
         self.button_text = button_text
+        self.formset_options = formset_options
+        self.model_formset = None
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -132,8 +137,8 @@ class CRUDView:
             "status_filter_dict": self.table_view.status_filter_dict,
             "rows": table_rows,
             "paginator": paginator,
-            "show_actions": True,
-            "actions_rule": self.actions_rule,
+            "show_actions": True and self.user_rule_permission,
+            "crud_action_rules": self.crud_action_rules,
             "model_name": self.model_name,
             "model_title": self.model_title,
             "view_only": self.view_only,
@@ -142,7 +147,14 @@ class CRUDView:
 
         return render(request, template_name, context)
 
-    def show_model_form(self, request, id: int = None, edit: str = "", field: str = ""):
+    def show_model_form(
+        self,
+        request,
+        id: int = None,
+        edit: str = "",
+        field: str = "",
+        formset_count: int = 1,
+    ):
         """
         View function to display a form for creating or editing a model instance.
 
@@ -171,6 +183,16 @@ class CRUDView:
         if field:
             relation_field_name = field.lower()
 
+        # model inline formset for one-to-many relation
+        if len(self.formset_options) > 0:
+            self.model_formset = inlineformset_factory(
+                self.model,
+                self.formset_options[0],
+                form=self.formset_options[1],
+                extra=formset_count,
+                can_delete=False,
+            )
+
         # Process the form based on ID and edit mode
         rows = []
         if id:
@@ -192,8 +214,8 @@ class CRUDView:
                 button_text = "Edit"
                 edit_url = (
                     reverse(f"edit_{self.model_name.lower()}", args=[id, "true"])
-                    if self.cud_actions_rule
-                    else "#"
+                    if self.user_rule_permission
+                    else None
                 )
 
                 # Make all form fields read-only
@@ -230,28 +252,64 @@ class CRUDView:
             else self.table_view.model_relation_fields[relation_field_name][-2]
         )
 
+        # add and remove urls for formset
+        if len(self.formset_options) > 0:
+            add_formset_url = (
+                reverse(
+                    f"{self.model_name.lower()}_formset",
+                    args=[formset_count + 1],
+                )
+                if self.user_rule_permission
+                else None
+            )
+
+            remove_formset_url = (
+                reverse(
+                    f"{self.model_name.lower()}_formset",
+                    args=[formset_count - 1],
+                )
+                if self.user_rule_permission
+                else None
+            )
+
         context = {
             "form": form,
+            "formset_title": self.formset_options[2] if self.formset_options else None,
+            "formset_form": self.model_formset() if self.model_formset else None,
+            "add_formset_url": add_formset_url
+            if "add_formset_url" in locals()
+            else None,
+            "remove_formset_url": remove_formset_url
+            if "remove_formset_url" in locals()
+            else None,
             "view_mode": view_mode,
             "view_only": self.view_only,
             "form_label": form_label,
             "button_text": button_text,
             "form_action_url": form_action_url,
             "id": id if id else None,
-            "edit_url": edit_url if "edit_url" in locals() else "#",
+            "edit_url": edit_url if "edit_url" in locals() else None,
             "page_label": page_label,
             "model_name": self.model_name,
             "model_title": self.model_title,
             "field_url": self.model_name,
             "custom_field_data": custom_field_data if custom_field_data else None,
-            "show_actions": False,
+            "show_actions": True if edit == "true" else False,
             "headers": relation_table_headers if relation_field_name else [],
             "relations_headers": self.table_view.model_relation_headers,
             "rows": rows,
-            "actions_rule": self.actions_rule,
+            "crud_action_rules": self.crud_action_rules,
         }
 
         if "HX-Request" in request.headers:
+            # if formset_count in the request as path parameters then return details page with #new-row-formset
+            if formset_count:
+                return render(
+                    request,
+                    f"{self.detail_template_name}",
+                    context,
+                )
+
             return render(
                 request,
                 f"{self.list_template_name}#partial-table-template",
@@ -289,15 +347,54 @@ class CRUDView:
         instance_obj = get_object_or_404(self.model, id=id) if id else None
 
         # Instantiate the form with POST data and optionally the instance object
-        form = self.model_form(request.POST, instance=instance_obj)
+        form = self.model_form(
+            request.POST, instance=instance_obj if instance_obj else None
+        )
 
         if len(form.errors) > 0:
             errors = {f: e.get_json_data() for f, e in form.errors.items()}
-            for error in errors:
+            for field, error in errors.items():
                 response = HttpResponse(status=400)
-                add_notification_headers(response, errors[error][0]["message"], "error")
+                message = f"{field}: {error[0]['message']}"
+                add_notification_headers(response, message, "error")
 
             return response
+
+        # inline formset validation and data fetching
+        formset_data = []
+
+        # check if formset form is available
+        if len(self.formset_options) > 0:
+            # get total number of forms in formset
+            total_formset_forms = int(
+                request.POST.get(f"{self.formset_options[2]}-TOTAL_FORMS", 0)
+            )
+
+            if total_formset_forms > 0:
+                # errors handling
+                inline_model_form = self.model_formset(request.POST or None)
+
+                for inline_form in inline_model_form:
+                    if inline_form.errors:
+                        errors = {
+                            f: e.get_json_data() for f, e in inline_form.errors.items()
+                        }
+                        for field, error in errors.items():
+                            response = HttpResponse(status=400)
+                            message = f"{field}: {error[0]['message']}"
+                            add_notification_headers(response, message, "error")
+
+                        return response
+
+                    if inline_model_form.is_valid():
+                        # if inline form is valid, get the form data
+                        for inline_form in inline_model_form:
+                            data_dict = {}
+                            form_data = inline_form.cleaned_data
+                            for key, value in form_data.items():
+                                if key in self.formset_options[3]:
+                                    data_dict[key] = value
+                            formset_data.append(data_dict)
 
         if form.is_valid():
             # Extract data from the form
@@ -307,6 +404,9 @@ class CRUDView:
 
             # Call the service function to create or update the instance
             obj_data["id"] = id
+            if len(self.formset_options) > 0 and len(formset_data) > 0:
+                obj_data[self.formset_options[2]] = formset_data
+
             try:
                 existing_instance = self.model.objects.get(id=obj_data["id"])
                 self.model_service(user=request.user).update(
@@ -335,7 +435,7 @@ class CRUDView:
                     "model_name": self.model_name,
                     "model_title": self.model_title,
                     "relations_headers": self.table_view.model_relation_headers,
-                    "actions_rule": self.actions_rule,
+                    "crud_action_rules": self.crud_action_rules,
                 },
             )
 
@@ -386,8 +486,8 @@ class CRUDView:
                 "status_filter_dict": self.table_view.status_filter_dict,
                 "rows": table_rows,
                 "paginator": paginator,
-                "show_actions": True,
-                "actions_rule": self.actions_rule,
+                "show_actions": True and self.user_rule_permission,
+                "crud_action_rules": self.crud_action_rules,
                 "model_name": self.model_name,
                 "model_title": self.model_title,
             },

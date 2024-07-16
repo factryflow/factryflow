@@ -6,16 +6,12 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        (
-            "resource_calendar",
-            "0002_historicalweeklyshifttemplatedetail_weekly_shift_template_and_more",
-        ),
-        ("resource_manager", "0001_initial"),
+        ("resource_calendar", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="historicalresource",
+            model_name="historicalweeklyshifttemplatedetail",
             name="weekly_shift_template",
             field=models.ForeignKey(
                 blank=True,
@@ -27,14 +23,14 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name="resource",
+            model_name="weeklyshifttemplatedetail",
             name="weekly_shift_template",
             field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.DO_NOTHING,
-                related_name="resources",
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="weekly_shift_template_details",
                 to="resource_calendar.weeklyshifttemplate",
             ),
+            preserve_default=False,
         ),
     ]

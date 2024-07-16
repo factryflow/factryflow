@@ -12,12 +12,6 @@ class WeeklyShiftTemplate(BaseModelWithExtras):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
 
-    weekly_shift_template_details = models.ManyToManyField(
-        "WeeklyShiftTemplateDetail",
-        related_name="weekly_shift_template",
-        blank=True,
-    )
-
     history = HistoricalRecords(table_name="weekly_shift_template_history")
 
     class Meta:
@@ -38,6 +32,11 @@ class DaysOfWeek(models.TextChoices):
 
 
 class WeeklyShiftTemplateDetail(BaseModel):
+    weekly_shift_template = models.ForeignKey(
+        WeeklyShiftTemplate,
+        on_delete=models.CASCADE,
+        related_name="weekly_shift_template_details",
+    )
     day_of_week = models.TextField(choices=DaysOfWeek.choices)
     start_time = models.TimeField()
     end_time = models.TimeField()
