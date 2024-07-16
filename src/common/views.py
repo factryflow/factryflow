@@ -215,7 +215,7 @@ class CRUDView:
                 edit_url = (
                     reverse(f"edit_{self.model_name.lower()}", args=[id, "true"])
                     if self.user_rule_permission
-                    else "#"
+                    else None
                 )
 
                 # Make all form fields read-only
@@ -260,7 +260,7 @@ class CRUDView:
                     args=[formset_count + 1],
                 )
                 if self.user_rule_permission
-                else "#"
+                else None
             )
 
             remove_formset_url = (
@@ -269,32 +269,33 @@ class CRUDView:
                     args=[formset_count - 1],
                 )
                 if self.user_rule_permission
-                else "#"
+                else None
             )
 
+        print(self.model_name)
         context = {
             "form": form,
             "formset_title": self.formset_options[2] if self.formset_options else None,
             "formset_form": self.model_formset() if self.model_formset else None,
             "add_formset_url": add_formset_url
             if "add_formset_url" in locals()
-            else "#",
+            else None,
             "remove_formset_url": remove_formset_url
             if "remove_formset_url" in locals()
-            else "#",
+            else None,
             "view_mode": view_mode,
             "view_only": self.view_only,
             "form_label": form_label,
             "button_text": button_text,
             "form_action_url": form_action_url,
             "id": id if id else None,
-            "edit_url": edit_url if "edit_url" in locals() else "#",
+            "edit_url": edit_url if "edit_url" in locals() else None,
             "page_label": page_label,
             "model_name": self.model_name,
             "model_title": self.model_title,
             "field_url": self.model_name,
             "custom_field_data": custom_field_data if custom_field_data else None,
-            "show_actions": False,
+            "show_actions": True if edit == "true" else False,
             "headers": relation_table_headers if relation_field_name else [],
             "relations_headers": self.table_view.model_relation_headers,
             "rows": rows,
