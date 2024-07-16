@@ -272,7 +272,6 @@ class CRUDView:
                 else None
             )
 
-        print(self.model_name)
         context = {
             "form": form,
             "formset_title": self.formset_options[2] if self.formset_options else None,
