@@ -1,6 +1,7 @@
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 
 from users.models import User
 
@@ -36,6 +37,7 @@ class UserService:
 
     #     return user
 
+    @transaction.atomic
     def update(self, instance: User, data: dict) -> User:
         # check permissions for update user
         if not self.permission_service.check_for_permission("change_user"):
@@ -49,6 +51,19 @@ class UserService:
 
         return user
 
+    @transaction.atomic
+    def change_password(self, data: dict) -> User:
+        # TODO: check permissions for update user
+        # if not self.permission_service.check_for_permission("change_user"):
+        #     raise PermissionDenied()
+
+        instance = self.user
+        instance.set_password(data["new_password"])
+        instance.save()
+
+        return instance
+
+    @transaction.atomic
     def delete(self, instance: User) -> None:
         # check permissions for delete user
         if not self.permission_service.check_for_permission("delete_user"):
