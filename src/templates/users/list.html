@@ -39,7 +39,7 @@
                         </td>
                         {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
                         {% if show_actions %}
-                            <td class="flex items-center px-6 py-4">
+                            <td class="px-6 py-4">
                                 {% if user|can:'actions_rule[0]' %}
                                     <a href="{% url 'users:view_'|add:model_name id=row.0 %}">
                                         <button id="view-{{ row.0 }}"

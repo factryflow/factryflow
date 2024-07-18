@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from users.forms import UserForm
+from users.forms.user import UserForm
 from users.models import User
 from users.services import UserService
 from users.views.table_view import USER_TABLE_VIEW
@@ -280,6 +280,7 @@ class UserDetailView:
                     "model_name": self.model_name,
                     "model_title": self.model_title,
                     "actions_rule": self.actions_rule,
+                    "id": obj_data["id"],
                 },
             )
 
