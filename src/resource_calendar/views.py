@@ -37,6 +37,15 @@ WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
     ],
 }
 
+SHIFT_TEMPLATE_DETAILS_FORMSET_FORM_FIELDS = ["day_of_week", "start_time", "end_time"]
+
+SHIFT_TEMPLATE_DETAILS_FORMSET_OPTIONS = [
+    WeeklyShiftTemplateDetail,
+    WeeklyShiftTemplateDetailForm,
+    "weekly_shift_template_details",
+    SHIFT_TEMPLATE_DETAILS_FORMSET_FORM_FIELDS,
+]
+
 
 WeeklyShiftTemplateTableView = CustomTableView(
     model=WeeklyShiftTemplate,
@@ -54,6 +63,7 @@ WEEKLY_SHIFT_TEMPLATE_VIEWS = CRUDView(
     model_service=WeeklyShiftTemplateService,
     model_form=WeeklyShiftTemplateForm,
     model_table_view=WeeklyShiftTemplateTableView,
+    formset_options=SHIFT_TEMPLATE_DETAILS_FORMSET_OPTIONS,
 )
 
 

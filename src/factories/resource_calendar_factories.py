@@ -9,15 +9,6 @@ from resource_calendar.models import (
 )
 
 
-class WeeklyShiftTemplateDetailFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = WeeklyShiftTemplateDetail
-
-    day_of_week = factory.lazy_attribute(lambda _: faker.random_element(DaysOfWeek))
-    start_time = factory.lazy_attribute(lambda _: time(hour=faker.random_int(5, 11)))
-    end_time = factory.lazy_attribute(lambda _: time(hour=faker.random_int(12, 23)))
-
-
 class WeeklyShiftTemplateFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = WeeklyShiftTemplate
@@ -27,9 +18,12 @@ class WeeklyShiftTemplateFactory(factory.django.DjangoModelFactory):
     external_id = ""
     notes = ""
 
-    class Params:
-        with_weekly_shift_template_details = factory.Trait(
-            weekly_shift_template_details=factory.lazy_attribute(
-                lambda _: WeeklyShiftTemplateDetailFactory.create_batch(2)
-            )
-        )
+
+class WeeklyShiftTemplateDetailFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = WeeklyShiftTemplateDetail
+
+    weekly_shift_template = factory.SubFactory(WeeklyShiftTemplateFactory)
+    day_of_week = factory.lazy_attribute(lambda _: faker.random_element(DaysOfWeek))
+    start_time = factory.lazy_attribute(lambda _: time(hour=faker.random_int(5, 11)))
+    end_time = factory.lazy_attribute(lambda _: time(hour=faker.random_int(12, 23)))

@@ -1,5 +1,5 @@
-from common.models import BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
+from common.models import BaseModel, BaseModelWithExtras
 from django.db import models
 from ordered_model.models import OrderedModel
 
