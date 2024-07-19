@@ -1,6 +1,8 @@
 from common.models import BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
 from django.db import models
+from ordered_model.models import OrderedModel
+
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
 
@@ -25,7 +27,7 @@ class TaskResourceAssigment(BaseModel):
         return f"{self.task} - {self.resource}"
 
 
-class AssigmentRule(BaseModelWithExtras):
+class AssigmentRule(BaseModelWithExtras, OrderedModel):
     """
     Represents a rule for assigning assignment constraints to tasks.
     """
@@ -35,7 +37,9 @@ class AssigmentRule(BaseModelWithExtras):
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=True)
 
-    class Meta:
+    order_with_respect_to = "work_center"
+
+    class Meta(OrderedModel.Meta):
         db_table = "assigment_rule"
 
     def __str__(self):
@@ -117,7 +121,6 @@ class AssignmentConstraint(BaseModel):
         if not (self.task) and not (self.assignment_rule):
             raise ValidationError("task or assignment_rule must be set.")
 
-    
 
 class TaskRuleAssignment(BaseModel):
     """
@@ -139,7 +142,7 @@ class TaskRuleAssignment(BaseModel):
 
     def __str__(self):
         return f"{self.task} - {self.assigment_rule}"
-    
+
     def clean(self, *args, **kwargs):
         # ensure that either task or assignment_rule is set
         if not (self.task) and not (self.assignment_rule):

@@ -6,6 +6,7 @@ from .views import (
     ASSIGMENT_RULE_CRITERIA_VIEWS,
     ASSIGNMENT_CONSTRAINT_VIEWS,
     match_rules_with_tasks,
+    change_assignment_rule_priority,
 )
 
 urlpatterns = [
@@ -153,5 +154,11 @@ urlpatterns = [
         "match-rules-with-tasks/",
         match_rules_with_tasks,
         name="match_rules_with_tasks",
+    ),
+    # change assignment rule priority
+    path(
+        "change-assignment-rule-priority/<int:id>/direction=<str:direction>",
+        change_assignment_rule_priority,
+        name="change_assignment_rule_priority",
     ),
 ]

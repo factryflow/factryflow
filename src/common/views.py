@@ -48,6 +48,7 @@ class CRUDView:
         model_type=None,
         view_only=False,
         button_text="Add",
+        ordered_model=False,
         cud_actions_rule=True,
     ):
         self.model = model
@@ -69,6 +70,7 @@ class CRUDView:
             f"delete_{model_name.lower()}",
         ]
         self.button_text = button_text
+        self.ordered_model = ordered_model
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -138,6 +140,7 @@ class CRUDView:
             "model_title": self.model_title,
             "view_only": self.view_only,
             "button_text": self.button_text,
+            "ordered_model": self.ordered_model,
         }
 
         return render(request, template_name, context)
@@ -387,6 +390,7 @@ class CRUDView:
                 "rows": table_rows,
                 "paginator": paginator,
                 "show_actions": True,
+                "ordered_model": self.ordered_model,
                 "actions_rule": self.actions_rule,
                 "model_name": self.model_name,
                 "model_title": self.model_title,
@@ -434,6 +438,7 @@ class CustomTableView:
         status_filter_field=None,
         tailwind_classes=None,
         status_classes={},
+        order_by_field="id",
     ):
         """
         Args:
@@ -463,12 +468,16 @@ class CustomTableView:
         self.table_headers = headers
         self.page_size = page_size
         self.status_classes = status_classes
+        self.order_by_field = order_by_field
 
     @property
     def all_instances(self):
         """
         Retrieve all instances of the model.
         """
+        if hasattr(self.model, self.order_by_field):
+            return self.model.objects.all().order_by(self.order_by_field)
+
         return self.model.objects.all().order_by("id")
 
     def get_custom_field_json_data(self, instance=None):
