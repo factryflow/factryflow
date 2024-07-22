@@ -76,7 +76,7 @@ RESOURCE_Group_TABLE_HEADERS = [
 ]
 
 
-RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "Work Units"]
+RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources"]
 RESOURCE_Group_MODEL_RELATION_FIELDS = {
     "resources": [
         "resources",
@@ -97,7 +97,7 @@ ResourceGroupTableView = CustomTableView(
 
 RESOURCE_GROUP_VIEWS = CRUDView(
     model=ResourceGroup,
-    model_name="resource_pool",
+    model_name="resource_group",
     model_service=ResourceGroupService,
     model_form=ResourceGroupForm,
     model_table_view=ResourceGroupTableView,

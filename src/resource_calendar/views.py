@@ -20,12 +20,12 @@ WEEKLY_SHIFT_TEMPLATE_TABLE_HEADERS = [
 ]
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS = [
-    "WEEKLY SHIFT TEMPLATE DETAILS",
+    "TEMPLATE DETAILS",
     "HISTORY",
 ]
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
-    "weekly_shift_template_details": [
+    "template_details": [
         "weekly_shift_template_details",
         ["ID", "Day of Week", "Start Time", "End Time"],
         ["id", "day_of_week", "start_time", "end_time"],

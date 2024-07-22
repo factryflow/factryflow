@@ -97,12 +97,12 @@ ASSIGMENT_RULE_TABLE_HEADERS = [
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
 ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
-    "ASSIGMENT_RULE_CRITERIA",
+    "RULE CRITERIA",
     "TASK",
 ]
 
 ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
-    "assigment_rule_criteria": [
+    "rule_criteria": [
         AssigmentRuleCriteria,
         "assigment_rule",
         ["ID", "field", "operator", "value"],

@@ -157,17 +157,19 @@
                 <li>
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <a href="{% url model_name %}"
+                        <a href="{% url model_name|add:'s' %}"
                         class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                     </div>
                 </li>
                 <li>
                     {% if not view_only %}
-                        <div class="flex items-center">
-                            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                            <a href="{% url model_name|add:'_form' %}"
-                            class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
-                        </div>
+                        {% if button_text == "Create" %}
+                            <div class="flex items-center">
+                                <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                                <a href="{% url model_name|add:'_form' %}"
+                                class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
+                            </div>
+                        {% endif %}
                     {% endif %}
                 </li>
                 <li aria-current="page">
@@ -196,7 +198,7 @@
             <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
                 <div class="md:flex flex-wrap text-sm md:text-base">
                     {% for i in relations_headers %}
-                        <button hx-get="/{{ field_url }}s/view/{{ id }}/field={{ i|lower }}"
+                        <button hx-get="/{{ field_url }}/view/{{ id }}/field={{ i|lower }}"
                                 hx-target="#{{ i }}"
                                 hx-trigger="click"
                                 x-on:click="activeTab = 'tab{{ forloop.counter }}'"

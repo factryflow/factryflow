@@ -167,7 +167,7 @@ class CRUDView:
             The rendered response displaying the model form.
         """
         # Determine form action URL based on whether editing or creating
-        form_action_url = f"/{self.model_name.lower()}-create/"
+        form_action_url = f"/{self.model_name.replace('_', '-').lower()}-create/"
 
         relation_field_name = None
 
@@ -292,7 +292,7 @@ class CRUDView:
             "page_label": page_label,
             "model_name": self.model_name,
             "model_title": self.model_title,
-            "field_url": self.model_name,
+            "field_url": self.model_name.replace("_", "-").lower(),
             "custom_field_data": custom_field_data if custom_field_data else None,
             "show_actions": True if edit == "true" else False,
             "headers": relation_table_headers if relation_field_name else [],
@@ -303,18 +303,19 @@ class CRUDView:
 
         if "HX-Request" in request.headers:
             # if formset_count in the request as path parameters then return details page with #new-row-formset
-            if formset_count:
+            if "field" in str(request.path):
+                return render(
+                    request,
+                    f"{self.list_template_name}#partial-table-template",
+                    context,
+                )
+
+            if "formset" in str(request.path):
                 return render(
                     request,
                     f"{self.detail_template_name}",
                     context,
                 )
-
-            return render(
-                request,
-                f"{self.list_template_name}#partial-table-template",
-                context,
-            )
 
         return render(
             request,
@@ -440,7 +441,7 @@ class CRUDView:
             )
 
             if request.htmx:
-                headers = {"HX-Redirect": reverse(f"{self.model_name.lower()}")}
+                headers = {"HX-Redirect": reverse(f"{self.model_name.lower()}s")}
                 response = HttpResponse(status=204, headers=headers)
                 add_notification_headers(
                     response,
