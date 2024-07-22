@@ -322,7 +322,7 @@ def change_assignment_rule_priority(request, id: int, direction: str):
         return response
 
     try:
-        rule = get_object_or_404(AssigmentRule, id=id)
+        rule = AssigmentRule.objects.get(id=id)
 
         if direction == "up" and rule.order > 0:
             rule.up()
@@ -333,7 +333,7 @@ def change_assignment_rule_priority(request, id: int, direction: str):
         if request.htmx:
             response = render(
                 request,
-                "common/list.html#all-assigment_rules-table",
+                "objects/list.html#all-assigment_rules-table",
                 {"rows": AssigmentRule.objects.all().order_by("order")},
             )
             return response
@@ -341,6 +341,7 @@ def change_assignment_rule_priority(request, id: int, direction: str):
         return response
 
     except AssigmentRule.DoesNotExist:
+        response = HttpResponse(status=404)
         message = "Rule not found."
         add_notification_headers(response, message, "error")
         return response
