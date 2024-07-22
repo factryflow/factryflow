@@ -13,25 +13,18 @@ class WeeklyShiftTemplateForm(forms.ModelForm):
         model = WeeklyShiftTemplate
         fields = [
             "name",
-            "external_id",
             "weekly_shift_template_details",
             "notes",
             "description",
         ]
         labels = {
             "name": "Weekly Shift Template Name",
-            "external_id": "External ID",
             "Weekly Shift Template Details": "Weekly Shift Template Details",
             "notes": "Notes",
             "description": "Description",
         }
         widgets = {
             "name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "external_id": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
@@ -88,19 +81,13 @@ class WeeklyShiftTemplateDetailForm(forms.ModelForm):
 class OperationalExceptionTypeForm(forms.ModelForm):
     class Meta:
         model = OperationalExceptionType
-        fields = ["name", "external_id", "notes"]
+        fields = ["name", "notes"]
         labels = {
             "name": "Operational Exception Type Name",
-            "external_id": "External ID",
             "notes": "Notes",
         }
         widgets = {
             "name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "external_id": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
@@ -117,7 +104,6 @@ class OperationalExceptionForm(forms.ModelForm):
     class Meta:
         model = OperationalException
         fields = [
-            "external_id",
             "resource",
             "weekly_shift_template",
             "start_datetime",
@@ -127,7 +113,6 @@ class OperationalExceptionForm(forms.ModelForm):
         ]
         labels = {
             "name": "Operational Exception Name",
-            "external_id": "External ID",
             "notes": "Notes",
             "start_datetime": "Start Datetime",
             "end_datetime": "End Datetime",
@@ -137,11 +122,6 @@ class OperationalExceptionForm(forms.ModelForm):
         }
         widgets = {
             "name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "external_id": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }

@@ -62,18 +62,22 @@ class CRUDView:
         self.list_template_name = "objects/list.html"
         self.detail_template_name = "objects/details.html"
         self.cud_actions_rule = cud_actions_rule
-        self.actions_rule = [
-            f"view_{model_name.lower()}",
-            f"add_{model_name.lower()}",
-            f"change_{model_name.lower()}",
-            f"delete_{model_name.lower()}",
-        ]
+        self.actions_rule = self.get_models_crud_permissions(model_name)
         self.button_text = button_text
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         # Dispatches the request to the appropriate view method.
         return super().dispatch(request, *args, **kwargs)
+    
+    def get_models_crud_permissions(self, model_name):
+        permissions_list = [
+            f"view_{model_name.lower()}",
+            f"add_{model_name.lower()}",
+            f"change_{model_name.lower()}",
+            f"delete_{model_name.lower()}",
+        ]
+        return permissions_list 
 
     def get_custom_field_json_data(self, content_type, instance=None):
         # to get custom field json data

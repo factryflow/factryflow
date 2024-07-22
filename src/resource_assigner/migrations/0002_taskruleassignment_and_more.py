@@ -7,33 +7,80 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('job_manager', '0001_initial'),
+        ("job_manager", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('resource_assigner', '0001_initial'),
+        ("resource_assigner", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TaskRuleAssignment',
+            name="TaskRuleAssignment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('is_applied', models.BooleanField(default=False)),
-                ('assigment_rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='resource_assigner.assigmentrule')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.task')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("is_applied", models.BooleanField(default=False)),
+                (
+                    "assigment_rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="resource_assigner.assigmentrule",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "task",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="job_manager.task",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'task_rule_assignment',
+                "db_table": "task_rule_assignment",
             },
         ),
         migrations.AddConstraint(
-            model_name='taskruleassignment',
-            constraint=models.UniqueConstraint(fields=('task', 'assigment_rule'), name='unique_task_assigment_rule'),
+            model_name="taskruleassignment",
+            constraint=models.UniqueConstraint(
+                fields=("task", "assigment_rule"), name="unique_task_assigment_rule"
+            ),
         ),
     ]

@@ -65,11 +65,10 @@ RESOURCE_VIEWS = CRUDView(
 # ResourcePool VIEWS
 # ------------------------------------------------------------------------------
 
-RESOURCE_Group_MODEL_FIELDS = ["id", "external_id", "notes", "name", "parent"]
+RESOURCE_Group_MODEL_FIELDS = ["id", "notes", "name", "parent"]
 RESOURCE_Group_SEARCH_FIELDS = ["name", "id"]
 RESOURCE_Group_TABLE_HEADERS = [
     "ID",
-    "External ID",
     "Notes",
     "Resource Group Name",
     "Parent",

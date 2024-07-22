@@ -10,7 +10,6 @@ from resource_assigner.models import (
 )
 
 
-
 # Fields that are not required in the form
 NOT_REQUIRED_FIELDS_IN_FORM = [
     "created_at",

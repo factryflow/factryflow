@@ -57,12 +57,11 @@ class AssigmentRuleForm(forms.ModelForm):
     class Meta:
         model = AssigmentRule
         fields = [
-            "external_id",
             "name",
             "work_center",
-            "is_active",
             "notes",
             "description",
+            "is_active",
         ]
         exclude = [
             "created_by",
@@ -72,7 +71,6 @@ class AssigmentRuleForm(forms.ModelForm):
             "custom_fields",
         ]
         labels = {
-            "external_id": "External ID",
             "name": "Name",
             "work_center": "Work Center",
             "is_active": "Is Active",
@@ -80,11 +78,6 @@ class AssigmentRuleForm(forms.ModelForm):
             "description": "Description",
         }
         widgets = {
-            "external_id": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                }
-            ),
             "name": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",

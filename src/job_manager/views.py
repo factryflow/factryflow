@@ -43,16 +43,16 @@ from resource_assigner.models import TaskRuleAssignment
 # WorkCenter Views
 # ------------------------------------------------------------------------------
 
-WORK_CENTER_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
+WORK_CENTER_MODEL_FIELDS = ["id", "name", "notes"]
 WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
-WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "External ID", "Notes"]
+WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "Notes"]
 
 WORK_CENTER_MODEL_RELATION_HEADERS = ["HISTORY"]
 WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
     "history": [
         "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
+        ["ID", "Name", "User", "Notes", "History Date"],
+        ["id", "name", "history_user", "notes", "history_date"],
     ],
 }
 
@@ -79,17 +79,17 @@ WORK_CENTER_VIEWS = CRUDView(
 # Job Type Views
 # ------------------------------------------------------------------------------
 
-JOB_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
+JOB_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-JOB_TYPE_TABLE_HEADERS = ["ID", "External ID", "Job Type Name", "Notes"]
+JOB_TYPE_TABLE_HEADERS = ["ID", "Job Type Name", "Notes"]
 JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 JOB_TYPE_MODEL_RELATION_FIELDS = {
     "history": [
         "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
+        ["ID", "Name", "User", "Notes", "History Date"],
+        ["id", "name", "history_user", "notes", "history_date"],
     ],
 }
 
@@ -246,8 +246,8 @@ JOB_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 
 
-TASK_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
-TASK_TYPE_TABLE_HEADERS = ["ID", "External ID", "Task Type Name", "Notes"]
+TASK_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
+TASK_TYPE_TABLE_HEADERS = ["ID", "Task Type Name", "Notes"]
 
 TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
@@ -255,8 +255,8 @@ TASK_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 TASK_TYPE_MODEL_RELATION_FIELDS = {
     "history": [
         "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
+        ["ID", "Name", "User", "Notes", "History Date"],
+        ["id", "name", "history_user", "notes", "history_date"],
     ],
 }
 
@@ -428,8 +428,8 @@ TASK_VIEWS = CRUDView(
 # Dependecy Type Views
 # ------------------------------------------------------------------------------
 
-DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
-DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "External ID", "Dependency Type Name", "notes"]
+DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
+DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "Dependency Type Name", "notes"]
 
 DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
@@ -437,8 +437,8 @@ DEPENDENCY_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
     "history": [
         "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
+        ["ID", "Name", "User", "Notes", "History Date"],
+        ["id", "name", "history_user", "notes", "history_date"],
     ],
 }
 
@@ -600,8 +600,8 @@ DEPENDENCY_VIEWS = CRUDView(
 # Item Views
 # ------------------------------------------------------------------------------
 
-ITEM_MODEL_FIELDS = ["id", "external_id", "name", "description", "notes"]
-ITEM_TABLE_HEADERS = ["ID", "External ID", "Item Name", "Description", "Notes"]
+ITEM_MODEL_FIELDS = ["id", "name", "description", "notes"]
+ITEM_TABLE_HEADERS = ["ID", "Item Name", "Description", "Notes"]
 
 ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
 
@@ -609,8 +609,8 @@ ITEM_MODEL_RELATION_HEADERS = ["HISTORY"]
 ITEM_MODEL_RELATION_FIELDS = {
     "history": [
         "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
+        ["ID", "Name", "User", "Notes", "History Date"],
+        ["id", "name", "history_user", "notes", "history_date"],
     ],
 }
 

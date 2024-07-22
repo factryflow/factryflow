@@ -10,12 +10,11 @@ from .services import *
 # Weekly Shift Template VIEWS
 # ------------------------------------------------------------------------------
 
-WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
+WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS = ["id", "name", "notes"]
 WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id"]
 WEEKLY_SHIFT_TEMPLATE_TABLE_HEADERS = [
     "ID",
     "Weekly Shift Template Name",
-    "External ID",
     "Notes",
 ]
 
@@ -107,12 +106,11 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS = CRUDView(
 # Operational Exception Type VIEWS
 # ------------------------------------------------------------------------------
 
-OPERATIONAL_EXCEPTION_TYPE_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
+OPERATIONAL_EXCEPTION_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 OPERATIONAL_EXCEPTION_TYPE_SEARCH_FIELDS = ["name", "id"]
 OPERATIONAL_EXCEPTION_TYPE_TABLE_HEADERS = [
     "ID",
     "Operational Exception Type Name",
-    "External ID",
     "Notes",
 ]
 
@@ -150,7 +148,6 @@ OPERATIONAL_EXCEPTION_TYPE_VIEWS = CRUDView(
 
 OPERATIONAL_EXCEPTION_MODEL_FIELDS = [
     "id",
-    "external_id",
     "start_datetime",
     "end_datetime",
     "operational_exception_type",
@@ -161,7 +158,6 @@ OPERATIONAL_EXCEPTION_MODEL_FIELDS = [
 
 OPERATIONAL_EXCEPTION_SEARCH_FIELDS = [
     "id",
-    "external_id",
     "start_datetime",
     "end_datetime",
     "operational_exception_type",
@@ -172,7 +168,6 @@ OPERATIONAL_EXCEPTION_SEARCH_FIELDS = [
 
 OPERATIONAL_EXCEPTION_TABLE_HEADERS = [
     "ID",
-    "External ID",
     "Start Datetime",
     "End Datetime",
     "Operational Exception Type",

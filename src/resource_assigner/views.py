@@ -77,7 +77,6 @@ TASK_RESOURCE_ASSIGNMENT_VIEWS = CRUDView(
 
 ASSIGMENT_RULE_MODEL_FIELDS = [
     "id",
-    "external_id",
     "notes",
     "name",
     "description",
@@ -86,7 +85,6 @@ ASSIGMENT_RULE_MODEL_FIELDS = [
 ]
 ASSIGMENT_RULE_TABLE_HEADERS = [
     "ID",
-    "External ID",
     "Notes",
     "Name",
     "Description",
