@@ -175,7 +175,7 @@ ASSIGMENT_RULE_CRITERIA_TABLE_VIEW = CustomTableView(
 
 ASSIGMENT_RULE_CRITERIA_VIEWS = CRUDView(
     model=AssigmentRuleCriteria,
-    model_name="assigment_rule_criterias",
+    model_name="assigment_rule_criteria",
     model_service=AssigmentRuleCriteriaService,
     model_form=AssigmentRuleCriteriaForm,
     model_table_view=ASSIGMENT_RULE_CRITERIA_TABLE_VIEW,

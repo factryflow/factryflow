@@ -89,34 +89,34 @@ urlpatterns = [
     ),
     # assigment_rule_criteria urls
     path(
-        "assigment-rule-criterias/new/",
+        "assigment-rule-criteria/new/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
-        name="assigment_rule_criterias_form",
+        name="assigment_rule_criteria_form",
     ),
     path(
-        "assigment-rule-criterias-create/",
+        "assigment-rule-criteria-create/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.create_or_update_model_instance,
-        name="assigment_rule_criterias_create",
+        name="assigment_rule_criteria_create",
     ),
     path(
-        "assigment-rule-criterias/",
+        "assigment-rule-criteria/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.get_all_instances,
-        name="assigment_rule_criterias",
+        name="assigment_rule_criteria",
     ),
     path(
-        "assigment-rule-criterias/delete/<int:id>/",
+        "assigment-rule-criteria/delete/<int:id>/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.delete_obj_instance,
-        name="delete_assigment_rule_criterias",
+        name="delete_assigment_rule_criteria",
     ),
     path(
-        "assigment-rule-criterias/view/<int:id>/",
+        "assigment-rule-criteria/view/<int:id>/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
-        name="view_assigment_rule_criterias",
+        name="view_assigment_rule_criteria",
     ),
     path(
-        "assigment-rule-criterias/view/<int:id>/edit=<str:edit>",
+        "assigment-rule-criteria/view/<int:id>/edit=<str:edit>",
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
-        name="edit_assigment_rule_criterias",
+        name="edit_assigment_rule_criteria",
     ),
     # assignment_constraint urls
     path(
