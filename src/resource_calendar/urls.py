@@ -10,19 +10,19 @@ from .views import (
 urlpatterns = [
     # weekly shift template urls
     path(
-        "weekly-shift-template/new/",
+        "weekly-shift-templates/new/",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
-        name="weekly_shift_template_form",
+        name="weekly_shift_templates_form",
     ),
     path(
-        "weekly-shift-template/new/<int:formset_count>",
+        "weekly-shift-templates/new/<int:formset_count>",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
-        name="weekly_shift_template_formset",
+        name="weekly_shift_templates_formset",
     ),
     path(
-        "weekly-shift-template-create/",
+        "weekly-shift-templates-create/",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.create_or_update_model_instance,
-        name="weekly_shift_template_create",
+        name="weekly_shift_templates_create",
     ),
     path(
         "weekly-shift-templates/",
@@ -30,35 +30,35 @@ urlpatterns = [
         name="weekly_shift_templates",
     ),
     path(
-        "weekly-shift-template/delete/<int:id>/",
+        "weekly-shift-templates/delete/<int:id>/",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.delete_obj_instance,
-        name="delete_weekly_shift_template",
+        name="delete_weekly_shift_templates",
     ),
     path(
-        "weekly-shift-template/view/<int:id>/",
+        "weekly-shift-templates/view/<int:id>/",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
-        name="view_weekly_shift_template",
+        name="view_weekly_shift_templates",
     ),
     path(
-        "weekly-shift-template/view/<int:id>/edit=<str:edit>",
+        "weekly-shift-templates/view/<int:id>/edit=<str:edit>",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
-        name="edit_weekly_shift_template",
+        name="edit_weekly_shift_templates",
     ),
     path(
-        "weekly-shift-template/view/<int:id>/field=<str:field>",
+        "weekly-shift-templates/view/<int:id>/field=<str:field>",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
-        name="weekly_shift_template_dependencies",
+        name="weekly_shift_templates_relationships",
     ),
     # weekly shift template detail urls
     path(
-        "weekly-shift-template-detail/new/",
+        "weekly-shift-template-details/new/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="weekly_shift_template_detail_form",
+        name="weekly_shift_template_details_form",
     ),
     path(
-        "weekly-shift-template-detail-create/",
+        "weekly-shift-template-details-create/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.create_or_update_model_instance,
-        name="weekly_shift_template_detail_create",
+        name="weekly_shift_template_details_create",
     ),
     path(
         "weekly-shift-template-details/",
@@ -66,35 +66,35 @@ urlpatterns = [
         name="weekly_shift_template_details",
     ),
     path(
-        "weekly-shift-template-detail/delete/<int:id>/",
+        "weekly-shift-template-details/delete/<int:id>/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.delete_obj_instance,
-        name="delete_weekly_shift_template_detail",
+        name="delete_weekly_shift_template_details",
     ),
     path(
-        "weekly-shift-template-detail/view/<int:id>/",
+        "weekly-shift-template-details/view/<int:id>/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="view_weekly_shift_template_detail",
+        name="view_weekly_shift_template_details",
     ),
     path(
-        "weekly-shift-template-detail/view/<int:id>/edit=<str:edit>",
+        "weekly-shift-template-details/view/<int:id>/edit=<str:edit>",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="edit_weekly_shift_template_detail",
+        name="edit_weekly_shift_template_details",
     ),
     path(
-        "weekly-shift-template-detail/view/<int:id>/field=<str:field>",
+        "weekly-shift-template-details/view/<int:id>/field=<str:field>",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="weekly_shift_template_detail_dependencies",
+        name="weekly_shift_template_details_relationships",
     ),
     # operational exception type urls
     path(
-        "operational-exception-type/new/",
+        "operational-exception-types/new/",
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.show_model_form,
-        name="operational_exception_type_form",
+        name="operational_exception_types_form",
     ),
     path(
-        "operational-exception-type-create/",
+        "operational-exception-types-create/",
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.create_or_update_model_instance,
-        name="operational_exception_type_create",
+        name="operational_exception_types_create",
     ),
     path(
         "operational-exception-types/",
@@ -102,35 +102,35 @@ urlpatterns = [
         name="operational_exception_types",
     ),
     path(
-        "operational-exception-type/delete/<int:id>/",
+        "operational-exception-types/delete/<int:id>/",
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.delete_obj_instance,
-        name="delete_operational_exception_type",
+        name="delete_operational_exception_types",
     ),
     path(
-        "operational-exception-type/view/<int:id>/",
+        "operational-exception-types/view/<int:id>/",
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.show_model_form,
-        name="view_operational_exception_type",
+        name="view_operational_exception_types",
     ),
     path(
-        "operational-exception-type/view/<int:id>/edit=<str:edit>",
+        "operational-exception-types/view/<int:id>/edit=<str:edit>",
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.show_model_form,
-        name="edit_operational_exception_type",
+        name="edit_operational_exception_types",
     ),
     path(
-        "operational-exception-type/view/<int:id>/field=<str:field>",
+        "operational-exception-types/view/<int:id>/field=<str:field>",
         OPERATIONAL_EXCEPTION_TYPE_VIEWS.show_model_form,
-        name="operational_exception_type_dependencies",
+        name="operational_exception_types_relationships",
     ),
     # operational exception urls
     path(
-        "operational-exception/new/",
+        "operational-exceptions/new/",
         OPERATIONAL_EXCEPTION_VIEWS.show_model_form,
-        name="operational_exception_form",
+        name="operational_exceptions_form",
     ),
     path(
-        "operational-exception-create/",
+        "operational-exceptions-create/",
         OPERATIONAL_EXCEPTION_VIEWS.create_or_update_model_instance,
-        name="operational_exception_create",
+        name="operational_exceptions_create",
     ),
     path(
         "operational-exceptions/",
@@ -138,23 +138,23 @@ urlpatterns = [
         name="operational_exceptions",
     ),
     path(
-        "operational-exception/delete/<int:id>/",
+        "operational-exceptions/delete/<int:id>/",
         OPERATIONAL_EXCEPTION_VIEWS.delete_obj_instance,
-        name="delete_operational_exception",
+        name="delete_operational_exceptions",
     ),
     path(
-        "operational-exception/view/<int:id>/",
+        "operational-exceptions/view/<int:id>/",
         OPERATIONAL_EXCEPTION_VIEWS.show_model_form,
-        name="view_operational_exception",
+        name="view_operational_exceptions",
     ),
     path(
-        "operational-exception/view/<int:id>/edit=<str:edit>",
+        "operational-exceptions/view/<int:id>/edit=<str:edit>",
         OPERATIONAL_EXCEPTION_VIEWS.show_model_form,
-        name="edit_operational_exception",
+        name="edit_operational_exceptions",
     ),
     path(
-        "operational-exception/view/<int:id>/field=<str:field>",
+        "operational-exceptions/view/<int:id>/field=<str:field>",
         OPERATIONAL_EXCEPTION_VIEWS.show_model_form,
-        name="operational_exception_dependencies",
+        name="operational_exceptions_relationships",
     ),
 ]

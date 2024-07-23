@@ -59,7 +59,7 @@ WeeklyShiftTemplateTableView = CustomTableView(
 
 WEEKLY_SHIFT_TEMPLATE_VIEWS = CRUDView(
     model=WeeklyShiftTemplate,
-    model_name="weekly_shift_template",
+    model_name="weekly_shift_templates",
     model_service=WeeklyShiftTemplateService,
     model_form=WeeklyShiftTemplateForm,
     model_table_view=WeeklyShiftTemplateTableView,
@@ -106,7 +106,7 @@ WeeklyShiftTemplateDetailTableView = CustomTableView(
 
 WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS = CRUDView(
     model=WeeklyShiftTemplateDetail,
-    model_name="weekly_shift_template_detail",
+    model_name="weekly_shift_template_details",
     model_service=WeeklyShiftTemplateDetailService,
     model_form=WeeklyShiftTemplateDetailForm,
     model_table_view=WeeklyShiftTemplateDetailTableView,
@@ -147,7 +147,7 @@ OperationalExceptionTypeTableView = CustomTableView(
 
 OPERATIONAL_EXCEPTION_TYPE_VIEWS = CRUDView(
     model=OperationalExceptionType,
-    model_name="operational_exception_type",
+    model_name="operational_exception_types",
     model_service=OperationalExceptionTypeService,
     model_form=OperationalExceptionTypeForm,
     model_table_view=OperationalExceptionTypeTableView,
@@ -212,7 +212,7 @@ OperationalExceptionTableView = CustomTableView(
 
 OPERATIONAL_EXCEPTION_VIEWS = CRUDView(
     model=OperationalException,
-    model_name="operational_exception",
+    model_name="operational_exceptions",
     model_service=OperationalExceptionService,
     model_form=OperationalExceptionForm,
     model_table_view=OperationalExceptionTableView,

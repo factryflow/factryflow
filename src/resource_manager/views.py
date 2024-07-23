@@ -54,7 +54,7 @@ ResourceTableView = CustomTableView(
 
 RESOURCE_VIEWS = CRUDView(
     model=Resource,
-    model_name="resource",
+    model_name="resources",
     model_service=ResourceService,
     model_form=ResourceForm,
     model_table_view=ResourceTableView,
@@ -97,7 +97,7 @@ ResourceGroupTableView = CustomTableView(
 
 RESOURCE_GROUP_VIEWS = CRUDView(
     model=ResourceGroup,
-    model_name="resource_group",
+    model_name="resource_groups",
     model_service=ResourceGroupService,
     model_form=ResourceGroupForm,
     model_table_view=ResourceGroupTableView,

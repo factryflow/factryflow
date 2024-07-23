@@ -11,14 +11,14 @@ from .views import (
 urlpatterns = [
     # task_resource_assigment urls
     path(
-        "task-resource-assigment/new/",
+        "task-resource-assigments/new/",
         TASK_RESOURCE_ASSIGNMENT_VIEWS.show_model_form,
-        name="task_resource_assigment_form",
+        name="task_resource_assigments_form",
     ),
     path(
-        "task-resource_assigment-create/",
+        "task-resource-assigments-create/",
         TASK_RESOURCE_ASSIGNMENT_VIEWS.create_or_update_model_instance,
-        name="task_resource_assigment_create",
+        name="task_resource_assigments_create",
     ),
     path(
         "task-resource-assigments/",
@@ -26,40 +26,40 @@ urlpatterns = [
         name="task_resource_assigments",
     ),
     path(
-        "task-resource-assigment/delete/<int:id>/",
+        "task-resource-assigments/delete/<int:id>/",
         TASK_RESOURCE_ASSIGNMENT_VIEWS.delete_obj_instance,
-        name="delete_task_resource_assigment",
+        name="delete_task_resource_assigments",
     ),
     path(
-        "task-resource-assigment/view/<int:id>/",
+        "task-resource-assigments/view/<int:id>/",
         TASK_RESOURCE_ASSIGNMENT_VIEWS.show_model_form,
-        name="view_task_resource_assigment",
+        name="view_task_resource_assigments",
     ),
     path(
-        "task-resource-assigment/view/<int:id>/edit=<str:edit>",
+        "task-resource-assigments/view/<int:id>/edit=<str:edit>",
         TASK_RESOURCE_ASSIGNMENT_VIEWS.show_model_form,
-        name="edit_task_resource_assigment",
+        name="edit_task_resource_assigments",
     ),
     path(
-        "task-resource-assigment/view/<int:id>/field=<str:field>",
+        "task-resource-assigments/view/<int:id>/field=<str:field>",
         TASK_RESOURCE_ASSIGNMENT_VIEWS.show_model_form,
-        name="task_resource_assigment_dependencies",
+        name="task_resource_assigments_relationships",
     ),
     # assigment_rule urls
     path(
-        "assigment-rule/new/",
+        "assigment-rules/new/",
         ASSIGMENT_RULE_VIEWS.show_model_form,
-        name="assigment_rule_form",
+        name="assigment_rules_form",
     ),
     path(
-        "assigment-rule/new/<int:formset_count>",
+        "assigment-rules/new/<int:formset_count>",
         ASSIGMENT_RULE_VIEWS.show_model_form,
-        name="assigment_rule_formset",
+        name="assigment_rules_formset",
     ),
     path(
-        "assigment-rule-create/",
+        "assigment-rules-create/",
         ASSIGMENT_RULE_VIEWS.create_or_update_model_instance,
-        name="assigment_rule_create",
+        name="assigment_rules_create",
     ),
     path(
         "assigment-rules/",
@@ -67,66 +67,66 @@ urlpatterns = [
         name="assigment_rules",
     ),
     path(
-        "assigment-rule/delete/<int:id>/",
+        "assigment-rules/delete/<int:id>/",
         ASSIGMENT_RULE_VIEWS.delete_obj_instance,
-        name="delete_assigment_rule",
+        name="delete_assigment_rules",
     ),
     path(
-        "assigment-rule/view/<int:id>/",
+        "assigment-rules/view/<int:id>/",
         ASSIGMENT_RULE_VIEWS.show_model_form,
-        name="view_assigment_rule",
+        name="view_assigment_rules",
     ),
     path(
-        "assigment-rule/view/<int:id>/edit=<str:edit>",
+        "assigment-rules/view/<int:id>/edit=<str:edit>",
         ASSIGMENT_RULE_VIEWS.show_model_form,
-        name="edit_assigment_rule",
+        name="edit_assigment_rules",
     ),
     path(
-        "assigment-rule/view/<int:id>/field=<str:field>",
+        "assigment-rules/view/<int:id>/field=<str:field>",
         ASSIGMENT_RULE_VIEWS.show_model_form,
-        name="assigment_rule_relationships",
+        name="assigment_rules_relationships",
     ),
     # assigment_rule_criteria urls
     path(
-        "assigment-rule-criteria/new/",
+        "assigment-rule-criterias/new/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
-        name="assigment_rule_criteria_form",
+        name="assigment_rule_criterias_form",
     ),
     path(
-        "assigment-rule-criteria-create/",
+        "assigment-rule-criterias-create/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.create_or_update_model_instance,
-        name="assigment_rule_criteria_create",
+        name="assigment_rule_criterias_create",
     ),
     path(
-        "assigment-rule-criteria/",
+        "assigment-rule-criterias/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.get_all_instances,
         name="assigment_rule_criterias",
     ),
     path(
-        "assigment-rule-criteria/delete/<int:id>/",
+        "assigment-rule-criterias/delete/<int:id>/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.delete_obj_instance,
-        name="delete_assigment_rule_criteria",
+        name="delete_assigment_rule_criterias",
     ),
     path(
-        "assigment-rule-criteria/view/<int:id>/",
+        "assigment-rule-criterias/view/<int:id>/",
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
-        name="view_assigment_rule_criteria",
+        name="view_assigment_rule_criterias",
     ),
     path(
-        "assigment-rule-criteria/view/<int:id>/edit=<str:edit>",
+        "assigment-rule-criterias/view/<int:id>/edit=<str:edit>",
         ASSIGMENT_RULE_CRITERIA_VIEWS.show_model_form,
-        name="edit_assigment_rule_criteria",
+        name="edit_assigment_rule_criterias",
     ),
     # assignment_constraint urls
     path(
-        "assignment-constraint/new/",
+        "assignment-constraints/new/",
         ASSIGNMENT_CONSTRAINT_VIEWS.show_model_form,
-        name="assignment_constraint_form",
+        name="assignment_constraints_form",
     ),
     path(
-        "assignment-constraint-create/",
+        "assignment-constraints-create/",
         ASSIGNMENT_CONSTRAINT_VIEWS.create_or_update_model_instance,
-        name="assignment_constraint_create",
+        name="assignment_constraints_create",
     ),
     path(
         "assignment-constraints/",
@@ -134,24 +134,24 @@ urlpatterns = [
         name="assignment_constraints",
     ),
     path(
-        "assignment-constraint/delete/<int:id>/",
+        "assignment-constraints/delete/<int:id>/",
         ASSIGNMENT_CONSTRAINT_VIEWS.delete_obj_instance,
-        name="delete_assignment_constraint",
+        name="delete_assignment_constraints",
     ),
     path(
-        "assignment-constraint/view/<int:id>/",
+        "assignment-constraints/view/<int:id>/",
         ASSIGNMENT_CONSTRAINT_VIEWS.show_model_form,
-        name="view_assignment_constraint",
+        name="view_assignment_constraints",
     ),
     path(
-        "assignment-constraint/view/<int:id>/edit=<str:edit>",
+        "assignment-constraints/view/<int:id>/edit=<str:edit>",
         ASSIGNMENT_CONSTRAINT_VIEWS.show_model_form,
-        name="edit_assignment_constraint",
+        name="edit_assignment_constraints",
     ),
     path(
-        "assignment-constraint/view/<int:id>/field=<str:field>",
+        "assignment-constraints/view/<int:id>/field=<str:field>",
         ASSIGNMENT_CONSTRAINT_VIEWS.show_model_form,
-        name="assignment_constraint_dependencies",
+        name="assignment_constraints_relationships",
     ),
     # match rules with tasks
     path(

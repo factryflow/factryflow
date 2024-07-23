@@ -441,7 +441,7 @@ class CRUDView:
             )
 
             if request.htmx:
-                headers = {"HX-Redirect": reverse(f"{self.model_name.lower()}s")}
+                headers = {"HX-Redirect": reverse(self.model_name.lower())}
                 response = HttpResponse(status=204, headers=headers)
                 add_notification_headers(
                     response,
@@ -813,7 +813,7 @@ CustomFieldTableView = CustomTableView(
 
 CUSTOM_FIELD_VIEWS = CRUDView(
     model=CustomField,
-    model_name="custom_field",
+    model_name="custom_fields",
     model_service=CustomFieldService,
     model_form=CustomFieldForm,
     model_table_view=CustomFieldTableView,

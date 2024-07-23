@@ -7,41 +7,43 @@ from .views import (
 
 urlpatterns = [
     # resources urls
-    path("resource/new/", RESOURCE_VIEWS.show_model_form, name="resource_form"),
+    path("resources/new/", RESOURCE_VIEWS.show_model_form, name="resources_form"),
     path(
-        "resource-create/",
+        "resources-create/",
         RESOURCE_VIEWS.create_or_update_model_instance,
-        name="resource_create",
+        name="resources_create",
     ),
     path("resources/", RESOURCE_VIEWS.get_all_instances, name="resources"),
     path(
-        "resource/delete/<int:id>/",
+        "resources/delete/<int:id>/",
         RESOURCE_VIEWS.delete_obj_instance,
-        name="delete_resource",
+        name="delete_resources",
     ),
     path(
-        "resource/view/<int:id>/", RESOURCE_VIEWS.show_model_form, name="view_resource"
-    ),
-    path(
-        "resource/view/<int:id>/edit=<str:edit>",
+        "resources/view/<int:id>/",
         RESOURCE_VIEWS.show_model_form,
-        name="edit_resource",
+        name="view_resources",
     ),
     path(
-        "resource/view/<int:id>/field=<str:field>",
+        "resources/view/<int:id>/edit=<str:edit>",
         RESOURCE_VIEWS.show_model_form,
-        name="resource_dependencies",
+        name="edit_resources",
+    ),
+    path(
+        "resources/view/<int:id>/field=<str:field>",
+        RESOURCE_VIEWS.show_model_form,
+        name="resources_relationships",
     ),
     # resource groups urls
     path(
-        "resource-group/new/",
+        "resource-groups/new/",
         RESOURCE_GROUP_VIEWS.show_model_form,
-        name="resource_group_form",
+        name="resource_groups_form",
     ),
     path(
-        "resource-group-create/",
+        "resource-groups-create/",
         RESOURCE_GROUP_VIEWS.create_or_update_model_instance,
-        name="resource_group_create",
+        name="resource_groups_create",
     ),
     path(
         "resource-groups/",
@@ -49,23 +51,23 @@ urlpatterns = [
         name="resource_groups",
     ),
     path(
-        "resource-group/delete/<int:id>/",
+        "resource-groups/delete/<int:id>/",
         RESOURCE_GROUP_VIEWS.delete_obj_instance,
-        name="delete_resource_group",
+        name="delete_resource_groups",
     ),
     path(
-        "resource-group/view/<int:id>/",
+        "resource-groups/view/<int:id>/",
         RESOURCE_GROUP_VIEWS.show_model_form,
-        name="view_resource_group",
+        name="view_resource_groups",
     ),
     path(
-        "resource-group/view/<int:id>/edit=<str:edit>",
+        "resource-groups/view/<int:id>/edit=<str:edit>",
         RESOURCE_GROUP_VIEWS.show_model_form,
-        name="edit_resource_group",
+        name="edit_resource_groups",
     ),
     path(
         "resource-groups/view/<int:id>/field=<str:field>",
         RESOURCE_GROUP_VIEWS.show_model_form,
-        name="resource_group_dependencies",
+        name="resource_groups_relationships",
     ),
 ]

@@ -14,160 +14,164 @@ from .views import (
 urlpatterns = [
     # work center urls
     path(
-        "work-center/new/", WORK_CENTER_VIEWS.show_model_form, name="work_center_form"
+        "work-centers/new/", WORK_CENTER_VIEWS.show_model_form, name="work_centers_form"
     ),
     path(
-        "work-center-create/",
+        "work-centers-create/",
         WORK_CENTER_VIEWS.create_or_update_model_instance,
-        name="work_center_create",
+        name="work_centers_create",
     ),
     path("work-centers/", WORK_CENTER_VIEWS.get_all_instances, name="work_centers"),
     path(
-        "work-center/delete/<int:id>/",
+        "work-centers/delete/<int:id>/",
         WORK_CENTER_VIEWS.delete_obj_instance,
-        name="delete_work_center",
+        name="delete_work_centers",
     ),
     path(
-        "work-center/view/<int:id>/",
+        "work-centers/view/<int:id>/",
         WORK_CENTER_VIEWS.show_model_form,
-        name="view_work_center",
+        name="view_work_centers",
     ),
     path(
-        "work-center/view/<int:id>/edit=<str:edit>",
+        "work-centers/view/<int:id>/edit=<str:edit>",
         WORK_CENTER_VIEWS.show_model_form,
-        name="edit_work_center",
+        name="edit_work_centers",
     ),
     path(
-        "work-center/view/<int:id>/field=<str:field>",
+        "work-centers/view/<int:id>/field=<str:field>",
         WORK_CENTER_VIEWS.show_model_form,
-        name="work_center_dependencies",
+        name="work_center_relationships",
     ),
     # jobs urls
-    path("job/new/", JOB_VIEWS.show_model_form, name="job_form"),
-    path("job-create/", JOB_VIEWS.create_or_update_model_instance, name="job_create"),
+    path("jobs/new/", JOB_VIEWS.show_model_form, name="jobs_form"),
+    path("jobs-create/", JOB_VIEWS.create_or_update_model_instance, name="jobs_create"),
     path("jobs/", JOB_VIEWS.get_all_instances, name="jobs"),
-    path("job/delete/<int:id>/", JOB_VIEWS.delete_obj_instance, name="delete_job"),
-    path("job/view/<int:id>/", JOB_VIEWS.show_model_form, name="view_job"),
+    path("jobs/delete/<int:id>/", JOB_VIEWS.delete_obj_instance, name="delete_jobs"),
+    path("jobs/view/<int:id>/", JOB_VIEWS.show_model_form, name="view_jobs"),
     path(
-        "job/view/<int:id>/edit=<str:edit>", JOB_VIEWS.show_model_form, name="edit_job"
+        "jobs/view/<int:id>/edit=<str:edit>",
+        JOB_VIEWS.show_model_form,
+        name="edit_jobs",
     ),
     path(
-        "job/view/<int:id>/field=<str:field>",
+        "jobs/view/<int:id>/field=<str:field>",
         JOB_VIEWS.show_model_form,
-        name="job_dependencies",
+        name="jobs_relationships",
     ),
     # job_type urls
-    path("job-type/new/", JOB_TYPE_VIEWS.show_model_form, name="job_type_form"),
+    path("job-types/new/", JOB_TYPE_VIEWS.show_model_form, name="job_types_form"),
     path(
-        "job-type-create/",
+        "job-types-create/",
         JOB_TYPE_VIEWS.create_or_update_model_instance,
-        name="job_type_create",
+        name="job_types_create",
     ),
     path("job-types/", JOB_TYPE_VIEWS.get_all_instances, name="job_types"),
     path(
-        "job-type/delete/<int:id>/",
+        "job-types/delete/<int:id>/",
         JOB_TYPE_VIEWS.delete_obj_instance,
-        name="delete_job_type",
+        name="delete_job_types",
     ),
     path(
-        "job-type/view/<int:id>/",
+        "job-types/view/<int:id>/",
         JOB_TYPE_VIEWS.show_model_form,
-        name="view_job_type",
+        name="view_job_types",
     ),
     path(
-        "job-type/view/<int:id>/edit=<str:edit>",
+        "job-types/view/<int:id>/edit=<str:edit>",
         JOB_TYPE_VIEWS.show_model_form,
-        name="edit_job_type",
+        name="edit_job_types",
     ),
     path(
-        "job-type/view/<int:id>/field=<str:field>",
+        "job-types/view/<int:id>/field=<str:field>",
         JOB_TYPE_VIEWS.show_model_form,
-        name="job_type_dependencies",
+        name="job_types_relationships",
     ),
     # tasks urls
-    path("task/new/", TASK_VIEWS.show_model_form, name="task_form"),
+    path("tasks/new/", TASK_VIEWS.show_model_form, name="tasks_form"),
     path(
-        "task-create/", TASK_VIEWS.create_or_update_model_instance, name="task_create"
+        "tasks-create/", TASK_VIEWS.create_or_update_model_instance, name="tasks_create"
     ),
     path("tasks/", TASK_VIEWS.get_all_instances, name="tasks"),
-    path("task/delete/<int:id>/", TASK_VIEWS.delete_obj_instance, name="delete_task"),
-    path("task/view/<int:id>/", TASK_VIEWS.show_model_form, name="view_task"),
+    path("tasks/delete/<int:id>/", TASK_VIEWS.delete_obj_instance, name="delete_tasks"),
+    path("tasks/view/<int:id>/", TASK_VIEWS.show_model_form, name="view_tasks"),
     path(
-        "task/view/<int:id>/edit=<str:edit>",
+        "tasks/view/<int:id>/edit=<str:edit>",
         TASK_VIEWS.show_model_form,
-        name="edit_task",
+        name="edit_tasks",
     ),
     path(
-        "task/view/<int:id>/field=<str:field>",
+        "tasks/view/<int:id>/field=<str:field>",
         TASK_VIEWS.show_model_form,
-        name="task_dependencies",
+        name="tasks_relationships",
     ),
     # task type urls
-    path("task-type/new/", TASK_TYPE_VIEWS.show_model_form, name="task_type_form"),
+    path("task-types/new/", TASK_TYPE_VIEWS.show_model_form, name="task_types_form"),
     path(
-        "task-type-create/",
+        "task-types-create/",
         TASK_TYPE_VIEWS.create_or_update_model_instance,
-        name="task_type_create",
+        name="task_types_create",
     ),
     path("task-types/", TASK_TYPE_VIEWS.get_all_instances, name="task_types"),
     path(
-        "task-type/delete/<int:id>/",
+        "task-types/delete/<int:id>/",
         TASK_TYPE_VIEWS.delete_obj_instance,
-        name="delete_task_type",
+        name="delete_task_types",
     ),
     path(
-        "task-type/view/<int:id>/",
+        "task-types/view/<int:id>/",
         TASK_TYPE_VIEWS.show_model_form,
-        name="view_task_type",
+        name="view_task_types",
     ),
     path(
-        "task-type/view/<int:id>/edit=<str:edit>",
+        "task-types/view/<int:id>/edit=<str:edit>",
         TASK_TYPE_VIEWS.show_model_form,
-        name="edit_task_type",
+        name="edit_task_types",
     ),
     path(
-        "task-type/view/<int:id>/field=<str:field>",
+        "task-types/view/<int:id>/field=<str:field>",
         TASK_TYPE_VIEWS.show_model_form,
-        name="task_type_dependencies",
+        name="task_types_relationships",
     ),
     # dependencies urls
-    path("dependency/new/", DEPENDENCY_VIEWS.show_model_form, name="dependency_form"),
     path(
-        "dependency-create/",
+        "dependencies/new/", DEPENDENCY_VIEWS.show_model_form, name="dependencies_form"
+    ),
+    path(
+        "dependencies-create/",
         DEPENDENCY_VIEWS.create_or_update_model_instance,
         name="dependency_create",
     ),
-    path("dependencys/", DEPENDENCY_VIEWS.get_all_instances, name="dependencys"),
+    path("dependencies/", DEPENDENCY_VIEWS.get_all_instances, name="dependencies"),
     path(
-        "dependency/delete/<int:id>/",
+        "dependencies/delete/<int:id>/",
         DEPENDENCY_VIEWS.delete_obj_instance,
-        name="delete_dependency",
+        name="delete_dependencies",
     ),
     path(
-        "dependency/view/<int:id>/",
+        "dependencies/view/<int:id>/",
         DEPENDENCY_VIEWS.show_model_form,
-        name="view_dependency",
+        name="view_dependencies",
     ),
     path(
-        "dependency/view/<int:id>/edit=<str:edit>",
+        "dependencies/view/<int:id>/edit=<str:edit>",
         DEPENDENCY_VIEWS.show_model_form,
-        name="edit_dependency",
+        name="edit_dependencies",
     ),
     path(
-        "dependency/view/<int:id>/field=<str:field>",
+        "dependencies/view/<int:id>/field=<str:field>",
         DEPENDENCY_VIEWS.show_model_form,
-        name="dependency_dependencies",
+        name="dependency_relationships",
     ),
     # dependency type urls
     path(
-        "dependency-type/new/",
+        "dependency-types/new/",
         DEPENDENCY_TYPE_VIEWS.show_model_form,
-        name="dependency_type_form",
+        name="dependency_types_form",
     ),
     path(
-        "dependency-type-create/",
+        "dependency-types-create/",
         DEPENDENCY_TYPE_VIEWS.create_or_update_model_instance,
-        name="dependency_type_create",
+        name="dependency_types_create",
     ),
     path(
         "dependency-types/",
@@ -175,41 +179,41 @@ urlpatterns = [
         name="dependency_types",
     ),
     path(
-        "dependency-type/delete/<int:id>/",
+        "dependency-types/delete/<int:id>/",
         DEPENDENCY_TYPE_VIEWS.delete_obj_instance,
-        name="delete_dependency_type",
+        name="delete_dependency_types",
     ),
     path(
-        "dependency-type/view/<int:id>/",
+        "dependency-types/view/<int:id>/",
         DEPENDENCY_TYPE_VIEWS.show_model_form,
-        name="view_dependency_type",
+        name="view_dependency_types",
     ),
     path(
-        "dependency-type/view/<int:id>/edit=<str:edit>",
+        "dependency-types/view/<int:id>/edit=<str:edit>",
         DEPENDENCY_TYPE_VIEWS.show_model_form,
-        name="edit_dependency_type",
+        name="edit_dependency_types",
     ),
     path(
-        "dependency-type/view/<int:id>/field=<str:field>",
+        "dependency-types/view/<int:id>/field=<str:field>",
         DEPENDENCY_TYPE_VIEWS.show_model_form,
-        name="dependency_type_dependencies",
+        name="dependency_types_relationships",
     ),
     # item urls
-    path("item/new/", ITEM_VIEWS.show_model_form, name="item_form"),
+    path("items/new/", ITEM_VIEWS.show_model_form, name="items_form"),
     path(
-        "item-create/", ITEM_VIEWS.create_or_update_model_instance, name="item_create"
+        "items-create/", ITEM_VIEWS.create_or_update_model_instance, name="items_create"
     ),
     path("items/", ITEM_VIEWS.get_all_instances, name="items"),
-    path("items/delete/<int:id>/", ITEM_VIEWS.delete_obj_instance, name="delete_item"),
-    path("item/view/<int:id>/", ITEM_VIEWS.show_model_form, name="view_item"),
+    path("items/delete/<int:id>/", ITEM_VIEWS.delete_obj_instance, name="delete_items"),
+    path("items/view/<int:id>/", ITEM_VIEWS.show_model_form, name="view_items"),
     path(
-        "item/view/<int:id>/edit=<str:edit>",
+        "items/view/<int:id>/edit=<str:edit>",
         ITEM_VIEWS.show_model_form,
-        name="edit_item",
+        name="edit_items",
     ),
     path(
-        "item/view/<int:id>/field=<str:field>",
+        "items/view/<int:id>/field=<str:field>",
         ITEM_VIEWS.show_model_form,
-        name="item_dependencies",
+        name="items_relationships",
     ),
 ]

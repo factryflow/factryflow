@@ -5,7 +5,7 @@ from .views import CUSTOM_FIELD_VIEWS
 urlpatterns = [
     # custom field urls
     path(
-        "custom-field/new/",
+        "custom-fields/new/",
         CUSTOM_FIELD_VIEWS.show_model_form,
         name="custom_field_form",
     ),
@@ -16,17 +16,17 @@ urlpatterns = [
     ),
     path("custom-fields/", CUSTOM_FIELD_VIEWS.get_all_instances, name="custom_fields"),
     path(
-        "custom-field/delete/<int:id>/",
+        "custom-fields/delete/<int:id>/",
         CUSTOM_FIELD_VIEWS.delete_obj_instance,
         name="delete_custom_field",
     ),
     path(
-        "custom-field/view/<int:id>/",
+        "custom-fields/view/<int:id>/",
         CUSTOM_FIELD_VIEWS.show_model_form,
         name="view_custom_field",
     ),
     path(
-        "custom-field/view/<int:id>/edit=<str:edit>",
+        "custom-fields/view/<int:id>/edit=<str:edit>",
         CUSTOM_FIELD_VIEWS.show_model_form,
         name="edit_custom_field",
     ),
