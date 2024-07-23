@@ -303,7 +303,7 @@ def change_assignment_rule_priority(request, id: int, direction: str):
     max_order_count = AssigmentRule.objects.count() - 1
 
     response = HttpResponse(status=302)
-    response["Location"] = reverse("assigment_rule")
+    response["Location"] = reverse("assigment_rules")
 
     if direction not in ["up", "down"]:
         response = HttpResponse(status=400)
