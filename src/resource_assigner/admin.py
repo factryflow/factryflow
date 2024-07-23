@@ -1,4 +1,5 @@
 from django.contrib import admin
+from ordered_model.admin import OrderedModelAdmin
 
 from resource_assigner.models import (
     AssigmentRule,
@@ -27,12 +28,14 @@ class AssignmentConstraint(admin.ModelAdmin):
 
 
 @admin.register(AssigmentRule)
-class AssigmentRule(admin.ModelAdmin):
+class AssigmentRule(OrderedModelAdmin):
     list_display = [
         "name",
+        "order",
         "work_center",
         "created_at",
         "created_by",
+        "move_up_down_links",
     ]
     list_filter = ["work_center", "created_at", "created_by"]
     search_fields = ["name"]

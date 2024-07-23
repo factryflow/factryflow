@@ -70,7 +70,12 @@
                 <th scope="col"
                     class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
                 {% endfor %}
-                {% if show_actions %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
+                {% if show_actions %}
+                    <th scope="col" class="px-6 py-4">Actions</th>
+                    {% if ordered_model %}
+                        <th scope="col" class="px-6 py-4">Change Priority</th>
+                    {% endif %}
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -134,35 +139,58 @@
                 {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
                 {% if show_actions %}
                     <td class="flex items-center px-6 py-4">
-                    {% if user|can:'actions_rule[0]' %}
-                        <a href="{% url 'view_'|add:model_name id=row.0 %}">
-                        <button id="view-{{ row.0 }}"
-                            type="button"
-                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                            <img src="{% static 'images/visibility.svg' %}" alt="View" />
-                        </button>
-                        </a>
-                    {% endif %}
-                    {% if not view_only %}
-                        {% if user|can:'actions_rule[2]' %}
-                        <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
-                            <button id="edit-{{ row.0 }}"
+                        {% if user|can:'actions_rule[0]' %}
+                            <a href="{% url 'view_'|add:model_name id=row.0 %}">
+                            <button id="view-{{ row.0 }}"
                                 type="button"
                                 class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                <img src="{% static 'images/visibility.svg' %}" alt="View" />
                             </button>
-                        </a>
+                            </a>
                         {% endif %}
-                        {% if user|can:'actions_rule[3]' %}
-                        <button id="delete-{{ row.0 }}"
-                            type="button"
-                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
-                            @click="showModal = {{ row.0 }}">
-                            <img src="{% static 'images/delete.svg' %}" alt="Delete" />
-                        </button>
+                        {% if not view_only %}
+                            {% if user|can:'actions_rule[2]' %}
+                            <a href="{% url 'edit_'|add:model_name id=row.0 edit='true' %}">
+                                <button id="edit-{{ row.0 }}"
+                                    type="button"
+                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                </button>
+                            </a>
+                            {% endif %}
+                            {% if user|can:'actions_rule[3]' %}
+                            <button id="delete-{{ row.0 }}"
+                                type="button"
+                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
+                                @click="showModal = {{ row.0 }}">
+                                <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                            </button>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
                     </td>
+                    {% if ordered_model %}
+                        <td class="px-6 py-4">
+                            {% if user|can:'actions_rule[2]' %}
+                                <button id="move-up-{{ row.0 }}"
+                                    hx-post="{% url 'change_assignment_rule_priority' id=row.0 direction='up' %}"
+                                    hx-target="#all-{{ model_name }}s-table"
+                                    hx-swap="outerHTML"
+                                    type="button"
+                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                    <img src="{% static 'images/up-arrow.svg' %}" alt="Move Up" />
+                                </button>
+
+                                <button id="move-down-{{ row.0 }}"
+                                    hx-post="{% url 'change_assignment_rule_priority' id=row.0 direction='down' %}"
+                                    hx-target="#all-{{ model_name }}s-table"
+                                    hx-swap="outerHTML"
+                                    type="button"
+                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                    <img src="{% static 'images/down-arrow.svg' %}" alt="Move Down" />
+                                </button>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 {% endif %}
                 </tr>
             {% endfor %}
