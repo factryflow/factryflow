@@ -251,7 +251,7 @@
                     <li>
                         <div class="flex items-center">
                             <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                            <a href="/{{ model_name }}"
+                            <a href="{% url model_name %}"
                                 class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                         </div>
                     </li>

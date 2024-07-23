@@ -47,27 +47,17 @@ TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS = [
 
 TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
 
-TASK_RESOURCE_ASSIGNMENT_RELATION_HEADERS = [
-    "Resource Group",
-]
-
-TASK_RESOURCE_ASSIGNMENT_RELATION_FIELDS = {
-    "resource_group": ["resource_group", ["ID", "Resource Group Name"], ["id", "name"]],
-}
-
 TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW = CustomTableView(
     model=TaskResourceAssigment,
     model_name="task_resource_assigment",
     fields=TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS,
     headers=TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS,
     search_fields_list=TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS,
-    model_relation_headers=TASK_RESOURCE_ASSIGNMENT_RELATION_HEADERS,
-    model_relation_fields=TASK_RESOURCE_ASSIGNMENT_RELATION_FIELDS,
 )
 
 TASK_RESOURCE_ASSIGNMENT_VIEWS = CRUDView(
     model=TaskResourceAssigment,
-    model_name="task_resource_assigment",
+    model_name="task_resource_assigments",
     model_service=TaskResourceAssigmentService,
     model_form=TaskResourceAssigmentForm,
     model_table_view=TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW,
@@ -101,12 +91,12 @@ ASSIGMENT_RULE_TABLE_HEADERS = [
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
 ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
-    "ASSIGMENT_RULE_CRITERIA",
+    "RULE CRITERIA",
     "TASK",
 ]
 
 ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
-    "assigment_rule_criteria": [
+    "rule_criteria": [
         AssigmentRuleCriteria,
         "assigment_rule",
         ["ID", "field", "operator", "value"],
@@ -142,7 +132,7 @@ ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
 
 ASSIGMENT_RULE_VIEWS = CRUDView(
     model=AssigmentRule,
-    model_name="assigment_rule",
+    model_name="assigment_rules",
     model_service=AssigmentRuleService,
     model_form=AssigmentRuleForm,
     model_table_view=ASSIGMENT_RULE_TABLE_VIEW,
@@ -246,7 +236,7 @@ ASSIGNMENT_CONSTRAINT_TABLE_VIEW = CustomTableView(
 
 ASSIGNMENT_CONSTRAINT_VIEWS = CRUDView(
     model=AssignmentConstraint,
-    model_name="assignment_constraint",
+    model_name="assignment_constraints",
     model_service=AssignmentConstraintService,
     model_form=AssignmentConstraintForm,
     model_table_view=ASSIGNMENT_CONSTRAINT_TABLE_VIEW,
@@ -313,7 +303,7 @@ def change_assignment_rule_priority(request, id: int, direction: str):
     max_order_count = AssigmentRule.objects.count() - 1
 
     response = HttpResponse(status=302)
-    response["Location"] = reverse("assigment_rule")
+    response["Location"] = reverse("assigment_rules")
 
     if direction not in ["up", "down"]:
         response = HttpResponse(status=400)

@@ -80,7 +80,7 @@
           {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="/tasks" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependencys" %}
+          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependencies" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% with menu_item_id='workcenters' menu_item_name='WorkCenter' menu_item_url="/work-centers" %}
@@ -107,7 +107,7 @@
           {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='RG' menu_item_name='Resources Group' menu_item_url="/resource-pools" %}
+          {% with menu_item_id='RG' menu_item_name='Resources Group' menu_item_url="/resource-groups" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
@@ -121,13 +121,13 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4">
-          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly_shift_templates" %}
+          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly-shift-templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           <!-- {% with menu_item_id='WSTD' menu_item_name='Weekly Shift Template Details' menu_item_url="/weekly_shift_template_details" %}
             {% partial _dropdown_menu_item %}
           {% endwith %} -->
-          {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational_exceptions" %}
+          {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational-exceptions" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
