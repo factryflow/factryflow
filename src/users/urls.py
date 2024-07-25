@@ -10,12 +10,17 @@ app_name = "users"
 
 urlpatterns = [
     # users urls
-    path("users/new/", USER_VIEWS.show_model_form, name="users_form"),
+    path("users/new/", USER_VIEWS.show_create_form, name="users_form"),
     path("users/", USER_VIEWS.get_all_instances, name="list"),
     path(
-        "users/write/",
-        USER_VIEWS.create_or_update_model_instance,
-        name="users_write",
+        "users/create/",
+        USER_VIEWS.create_model_instance,
+        name="users_create",
+    ),
+    path(
+        "users/update/",
+        USER_VIEWS.update_model_instance,
+        name="users_update",
     ),
     path("users/view/<int:id>/", USER_VIEWS.show_model_form, name="view_users"),
     path(

@@ -1,35 +1,36 @@
 import pytest
-from django.contrib.auth.models import Permission
+from factories.user_factories import UserFactory
+from rolepermissions.roles import assign_role
 
 from users.models import User
 from users.services import UserService
 
-# @pytest.fixture
-# def resource_data():
-#     return {
-#         "name": "Resource 1",
-#         "external_id": "1",
-#         "resource_type": ResourceTypeChoices.OPERATOR,
-#         "users": UserFactory.create_batch(2),
-#         "weekly_shift_template": WeeklyShiftTemplateFactory(),
-#     }
+
+@pytest.fixture
+def user_data():
+    return {
+        "username": "test-username",
+        "password": "test-password",
+        "first_name": "FirstName",
+        "last_name": "LastName",
+        "groups": [],
+    }
 
 
-# @pytest.mark.django_db
-# def test_can_create_resource(resource_data):
-#     user = UserFactory()
+@pytest.mark.django_db
+def test_can_create_user(user_data):
+    user = UserFactory()
 
-#     resource = ResourceService(user=user).create(**resource_data)
+    new_user = UserService(user=user).create(**user_data)
 
-#     assert resource.name == resource_data["name"]
-#     assert resource.external_id == resource_data["external_id"]
-#     assert resource.users.count() == 2
+    assert new_user.username == user_data["username"]
+    assert User.objects.count() == 2
 
 
 @pytest.mark.django_db
 def test_can_change_password():
     user = User.objects.create_user(username="testuser", password="12345")
-    user.user_permissions.add(Permission.objects.get(codename="change_user"))
+    assign_role(user, "admin")
     user.save()
     user.refresh_from_db()
 
@@ -40,31 +41,25 @@ def test_can_change_password():
     assert user.check_password("new-password") is True
 
 
-# @pytest.mark.django_db
-# def test_can_update_relationships(resource_data):
-#     user = UserFactory()
+@pytest.mark.django_db
+def test_can_update_user(user_data):
+    user = UserFactory()
 
-#     resource = ResourceService(user=user).create(**resource_data)
+    user_service = UserService(user)
 
-#     new_weekly_shift_template = WeeklyShiftTemplateFactory()
+    new_user = user_service.create(**user_data)
 
-#     updated_resource = ResourceService(user=user).update(
-#         instance=resource,
-#         data={
-#             "weekly_shift_template": new_weekly_shift_template,
-#         },
-#     )
+    user_service.update(
+        new_user,
+        data={
+            "first_name": "first-name",
+            "last_name": "last-name",
+            "require_password_change": True,
+        },
+    )
 
-#     assert updated_resource.id == resource.id
-#     assert updated_resource.weekly_shift_template == new_weekly_shift_template
+    new_user.refresh_from_db()
 
-
-# @pytest.mark.django_db
-# def test_can_delete_resource(resource_data):
-#     user = UserFactory()
-
-#     resource = ResourceService(user=user).create(**resource_data)
-
-#     ResourceService(user=user).delete(instance=resource)
-
-#     assert Resource.objects.count() == 0
+    assert new_user.first_name == "first-name"
+    assert new_user.last_name == "last-name"
+    assert new_user.require_password_change is True

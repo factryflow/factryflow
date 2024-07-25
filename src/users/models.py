@@ -10,6 +10,7 @@ class User(AbstractUser):
     updated_by = models.ForeignKey(
         "self", on_delete=models.DO_NOTHING, blank=True, null=True
     )
+    require_password_change = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         user = kwargs.pop("user", None)
