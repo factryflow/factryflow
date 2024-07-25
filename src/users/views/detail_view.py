@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from users.forms.user import UserForm
+from users.forms.user import UserCreateForm, UserForm
 from users.models import User
 from users.services import UserService
 from users.views.table_view import USER_TABLE_VIEW
@@ -53,7 +53,7 @@ class UserDetailView:
         self.view_only = view_only
         self.model_name = model_name
         self.model_title = model_name.capitalize().replace("_", " ")
-        self.model_service = model_service
+        self.model_service = UserService
         self.model_form = model_form
         self.table_view = model_table_view
         self.model_type = model_type
@@ -148,6 +148,45 @@ class UserDetailView:
 
         return rows
 
+    def show_create_form(
+        self, request, id: int = None, edit: str = "", field: str = ""
+    ):
+        form_action_url = "/users/create/"
+
+        form = UserCreateForm()
+        button_text = "Create"
+        view_mode = False
+        form_label = "New User Details"
+        page_label = "New User"
+
+        context = {
+            "form": form,
+            "view_mode": view_mode,
+            "view_only": self.view_only,
+            "form_label": form_label,
+            "button_text": button_text,
+            "form_action_url": form_action_url,
+            "id": id if id else None,
+            "page_label": page_label,
+            "model_name": self.model_name,
+            "model_title": self.model_title,
+            "field_url": self.model_name,
+            "actions_rule": self.actions_rule,
+        }
+
+        if "HX-Request" in request.headers:
+            return render(
+                request,
+                f"{self.list_template_name}#partial-table-template",
+                context,
+            )
+
+        return render(
+            request,
+            self.detail_template_name,
+            context,
+        )
+
     def show_model_form(self, request, id: int = None, edit: str = "", field: str = ""):
         """
         View function to display a form for creating or editing a model instance.
@@ -161,7 +200,7 @@ class UserDetailView:
             The rendered response displaying the model form.
         """
         # Determine form action URL based on whether editing or creating
-        form_action_url = "/users/write/"
+        form_action_url = "/users/update/"
 
         # Process the form based on ID and edit mode
         instance_obj = get_object_or_404(self.model, id=id)
@@ -220,7 +259,63 @@ class UserDetailView:
         )
 
     # @require_http_methods('POST')
-    def create_or_update_model_instance(self, request, id: int = None):
+    def create_model_instance(self, request, id: int = None):
+        """
+        Handle POST request to create or update a model instance using Django form and service.
+
+        Args:
+            request: The HTTP request object.
+            id: The ID of the model instance (optional).
+
+        Returns:
+            The response indicating success or failure of the operation.
+        """
+
+        form = UserCreateForm(request.POST)
+
+        if len(form.errors) > 0:
+            errors = {f: e.get_json_data() for f, e in form.errors.items()}
+            for error in errors:
+                response = HttpResponse(status=400)
+                add_notification_headers(response, errors[error][0]["message"], "error")
+
+            return response
+
+        if form.is_valid():
+            # Extract data from the form
+            obj_data = form.cleaned_data
+
+            # Call the service function to create or update the instance
+            UserService(user=request.user).create(**obj_data)
+            message = "User created successfully!"
+
+            # Render the form with success message and handle HX-Request
+            form = UserCreateForm()
+
+            response = render(
+                request,
+                f"{self.detail_template_name}#partial-form",
+                {
+                    "form": form,
+                    "button_text": f"Add {self.model_title}",
+                    "form_label": f"{self.model_title} Details",
+                    "model_name": self.model_name,
+                    "model_title": self.model_title,
+                    "actions_rule": self.actions_rule,
+                },
+            )
+
+            if request.htmx:
+                headers = {"HX-Redirect": reverse("users:list")}
+                response = HttpResponse(status=204, headers=headers)
+                add_notification_headers(
+                    response,
+                    message,
+                    "success",
+                )
+                return response
+
+    def update_model_instance(self, request, id: int = None):
         """
         Handle POST request to create or update a model instance using Django form and service.
 
@@ -262,10 +357,11 @@ class UserDetailView:
                 message = f"{self.model_title} updated successfully!"
 
             except self.model.DoesNotExist:
-                del obj_data["id"]
-
-                self.model_service(user=request.user).create(**obj_data)
-                message = f"{self.model_title} created successfully!"
+                response = HttpResponse(status=404)
+                add_notification_headers(
+                    response, errors[error][0]["message"], "User not found"
+                )
+                return response
 
             # Render the form with success message and handle HX-Request
             form = self.model_form()

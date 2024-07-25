@@ -15,27 +15,23 @@ class UserService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
-    # TODO: Might be used with user invite feature
-    # def create(
-    #     self,
-    #     first_name,
-    #     last_name,
-    #     email
-    # ) -> User:
-    #     # check permissions for add user
-    #     if not self.permission_service.check_for_permission("add_user"):
-    #         raise PermissionDenied()
+    @transaction.atomic
+    def create(self, *args, **kwargs) -> User:
+        # check permissions for add user
+        if not self.permission_service.check_for_permission("add_user"):
+            raise PermissionDenied()
 
-    #     user = User.objects.create(
-    #         email=email,
-    #         first_name=first_name,
-    #         last_name=last_name
-    #     )
+        groups = kwargs.pop("groups", [])
 
-    #     user.full_clean()
-    #     user.save()
+        user = User(**kwargs)
 
-    #     return user
+        user.full_clean()
+        user.save()
+
+        user.groups.set(groups)
+        user.save()
+
+        return user
 
     @transaction.atomic
     def update(self, instance: User, data: dict) -> User:
@@ -43,7 +39,13 @@ class UserService:
         if not self.permission_service.check_for_permission("change_user"):
             raise PermissionDenied()
 
-        fields = ["first_name", "last_name", "groups", "is_active"]
+        fields = [
+            "first_name",
+            "last_name",
+            "groups",
+            "is_active",
+            "require_password_change",
+        ]
 
         user, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
@@ -53,9 +55,8 @@ class UserService:
 
     @transaction.atomic
     def change_password(self, data: dict) -> User:
-        # TODO: check permissions for update user
-        # if not self.permission_service.check_for_permission("change_user"):
-        #     raise PermissionDenied()
+        if not self.permission_service.check_for_permission("change_user"):
+            raise PermissionDenied()
 
         instance = self.user
         instance.set_password(data["new_password"])

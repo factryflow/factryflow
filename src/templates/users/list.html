@@ -122,9 +122,20 @@
                     </li>
                 </ol>
             </nav>
-            <div>
-                <h1 class="text-2xl font-semibold text-[#181C32] pb-5">User Management</h1>
+            <div class="flex justify-between items-center">
+                <div class="flex gap-2">
+                    <h1 class="text-2xl font-semibold text-[#181C32] pb-5">User Management</h1>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{% url 'users:users_form' %}"
+                       class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+                    User</a>
+                </div>
             </div>
+            {% comment %} <div class="flex">
+                <a href="{% url 'users:users_form' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+                User</a>
+            </div> {% endcomment %}
         </div>
     </div>
     <!-- Tabs -->

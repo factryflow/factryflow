@@ -43,10 +43,12 @@
                     </a>
                 {% endif %}
             {% else %}
-                <div class="flex">
-                    <a href="{% url 'users:admin_change_password' id=id %}"
-                       class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Change Password</a>
-                </div>
+                {% if id %}
+                    <div class="flex">
+                        <a href="{% url 'users:admin_change_password' id=id %}"
+                           class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Change Password</a>
+                    </div>
+                {% endif %}
                 {% if user|can:'actions_rule[1]' %}
                     <button type="submit"
                             class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
