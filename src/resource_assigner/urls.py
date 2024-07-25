@@ -52,6 +52,11 @@ urlpatterns = [
         name="assigment_rule_form",
     ),
     path(
+        "assigment-rules/new/<int:formset_count>",
+        ASSIGMENT_RULE_VIEWS.show_model_form,
+        name="assigment_rule_formset",
+    ),
+    path(
         "assigment_rule-create/",
         ASSIGMENT_RULE_VIEWS.create_or_update_model_instance,
         name="assigment_rule_create",

@@ -1,5 +1,5 @@
-from common.models import BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
+from common.models import BaseModel, BaseModelWithExtras
 from django.db import models
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup

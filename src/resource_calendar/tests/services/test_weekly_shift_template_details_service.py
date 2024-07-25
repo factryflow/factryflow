@@ -2,7 +2,7 @@ from datetime import time
 
 import pytest
 from django.core.exceptions import ValidationError
-from factories import UserFactory
+from factories import UserFactory, WeeklyShiftTemplateFactory
 
 from resource_calendar.services import WeeklyShiftTemplateDetailService
 
@@ -12,6 +12,7 @@ from resource_calendar.models import DaysOfWeek, WeeklyShiftTemplateDetail
 @pytest.fixture
 def detail_data():
     return {
+        "weekly_shift_template": WeeklyShiftTemplateFactory(),
         "day_of_week": DaysOfWeek.MONDAY.value,
         "start_time": "05:00",
         "end_time": "12:00",
@@ -53,6 +54,7 @@ def test_can_create_template_detail(detail_data):
     detail = WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
 
     assert detail.id is not None
+    assert detail.weekly_shift_template == detail_data["weekly_shift_template"]
     assert detail.day_of_week == detail_data["day_of_week"]
     assert detail.start_time == time(hour=5)
     assert detail.end_time == time(hour=12)
@@ -92,7 +94,11 @@ def test_start_time_after_end_time(detail_data):
 def test_can_create_bulk(multiple_detail_data):
     user = UserFactory()
 
-    WeeklyShiftTemplateDetailService(user=user).create_bulk(multiple_detail_data)
+    weekly_shift_template = WeeklyShiftTemplateFactory()
+
+    WeeklyShiftTemplateDetailService(user=user).create_bulk(
+        weekly_shift_template, multiple_detail_data
+    )
 
     assert WeeklyShiftTemplateDetail.objects.count() == len(multiple_detail_data)
 

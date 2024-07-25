@@ -15,6 +15,11 @@ urlpatterns = [
         name="weekly_shift_template_form",
     ),
     path(
+        "weekly_shift_templates/new/<int:formset_count>",
+        WEEKLY_SHIFT_TEMPLATE_VIEWS.show_model_form,
+        name="weekly_shift_template_formset",
+    ),
+    path(
         "weekly_shift_template-create/",
         WEEKLY_SHIFT_TEMPLATE_VIEWS.create_or_update_model_instance,
         name="weekly_shift_template_create",

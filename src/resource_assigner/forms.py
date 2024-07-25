@@ -139,20 +139,33 @@ class AssigmentRuleCriteriaForm(forms.ModelForm):
                     "Task", "job_manager", ["item", "task_type", "job", "work_center"]
                 ),
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 },
             ),
             "operator": forms.Select(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
             "value": forms.TextInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "mb-5 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
         }
+
+
+# ------------------------------------------------------------------------------
+# AssigmentRuleCriteria, AssigmentRule model formset
+# ------------------------------------------------------------------------------
+
+AssigmentRuleCriteriaFormSet = forms.inlineformset_factory(
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    form=AssigmentRuleCriteriaForm,
+    extra=2,
+    can_delete=False,
+)
 
 
 # ------------------------------------------------------------------------------
