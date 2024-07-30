@@ -9,13 +9,21 @@ def get_current_user_role(user):
     """
     Returns the role of the current user.
 
-    Parameters:
-    - user: The user object for which to retrieve the role.
+    Args:
+        user (User): The user object for which to retrieve the role.
 
     Returns:
-    - The name of the user's role, or None if the user has no roles.
+        str: The name of the user's role, or "Normal User" if the user has no roles.
     """
-    roles = get_user_roles(user)
-    if roles:
-        return roles[0].name
-    return None
+    user_role = "Normal"
+
+    if user.is_superuser:
+        user_role = "Super Admin"
+    elif user.is_staff:
+        user_role = "Staff"
+    else:
+        roles = get_user_roles(user)
+        if roles:
+            user_role = roles[0].name
+
+    return user_role
