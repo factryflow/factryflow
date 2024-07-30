@@ -1,5 +1,6 @@
 {% load static %}
 {% load partials %}
+{% load user_role %}
 
 {% partialdef _menu_item %}
 <li>
@@ -17,17 +18,17 @@
 {% partialdef _dropdown_menu_item %}
   <li x-cloak>
     <a href="{{ menu_item_url }}"
-       class="flex py-2 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
-       x-data="{isHovered:false}"
-       @click="active='{{ menu_item_id }}'"
-       x-on:mouseover="isHovered = true"
-       x-on:mouseleave="isHovered = false"
-       :class="{'text-[#023E8A]  custom-filter': active == '{{ menu_item_id }}' || isHovered}">
+      class="flex py-2 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
+      x-data="{isHovered:false}"
+      @click="active='{{ menu_item_id }}'"
+      x-on:mouseover="isHovered = true"
+      x-on:mouseleave="isHovered = false"
+      :class="{'text-[#023E8A]  custom-filter': active == '{{ menu_item_id }}' || isHovered}">
       <img class="h-2 w-2"
-           :class="{ 'h-2.5 w-2.5': isHovered || active == '{{ menu_item_id }}' }"
-           src="{% static 'images/dot.svg' %}" />
+          :class="{ 'h-2.5 w-2.5': isHovered || active == '{{ menu_item_id }}' }"
+          src="{% static 'images/dot.svg' %}" />
       <span class="ml-4" :class="$store.sidebar.full ? 'block' : 'hidden'">{{ menu_item_name }}</span>
-    </a>
+  </a>
   </li>
 {% endpartialdef %}
 
@@ -45,14 +46,34 @@
       <span class="ml-4">{{ menu_item_name }}</span>
     </div>
     <img class="h-6 w-6 ml-auto"
-         class="pt-2.5"
-         :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/down-arrow.svg' %}'" />
+        class="pt-2.5"
+        :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/down-arrow.svg' %}'" />
   </button>
 {% endpartialdef %}
 
 <div class="container overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-auto"
-     x-cloak>
-  <div class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer">
+    x-cloak>
+    <div class="p-3 mt-4 flex items-left rounded-md duration-300 cursor-pointer md:hidden bg-white shadow-sm border-b border-gray-300">
+      <!-- User details Mobile menu -->
+      <div class="inline-flex items-center bg-[#181c320d] py-3 px-4 rounded-full">
+        <h1 class="text-base font-semibold text-[#2884EF]">
+          {% if user.first_name %}
+            {{ user.first_name.0 }}
+          {% elif user.last_name %}
+            {{ user.last_name.0 }}
+          {% else %}
+            {{ user.username.0 }}
+          {% endif %}
+        </h1>
+      </div>
+      <div class="ml-3">
+        <span class="block text-sm font-medium text-gray-900 truncate">{{ user.first_name }} - {% get_current_user_role user %}</span>
+        <p class="text-xs text-gray-600 truncate">{{ user.email }}</p>
+      </div>
+    </div>
+
+  <div class="p-2.5 mt-3 flex items-left rounded-md duration-300 cursor-pointer">
+    
     <!-- Sidebar content (links, icons, etc.) -->
     <div class="text-[#A1A5B7] ml-2">
       <h1 class="flex leading-5 font-medium uppercase">Management</h1>
@@ -64,7 +85,6 @@
       {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' %}
         {% partial _menu_item %}
       {% endwith %}
-
 
       {% comment %} Production Menu {% endcomment %}
       <div x-data="dropdown">
@@ -94,7 +114,6 @@
           {% endwith %}
         </ul>
       </div>
-
 
       {% comment %} Resource Management Menu {% endcomment %}
       <div x-data="dropdown">
@@ -205,12 +224,12 @@
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
       {% partial _menu_item %}
       {% endwith %}
-       {% comment %} operator menu {% endcomment %}
-       {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
-       {% partial _menu_item %}
-       {% endwith %}
+      {% comment %} operator menu {% endcomment %}
+      {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
+      {% partial _menu_item %}
+      {% endwith %}
       {% comment %} Logout {% endcomment %}
-      {% with menu_item_id='logout' menu_item_icon='images/Dashboard.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %} 
+      {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %} 
       {% partial _menu_item %}
       {% endwith %}
     </ul>
