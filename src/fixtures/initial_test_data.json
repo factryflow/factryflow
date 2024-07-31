@@ -342,6 +342,76 @@
         }
     },
     {
+        "model": "job_manager.dependencytype",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.407Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_1",
+            "notes": "Dependency type 1 notes",
+            "name": "DEPENDENCY_TYPE_1"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.407Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_2",
+            "notes": "Dependency type 2 notes",
+            "name": "DEPENDENCY_TYPE_2"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 3,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.408Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_3",
+            "notes": "Dependency type 3 notes",
+            "name": "DEPENDENCY_TYPE_3"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 4,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.408Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_4",
+            "notes": "Dependency type 4 notes",
+            "name": "DEPENDENCY_TYPE_4"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 5,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.408Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_5",
+            "notes": "Dependency type 5 notes",
+            "name": "DEPENDENCY_TYPE_5"
+        }
+    },
+    {
         "model": "resource_calendar.weeklyshifttemplate",
         "pk": 1,
         "fields": {

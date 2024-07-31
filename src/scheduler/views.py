@@ -57,21 +57,25 @@ SCHEDULER_MODEL_RELATION_HEADERS = [
 
 SCHEDULER_MODEL_RELATION_FIELDS = {
     # model_name: [model, related_name, [headers], [fields]]
-    "resource_allocations": [
-        ResourceAllocations,
-        "run_id",
-        ["Resource", "Task"],
-        ["resource", "task"],
-    ],
-    "resource_intervals": [
-        ResourceIntervals,
-        "run_id",
-        ["Resource", "Task", "Interval Start", "Interval End"],
-        ["resource", "task", "interval_start", "interval_end"],
-    ],
-    "history": [
-        "history",
-        [
+    "resource_allocations": {
+        "model": ResourceAllocations,
+        "model_name": "resource_allocations",
+        "related_name": "run_id",
+        "headers": ["Resource", "Task"],
+        "fields": ["resource", "task"],
+    },
+    "resource_intervals": {
+        "model": ResourceIntervals,
+        "model_name": "resource_intervals",
+        "related_name": "run_id",
+        "headers": ["Resource", "Task", "Interval Start", "Interval End"],
+        "fields": ["resource", "task", "interval_start", "interval_end"],
+    },
+    "history": {
+        "model": "history",
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Resource",
             "Interval Start",
@@ -80,7 +84,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
             "History Type",
             "History User",
         ],
-        [
+        "fields": [
             "id",
             "resource",
             "interval_start",
@@ -89,7 +93,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
             "history_type",
             "history_user",
         ],
-    ],
+    },
 }
 
 
@@ -140,9 +144,10 @@ RESOURCE_INTERVALS_TABLE_HEADERS = [
 RESOURCE_INTERVALS_MODELS_RELATION_HEADERS = ["HISTORY"]
 
 RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
-    "history": [
-        "history",
-        [
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Resource",
             "Task",
@@ -152,7 +157,7 @@ RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
             "History Type",
             "History User",
         ],
-        [
+        "fields": [
             "id",
             "resource",
             "task",
@@ -162,7 +167,7 @@ RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
             "history_type",
             "history_user",
         ],
-    ],
+    },
 }
 
 ResourceIntervalsView = CustomTableView(

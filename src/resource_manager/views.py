@@ -32,11 +32,12 @@ RESOURCE_TABLE_HEADERS = [
 
 RESOURCE_MODEL_RELATION_HEADERS = ["HISTORY"]
 RESOURCE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "History Date", "History Type", "History User"],
-        ["id", "history_date", "history_type", "history_user"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "fields": ["id", "history_date", "history_type", "history_user"],
+        "headers": ["ID", "History Date", "History Type", "History User"],
+    }
 }
 
 ResourceTableView = CustomTableView(
@@ -54,7 +55,7 @@ ResourceTableView = CustomTableView(
 
 RESOURCE_VIEWS = CRUDView(
     model=Resource,
-    model_name="resource",
+    model_name="resources",
     model_service=ResourceService,
     model_form=ResourceForm,
     model_table_view=ResourceTableView,
@@ -75,13 +76,20 @@ RESOURCE_Group_TABLE_HEADERS = [
 ]
 
 
-RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "Work Units"]
+RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "History"]
 RESOURCE_Group_MODEL_RELATION_FIELDS = {
-    "resources": [
-        "resources",
-        ["ID", "Resource Name", "Resource Type", "Weekly Shift Template"],
-        ["id", "name", "resource_type", "weekly_shift_template"],
-    ],
+    "resources": {
+        "model_name": "resources",
+        "related_name": "resources",
+        "fields": ["id", "name", "resource_type", "weekly_shift_template"],
+        "headers": ["ID", "Resource Name", "Resource Type", "Weekly Shift Template"],
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "fields": ["id", "history_date", "history_type", "history_user"],
+        "headers": ["ID", "History Date", "History Type", "History User"],
+    },
 }
 
 ResourceGroupTableView = CustomTableView(
@@ -96,7 +104,7 @@ ResourceGroupTableView = CustomTableView(
 
 RESOURCE_GROUP_VIEWS = CRUDView(
     model=ResourceGroup,
-    model_name="resource_pool",
+    model_name="resource_groups",
     model_service=ResourceGroupService,
     model_form=ResourceGroupForm,
     model_table_view=ResourceGroupTableView,

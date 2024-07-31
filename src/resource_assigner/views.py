@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from common.views import CRUDView, CustomTableView
 from common.utils.views import add_notification_headers
@@ -45,27 +47,17 @@ TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS = [
 
 TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
 
-TASK_RESOURCE_ASSIGNMENT_RELATION_HEADERS = [
-    "Resource Group",
-]
-
-TASK_RESOURCE_ASSIGNMENT_RELATION_FIELDS = {
-    "resource_group": ["resource_group", ["ID", "Resource Group Name"], ["id", "name"]],
-}
-
 TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW = CustomTableView(
     model=TaskResourceAssigment,
     model_name="task_resource_assigment",
     fields=TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS,
     headers=TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS,
     search_fields_list=TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS,
-    model_relation_headers=TASK_RESOURCE_ASSIGNMENT_RELATION_HEADERS,
-    model_relation_fields=TASK_RESOURCE_ASSIGNMENT_RELATION_FIELDS,
 )
 
 TASK_RESOURCE_ASSIGNMENT_VIEWS = CRUDView(
     model=TaskResourceAssigment,
-    model_name="task_resource_assigment",
+    model_name="task_resource_assigments",
     model_service=TaskResourceAssigmentService,
     model_form=TaskResourceAssigmentForm,
     model_table_view=TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW,
@@ -77,6 +69,7 @@ TASK_RESOURCE_ASSIGNMENT_VIEWS = CRUDView(
 
 ASSIGMENT_RULE_MODEL_FIELDS = [
     "id",
+    "order",
     "notes",
     "name",
     "description",
@@ -85,6 +78,7 @@ ASSIGMENT_RULE_MODEL_FIELDS = [
 ]
 ASSIGMENT_RULE_TABLE_HEADERS = [
     "ID",
+    "Priority",
     "Notes",
     "Name",
     "Description",
@@ -95,23 +89,32 @@ ASSIGMENT_RULE_TABLE_HEADERS = [
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 
 ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
-    "ASSIGMENT_RULE_CRITERIA",
+    "RULE CRITERIA",
     "TASK",
+    "HISTORY",
 ]
 
 ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
-    "assigment_rule_criteria": [
-        AssigmentRuleCriteria,
-        "assigment_rule",
-        ["ID", "field", "operator", "value"],
-        ["id", "field", "operator", "value"],
-    ],
-    "task": [
-        TaskRuleAssignment,
-        "assigment_rule",
-        ["ID", "Task", "Rule Applied"],
-        ["id", "task", "is_applied"],
-    ],
+    "rule_criteria": {
+        "model": AssigmentRuleCriteria,
+        "model_name": "assigment_rule_criteria",
+        "related_name": "assigment_rule",
+        "headers": ["ID", "field", "operator", "value"],
+        "fields": ["id", "field", "operator", "value"],
+    },
+    "task": {
+        "model": TaskRuleAssignment,
+        "model_name": "task_rule_assignment",
+        "related_name": "assigment_rule",
+        "headers": ["ID", "Task", "Rule Applied"],
+        "fields": ["id", "task", "is_applied"],
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "History Date", "History Type", "History User"],
+        "fields": ["id", "history_date", "history_type", "history_user"],
+    },
 }
 
 ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS = ["field", "operator", "value"]
@@ -131,14 +134,16 @@ ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
     model_relation_headers=ASSIGMENT_RULE_MODEL_RELATION_HEADERS,
     model_relation_fields=ASSIGMENT_RULE_MODEL_RELATION_FIELDS,
     search_fields_list=ASSIGMENT_RULE_SEARCH_FIELDS,
+    order_by_field="order",
 )
 
 ASSIGMENT_RULE_VIEWS = CRUDView(
     model=AssigmentRule,
-    model_name="assigment_rule",
+    model_name="assigment_rules",
     model_service=AssigmentRuleService,
     model_form=AssigmentRuleForm,
     model_table_view=ASSIGMENT_RULE_TABLE_VIEW,
+    ordered_model=True,
     formset_options=ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS,
 )
 
@@ -219,10 +224,22 @@ ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS = [
 
 ASSIGNMENT_CONSTRAINT_RELATION_HEADERS = [
     "Resources",
+    "History",
 ]
 
 ASSIGNMENT_CONSTRAINT_RELATION_FIELDS = {
-    "resources": ["resources", ["ID", "Resource Name"], ["id", "name"]],
+    "resources": {
+        "model_name": "resources",
+        "related_name": "resources",
+        "headers": ["ID", "Resource Name"],
+        "fields": ["id", "name"],
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "History Date", "History Type", "History User"],
+        "fields": ["id", "history_date", "history_type", "history_user"],
+    },
 }
 
 
@@ -238,7 +255,7 @@ ASSIGNMENT_CONSTRAINT_TABLE_VIEW = CustomTableView(
 
 ASSIGNMENT_CONSTRAINT_VIEWS = CRUDView(
     model=AssignmentConstraint,
-    model_name="assignment_constraint",
+    model_name="assignment_constraints",
     model_service=AssignmentConstraintService,
     model_form=AssignmentConstraintForm,
     model_table_view=ASSIGNMENT_CONSTRAINT_TABLE_VIEW,
@@ -281,4 +298,64 @@ def match_rules_with_tasks(request):
             str(e),
             "error",
         )
+        return response
+
+
+# ------------------------------------------------------------------------------
+# Ordered Model APIs to manage the order of the rules based on the work center
+# ------------------------------------------------------------------------------
+
+
+def change_assignment_rule_priority(request, id: int, direction: str):
+    """
+    Move the rule up or down in the order.
+
+    Parameters:
+    -----------
+        id: int - The id of the rule.
+        direction: str - The direction to move the rule. It can be either "up" or "down".
+
+    Returns:
+    --------
+        dict: A dictionary containing the message of the operation.
+    """
+    max_order_count = AssigmentRule.objects.count() - 1
+
+    response = HttpResponse(status=302)
+    response["Location"] = reverse("assigment_rules")
+
+    if direction not in ["up", "down"]:
+        response = HttpResponse(status=400)
+        message = "Invalid direction. Use 'up' or 'down'."
+        add_notification_headers(response, message, "error")
+        return response
+
+    try:
+        rule = AssigmentRule.objects.get(id=id)
+
+        if direction == "up" and rule.order > 0:
+            rule.up()
+
+        elif direction == "down" and rule.order < max_order_count:
+            rule.down()
+
+        if request.htmx:
+            response = render(
+                request,
+                "objects/list.html#all-assigment_rules-table",
+                {"rows": AssigmentRule.objects.all().order_by("order")},
+            )
+            return response
+
+        return response
+
+    except AssigmentRule.DoesNotExist:
+        response = HttpResponse(status=404)
+        message = "Rule not found."
+        add_notification_headers(response, message, "error")
+        return response
+
+    except Exception as e:
+        message = f"An error occurred: {str(e)}"
+        add_notification_headers(response, message, "error")
         return response
