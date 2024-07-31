@@ -15,16 +15,35 @@
     {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
     <div class="md:flex md:flex-wrap -mx-3">
         {% for field in form %}
-            <div class="md:w-1/2 px-3 mb-6">
-                <label for="{{ field.id_for_label }}"
-                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                    {{ field.label }}
-                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                </label>
-                {{ field }}
-                {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-                {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-            </div>
+            {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="md:w-1/2 px-3 mb-6 mt-6">
+                    <div class="flex items-center">
+                        <div class="w-1/8">
+                            {{ field }}
+                        </div>
+                        <div class="w-1/2 p-3 pt-5">
+                            <label for="{{ field.id_for_label }}"
+                                class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                    </div>
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% else %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <label for="{{ field.id_for_label }}"
+                        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
             {% if forloop.counter|divisibleby:2 and not forloop.last %}
             </div>
             <div class="md:flex md:flex-wrap -mx-3">

@@ -55,7 +55,7 @@ class CustomFieldForm(forms.ModelForm):
             ),
             "is_required": forms.CheckboxInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-1/4 p-3"
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-1/8 p-3"
                 }
             ),
         }

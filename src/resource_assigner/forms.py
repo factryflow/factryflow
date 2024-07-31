@@ -90,7 +90,7 @@ class AssigmentRuleForm(forms.ModelForm):
             ),
             "is_active": forms.CheckboxInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3",
                 }
             ),
             "notes": forms.Textarea(
@@ -220,7 +220,7 @@ class AssignmentConstraintForm(forms.ModelForm):
             ),
             "use_all_resources": forms.CheckboxInput(
                 attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3 bg-inherit"
                 }
             ),
         }
