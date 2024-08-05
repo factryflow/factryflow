@@ -98,7 +98,7 @@
 {% block content %}
     <!-- Breadcrumb -->
     <div class="flex justify-between items-center" x-cloak>
-        <div class="flex-wrap">
+        <div class="w-full">
             <nav class="flex pb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
@@ -122,20 +122,20 @@
                     </li>
                 </ol>
             </nav>
-            <div class="flex justify-between items-center">
-                <div class="flex gap-2">
+            <div class="flex gap-2">
+                <div class="flex-1">
                     <h1 class="text-2xl font-semibold text-[#181C32] pb-5">User Management</h1>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex-2">
                     <a href="{% url 'users:users_form' %}"
                        class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
                     User</a>
                 </div>
             </div>
-            {% comment %} <div class="flex">
+            <!-- {% comment %} <div class="flex">
                 <a href="{% url 'users:users_form' %}" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
                 User</a>
-            </div> {% endcomment %}
+            </div> {% endcomment %} -->
         </div>
     </div>
     <!-- Tabs -->
