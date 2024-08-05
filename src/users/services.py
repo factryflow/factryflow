@@ -1,3 +1,5 @@
+import re
+
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.core.exceptions import PermissionDenied
@@ -15,6 +17,17 @@ class UserService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
+    @staticmethod
+    def _string_is_email(email_string):
+        # Check if string is a valid email address.
+        regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
+
+        if re.fullmatch(regex, email_string):
+            return True
+
+        else:
+            return False
+
     @transaction.atomic
     def create(self, *args, **kwargs) -> User:
         # check permissions for add user
@@ -22,6 +35,10 @@ class UserService:
             raise PermissionDenied()
 
         groups = kwargs.pop("groups", [])
+        username = kwargs["username"]
+
+        if self._string_is_email(username) and not kwargs.get("email", None):
+            kwargs["email"] = username
 
         user = User(**kwargs)
 
@@ -60,6 +77,7 @@ class UserService:
 
         instance = self.user
         instance.set_password(data["new_password"])
+        instance.require_password_change = False
         instance.save()
 
         return instance

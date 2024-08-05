@@ -24,6 +24,19 @@ def test_can_create_user(user_data):
     new_user = UserService(user=user).create(**user_data)
 
     assert new_user.username == user_data["username"]
+    assert new_user.email == ""
+    assert User.objects.count() == 2
+
+
+@pytest.mark.django_db
+def test_email_auto_populates(user_data):
+    user = UserFactory()
+
+    user_data["username"] = "test@username.com"
+    new_user = UserService(user=user).create(**user_data)
+
+    assert new_user.username == "test@username.com"
+    assert new_user.email == "test@username.com"
     assert User.objects.count() == 2
 
 
