@@ -23,7 +23,7 @@ def template_data():
     data = {
         "name": "Test Template",
         "description": "Test Description",
-        "details": [
+        "weekly_shift_template_details": [
             {
                 "day_of_week": DaysOfWeek.TUESDAY.value,
                 "start_time": "08:00",
@@ -68,7 +68,7 @@ def test_can_create_template(template_data):
     assert template.id is not None
     assert template.name == template_data["name"]
     assert template.weekly_shift_template_details.count() == len(
-        template_data["details"]
+        template_data["weekly_shift_template_details"]
     )
     assert template.weekly_shift_template_details.first().day_of_week == "Tuesday"
 
@@ -121,7 +121,7 @@ def test_can_update_template(template_data_without_details):
 def test_create_throws_value_error_on_missing_detail_fields(template_data):
     user = UserFactory()
 
-    template_data["details"][0].pop("start_time")
+    template_data["weekly_shift_template_details"][0].pop("start_time")
     with pytest.raises(ValueError):
         WeeklyShiftTemplateService(user=user).create(**template_data)
 
@@ -130,10 +130,10 @@ def test_create_throws_value_error_on_missing_detail_fields(template_data):
 def test_create_throws_validation_error_on_overlapping_details(template_data):
     user = UserFactory()
 
-    template_data["details"][0]["day_of_week"] = "Tuesday"
-    template_data["details"][0]["start_time"] = "07:00"
-    template_data["details"][1]["day_of_week"] = "Tuseday"
-    template_data["details"][1]["start_time"] = "07:00"
+    template_data["weekly_shift_template_details"][0]["day_of_week"] = "Tuesday"
+    template_data["weekly_shift_template_details"][0]["start_time"] = "07:00"
+    template_data["weekly_shift_template_details"][1]["day_of_week"] = "Tuseday"
+    template_data["weekly_shift_template_details"][1]["start_time"] = "07:00"
 
     with pytest.raises(ValidationError):
         WeeklyShiftTemplateService(user=user).create(**template_data)

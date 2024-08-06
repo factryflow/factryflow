@@ -6,7 +6,7 @@ from resource_assigner.models import (
     AssigmentRule,
     AssigmentRuleCriteria,
     Operator,
-    TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 
 
@@ -90,8 +90,18 @@ def check_criteria_match(task, criteria):
     operator = criteria.operator
     value = criteria.value
 
-    # get task value for the field
-    task_value = str(getattr(task, field))
+    # get the value of the field in the task
+    if "." in field:
+        # get the related object and field (foreign key field)
+        related_object, field = field.split(".")
+        task_value = (
+            str(getattr(getattr(task, related_object), field))
+            if hasattr(getattr(task, related_object), field)
+            else None
+        )
+    else:
+        # get the value of the field in the task
+        task_value = str(getattr(task, field)) if hasattr(task, field) else None
 
     # check if the task value matches the criteria value
     if operator == Operator.EQUALS:
@@ -118,31 +128,39 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
 
         for task in tasks:
             # check if task is already matched with another rules
-            if not TaskResourceAssigment.objects.filter(task=task).exists():
-                # get all assignment rules
-                assignment_rules = AssigmentRule.objects.filter(
-                    work_center=task.work_center
-                )
+            # get all assignment rules
+            assignment_rules = AssigmentRule.objects.filter(
+                work_center=task.work_center, is_active=True
+            )
 
-                if assignment_rules:
-                    for rule in assignment_rules:
-                        # get all rule criteria for the rule
-                        rule_criteria = AssigmentRuleCriteria.objects.filter(
-                            assigment_rule=rule
+            if assignment_rules:
+                for rule in assignment_rules:
+                    # get all rule criteria for the rule
+                    rule_criteria = AssigmentRuleCriteria.objects.filter(
+                        assigment_rule=rule
+                    )
+
+                    criteria_match = False
+                    if rule_criteria:
+                        # check if any rule criteria matches the task
+                        for criteria in rule_criteria:
+                            if check_criteria_match(task, criteria):
+                                criteria_match = True
+                                matching_task_count += 1
+
+                    if criteria_match:
+                        # if criteria match store it in the TaskRuleAssignment model
+                        TaskRuleAssignment.objects.create(
+                            task=task,
+                            assigment_rule=rule,
                         )
-
-                        if rule_criteria:
-                            # check if any rule criteria matches the task
-                            for criteria in rule_criteria:
-                                if check_criteria_match(task, criteria):
-                                    # if criteria match store it in the TaskResourceAssigment model
-                                    TaskResourceAssigment.objects.create(
-                                        task=task,
-                                        assigment_rule=rule,
-                                    )
-
-                                    matching_task_count += 1
-                                    break
+                    else:
+                        # if not criteria match, delete the TaskRuleAssignment model instance if exists
+                        task_rule_assignment = TaskRuleAssignment.objects.filter(
+                            task=task, assigment_rule=rule
+                        )
+                        if task_rule_assignment.exists():
+                            task_rule_assignment.delete()
 
             result["message"] = (
                 f"Matched {matching_task_count} tasks with assignment rules"

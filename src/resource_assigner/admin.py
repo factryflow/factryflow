@@ -1,9 +1,11 @@
 from django.contrib import admin
+from ordered_model.admin import OrderedModelAdmin
 
 from resource_assigner.models import (
     AssigmentRule,
     AssignmentConstraint,
     TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 
 
@@ -26,12 +28,14 @@ class AssignmentConstraint(admin.ModelAdmin):
 
 
 @admin.register(AssigmentRule)
-class AssigmentRule(admin.ModelAdmin):
+class AssigmentRule(OrderedModelAdmin):
     list_display = [
         "name",
+        "order",
         "work_center",
         "created_at",
         "created_by",
+        "move_up_down_links",
     ]
     list_filter = ["work_center", "created_at", "created_by"]
     search_fields = ["name"]
@@ -50,3 +54,9 @@ class TaskResourceAssigment(admin.ModelAdmin):
         "created_by",
     ]
     search_fields = ["task"]
+
+
+@admin.register(TaskRuleAssignment)
+class TaskRuleAssignment(admin.ModelAdmin):
+    list_display = ["task", "assigment_rule", "is_applied"]
+    list_filter = ["is_applied"]

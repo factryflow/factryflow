@@ -1,5 +1,6 @@
 {% load static %}
 {% load partials %}
+{% load user_role %}
 {% partialdef _menu_item %}
 <li>
   <a href="{{ menu_item_url }}"
@@ -48,12 +49,30 @@
   </div>
   <img class="h-6 w-6 ml-auto"
        class="pt-2.5"
-       :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/DownArrow.svg' %}'" />
+       :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/down-arrow.svg' %}'" />
 </button>
 {% endpartialdef %}
 <div class="container overflow-x-hidden sidebar z-20 lg:z-0 fixed top-16 bottom-0 lg:left-0 left-[-300px] duration-1000 p-2 w-[300px] overflow-y-auto text-center bg-white h-auto"
      x-cloak>
-  <div class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer">
+  <div class="p-3 mt-4 flex items-left rounded-md duration-300 cursor-pointer md:hidden bg-white shadow-sm border-b border-gray-300">
+    <!-- User details Mobile menu -->
+    <div class="inline-flex items-center bg-[#181c320d] py-3 px-4 rounded-full">
+      <h1 class="text-base font-semibold text-[#2884EF]">
+        {% if user.first_name %}
+          {{ user.first_name.0 }}
+        {% elif user.last_name %}
+          {{ user.last_name.0 }}
+        {% else %}
+          {{ user.username.0 }}
+        {% endif %}
+      </h1>
+    </div>
+    <div class="ml-3">
+      <span class="block text-sm font-medium text-gray-900 truncate">{{ user.first_name }} - {% get_current_user_role user %}</span>
+      <p class="text-xs text-gray-600 truncate">{{ user.email }}</p>
+    </div>
+  </div>
+  <div class="p-2.5 mt-3 flex items-left rounded-md duration-300 cursor-pointer">
     <!-- Sidebar content (links, icons, etc.) -->
     <div class="text-[#A1A5B7] ml-2">
       <h1 class="flex leading-5 font-medium uppercase">Management</h1>
@@ -79,7 +98,7 @@
           {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="/tasks" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependencys" %}
+          {% with menu_item_id='dependencys' menu_item_name='Dependency' menu_item_url="/dependencies" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% with menu_item_id='workcenters' menu_item_name='WorkCenter' menu_item_url="/work-centers" %}
@@ -104,7 +123,7 @@
           {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='RG' menu_item_name='Resources Group' menu_item_url="/resource-pools" %}
+          {% with menu_item_id='RG' menu_item_name='Resources Group' menu_item_url="/resource-groups" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
@@ -117,13 +136,13 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4">
-          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly_shift_templates" %}
+          {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly-shift-templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='WSTD' menu_item_name='Weekly Shift Template Details' menu_item_url="/weekly_shift_template_details" %}
+          <!-- {% with menu_item_id='WSTD' menu_item_name='Weekly Shift Template Details' menu_item_url="/weekly_shift_template_details" %}
             {% partial _dropdown_menu_item %}
-          {% endwith %}
-          {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational_exceptions" %}
+          {% endwith %} -->
+          {% with menu_item_id='OE' menu_item_name='Operational Exception' menu_item_url="/operational-exceptions" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
@@ -142,9 +161,9 @@
           {% with menu_item_id='AR' menu_item_name='Assignment Rule' menu_item_url="/assigment-rules" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='ARC' menu_item_name='Assignment Rule Criteria' menu_item_url="/assigment-rule-criteria" %}
+          <!-- {% with menu_item_id='ARC' menu_item_name='Assignment Rule Criteria' menu_item_url="/assigment-rule-criteria" %}
             {% partial _dropdown_menu_item %}
-          {% endwith %}
+          {% endwith %} -->
           {% with menu_item_id='AC' menu_item_name='Assignment Constraints' menu_item_url="/assignment-constraints" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -214,8 +233,12 @@
       {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
         {% partial _menu_item %}
       {% endwith %}
+      {% comment %} operator menu {% endcomment %}
+      {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
+        {% partial _menu_item %}
+      {% endwith %}
       {% comment %} Logout {% endcomment %}
-      {% with menu_item_id='logout' menu_item_icon='images/Dashboard.svg' menu_item_name='Logout' menu_item_url='/accounts/logout/' %}
+      {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %}
         {% partial _menu_item %}
       {% endwith %}
     </ul>
