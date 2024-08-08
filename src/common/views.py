@@ -1,13 +1,13 @@
 import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.forms import inlineformset_factory
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.contenttypes.models import ContentType
-from django.forms import inlineformset_factory
 
 from common.utils.views import (
     add_notification_headers,
@@ -18,7 +18,6 @@ from common.utils.views import (
 from .forms import CustomFieldForm
 from .models import CustomField, FieldType
 from .services import CustomFieldService
-
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -82,6 +81,12 @@ class CRUDView:
         # Dispatches the request to the appropriate view method.
         return super().dispatch(request, *args, **kwargs)
 
+    @staticmethod
+    def check_change_password(user):
+        if user.require_password_change:
+            return True
+        return False
+
     def get_custom_field_json_data(self, content_type, instance=None):
         # to get custom field json data
         data = []
@@ -116,6 +121,10 @@ class CRUDView:
         Returns:
             The rendered response displaying all instances.
         """
+
+        if self.check_change_password(request.user):
+            return redirect(reverse("users:change_password"))
+
         # Retrieve filtering and search parameters from the request
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
@@ -169,6 +178,9 @@ class CRUDView:
         Returns:
             The rendered response displaying the model form.
         """
+        if self.check_change_password(request.user):
+            return redirect(reverse("users:change_password"))
+
         # Determine form action URL based on whether editing or creating
         form_action_url = f"/{self.model_name.replace('_', '-').lower()}-create/"
 

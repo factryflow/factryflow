@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "django_extensions",
     "django_filters",
+    "invitations",
     "template_partials",
     "simple_history",
     "storages",
