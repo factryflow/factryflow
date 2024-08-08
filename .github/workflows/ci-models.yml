@@ -89,6 +89,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.prod
+          push: true
           context: .  
           tags: ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 
