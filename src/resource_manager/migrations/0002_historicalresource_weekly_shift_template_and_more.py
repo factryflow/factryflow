@@ -6,10 +6,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        (
-            "resource_calendar",
-            "0002_historicalweeklyshifttemplatedetail_weekly_shift_template_and_more",
-        ),
         ("resource_manager", "0001_initial"),
     ]
 
