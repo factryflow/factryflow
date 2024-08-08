@@ -49,6 +49,7 @@ jobs:
         run: |
           source venv/bin/activate
           python src/manage.py migrate
+          python src/manage.py sync_roles
         env:
           DJANGO_ENV: development
           DATABASE: sqlite3
