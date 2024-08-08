@@ -1,6 +1,8 @@
 # testing notebooks
 src/*.ipynb
 
+.secrets
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -2,9 +2,41 @@
 
 from common.views import CRUDView, CustomTableView
 
-from .forms import *
-from .models import *
-from .services import *
+from .forms import (
+    DependencyForm,
+    DependencyTypeForm,
+    ItemForm,
+    JobForm,
+    TaskForm,
+    TaskTypeForm,
+    WorkCenterForm,
+    JobTypeForm,
+)
+from .models import (
+    Dependency,
+    DependencyType,
+    Item,
+    Job,
+    Task,
+    TaskType,
+    WorkCenter,
+    JobType,
+    TaskStatusChoices,
+    JobStatusChoices,
+    DependencyStatusChoices,
+)
+from .services import (
+    DependencyService,
+    DependencyTypeService,
+    ItemService,
+    JobService,
+    TaskService,
+    TaskTypeService,
+    WorkCenterService,
+    JobTypeService,
+)
+
+from resource_assigner.models import TaskRuleAssignment
 
 
 # ------------------------------------------------------------------------------
@@ -36,7 +68,7 @@ WorkCenterTableView = CustomTableView(
 
 WORK_CENTER_VIEWS = CRUDView(
     model=WorkCenter,
-    model_name="work_center",
+    model_name="work_centers",
     model_service=WorkCenterService,
     model_form=WorkCenterForm,
     model_table_view=WorkCenterTableView,
@@ -73,7 +105,7 @@ JOB_TYPE_TABLE_VIEW = CustomTableView(
 
 JOB_TYPE_VIEWS = CRUDView(
     model=JobType,
-    model_name="job_type",
+    model_name="job_types",
     model_service=JobTypeService,
     model_form=JobTypeForm,
     model_table_view=JOB_TYPE_TABLE_VIEW,
@@ -202,7 +234,7 @@ JobTableView = CustomTableView(
 JOB_VIEWS = CRUDView(
     model=Job,
     model_type=JobType,
-    model_name="job",
+    model_name="jobs",
     model_service=JobService,
     model_form=JobForm,
     model_table_view=JobTableView,
@@ -241,7 +273,7 @@ TASK_TYPE_TABLE_VIEW = CustomTableView(
 
 TASK_TYPE_VIEWS = CRUDView(
     model=TaskType,
-    model_name="task_type",
+    model_name="task_types",
     model_service=TaskTypeService,
     model_form=TaskTypeForm,
     model_table_view=TASK_TYPE_TABLE_VIEW,
@@ -290,7 +322,7 @@ TASK_TABLE_HEADERS = [
     "Status",
 ]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "predecessors", "HISTORY"]
+TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "RULES"]
 TASK_MODEL_RELATION_FIELDS = {
     "dependencies": [
         "dependencies",
@@ -360,6 +392,12 @@ TASK_MODEL_RELATION_FIELDS = {
             "history_date",
         ],
     ],
+    "rules": [
+        TaskRuleAssignment,
+        "task",
+        ["ID", "Assignment Rule", "Is Applied"],
+        ["id", "assigment_rule", "is_applied"],
+    ],
 }
 
 
@@ -379,7 +417,7 @@ TaskTableView = CustomTableView(
 TASK_VIEWS = CRUDView(
     model=Task,
     model_type=TaskType,
-    model_name="task",
+    model_name="tasks",
     model_service=TaskService,
     model_form=TaskForm,
     model_table_view=TaskTableView,
@@ -416,7 +454,7 @@ DEPENDENCY_TYPE_TABLE_VIEW = CustomTableView(
 
 DEPENDENCY_TYPE_VIEWS = CRUDView(
     model=DependencyType,
-    model_name="dependency_type",
+    model_name="dependency_types",
     model_service=DependencyTypeService,
     model_form=DependencyTypeForm,
     model_table_view=DEPENDENCY_TYPE_TABLE_VIEW,
@@ -538,7 +576,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
 
 DependencyTableView = CustomTableView(
     model=Dependency,
-    model_name="dependency",
+    model_name="dependencies",
     fields=DEPENDENCY_MODEL_FIELDS,
     status_choices_class=DependencyStatusChoices,
     model_relation_fields=DEPENDENCY_MODEL_RELATION_FIELDS,
@@ -552,7 +590,7 @@ DependencyTableView = CustomTableView(
 DEPENDENCY_VIEWS = CRUDView(
     model=Dependency,
     model_type=DependencyType,
-    model_name="dependency",
+    model_name="dependencies",
     model_service=DependencyService,
     model_form=DependencyForm,
     model_table_view=DependencyTableView,
@@ -588,7 +626,7 @@ ITEM_TABLE_VIEW = CustomTableView(
 
 ITEM_VIEWS = CRUDView(
     model=Item,
-    model_name="item",
+    model_name="items",
     model_service=ItemService,
     model_form=ItemForm,
     model_table_view=ITEM_TABLE_VIEW,

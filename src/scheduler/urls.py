@@ -15,9 +15,9 @@ urlpatterns = [
         name="view_scheduler_runs",
     ),
     path(
-        "scheduler-runss/view/<int:id>/field=<str:field>",
+        "scheduler-runs/view/<int:id>/field=<str:field>",
         SchedulerRuns_VIEWS.show_model_form,
-        name="scheduler_runs_models_fields",
+        name="scheduler_runs_relationships",
     ),
     # resource intervals urls
     path(

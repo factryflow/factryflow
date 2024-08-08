@@ -342,6 +342,76 @@
         }
     },
     {
+        "model": "job_manager.dependencytype",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.407Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_1",
+            "notes": "Dependency type 1 notes",
+            "name": "DEPENDENCY_TYPE_1"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.407Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_2",
+            "notes": "Dependency type 2 notes",
+            "name": "DEPENDENCY_TYPE_2"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 3,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.408Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_3",
+            "notes": "Dependency type 3 notes",
+            "name": "DEPENDENCY_TYPE_3"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 4,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.408Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_4",
+            "notes": "Dependency type 4 notes",
+            "name": "DEPENDENCY_TYPE_4"
+        }
+    },
+    {
+        "model": "job_manager.dependencytype",
+        "pk": 5,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.408Z",
+            "updated_at": "2024-05-20T12:45:20.409Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_5",
+            "notes": "Dependency type 5 notes",
+            "name": "DEPENDENCY_TYPE_5"
+        }
+    },
+    {
         "model": "resource_calendar.weeklyshifttemplate",
         "pk": 1,
         "fields": {
@@ -353,8 +423,7 @@
             "external_id": "EXTERNAL_ID_1",
             "notes": " shift Template 1 notes",
             "name": "Shift_template_first",
-            "description": "shift Template 1 description",
-            "weekly_shift_template_details": []
+            "description": "shift Template 1 description"
         }
     },
     {
@@ -369,8 +438,7 @@
             "external_id": "EXTERNAL_ID_2",
             "notes": " shift Template 2 notes",
             "name": "Shift_template_second",
-            "description": "shift Template 2 description",
-            "weekly_shift_template_details": []
+            "description": "shift Template 2 description"
         }
     },
     {
@@ -385,8 +453,7 @@
             "external_id": "EXTERNAL_ID_3",
             "notes": " shift Template 3 notes",
             "name": "Shift_template_third",
-            "description": "shift Template 3 description",
-            "weekly_shift_template_details": []
+            "description": "shift Template 3 description"
         }
     },
     {
@@ -401,8 +468,7 @@
             "external_id": "EXTERNAL_ID_4",
             "notes": " shift Template 4 notes",
             "name": "Shift_template_fourth",
-            "description": "shift Template 4 description",
-            "weekly_shift_template_details": []
+            "description": "shift Template 4 description"
         }
     },
     {
@@ -417,8 +483,7 @@
             "external_id": "EXTERNAL_ID_5",
             "notes": " shift Template 5 notes",
             "name": "Shift_template_fifth",
-            "description": "shift Template 5 description",
-            "weekly_shift_template_details": []
+            "description": "shift Template 5 description"
         }
     },
     {
@@ -433,8 +498,7 @@
             "external_id": "EXTERNAL_ID_6",
             "notes": " shift Template 6 notes",
             "name": "Shift_template_sixth",
-            "description": "shift Template 6 description",
-            "weekly_shift_template_details": []
+            "description": "shift Template 6 description"
         }
     },
     {
@@ -446,6 +510,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
+            "weekly_shift_template": 1,
             "day_of_week": "Monday",
             "start_time": "08:00:00",
             "end_time": "16:00:00"
@@ -460,6 +525,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
+            "weekly_shift_template": 1,
             "day_of_week": "Tuesday",
             "start_time": "09:00:00",
             "end_time": "17:00:00"
@@ -474,6 +540,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
+            "weekly_shift_template":1,
             "day_of_week": "Wednesday",
             "start_time": "10:00:00",
             "end_time": "18:00:00"
@@ -488,6 +555,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
+            "weekly_shift_template":1,
             "day_of_week": "Thursday",
             "start_time": "11:00:00",
             "end_time": "19:00:00"
@@ -502,6 +570,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
+            "weekly_shift_template":1,
             "day_of_week": "Friday",
             "start_time": "12:00:00",
             "end_time": "20:00:00"
@@ -516,6 +585,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
+            "weekly_shift_template":1,
             "day_of_week": "Saturday",
             "start_time": "13:00:00",
             "end_time": "21:00:00"

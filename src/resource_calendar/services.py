@@ -40,6 +40,7 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create(
         self,
+        weekly_shift_template: WeeklyShiftTemplate,
         day_of_week: int,
         start_time: str | time,
         end_time: str | time,
@@ -55,6 +56,7 @@ class WeeklyShiftTemplateDetailService:
             raise PermissionDenied()
 
         weekly_shift_template_detail = WeeklyShiftTemplateDetail.objects.create(
+            weekly_shift_template=weekly_shift_template,
             day_of_week=day_of_week,
             start_time=self._parse_time(start_time),
             end_time=self._parse_time(end_time),
@@ -69,6 +71,7 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create_bulk(
         self,
+        template: WeeklyShiftTemplate,
         details: list[dict],
     ) -> None:
         """
@@ -84,6 +87,7 @@ class WeeklyShiftTemplateDetailService:
 
         for detail_data in details:
             detail = self.create(
+                weekly_shift_template=template,
                 day_of_week=detail_data["day_of_week"],
                 start_time=detail_data["start_time"],
                 end_time=detail_data["end_time"],
@@ -108,6 +112,7 @@ class WeeklyShiftTemplateDetailService:
             raise PermissionDenied()
 
         fields = [
+            "weekly_shift_template",
             "day_of_week",
             "start_time",
             "end_time",
@@ -158,7 +163,9 @@ class WeeklyShiftTemplateService:
         """
         Process a list of WeeklyShiftTemplateDetails for a given WeeklyShiftTemplate.
         """
-        existing_details = template.weekly_shift_template_details.all()
+        existing_details = WeeklyShiftTemplateDetail.objects.filter(
+            weekly_shift_template=template
+        ).all()
 
         # Convert existing details to a dictionary
         existing_detail_dict = {
@@ -189,7 +196,7 @@ class WeeklyShiftTemplateService:
 
         # Create new details
         list_of_details = self.weeklyshifttemplatedetailservice.create_bulk(
-            details=details_to_create
+            template=template, details=details_to_create
         )
 
         return list_of_details
@@ -197,8 +204,13 @@ class WeeklyShiftTemplateService:
     def _check_no_overlapping_details(self, template: WeeklyShiftTemplate) -> None:
         details_by_day = defaultdict(list)
 
+        # get details
+        details = WeeklyShiftTemplateDetail.objects.filter(
+            weekly_shift_template=template
+        ).all()
+
         # Group details by day of the week
-        for detail in template.weekly_shift_template_details.all():
+        for detail in details:
             details_by_day[detail.day_of_week].append(detail)
 
         # Check for overlaps within each day, but only if there's more than one detail for that day
@@ -231,7 +243,7 @@ class WeeklyShiftTemplateService:
         external_id: str = "",
         notes: str = "",
         description: str = "",
-        details: list[dict] = None,
+        weekly_shift_template_details: list[dict] = None,
         custom_fields: dict = None,
     ) -> WeeklyShiftTemplate:
         """
@@ -241,9 +253,9 @@ class WeeklyShiftTemplateService:
         if not self.permission_service.check_for_permission("add_weeklyshifttemplate"):
             raise PermissionDenied()
 
-        if details:
+        if weekly_shift_template_details:
             # Validate details
-            self._validate_details_fields(details)
+            self._validate_details_fields(weekly_shift_template_details)
 
         # Create WeeklyShiftTemplate
         template = WeeklyShiftTemplate.objects.create(
@@ -255,16 +267,12 @@ class WeeklyShiftTemplateService:
         )
 
         # Create WeeklyShiftTemplateDetails
-        weekly_shift_details = None
-        if details:
-            weekly_shift_details = self.weeklyshifttemplatedetailservice.create_bulk(
-                details=details
+        if weekly_shift_template_details:
+            self.weeklyshifttemplatedetailservice.create_bulk(
+                template=template, details=weekly_shift_template_details
             )
             # Check for overlapping details
             self._check_no_overlapping_details(template)
-
-        if weekly_shift_details:
-            template.weekly_shift_template_details.set(weekly_shift_details)
 
         template.full_clean()
         template.save(user=self.user)
@@ -291,7 +299,6 @@ class WeeklyShiftTemplateService:
             "external_id",
             "notes",
             "description",
-            "weekly_shift_template_details",
             "custom_fields",
         ]
 
