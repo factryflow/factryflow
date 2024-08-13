@@ -26,7 +26,7 @@ def taskform(request):
     return render(request, "base/task/form.html")
 
 
-def chart(request):
+def dashboard(request):
     return render(request, "base/chart/main.html")
 
 
@@ -50,8 +50,8 @@ if settings.DEBUG:
     import debug_toolbar
 
 urlpatterns = [
-    path("", home, name="home"),
-    path("chart/", chart, name="chart"),
+    path("dashboard/", dashboard, name="home"),
+    # path("chart/", chart, name="chart"),
     path("settings/", settingsPage, name="settings"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
