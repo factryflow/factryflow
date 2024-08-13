@@ -18,7 +18,7 @@ from resource_calendar.api import resource_calendar_router
 from resource_manager.api import resource_manager_router
 from users.api import router as user_router
 from common.api import common_router
-from job_manager.api import job_manager_router
+from job_manager.api.viewsets import job_manager_router
 from resource_assigner.api import resource_assigner_router
 
 

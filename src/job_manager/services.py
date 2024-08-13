@@ -8,13 +8,13 @@ from django.db import transaction
 from job_manager.models import (
     Dependency,
     DependencyType,
+    Item,
     Job,
     JobStatusChoices,
     JobType,
     Task,
     TaskType,
     WorkCenter,
-    Item,
 )
 
 # ------------------------------------------------------------------------------
@@ -558,3 +558,72 @@ class ItemService:
 
         instance.delete()
         return True
+
+
+class JobGanttChartService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    def map_jobs_to_gantt(self) -> list:
+        # check for permission to view job gantt chart
+        if not self.permission_service.check_for_permission("view_job_gantt_chart"):
+            raise PermissionDenied()
+
+        job_data = []
+        jobs = Job.objects.prefetch_related("tasks")
+
+        for job in jobs:
+            job_data.append(
+                {
+                    "pID": job.id,
+                    "pName": job.name,
+                    "pStart": "",
+                    "pEnd": "",
+                    "pClass": "gtaskblue",
+                    "pLink": "",
+                    "pMile": 0,
+                    "pRes": "",
+                    "pComp": 0,
+                    "pGroup": 1,
+                    "pOpen": 1,
+                    "pDepend": "",
+                    "pCaption": "",
+                    "pNotes": "Some Notes text",
+                    "category": "Planning",
+                    "sector": "CMO",
+                    "pPlanStart": job.planned_start_datetime,
+                    "pPlanEnd": job.planned_end_datetime,
+                }
+            )
+            for task in job.tasks.all():
+                if hasattr(task, "taskresourceassigment"):
+                    resource_name = task.taskresourceassigment.resource.name
+                else:
+                    resource_name = ""
+
+                job_data.append(
+                    {
+                        "pID": task.id,
+                        "pName": task.name,
+                        "pStart": "",
+                        "pEnd": "",
+                        "pClass": "gtaskblue",
+                        "pLink": "",
+                        "pMile": 0,
+                        "pRes": resource_name,
+                        "pComp": 0,
+                        "pGroup": 0,
+                        "pParent": job.id,
+                        "pOpen": 1,
+                        "pDepend": list(task.predecessors.values_list("id", flat=True)),
+                        "pCaption": "",
+                        "pNotes": "Some Notes text",
+                        "category": "Planning",
+                        "sector": "CMO",
+                        "pPlanStart": task.planned_start_datetime,
+                        "pPlanEnd": task.planned_end_datetime,
+                    }
+                )
+
+        return job_data
