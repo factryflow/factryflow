@@ -63,6 +63,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
         "related_name": "run_id",
         "headers": ["Resource", "Task"],
         "fields": ["resource", "task"],
+        "show_edit_actions": False,
     },
     "resource_intervals": {
         "model": ResourceIntervals,
@@ -70,6 +71,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
         "related_name": "run_id",
         "headers": ["Resource", "Task", "Interval Start", "Interval End"],
         "fields": ["resource", "task", "interval_start", "interval_end"],
+        "show_edit_actions": False,
     },
     "history": {
         "model": "history",
@@ -93,6 +95,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
             "history_type",
             "history_user",
         ],
+        "show_edit_actions": False,
     },
 }
 
@@ -167,6 +170,7 @@ RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
             "history_type",
             "history_user",
         ],
+        "show_edit_actions": False,
     },
 }
 

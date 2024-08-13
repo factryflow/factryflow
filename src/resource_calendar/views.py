@@ -1,7 +1,13 @@
 from common.views import CRUDView, CustomTableView
 
 # Create your views here.
-from .models import *
+from .models import (
+    OperationalException,
+    OperationalExceptionType,
+    WeeklyShiftTemplate,
+    WeeklyShiftTemplateDetail,
+    DaysOfWeek,
+)
 from .forms import *
 from .services import *
 
@@ -29,12 +35,18 @@ WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
         "model_name": "weekly_shift_template_details",
         "headers": ["ID", "Day of Week", "Start Time", "End Time"],
         "fields": ["id", "day_of_week", "start_time", "end_time"],
+        "select_fields": {
+            "day_of_week": DaysOfWeek.choices,
+        },
+        "relationship_fields": "weekly_shift_template",
+        "show_edit_actions": True,
     },
     "history": {
         "related_name": "history",
         "model_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
         "fields": ["id", "history_date", "history_type", "history_user"],
+        "show_edit_actions": False,
     },
 }
 
@@ -45,6 +57,7 @@ SHIFT_TEMPLATE_DETAILS_FORMSET_OPTIONS = [
     WeeklyShiftTemplateDetailForm,
     "weekly_shift_template_details",
     SHIFT_TEMPLATE_DETAILS_FORMSET_FORM_FIELDS,
+    "weekly_shift_template_details",
 ]
 
 
@@ -112,6 +125,7 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS = CRUDView(
     model_service=WeeklyShiftTemplateDetailService,
     model_form=WeeklyShiftTemplateDetailForm,
     model_table_view=WeeklyShiftTemplateDetailTableView,
+    sub_model_relation=True,
 )
 
 
@@ -134,6 +148,7 @@ OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
         "fields": ["id", "history_date", "history_type", "history_user"],
+        "show_edit_actions": False,
     },
 }
 

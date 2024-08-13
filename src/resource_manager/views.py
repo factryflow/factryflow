@@ -37,6 +37,7 @@ RESOURCE_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "fields": ["id", "history_date", "history_type", "history_user"],
         "headers": ["ID", "History Date", "History Type", "History User"],
+        "show_edit_actions": False,
     }
 }
 
@@ -83,12 +84,14 @@ RESOURCE_Group_MODEL_RELATION_FIELDS = {
         "related_name": "resources",
         "fields": ["id", "name", "resource_type", "weekly_shift_template"],
         "headers": ["ID", "Resource Name", "Resource Type", "Weekly Shift Template"],
+        "show_edit_actions": False,
     },
     "history": {
         "model_name": "history",
         "related_name": "history",
         "fields": ["id", "history_date", "history_type", "history_user"],
         "headers": ["ID", "History Date", "History Type", "History User"],
+        "show_edit_actions": False,
     },
 }
 

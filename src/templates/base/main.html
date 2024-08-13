@@ -42,10 +42,12 @@
   </div>
   {% include "base/notifications.html" %}
 </body>
-<script>
-  {% block scripts %}
+
+{% block scripts %}
   
-  {% endblock scripts %}
+{% endblock scripts %}
+
+<script>
     function Openbar() {
       document.querySelector('.sidebar').classList.toggle('left-[-300px]')
     }

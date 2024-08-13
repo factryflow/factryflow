@@ -50,6 +50,7 @@ class CRUDView:
         formset_options=[],
         model_type=None,
         view_only=False,
+        sub_model_relation=False,
         button_text="Add",
         ordered_model=False,
         user_rule_permission=True,
@@ -71,6 +72,7 @@ class CRUDView:
         self.ordered_model = ordered_model
         self.formset_options = formset_options
         self.model_formset = None
+        self.sub_model_relation = sub_model_relation
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -80,10 +82,10 @@ class CRUDView:
     def get_models_crud_permissions(self, model_name):
         permissions_list = (
             [
-                f"view_{model_name.lower()}",
-                f"add_{model_name.lower()}",
-                f"change_{model_name.lower()}",
-                f"delete_{model_name.lower()}",
+                f"view_{model_name.lower().replace('_', '')[:-1]}",
+                f"add_{model_name.lower().replace('_', '')[:-1]}",
+                f"change_{model_name.lower().replace('_', '')[:-1]}",
+                f"delete_{model_name.lower().replace('_', '')[:-1]}",
             ]
             if model_name
             else None
@@ -93,27 +95,29 @@ class CRUDView:
     def get_custom_field_json_data(self, content_type, instance=None):
         # to get custom field json data
         data = []
-        id = 0
-        if instance and instance.custom_fields != {}:
-            custom_field_data = instance.custom_fields
-            if custom_field_data:
-                for key, value in custom_field_data.items():
-                    id += 1
-                    custom_field_instance = CustomField.objects.get(name=key)
-                    field_name = custom_field_instance.name
-                    field_label = custom_field_instance.label
-                    field_type = custom_field_instance.field_type
-                    field_info = [id, field_name, field_label, field_type, value]
-                    data.append(field_info)
-        else:
-            custom_fields = CustomField.objects.filter(content_type=content_type)
-            for custom_field in custom_fields:
-                id += 1
-                field_name = custom_field.name
-                field_label = custom_field.label
-                field_type = custom_field.field_type
-                field_info = [id, field_name, field_label, field_type, ""]
-                data.append(field_info)
+        custom_fields = (
+            instance.custom_fields
+            if instance and instance.custom_fields != {}
+            else {
+                field.name: ""
+                for field in CustomField.objects.filter(content_type=content_type)
+            }
+        )
+
+        for id, (key, value) in enumerate(custom_fields.items(), start=1):
+            custom_field_instance = CustomField.objects.get(
+                name=key, content_type=content_type
+            )
+            data.append(
+                {
+                    "id": id,
+                    "name": custom_field_instance.name,
+                    "label": custom_field_instance.label,
+                    "type": custom_field_instance.field_type,
+                    "value": value,
+                    "is_required": custom_field_instance.is_required,
+                }
+            )
 
         return data
 
@@ -204,6 +208,11 @@ class CRUDView:
                 extra=formset_count,
                 can_delete=False,
             )
+            formset_model_name = self.formset_options[-1]
+
+            formset_action_url = (
+                f"/{formset_model_name.replace('_', '-').lower()}-create/"
+            )
 
         custom_field_form_data = self.get_custom_field_json_data(
             content_type=model_content_type
@@ -214,6 +223,7 @@ class CRUDView:
         if id:
             instance_obj = get_object_or_404(self.model, id=id)
             form = self.model_form(instance=instance_obj)
+
             if "name" in instance_obj.__dict__:
                 page_label = instance_obj.name.capitalize().replace("_", " ")
             else:
@@ -258,17 +268,37 @@ class CRUDView:
             form_label = f"New {self.model_title} Details"
             page_label = f"New {self.model_title}"
 
+        # get relation table headers
         relation_table_headers = (
             ["ID", "Name", "Label", "Type", "Value"]
             if relation_field_name == "custom_fields"
-            else self.table_view.model_relation_fields[relation_field_name]["headers"]
+            else self.table_view.model_relation_fields[relation_field_name].get(
+                "headers"
+            )
+        )
+
+        # get relation field names
+        if relation_field_name != "custom_fields":
+            relationship_fields = self.table_view.model_relation_fields[
+                relation_field_name
+            ].get("relationship_fields")
+            if relationship_fields:
+                model_relation_field_name = relationship_fields
+
+        # to show edit actions for model relation table
+        show_edit_actions = (
+            False
+            if relation_field_name == "custom_fields"
+            else self.table_view.model_relation_fields[relation_field_name].get(
+                "show_edit_actions"
+            )
         )
 
         # model name of relation field
         relation_model_name = (
             self.table_view.model_relation_fields[relation_field_name].get("model_name")
             if relation_field_name not in ["custom_fields", "history"]
-            else None
+            else relation_field_name
         )
 
         # add and remove urls for formset
@@ -285,7 +315,7 @@ class CRUDView:
             remove_formset_url = (
                 reverse(
                     f"{self.model_name.lower()}_formset",
-                    args=[formset_count - 1],
+                    args=[formset_count - 1 if formset_count > 0 else 0],
                 )
                 if self.user_rule_permission
                 else None
@@ -294,12 +324,23 @@ class CRUDView:
         context = {
             "form": form,
             "formset_title": self.formset_options[2] if self.formset_options else None,
-            "formset_form": self.model_formset() if self.model_formset else None,
+            "formset_form": (
+                self.model_formset(instance=instance_obj)
+                if id
+                else self.model_formset()
+            )
+            if self.model_formset
+            else None,
+            "formset_action_url": formset_action_url if self.model_formset else None,
             "add_formset_url": add_formset_url
             if "add_formset_url" in locals()
             else None,
             "remove_formset_url": remove_formset_url
             if "remove_formset_url" in locals()
+            else None,
+            "show_edit_actions": show_edit_actions,
+            "model_relation_field_name": model_relation_field_name
+            if "model_relation_field_name" in locals()
             else None,
             "view_mode": view_mode,
             "view_only": self.view_only,
@@ -320,7 +361,8 @@ class CRUDView:
             "show_actions": True if edit == "true" and relation_model_name else False,
             "headers": relation_table_headers if relation_field_name else [],
             "relations_headers": self.table_view.model_relation_headers,
-            "rows": rows,
+            "rows": rows if rows != [] else None,
+            "relation_model_name": relation_model_name.replace("_", " ").title(),
         }
 
         if "HX-Request" in request.headers:
@@ -328,7 +370,7 @@ class CRUDView:
             if "field" in str(request.path):
                 return render(
                     request,
-                    f"{self.list_template_name}#partial-table-template",
+                    f"{self.detail_template_name}#model-relation-editable-table",
                     context,
                 )
 
@@ -360,9 +402,10 @@ class CRUDView:
         # get instance object id
         id = request.POST.get("id")
 
-        # custom field data
-        custom_fields_keys = request.POST.getlist("key[]")
-        custom_fields_values = request.POST.getlist("value[]")
+        custom_fields_keys = CustomField.objects.filter(
+            content_type=ContentType.objects.get_for_model(self.model)
+        ).values_list("name", flat=True)
+        custom_fields_values = [request.POST.get(key) for key in custom_fields_keys]
 
         custom_fields_data = dict(zip(custom_fields_keys, custom_fields_values))
 
@@ -422,7 +465,7 @@ class CRUDView:
         if form.is_valid():
             # Extract data from the form
             obj_data = form.cleaned_data
-            
+
             # if custom_fields_data != {}:
             obj_data["custom_fields"] = custom_fields_data
 
@@ -464,7 +507,10 @@ class CRUDView:
             )
 
             if request.htmx:
-                headers = {"HX-Redirect": reverse(self.model_name.lower())}
+                headers = None
+                if not self.sub_model_relation:
+                    headers = {"HX-Redirect": reverse(self.model_name.lower())}
+
                 response = HttpResponse(status=204, headers=headers)
                 add_notification_headers(
                     response,
@@ -501,10 +547,17 @@ class CRUDView:
             page_number=page_number,
         )
 
+        # template name based on is_redirect variable
+        template_name = (
+            f"{self.detail_template_name}#model-relation-editable-table"
+            if self.sub_model_relation
+            else f"{self.list_template_name}#partial-table-template"
+        )
+
         # Render the updated table and add notification headers
         response = render(
             request,
-            f"{self.list_template_name}#partial-table-template",
+            template_name,
             {
                 "headers": self.table_view.table_headers,
                 "status_filter_dict": self.table_view.status_filter_dict,
@@ -532,6 +585,15 @@ class CRUDView:
                 f"Failed to delete the {self.model_title}.",
                 "error",
             )
+
+        if request.htmx and deletion_successful and self.sub_model_relation:
+            response = HttpResponse(status=204)
+            add_notification_headers(
+                response,
+                f"{self.model_title} has been deleted.",
+                "success",
+            )
+            return response
 
         return response
 
@@ -611,24 +673,35 @@ class CustomTableView:
         if custom_field_data:
             for key, value in custom_field_data.items():
                 id += 1
-                custom_field_instance = CustomField.objects.get(name=key)
-                field_name = custom_field_instance.name
-                field_label = custom_field_instance.label
-                field_type = custom_field_instance.field_type
-                field_info = [id, field_name, field_label, field_type, value]
+                field_info = {}
+                custom_field_instance = CustomField.objects.get(
+                    name=key, content_type=ContentType.objects.get_for_model(instance)
+                )
+                field_info["id"] = id
+                field_info["name"] = custom_field_instance.name
+                field_info["label"] = custom_field_instance.label
+                field_info["type"] = custom_field_instance.field_type
+                field_info["value"] = value
                 data.append(field_info)
         return data
 
     def get_all_many_to_many_field_instances(self, obj_instance, field_name=None):
-        # if field is none, get for first header
         rows = []
 
         if field_name == "custom_fields":
             data = self.get_custom_field_json_data(obj_instance)
-            return data
+            formatted_data = []
+            for item in data:
+                formatted_item = {}
+                for key, value in item.items():
+                    field_type = type(value).__name__
+                    formatted_item[key] = {"value": str(value), "type": field_type}
+                formatted_data.append(formatted_item)
+            return formatted_data
 
         if field_name:
             if "model" in self.model_relation_fields[field_name].keys():
+                # if model is provided in model_relation_fields then get data from that model
                 data = self.model_relation_fields[field_name]["model"].objects.filter(
                     **{
                         self.model_relation_fields[field_name][
@@ -636,34 +709,93 @@ class CustomTableView:
                         ]: obj_instance
                     }
                 )
-
-            if "model" not in self.model_relation_fields[field_name].keys():
+            else:
+                # if model is not provided in model_relation_fields then get data from related_name
                 data = getattr(
                     obj_instance, self.model_relation_fields[field_name]["related_name"]
                 ).all()
 
             for instance in data:
-                row_data = []
+                # get data for each field in the model
+                row_data = {}
                 for field in self.model_relation_fields[field_name]["fields"]:
                     if "status" in field:
-                        value = (
-                            f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
-                            f'{getattr(instance, "get_" + field + "_display")()}</span>',
-                        )
-                        row_data.append(value[0])
+                        # if field is status field then get the colored text
+                        value = {
+                            "value": str(
+                                getattr(instance, "get_" + field + "_display")()
+                            ),
+                            "type": "text",
+                        }
+                        row_data[field] = value
                     elif isinstance(getattr(instance, field), datetime.datetime):
-                        value = convert_datetime_to_readable_string(
-                            getattr(instance, field)
-                        )
-                        row_data.append(value)
+                        # if field is datetime then convert it to readable string and type is datetime-local
+                        value = {
+                            "value": str(
+                                convert_datetime_to_readable_string(
+                                    getattr(instance, field)
+                                )
+                            ),
+                            "type": "datetime-local",
+                        }
+                        row_data[field] = value
                     elif isinstance(getattr(instance, field), datetime.date):
-                        value = convert_date_to_readable_string(
-                            getattr(instance, field)
-                        )
-                        row_data.append(value)
+                        # if field is date then convert it to readable string and type is date
+                        value = {
+                            "value": str(
+                                convert_date_to_readable_string(
+                                    getattr(instance, field)
+                                )
+                            ),
+                            "type": "datetime-local",
+                        }
+                        row_data[field] = value
+                    elif isinstance(getattr(instance, field), datetime.time):
+                        # if field is time then convert it to readable string and type is time
+                        value = {
+                            "value": str(getattr(instance, field).strftime("%H:%M")),
+                            "type": "time",
+                        }
+                        row_data[field] = value
                     else:
-                        value = getattr(instance, field)
-                        row_data.append(value)
+                        # if field is not status or datetime then get the value and type
+                        field_type = type(getattr(instance, field)).__name__
+                        value = {
+                            "value": str(getattr(instance, field)),
+                        }
+
+                        if field_type == "str":
+                            # if field type is str then type is text
+                            value["type"] = "text"
+                        elif (
+                            field_type == "int"
+                            or field_type == "AutoField"
+                            or field_type == "PositiveIntegerField"
+                            or field_type == "IntegerField"
+                        ):
+                            # if field type is int then type is number
+                            value["type"] = "number"
+                        else:
+                            # if field type is not str or int then type is field type
+                            value["type"] = field_type
+
+                        row_data[field] = value
+
+                    if "select_fields" in self.model_relation_fields[field_name]:
+                        # if select_fields is provided in model_relation_fields
+                        if (
+                            field
+                            in self.model_relation_fields[field_name]["select_fields"]
+                        ):
+                            value = {
+                                "value": str(getattr(instance, field)),
+                                "type": "select",
+                                "options": self.model_relation_fields[field_name][
+                                    "select_fields"
+                                ][field],
+                            }
+                            row_data[field] = value
+
                 rows.append(row_data)
 
         return rows

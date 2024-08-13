@@ -5,6 +5,7 @@ from ordered_model.models import OrderedModel
 
 from job_manager.models import Task, WorkCenter
 from resource_manager.models import Resource, ResourceGroup
+from simple_history.models import HistoricalRecords
 
 
 class TaskResourceAssigment(BaseModel):
@@ -19,6 +20,8 @@ class TaskResourceAssigment(BaseModel):
     resource = models.ForeignKey(
         Resource, on_delete=models.DO_NOTHING, blank=True, null=True
     )
+
+    history = HistoricalRecords(table_name="task_resource_assigment_history")
 
     class Meta:
         db_table = "task_resource_assigment"
@@ -36,6 +39,8 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
     work_center = models.ForeignKey(WorkCenter, on_delete=models.DO_NOTHING)
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=True)
+
+    history = HistoricalRecords(table_name="assigment_rule_history")
 
     order_with_respect_to = "work_center"
 
@@ -71,6 +76,8 @@ class AssigmentRuleCriteria(BaseModel):
     )
     value = models.CharField(max_length=254, blank=True, null=True)
 
+    history = HistoricalRecords(table_name="assigment_rule_criteria_history")
+
     class Meta:
         db_table = "assigment_rule_criteria"
 
@@ -105,6 +112,8 @@ class AssignmentConstraint(BaseModel):
     resource_count = models.PositiveIntegerField(default=1)
     use_all_resources = models.BooleanField(default=False)
 
+    history = HistoricalRecords(table_name="assignment_constraint_history")
+
     class Meta:
         db_table = "assignment_constraint"
 
@@ -131,6 +140,8 @@ class TaskRuleAssignment(BaseModel):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.CASCADE)
     is_applied = models.BooleanField(default=False)
+
+    history = HistoricalRecords(table_name="task_rule_assignment_history")
 
     class Meta:
         db_table = "task_rule_assignment"

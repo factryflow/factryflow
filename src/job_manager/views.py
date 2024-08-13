@@ -54,6 +54,7 @@ WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
         "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
     },
 }
 
@@ -87,11 +88,13 @@ JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 JOB_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "Name", "User", "Notes", "History Date"],
-        ["id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 JOB_TYPE_TABLE_VIEW = CustomTableView(
@@ -180,6 +183,7 @@ JOB_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
+        "show_edit_actions": False,
     },
     "dependencies": {
         "model_name": "dependency",
@@ -200,6 +204,7 @@ JOB_MODEL_RELATION_FIELDS = {
             "dependency_type",
             "dependency_status",
         ],
+        "show_edit_actions": False,
     },
     "history": {
         "model_name": "history",
@@ -224,6 +229,7 @@ JOB_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
+        "show_edit_actions": False,
     },
 }
 
@@ -269,6 +275,7 @@ TASK_TYPE_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
         "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
     },
 }
 
@@ -355,6 +362,7 @@ TASK_MODEL_RELATION_FIELDS = {
             "dependency_type",
             "dependency_status",
         ],
+        "show_edit_actions": False,
     },
     "predecessors": {
         "model_name": "tasks",
@@ -381,8 +389,10 @@ TASK_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
+        "show_edit_actions": False,
     },
     "history": {
+        "model_name": "history",
         "related_name": "history",
         "headers": [
             "ID",
@@ -412,12 +422,16 @@ TASK_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
+        "show_edit_actions": False,
     },
     "rules": {
         "model": TaskRuleAssignment,
+        "model_name": "task_rule_assignments",
+        "related_name": "task",
         "model_name": "task_rule_assignment",
         "headers": ["ID", "Assignment Rule", "Is Applied"],
         "fields": ["id", "assigment_rule", "is_applied"],
+        "show_edit_actions": False,
     },
 }
 
@@ -461,6 +475,7 @@ DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
         "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
     },
 }
 
@@ -543,6 +558,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
+        "show_edit_actions": False,
     },
     "jobs": {
         "model": Job,
@@ -570,6 +586,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "priority",
             "job_status",
         ],
+        "show_edit_actions": False,
     },
     "history": {
         "model_name": "history",
@@ -596,6 +613,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
+        "show_edit_actions": False,
     },
 }
 
@@ -637,6 +655,7 @@ ITEM_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
         "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
     },
 }
 

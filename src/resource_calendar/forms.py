@@ -43,7 +43,7 @@ class WeeklyShiftTemplateForm(forms.ModelForm):
 class WeeklyShiftTemplateDetailForm(forms.ModelForm):
     class Meta:
         model = WeeklyShiftTemplateDetail
-        fields = ["day_of_week", "start_time", "end_time"]
+        fields = ["weekly_shift_template", "day_of_week", "start_time", "end_time"]
         labels = {
             "weekly_shift_template": "Weekly Shift Template",
             "day_of_week": "Day of Week",
@@ -53,24 +53,28 @@ class WeeklyShiftTemplateDetailForm(forms.ModelForm):
         widgets = {
             "weekly_shift_template": forms.Select(
                 attrs={
-                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "required": "required",
                 }
             ),
             "day_of_week": forms.Select(
                 attrs={
                     "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "required": "required",
                 }
             ),
             "start_time": forms.TimeInput(
                 attrs={
                     "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "time",
+                    "required": "required",
                 }
             ),
             "end_time": forms.TimeInput(
                 attrs={
                     "class": "mb-5 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                     "type": "time",
+                    "required": "required",
                 }
             ),
         }
