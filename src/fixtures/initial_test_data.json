@@ -180,6 +180,136 @@
         }
     },
     {
+        "model": "job_manager.task",
+        "pk": 1,
+        "fields": {
+            "name": "TASK_NAME_1",
+            "duration": 60,
+            "setup_time": 10,
+            "run_time_per_unit": 5,
+            "teardown_time": 10,
+            "quantity": 10,
+            "planned_start_datetime": null,
+            "planned_end_datetime": null,
+            "item": 5,
+            "task_status": "NS",
+            "task_type": 1,
+            "job": 1,
+            "work_center": 1,
+            "predecessors": [],
+            "dependencies": [],
+            "created_at": "2024-05-20T12:45:20.430Z",
+            "updated_at": "2024-05-20T12:45:20.430Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "job_manager.task",
+        "pk": 2,
+        "fields": {
+            "name": "TASK_NAME_2",
+            "duration": 90,
+            "setup_time": 20,
+            "run_time_per_unit": 10,
+            "teardown_time": 20,
+            "quantity": 5,
+            "planned_start_datetime": null,
+            "planned_end_datetime": null,
+            "item": 6,
+            "task_status": "NS",
+            "task_type": 2,
+            "job": 2,
+            "work_center": 2,
+            "predecessors": [],
+            "dependencies": [],
+            "created_at": "2024-05-20T12:45:20.430Z",
+            "updated_at": "2024-05-20T12:45:20.430Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "job_manager.task",
+        "pk": 3,
+        "fields": {
+            "name": "TASK_NAME_3",
+            "duration": 120,
+            "setup_time": 30,
+            "run_time_per_unit": 15,
+            "teardown_time": 30,
+            "quantity": 3,
+            "planned_start_datetime": null,
+            "planned_end_datetime": null,
+            "item": 5,
+            "task_status": "NS",
+            "task_type": 3,
+            "job": 2,
+            "work_center": 3,
+            "predecessors": [],
+            "dependencies": [],
+            "created_at": "2024-05-20T12:45:20.430Z",
+            "updated_at": "2024-05-20T12:45:20.430Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "job_manager.task",
+        "pk": 4,
+        "fields": {
+            "name": "TASK_NAME_4",
+            "duration": 180,
+            "setup_time": 40,
+            "run_time_per_unit": 20,
+            "teardown_time": 40,
+            "quantity": 2,
+            "planned_start_datetime": null,
+            "planned_end_datetime": null,
+            "item": 6,
+            "task_status": "NS",
+            "task_type": 4,
+            "job": 1,
+            "work_center": 4,
+            "predecessors": [],
+            "dependencies": [],
+            "created_at": "2024-05-20T12:45:20.430Z",
+            "updated_at": "2024-05-20T12:45:20.430Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "job_manager.task",
+        "pk": 5,
+        "fields": {
+            "name": "TASK_NAME_5",
+            "duration": 240,
+            "setup_time": 50,
+            "run_time_per_unit": 25,
+            "teardown_time": 50,
+            "quantity": 1,
+            "planned_start_datetime": null,
+            "planned_end_datetime": null,
+            "item": 5,
+            "task_status": "NS",
+            "task_type": 5,
+            "job": 1,
+            "work_center": 5,
+            "predecessors": [],
+            "dependencies": [],
+            "created_at": "2024-05-20T12:45:20.430Z",
+            "updated_at": "2024-05-20T12:45:20.430Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
         "model": "job_manager.item",
         "pk": 5,
         "fields": {
@@ -448,63 +578,171 @@
         }
     },
     {
-        "model": "resource_calendar.weeklyshifttemplate",
+        "model": "job_manager.dependency",
         "pk": 1,
         "fields": {
-            "created_at": "2024-05-20T12:45:20.436Z",
-            "updated_at": "2024-05-20T12:45:20.440Z",
+            "created_at": "2024-05-20T12:45:20.415Z",
+            "updated_at": "2024-05-20T12:45:20.416Z",
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
             "external_id": "EXTERNAL_ID_1",
-            "notes": " shift Template 1 notes",
-            "name": "Shift_template_first",
-            "description": "shift Template 1 description"
+            "notes": "Dependency 1 notes",
+            "name": "Dependency_1",
+            "expected_close_datetime": "2024-05-20T12:45:20.417Z",
+            "actual_close_datetime": "2024-05-20T12:45:20.418Z",
+            "dependency_type": 1,
+            "dependency_status": "PD"
+        }
+    },
+    {
+        "model": "job_manager.dependency",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.415Z",
+            "updated_at": "2024-05-20T12:45:20.416Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_2",
+            "notes": "Dependency 2 notes",
+            "name": "Dependency_2",
+            "expected_close_datetime": "2024-05-20T12:45:20.417Z",
+            "actual_close_datetime": "2024-05-20T12:45:20.418Z",
+            "dependency_type": 1,
+            "dependency_status": "PD"
+        }
+    },
+    {
+        "model": "job_manager.dependency",
+        "pk": 3,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.415Z",
+            "updated_at": "2024-05-20T12:45:20.416Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_3",
+            "notes": "Dependency 3 notes",
+            "name": "Dependency_3",
+            "expected_close_datetime": "2024-05-20T12:45:20.417Z",
+            "actual_close_datetime": "2024-05-20T12:45:20.418Z",
+            "dependency_type": 1,
+            "dependency_status": "PD"
+        }
+    },
+    {
+        "model": "job_manager.dependency",
+        "pk": 4,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.415Z",
+            "updated_at": "2024-05-20T12:45:20.416Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_4",
+            "notes": "Dependency 4 notes",
+            "name": "Dependency_4",
+            "expected_close_datetime": "2024-05-20T12:45:20.417Z",
+            "actual_close_datetime": "2024-05-20T12:45:20.418Z",
+            "dependency_type": 4,
+            "dependency_status": "PD"
+        }
+    },
+    {
+        "model": "job_manager.dependency",
+        "pk": 5,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.415Z",
+            "updated_at": "2024-05-20T12:45:20.416Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_5",
+            "notes": "Dependency 5 notes",
+            "name": "Dependency_5",
+            "expected_close_datetime": "2024-05-20T12:45:20.417Z",
+            "actual_close_datetime": "2024-05-20T12:45:20.418Z",
+            "dependency_type": 4,
+            "dependency_status": "PD"
+        }
+    },
+    {
+        "model": "job_manager.dependency",
+        "pk": 6,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.439Z",
+            "updated_at": "2024-05-20T12:45:20.416Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_6",
+            "notes": "Dependency 6 notes",
+            "name": "Dependency_6",
+            "expected_close_datetime": "2024-05-20T12:45:20.417Z",
+            "actual_close_datetime": "2024-05-20T12:45:20.418Z",
+            "dependency_type": 3,
+            "dependency_status": "PD"
+        }
+    },
+    {
+        "model": "resource_calendar.weeklyshifttemplate",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-20T12:45:20.439Z",
+            "updated_at": "2024-05-20T12:45:20.440Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_6",
+            "notes": " shift Template 6 notes",
+            "name": "Shift_template_sixth",
+            "description": "shift Template 6 description"
         }
     },
     {
         "model": "resource_calendar.weeklyshifttemplate",
         "pk": 2,
         "fields": {
-            "created_at": "2024-05-20T12:45:20.437Z",
+            "created_at": "2024-05-20T12:45:20.439Z",
             "updated_at": "2024-05-20T12:45:20.440Z",
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "external_id": "EXTERNAL_ID_2",
-            "notes": " shift Template 2 notes",
-            "name": "Shift_template_second",
-            "description": "shift Template 2 description"
+            "external_id": "EXTERNAL_ID_6",
+            "notes": " shift Template 6 notes",
+            "name": "Shift_template_sixth",
+            "description": "shift Template 6 description"
         }
     },
     {
         "model": "resource_calendar.weeklyshifttemplate",
         "pk": 3,
         "fields": {
-            "created_at": "2024-05-20T12:45:20.438Z",
+            "created_at": "2024-05-20T12:45:20.439Z",
             "updated_at": "2024-05-20T12:45:20.440Z",
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "external_id": "EXTERNAL_ID_3",
-            "notes": " shift Template 3 notes",
-            "name": "Shift_template_third",
-            "description": "shift Template 3 description"
+            "external_id": "EXTERNAL_ID_6",
+            "notes": " shift Template 6 notes",
+            "name": "Shift_template_sixth",
+            "description": "shift Template 6 description"
         }
     },
     {
         "model": "resource_calendar.weeklyshifttemplate",
         "pk": 4,
         "fields": {
-            "created_at": "2024-05-20T12:45:20.438Z",
+            "created_at": "2024-05-20T12:45:20.439Z",
             "updated_at": "2024-05-20T12:45:20.440Z",
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "external_id": "EXTERNAL_ID_4",
-            "notes": " shift Template 4 notes",
-            "name": "Shift_template_fourth",
-            "description": "shift Template 4 description"
+            "external_id": "EXTERNAL_ID_6",
+            "notes": " shift Template 6 notes",
+            "name": "Shift_template_sixth",
+            "description": "shift Template 6 description"
         }
     },
     {
@@ -516,10 +754,10 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "external_id": "EXTERNAL_ID_5",
-            "notes": " shift Template 5 notes",
-            "name": "Shift_template_fifth",
-            "description": "shift Template 5 description"
+            "external_id": "EXTERNAL_ID_6",
+            "notes": " shift Template 6 notes",
+            "name": "Shift_template_sixth",
+            "description": "shift Template 6 description"
         }
     },
     {
@@ -561,7 +799,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "weekly_shift_template": 1,
+            "weekly_shift_template": 2,
             "day_of_week": "Tuesday",
             "start_time": "09:00:00",
             "end_time": "17:00:00"
@@ -576,7 +814,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "weekly_shift_template":1,
+            "weekly_shift_template":3,
             "day_of_week": "Wednesday",
             "start_time": "10:00:00",
             "end_time": "18:00:00"
@@ -591,7 +829,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "weekly_shift_template":1,
+            "weekly_shift_template":4,
             "day_of_week": "Thursday",
             "start_time": "11:00:00",
             "end_time": "19:00:00"
@@ -606,7 +844,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "weekly_shift_template":1,
+            "weekly_shift_template":5,
             "day_of_week": "Friday",
             "start_time": "12:00:00",
             "end_time": "20:00:00"
@@ -621,7 +859,7 @@
             "created_by": null,
             "updated_by": null,
             "custom_fields": {},
-            "weekly_shift_template":1,
+            "weekly_shift_template":6,
             "day_of_week": "Saturday",
             "start_time": "13:00:00",
             "end_time": "21:00:00"
@@ -710,5 +948,439 @@
             "notes": "Exception type 6 notes",
             "name": "EXCEPTION_TYPE_6"
         }
+    },
+
+    {
+        "model": "resource_manager.resource",
+        "pk": 1,
+        "fields": {
+            "name": "Machine 1",
+            "resource_type": "Machine",
+            "weekly_shift_template": 1,
+            "users": [],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_1",
+            "notes": "Machine 1 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resource",
+        "pk": 2,
+        "fields": {
+            "name": "Machine 2",
+            "resource_type": "Machine",
+            "weekly_shift_template": 2,
+            "users": [],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_2",
+            "notes": "Machine 2 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resource",
+        "pk": 3,
+        "fields": {
+            "name": "User 1",
+            "resource_type": "Operator",
+            "weekly_shift_template": 3,
+            "users": [],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_3",
+            "notes": "User 1 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resource",
+        "pk": 4,
+        "fields": {
+            "name": "User 2",
+            "resource_type": "Operator",
+            "weekly_shift_template": 4,
+            "users": [],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_4",
+            "notes": "User 2 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resource",
+        "pk": 5,
+        "fields": {
+            "name": "User 3",
+            "resource_type": "Operator",
+            "weekly_shift_template": 5,
+            "users": [],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_5",
+            "notes": "User 3 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resourcegroup",
+        "pk": 1,
+        "fields": {
+            "name": "Group 1",
+            "parent": null,
+            "resources": [1, 3],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_6",
+            "notes": "Group 1 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resourcegroup",
+        "pk": 2,
+        "fields": {
+            "name": "Group 2",
+            "parent": null,
+            "resources": [2, 4],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_7",
+            "notes": "Group 2 notes"
+        }
+    },
+    {
+        "model": "resource_manager.resourcegroup",
+        "pk": 3,
+        "fields": {
+            "name": "Group 3",
+            "parent": null,
+            "resources": [5],
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_8",
+            "notes": "Group 3 notes"
+        }
+    },
+    {
+        "model": "resource_calendar.operationalexception",
+        "pk": 1,
+        "fields": {
+            "start_datetime": "2024-05-20T08:00:00Z",
+            "end_datetime": "2024-05-20T10:00:00Z",
+            "operational_exception_type": 1,
+            "weekly_shift_template": 1,
+            "resource": 1,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_1",
+            "notes": "Operational exception 1 notes"
+        }
+    },
+    {
+        "model": "resource_calendar.operationalexception",
+        "pk": 2,
+        "fields": {
+            "start_datetime": "2024-05-21T08:00:00Z",
+            "end_datetime": "2024-05-21T10:00:00Z",
+            "operational_exception_type": 2,
+            "weekly_shift_template": 2,
+            "resource": 2,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_2",
+            "notes": "Operational exception 2 notes"
+        }
+    },
+    {
+        "model": "resource_calendar.operationalexception",
+        "pk": 3,
+        "fields": {
+            "start_datetime": "2024-05-22T08:00:00Z",
+            "end_datetime": "2024-05-22T10:00:00Z",
+            "operational_exception_type": 3,
+            "weekly_shift_template": 3,
+            "resource": 3,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_3",
+            "notes": "Operational exception 3 notes"
+        }
+    },
+    {
+        "model": "resource_calendar.operationalexception",
+        "pk": 4,
+        "fields": {
+            "start_datetime": "2024-05-23T08:00:00Z",
+            "end_datetime": "2024-05-23T10:00:00Z",
+            "operational_exception_type": 4,
+            "weekly_shift_template": 4,
+            "resource": 4,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_4",
+            "notes": "Operational exception 4 notes"
+        }
+    },
+    {
+        "model": "resource_calendar.operationalexception",
+        "pk": 5,
+        "fields": {
+            "start_datetime": "2024-05-24T08:00:00Z",
+            "end_datetime": "2024-05-24T10:00:00Z",
+            "operational_exception_type": 5,
+            "weekly_shift_template": 5,
+            "resource": 5,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_5",
+            "notes": "Operational exception 5 notes"
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrule",
+        "pk": 1,
+        "fields": {
+            "name": "Rule 1",
+            "work_center": 1,
+            "is_active": true,
+            "order": 0,
+            "description": "Description for Rule 1",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_1",
+            "notes": "Notes for Rule 1"
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrule",
+        "pk": 2,
+        "fields": {
+            "name": "Rule 2",
+            "work_center": 2,
+            "is_active": true,
+            "order": 0,
+            "description": "Description for Rule 2",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_2",
+            "notes": "Notes for Rule 2"
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrule",
+        "pk": 3,
+        "fields": {
+            "name": "Rule 3",
+            "work_center": 1,
+            "is_active": true,
+            "order": 1,
+            "description": "Description for Rule 3",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {},
+            "external_id": "EXTERNAL_ID_3",
+            "notes": "Notes for Rule 3"
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrulecriteria",
+        "pk": 1,
+        "fields": {
+            "assigment_rule": 1,
+            "field": "task_name",
+            "operator": "equals",
+            "value": "Task 1",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrulecriteria",
+        "pk": 2,
+        "fields": {
+            "assigment_rule": 2,
+            "field": "duration",
+            "operator": "equals",
+            "value": "5",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrulecriteria",
+        "pk": 3,
+        "fields": {
+            "assigment_rule": 3,
+            "field": "task_status",
+            "operator": "contains",
+            "value": "In Progress",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrulecriteria",
+        "pk": 4,
+        "fields": {
+            "assigment_rule": 2,
+            "field": "description",
+            "operator": "contains",
+            "value": "due before June 2024",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "resource_assigner.assigmentrulecriteria",
+        "pk": 5,
+        "fields": {
+            "assigment_rule": 3,
+            "field": "notes",
+            "operator": "starts_with",
+            "value": "Urgent",
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null,
+            "custom_fields": {}
+        }
+    },
+    {
+        "model": "common.customfield",
+        "pk": 1,
+        "fields": {
+            "content_type": 21,
+            "name": "custom_text_field",
+            "label": "Custom Text Field",
+            "description": "A custom text field",
+            "field_type": "text",
+            "is_required": true,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "common.customfield",
+        "pk": 2,
+        "fields": {
+            "content_type": 49,
+            "name": "custom_number_field",
+            "label": "Custom Number Field",
+            "description": "A custom number field",
+            "field_type": "number",
+            "is_required": false,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "common.customfield",
+        "pk": 3,
+        "fields": {
+            "content_type": 21,
+            "name": "custom_date_field",
+            "label": "Custom Date Field",
+            "description": "A custom date field",
+            "field_type": "date",
+            "is_required": true,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "common.customfield",
+        "pk": 4,
+        "fields": {
+            "content_type": 49,
+            "name": "custom_time_field",
+            "label": "Custom Time Field",
+            "description": "A custom time field",
+            "field_type": "time",
+            "is_required": false,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null
+        }
+    },
+    {
+        "model": "common.customfield",
+        "pk": 5,
+        "fields": {
+            "content_type": 21,
+            "name": "custom_datetime_field",
+            "label": "Custom Datetime Field",
+            "description": "A custom datetime field",
+            "field_type": "datetime-local",
+            "is_required": true,
+            "created_at": "2024-05-20T12:45:20.459Z",
+            "updated_at": "2024-05-20T12:45:20.459Z",
+            "created_by": null,
+            "updated_by": null
+        }
     }
+
 ]

@@ -49,6 +49,7 @@ jobs:
         run: |
           source venv/bin/activate
           python src/manage.py migrate
+          python src/manage.py sync_roles
         env:
           DJANGO_ENV: development
           DATABASE: sqlite3
@@ -89,6 +90,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.prod
+          push: true
           context: .  
           tags: ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 

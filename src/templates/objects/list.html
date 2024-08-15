@@ -6,9 +6,10 @@
 {% load partials %}
 {% load static %}
 {% partialdef partial-table-template %}
-<div x-data="{runSchedulerDialog: false, showModal:false}">
+<div x-data="{ runSchedulerDialog: false, showModal: false, selectAll: false }" x-init="$watch('selectAll', value => {
+    document.querySelectorAll('#all-{{ model_name }}s-table tbody input[type=checkbox]').forEach(checkbox => checkbox.checked = value);
+})">
     <!-- Modal -->
-
     <div x-show="runSchedulerDialog" x-cloak x-on:keydown.escape.prevent.stop="runSchedulerDialog = false" role="dialog"
         aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto">
         <!-- Overlay -->
@@ -23,10 +24,6 @@
                 class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
                 <!-- Title -->
                 <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
-                    {% comment %} <div
-                        class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
-                        <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
-                    </div> {% endcomment %}
                     <p class="text-[#5E6278] font-semibold text-xl">Scheduler has been started</p>
                     <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">
                         Come after some time and check the result on the same page.
@@ -43,11 +40,12 @@
 
     {% if rows %}
     <table class="w-full text-sm text-center" id="all-{{ model_name }}s-table" x-cloak>
-        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
+        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
             <tr class="text-[#181C32]">
                 <th scope="col" class="p-4">
                     <div class="flex items-center">
-                        <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                        <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
+                            x-model="selectAll">
                     </div>
                 </th>
                 {% for header in headers %}
@@ -81,8 +79,7 @@
                             <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
                                 <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
                             </div>
-                            <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{
-                                model_title }} model instance with id {{ row.0 }}</p>
+                            <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{ model_title }} model instance with id {{ row.0 }}</p>
                         </div>
                         <!-- Buttons -->
                         <div class="px-9 py-5 flex justify-center items-center gap-3">
@@ -107,8 +104,7 @@
                         <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                     </div>
                 </td>
-                {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{%
-                endfor %}
+                {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
                 {% if show_actions %}
                 <td class="flex justify-center items-center px-6 py-4">
                     {% if user|can:'crud_action_rules[0]' %}
@@ -167,6 +163,7 @@
     </div>
     {% endif %}
 </div>
+
 {% endpartialdef %}
 {% partialdef partial-search-filter %}
 <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7" x-cloak>
@@ -209,8 +206,7 @@
                 <li>
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <a href="{% url model_name %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{
-                            model_title }}</a>
+                        <a href="{% url model_name %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -227,11 +223,10 @@
     </div>
     {% if view_only %}
     <div class="flex">
-        <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md" hx-post={%
-            url 'start_scheduler_run' %} type="button" hx-confirm="Are you sure you want to start the scheduler?"
+        <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md" 
+        hx-post={% url 'start_scheduler_run' %} type="button" hx-confirm="Are you sure you want to start the scheduler?"
             @click="runSchedulerDialog = !runSchedulerDialog">{{ button_text }}</button>
     </div>
-
 
     {% else %}
     {% if user|can:'crud_action_rules[1]' %}
@@ -242,8 +237,7 @@
         {% endif %}
 
         <a href="{% url model_name|add:'_form' %}"
-            class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
-            {{ model_title | title }}</a>
+            class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New {{ model_title | title }}</a>
     </div>
     {% endif %}
     {% endif %}
@@ -273,7 +267,7 @@
             <div class="pt-6">
                 <div class="relative overflow-x-auto table-container">
                     {% with table_id="all-{{ model_name }}s-table" %}
-                    {% partial partial-table-template %}
+                        {% partial partial-table-template %}
                     {% endwith %}
                 </div>
             </div>
@@ -325,8 +319,7 @@
                     class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
                     {{ paginator.number }}
                 </a>
-                <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of {{
-                    paginator.num_pages }}</span>
+                <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of {{ paginator.num_pages }}</span>
                 {% if paginator.has_next %}
                 <a href="{% url model_name %}?page={{ paginator.next_page_number }}"
                     hx-get="{% url model_name %}?page={{ paginator.next_page_number }}"

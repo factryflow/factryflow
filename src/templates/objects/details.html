@@ -1,8 +1,6 @@
 {% extends 'base/main.html' %}
 {% load permission_tags %}
-{% block title %}
-{{ model_title }}
-{% endblock title %}
+{% block title %} {{ model_title }} {% endblock title %}
 {% load static %}
 {% load partials %}
 {% partialdef partial-form %}
@@ -12,40 +10,39 @@
     {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
     <div class="md:flex md:flex-wrap -mx-3">
         {% for field in form %}
-        {% if field.field.widget.input_type == 'checkbox' %}
-        <div class="md:w-1/2 px-3 mb-6 mt-6">
-            <div class="flex items-center">
-                <div class="w-1/8">
-                    {{ field }}
+            {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="md:w-1/2 px-3 mb-6 mt-6">
+                    <div class="flex items-center">
+                        <div class="w-1/8">{{ field }}</div>
+                        <div class="w-1/2 p-3 pt-5">
+                            <label for="{{ field.id_for_label }}"
+                                   class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                    </div>
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
                 </div>
-                <div class="w-1/2 p-3 pt-5">
-                    <label for="{{ field.id_for_label }}" class="block uppercase text-gray-700 text-xs font-bold mb-2">
+            {% else %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <label for="{{ field.id_for_label }}"
+                           class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                         {{ field.label }}
                         {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                     </label>
+                    {{ field }}
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
                 </div>
+            {% endif %}
+            {% if forloop.counter|divisibleby:2 and not forloop.last %}
             </div>
-            {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-            {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-        </div>
-        {% else %}
-        <div class="md:w-1/2 px-3 mb-6">
-            <label for="{{ field.id_for_label }}"
-                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                {{ field.label }}
-                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-            </label>
-            {{ field }}
-            {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-            {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-        </div>
-        {% endif %}
-        {% if forloop.counter|divisibleby:2 and not forloop.last %}
-
-        <div class="md:flex md:flex-wrap -mx-3"></div>
-        {% endif %}
+            <div class="md:flex md:flex-wrap -mx-3">
+            {% endif %}
         {% endfor %}
-
+        
         {% if custom_field_data %}
         {% for field_info in custom_field_data %}
         <div class="md:w-1/2 px-3 mb-6">
@@ -56,8 +53,8 @@
             </label>
             <input id="{{ field_info.name }}"
                 class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                type="{{ field_info.type }}" name="{{ field_info.name }}" value="{{ field_info.value }}" {% if
-                field_info.is_required %}required="required" {% endif %}>
+                type="{{ field_info.type }}" name="{{ field_info.name }}" value="{{ field_info.value }}" 
+                {% if field_info.is_required %} required="required" {% endif %}>
             {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
             {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
         </div>
@@ -73,9 +70,9 @@
         <table class="w-full text-sm text-center">
             <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
                 <tr class="text-[#181C32]">
-                    {% for form in formset_form %}
+                    {% for formset in formset_form %}
                     {% if forloop.first %}
-                    {% for field in form %}
+                    {% for field in formset %}
                     {% if not field.is_hidden %}
                     <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">{{ field.label }}</th>
                     {% endif %}
@@ -85,9 +82,9 @@
                 </tr>
             </thead>
             <tbody>
-                {% for form in formset_form %}
+                {% for formset in formset_form %}
                 <tr class="bg-white border-b">
-                    {% for field in form %}
+                    {% for field in formset %}
                     {% if not field.is_hidden %}
                     <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ field }}</td>
                     {% endif %}
@@ -139,8 +136,7 @@
         {% if show_edit_actions %}
         <div class="flex justify-end items-center p-4" x-cloak>
             <button type="button" @click="addNewRow"
-                class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">Add
-                New Line</button>
+                class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">Add {{ relation_model_name }}</button>
         </div>
         {% endif %}
         <div id="table-container">
@@ -177,8 +173,7 @@
                                 <input type="hidden" name="id" :value="row.id.value" x-model="row.id.value">
                             </template>
                             <template x-data="{'field_name': '{{ model_relation_field_name }}'}" x-if="row.isEditing">
-                                {% if id %} <input type="hidden" :name="field_name" :value="{{ id }}"
-                                    x-model="{{ id }}"> {% endif %}
+                                {% if id %} <input type="hidden" :name="field_name" :value="{{ id }}"> {% endif %}
                             </template>
                             <template x-for="(field, key) in row" :key="key">
                                 <td x-show="key !== 'isEditing' && key !== 'selected'">
@@ -205,7 +200,7 @@
                                                 <select x-model="row[key].value" :name="key"
                                                     class="border border-gray-300 rounded-md p-2">
                                                     <template x-for="option in field.options" :key="option">
-                                                        <option :value="field.value" x-text="option"></option>
+                                                        <option x-text="option"></option>
                                                     </template>
                                                 </select>
                                             </template>
@@ -228,6 +223,7 @@
                                         {% endif %}
                                         {% if user|can:'crud_action_rules[3]' %}
                                         <button type="button"
+                                            @click="deleteRow(rowID)"
                                             :hx-delete="`{% url 'delete_'|add:model_name_for_crud 0 %}`.replace('/0/', '/' + rowID + '/')"
                                             hx-target="#model-relation-editable-table" hx-swap="outerHTML"
                                             class="font-medium text-blue-600 text-blue-500 hover:underline">
@@ -258,7 +254,7 @@
             </table>
             {% else %}
             <div class="flex justify-center items-center h-[300px]">
-                <p class="text-[#7E8299] font-normal text-lg">No {{ relation_model_name }} found for {{ model_title }}
+                <p class="text-[#7E8299] font-normal text-lg">{{ relation_model_name }} not found for {{ model_title }}
                 </p>
             </div>
             {% endif %}
@@ -321,8 +317,7 @@
             <li>
                 <div class="flex items-center">
                     <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                    <a href="{% url model_name %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{
-                        model_title }}</a>
+                    <a href="{% url model_name %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                 </div>
             </li>
             <li>
@@ -381,11 +376,6 @@
     </div>
     {% endif %}
     <script>
-        function removeFormsetForm(button) {
-            document.getElementById('id_criteria-TOTAL_FORMS').value = parseInt(document.getElementById('id_criteria-TOTAL_FORMS').value) - 1;
-            button.parentNode.parentNode.remove();
-        };
-
         function subModelRelationData(initialRows = [], initialHeaders = []) {
             // to be used in x-data for tableData
             return {
@@ -395,25 +385,35 @@
 
                 currentPage: 1,
                 rowsPerPage: 5,
+
                 get totalPages() {
+                    // Calculate total pages
                     return Math.ceil(this.rows.length / this.rowsPerPage);
                 },
                 get paginatedRows() {
+                    // Calculate start and end index of rows
                     const start = (this.currentPage - 1) * this.rowsPerPage;
                     const end = start + this.rowsPerPage;
                     return this.rows.slice(start, end);
                 },
                 get startIndex() {
+                    // Calculate start index of rows
                     return (this.currentPage - 1) * this.rowsPerPage + 1;
                 },
                 get endIndex() {
+                    // Calculate end index of rows
                     return Math.min(this.currentPage * this.rowsPerPage, this.rows.length);
                 },
+
                 selectAll: false,
+
+                // Select all rows
                 toggleSelectAll() {
                     this.selectAll = !this.selectAll;
                     this.paginatedRows.forEach(row => row.selected = this.selectAll);
                 },
+
+                // Edit row data
                 editRow(index) {
                     this.paginatedRows.forEach((row, i) => {
                         if (i !== index) {
@@ -423,10 +423,43 @@
                     this.paginatedRows[index].isEditing = true;
                 },
 
+                // Cancel editing row
                 cancelEdit(index) {
                     this.paginatedRows[index].isEditing = false;
                 },
 
+                // Update row data after saving or deleting
+                updateRowData(responseData) {
+                    this.rows = this.rows.map(row => {
+                        if (row.id.value === responseData.id) {
+                            return { ...responseData, isEditing: false, selected: false };
+                        }
+                        return row;
+                    });
+                },
+
+                // Save row data
+                async saveRow(index, saveUrl) {
+                    const rowData = this.paginatedRows[index];
+                    const formData = new FormData();
+                    for (const key in rowData) {
+                        if (key !== 'isEditing' && key !== 'selected') {
+                            formData.append(key, rowData[key].value);
+                        }
+                    }
+
+                    const response = await fetch(saveUrl, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        this.updateRowData(responseData);
+                    }
+                },
+
+                // Add new row to the table
                 addNewRow() {
                     this.paginatedRows.forEach(row => row.isEditing = false);
 
@@ -444,16 +477,32 @@
                     this.rows.push(newRow);
                     this.currentPage = this.totalPages;
                 },
+
+                // Go to the previous page
                 prevPage() {
                     if (this.currentPage > 1) {
                         this.currentPage--;
                     }
                 },
+
+                // Go to the next page
                 nextPage() {
                     if (this.currentPage < this.totalPages) {
                         this.currentPage++;
                     }
                 },
+
+                // Delete row from the table
+                async deleteRow(rowID, deleteUrl) {
+                    const response = await fetch(deleteUrl.replace('/0/', `/${rowID}/`), {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        this.rows = this.rows.filter(row => row.id.value !== rowID);
+                        this.currentPage = Math.min(this.currentPage, this.totalPages);
+                    }
+                }
             }
         }
 

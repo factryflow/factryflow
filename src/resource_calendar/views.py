@@ -177,11 +177,11 @@ OPERATIONAL_EXCEPTION_TYPE_VIEWS = CRUDView(
 
 OPERATIONAL_EXCEPTION_MODEL_FIELDS = [
     "id",
-    "start_datetime",
-    "end_datetime",
+    "resource",
     "operational_exception_type",
     "weekly_shift_template",
-    "resource",
+    "start_datetime",
+    "end_datetime",
     "notes",
 ]
 
@@ -197,11 +197,11 @@ OPERATIONAL_EXCEPTION_SEARCH_FIELDS = [
 
 OPERATIONAL_EXCEPTION_TABLE_HEADERS = [
     "ID",
-    "Start Datetime",
-    "End Datetime",
+    "Resource",
     "Operational Exception Type",
     "Weekly Shift Template",
-    "Resource",
+    "Start Datetime",
+    "End Datetime",
     "Notes",
 ]
 
