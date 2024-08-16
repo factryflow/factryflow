@@ -573,10 +573,13 @@ class JobGanttChartService:
         job_data = []
         jobs = Job.objects.prefetch_related("tasks")
 
+        gantt_pid = 0
+
         for job in jobs:
+            job_pid = gantt_pid
             job_data.append(
                 {
-                    "pID": job.id,
+                    "pID": job_pid,
                     "pName": job.name,
                     "pStart": "",
                     "pEnd": "",
@@ -596,6 +599,9 @@ class JobGanttChartService:
                     "pPlanEnd": job.planned_end_datetime,
                 }
             )
+
+            gantt_pid += 1
+
             for task in job.tasks.all():
                 if hasattr(task, "taskresourceassigment"):
                     resource_name = task.taskresourceassigment.resource.name
@@ -604,7 +610,7 @@ class JobGanttChartService:
 
                 job_data.append(
                     {
-                        "pID": task.id,
+                        "pID": gantt_pid,
                         "pName": task.name,
                         "pStart": "",
                         "pEnd": "",
@@ -614,7 +620,7 @@ class JobGanttChartService:
                         "pRes": resource_name,
                         "pComp": 0,
                         "pGroup": 0,
-                        "pParent": job.id,
+                        "pParent": job_pid,
                         "pOpen": 1,
                         "pDepend": list(task.predecessors.values_list("id", flat=True)),
                         "pCaption": "",
@@ -625,5 +631,7 @@ class JobGanttChartService:
                         "pPlanEnd": task.planned_end_datetime,
                     }
                 )
+
+                gantt_pid += 1
 
         return job_data
