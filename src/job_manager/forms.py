@@ -191,6 +191,8 @@ class TaskForm(forms.ModelForm):
             "duration",
             "quantity",
             "run_time_per_unit",
+            "planned_start_datetime",
+            "planned_end_datetime",
             "item",
             "predecessors",
             "task_status",
@@ -208,6 +210,8 @@ class TaskForm(forms.ModelForm):
             "duration": "Duration",
             "quantity": "Quantity",
             "run_time_per_unit": "Run Time Per Unit",
+            "planned_start_datetime": "Start Date",
+            "planned_end_datetime": "End Date",
             "item": "Item",
             "task_type": "Task Type",
             "task_status": "Task Status",
@@ -258,6 +262,20 @@ class TaskForm(forms.ModelForm):
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 ",
                     "type": "number",
+                }
+            ),
+            "planned_start_datetime": forms.DateTimeInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] cursor-not-allowed curs text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "datetime-local",
+                    "disabled": "disabled",
+                }
+            ),
+            "planned_end_datetime": forms.DateTimeInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] cursor-not-allowed curs text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "datetime-local",
+                    "disabled": "disabled",
                 }
             ),
             "item": forms.Select(
