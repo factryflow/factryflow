@@ -50,8 +50,8 @@ if settings.DEBUG:
     import debug_toolbar
 
 urlpatterns = [
-    path("dashboard/", dashboard, name="home"),
-    # path("chart/", chart, name="chart"),
+    path("", home, name="home"),
+    path("chart/", dashboard, name="chart"),
     path("settings/", settingsPage, name="settings"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
