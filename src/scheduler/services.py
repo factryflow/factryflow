@@ -325,10 +325,18 @@ class SchedulingService:
         )
         result = scheduler.schedule()
 
+        # convert result to dataframe
+        res_df = result.to_dataframe()
+
         # convert 'task_start' and task_end and 'resource_intervals': dict_values to time
-        for task in result.to_dict():
-            task["task_start"] = self._int_to_datetime(task["task_start"])
-            task["task_end"] = self._int_to_datetime(task["task_end"])
+        res_df["planned_task_start"] = res_df.apply(
+            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_start"]), axis=1
+        )
+        res_df["planned_task_end"] = res_df.apply(
+            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_end"]), axis=1
+        )
+
+        print(result.to_dict())
 
             # task["resource_intervals"] = list(task["resource_intervals"])
 
@@ -377,18 +385,15 @@ class SchedulingService:
                 # check for assignments
                 scheduler_group_list = []
 
-                # for (
-                #     resource_group
-                # ) in rule_assignment.task.assignmentconstraint.resource_group.all():
-
                 if hasattr(rule_assignment.task, "assignmentconstraint"):
                     assignment_constraint = rule_assignment.task.assignmentconstraint
                     resource_count = assignment_constraint.resource_count
-                    resource_group = assignment_constraint.resource_group
                     scheduler_assignment = None
 
+                    assigned_resources = assignment_constraint.resource_group.resources.all() if assignment_constraint.resource_group else assignment_constraint.resources.all()
+
                     group_resources = []
-                    for resource in resource_group.resources.all():
+                    for resource in assigned_resources:
                         available_windows = (
                             self.weekly_shift_templates_windows_dict.get(
                                 resource.weekly_shift_template.id, []
@@ -440,10 +445,11 @@ class SchedulingService:
             task=task
         ).first()
 
-        print(f"get_task_constraints TASK: {task}")
-
         if constraint_resource_tasks:
-            for resource in constraint_resource_tasks.resources.all():
+            # if resources is not empty, get all resources from the resources field else get all resources from the resource_group field
+            assigned_resources = constraint_resource_tasks.resource_group.resources.all() if constraint_resource_tasks.resource_group else constraint_resource_tasks.resources.all()
+
+            for resource in assigned_resources:
                 available_windows = self.weekly_shift_templates_windows_dict.get(
                     resource.weekly_shift_template.id, []
                 )
@@ -455,7 +461,6 @@ class SchedulingService:
 
                 constraints.append(resource_data)
 
-        print(f"get_task_constraints CONSTRAINTS: {constraints}")
         return constraints
 
     # Convert periods to time
