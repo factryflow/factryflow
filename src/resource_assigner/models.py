@@ -1,9 +1,8 @@
-from django.core.exceptions import ValidationError
 from common.models import BaseModel, BaseModelWithExtras
+from django.core.exceptions import ValidationError
 from django.db import models
-from ordered_model.models import OrderedModel
-
 from job_manager.models import Task, WorkCenter
+from ordered_model.models import OrderedModel
 from resource_manager.models import Resource, ResourceGroup
 
 
@@ -13,18 +12,15 @@ class TaskResourceAssigment(BaseModel):
     """
 
     task = models.OneToOneField(Task, on_delete=models.DO_NOTHING)
-    assigment_rule = models.ForeignKey(
-        "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
-    )
-    resource = models.ForeignKey(
-        Resource, on_delete=models.DO_NOTHING, blank=True, null=True
+    resources = models.ManyToManyField(
+        Resource, blank=True, related_name="task_resource_assignments"
     )
 
     class Meta:
         db_table = "task_resource_assigment"
 
     def __str__(self):
-        return f"{self.task} - {self.resource}"
+        return f"{self.task.name}"
 
 
 class AssigmentRule(BaseModelWithExtras, OrderedModel):

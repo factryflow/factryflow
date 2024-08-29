@@ -330,24 +330,63 @@ class SchedulingService:
 
         # convert 'task_start' and task_end and 'resource_intervals': dict_values to time
         res_df["planned_task_start"] = res_df.apply(
-            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_start"]), axis=1
-        )
-        res_df["planned_task_end"] = res_df.apply(
-            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_end"]), axis=1
+            lambda scheduled_task: str(
+                self._int_to_datetime(scheduled_task["task_start"])
+            ),
+            axis=1,
         )
 
+        res_df["planned_task_end"] = res_df.apply(
+            lambda scheduled_task: str(
+                self._int_to_datetime(scheduled_task["task_end"])
+            ),
+            axis=1,
+        )
+
+        # breakpoint()
         print(result.to_dict())
 
-            # task["resource_intervals"] = list(task["resource_intervals"])
+        # task["resource_intervals"] = list(task["resource_intervals"])
 
-            # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
+        # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
 
         # save to TaskResourceAssigment model
-        # Add start datetime and end datetime to the job
-        # Job start time is earliest task start time
-        # Job end time is latest task end time
+        task_resource_assignments = []
 
-        return result.to_dict()
+        for task in result.to_dict():
+            task_id = task["task_id"]
+
+            # Update task planned start and end datetime
+            task_obj = Task.objects.get(id=task_id)
+            task_obj.planned_start_datetime = self._int_to_datetime(
+                int(task["task_start"])
+            )
+            task_obj.planned_end_datetime = self._int_to_datetime(int(task["task_end"]))
+            task_obj.save()
+
+            resource_ids = task["assigned_resource_ids"]
+            resources = Resource.objects.filter(id__in=resource_ids)
+
+            # Create TaskResourceAssigment object
+            task_resource_assignment = TaskResourceAssigment(task_id=task_id)
+            task_resource_assignment.save()
+            task_resource_assignment.resources.set(resources)
+            task_resource_assignments.append(task_resource_assignment)
+
+            # Set Task Job planned start and end datetime
+            if task_obj == Task.objects.filter(job=task_obj.job).earliest(
+                "planned_start_datetime"
+            ):
+                task_obj.job.planned_start_datetime = task_obj.planned_start_datetime
+                task_obj.job.save()
+
+            if task_obj == Task.objects.filter(job=task_obj.job).latest(
+                "planned_end_datetime"
+            ):
+                task_obj.job.planned_end_datetime = task_obj.planned_end_datetime
+                task_obj.job.save()
+
+        return res_df.to_dict("records")
 
     def _create_scheduler_task_objects(self, resources_dict: dict):
         tasks = Task.objects.filter(job__isnull=False)
@@ -390,7 +429,11 @@ class SchedulingService:
                     resource_count = assignment_constraint.resource_count
                     scheduler_assignment = None
 
-                    assigned_resources = assignment_constraint.resource_group.resources.all() if assignment_constraint.resource_group else assignment_constraint.resources.all()
+                    assigned_resources = (
+                        assignment_constraint.resource_group.resources.all()
+                        if assignment_constraint.resource_group
+                        else assignment_constraint.resources.all()
+                    )
 
                     group_resources = []
                     for resource in assigned_resources:
@@ -447,7 +490,11 @@ class SchedulingService:
 
         if constraint_resource_tasks:
             # if resources is not empty, get all resources from the resources field else get all resources from the resource_group field
-            assigned_resources = constraint_resource_tasks.resource_group.resources.all() if constraint_resource_tasks.resource_group else constraint_resource_tasks.resources.all()
+            assigned_resources = (
+                constraint_resource_tasks.resource_group.resources.all()
+                if constraint_resource_tasks.resource_group
+                else constraint_resource_tasks.resources.all()
+            )
 
             for resource in assigned_resources:
                 available_windows = self.weekly_shift_templates_windows_dict.get(

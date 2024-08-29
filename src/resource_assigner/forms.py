@@ -26,8 +26,7 @@ class TaskResourceAssigmentForm(forms.ModelForm):
         ]
         labels = {
             "task": "Task",
-            "assigment_rule": "Assigment Rule",
-            "resource": "Resource",
+            "resources": "Resources",
         }
         widgets = {
             "task": forms.Select(
@@ -35,12 +34,7 @@ class TaskResourceAssigmentForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "assigment_rule": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resource": forms.Select(
+            "resources": forms.SelectMultiple(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
