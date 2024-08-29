@@ -330,17 +330,17 @@ class SchedulingService:
 
         # convert 'task_start' and task_end and 'resource_intervals': dict_values to time
         res_df["planned_task_start"] = res_df.apply(
-            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_start"]), axis=1
+            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_start"]),
+            axis=1,
         )
         res_df["planned_task_end"] = res_df.apply(
-            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_end"]), axis=1
+            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_end"]),
+            axis=1,
         )
 
-        print(result.to_dict())
+        # task["resource_intervals"] = list(task["resource_intervals"])
 
-            # task["resource_intervals"] = list(task["resource_intervals"])
-
-            # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
+        # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
 
         # save to TaskResourceAssigment model
         # Add start datetime and end datetime to the job
@@ -390,7 +390,11 @@ class SchedulingService:
                     resource_count = assignment_constraint.resource_count
                     scheduler_assignment = None
 
-                    assigned_resources = assignment_constraint.resource_group.resources.all() if assignment_constraint.resource_group else assignment_constraint.resources.all()
+                    assigned_resources = (
+                        assignment_constraint.resource_group.resources.all()
+                        if assignment_constraint.resource_group
+                        else assignment_constraint.resources.all()
+                    )
 
                     group_resources = []
                     for resource in assigned_resources:
@@ -447,7 +451,11 @@ class SchedulingService:
 
         if constraint_resource_tasks:
             # if resources is not empty, get all resources from the resources field else get all resources from the resource_group field
-            assigned_resources = constraint_resource_tasks.resource_group.resources.all() if constraint_resource_tasks.resource_group else constraint_resource_tasks.resources.all()
+            assigned_resources = (
+                constraint_resource_tasks.resource_group.resources.all()
+                if constraint_resource_tasks.resource_group
+                else constraint_resource_tasks.resources.all()
+            )
 
             for resource in assigned_resources:
                 available_windows = self.weekly_shift_templates_windows_dict.get(
