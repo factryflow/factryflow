@@ -666,6 +666,7 @@ class CustomTableView:
         self.status_classes = status_classes
         self.order_by_field = order_by_field
 
+    @property
     def all_instances(self):
         """
         Retrieve all instances of the model.
@@ -673,7 +674,7 @@ class CustomTableView:
         if hasattr(self.model, self.order_by_field):
             return self.model.objects.all().order_by(self.order_by_field)
 
-        return self.model.objects.all().order_by("-id")
+        return self.model.objects.all().order_by("id")
 
     def get_custom_field_json_data(self, instance=None):
         # get custom field json data in two rows one is headers which are keys(convert in captilize and replace "_" with " ", and values as data)
@@ -826,7 +827,7 @@ class CustomTableView:
         Returns:
             List: Filtered instances based on the provided status and search query.
         """
-        all_instances = self.all_instances()
+        all_instances = self.all_instances
         if status_filter != "all":
             all_instances = [
                 instance
@@ -892,12 +893,7 @@ class CustomTableView:
         for instance in paginated_data.object_list:
             row_data = []
             for field in self.fields:
-                if field == "order":
-                    # to get order field value and increment it by 1
-                    value = getattr(instance, field) + 1
-                    row_data.append(value)
-
-                elif "status" in field:
+                if "status" in field:
                     value = (
                         f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
                         f'{getattr(instance, "get_" + self.model_name + "_status_display")() if hasattr(instance, "get_" + self.model_name + "_status_display") else self.status_classes.get(getattr(instance, field))}</span>',

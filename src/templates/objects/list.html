@@ -42,12 +42,12 @@
     <table class="w-full text-sm text-center" id="all-{{ model_name }}s-table" x-cloak>
         <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
             <tr class="text-[#181C32]">
-                <!-- <th scope="col" class="p-4">
+                <th scope="col" class="p-4">
                     <div class="flex items-center">
                         <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
                             x-model="selectAll">
                     </div>
-                </th> -->
+                </th>
                 {% for header in headers %}
                 <th scope="col" class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
                 {% endfor %}
@@ -99,20 +99,12 @@
             </div>
             {% endif %}
             <tr class="bg-white border-b">
-                <!-- <td class="w-4 p-4">
+                <td class="w-4 p-4">
                     <div class="flex items-center">
                         <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                     </div>
-                </td> -->
-                {% for cell in row %}
-                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
-                        {% if not cell %}
-                            <span class="text-[#7E8299]">None</span>
-                        {% else %}
-                            {{ cell|safe }}
-                        {% endif %}
-                    </td>
-                {% endfor %}
+                </td>
+                {% for cell in row %}<td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ cell|safe }}</td>{% endfor %}
                 {% if show_actions %}
                 <td class="flex justify-center items-center px-6 py-4">
                     {% if user|can:'crud_action_rules[0]' %}
