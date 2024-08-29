@@ -16,7 +16,7 @@
                         <div class="w-1/8">{{ field }}</div>
                         <div class="w-1/2 p-3 pt-5">
                             <label for="{{ field.id_for_label }}"
-                                   class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                class="block uppercase text-gray-700 text-xs font-bold mb-2">
                                 {{ field.label }}
                                 {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                             </label>
@@ -96,7 +96,7 @@
                             onclick="removeField(this)"
                             {% if forloop.first %} disabled {% endif %}
                             >
-                                Delete
+                                Remove
                         </button>
                     </td>
                 </tr>
@@ -251,7 +251,7 @@
                                             class="font-medium text-green-600 text-green-500 hover:underline">
                                             <img 
                                                 @click="saveRow(index)"
-                                                src="{% static 'images/save.svg' %}" 
+                                                src="{% static 'images/Save.svg' %}" 
                                                 alt="Save" 
                                             />
                                         </button>

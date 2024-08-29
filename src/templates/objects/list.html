@@ -4,7 +4,7 @@
 {{ model_title }}
 {% endblock title %}
 {% load partials %}
-{% load static %}
+{% load static %}d345580d3f13838ff285cb81b8ca0f83f1d83a2d
 {% partialdef partial-table-template %}
 <div x-data="{ runSchedulerDialog: false, showModal: false, selectAll: false }" x-init="$watch('selectAll', value => {
     document.querySelectorAll('#all-{{ model_name }}s-table tbody input[type=checkbox]').forEach(checkbox => checkbox.checked = value);
