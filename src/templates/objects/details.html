@@ -38,8 +38,7 @@
                 </div>
             {% endif %}
             {% if forloop.counter|divisibleby:2 and not forloop.last %}
-            </div>
-            <div class="md:flex md:flex-wrap -mx-3">
+            <div class="md:flex md:flex-wrap -mx-3"></div>
             {% endif %}
         {% endfor %}
         
@@ -96,7 +95,7 @@
                             onclick="removeField(this)"
                             {% if forloop.first %} disabled {% endif %}
                             >
-                                Delete
+                                Remove
                         </button>
                     </td>
                 </tr>
@@ -117,14 +116,16 @@
     <div class="flex justify-left mt-6 space-x-4">
         <button
             class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-            Cancel
+            <a href="{% url model_name %}" class="text-[#181C32]">Cancel</a>
         </button>
         {% if view_mode %}
         {% if user|can:'crud_action_rules[0]' %}
-        <a href="{{ edit_url }}"
-            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-            {{ button_text }}
-        </a>
+        <button>
+            <a href="{{ edit_url }}"
+                class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                {{ button_text }}
+            </a>
+        </button>
         {% endif %}
         {% else %}
         {% if user|can:'crud_action_rules[1]' %}
@@ -143,7 +144,7 @@
     {% csrf_token %}
     <div id="model-relation-editable-table" class="relative overflow-x-auto shadow-md sm:rounded-lg"
         x-data="subModelRelationData({{rows|safe}}, {{headers|safe}})" x-cloak>
-        {% if show_edit_actions %}
+        {% if show_edit_actions and not view_mode  %}
         <div class="flex justify-end items-center p-4" x-cloak>
             <button type="button" @click="addNewRow"
                 class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">Add {{ relation_model_name }}</button>
@@ -154,12 +155,12 @@
             <table class="w-full text-sm text-center" x-cloak>
                 <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
                     <tr class="text-[#181C32]">
-                        <th scope="col" class="p-4">
+                        <!-- <th scope="col" class="p-4">
                             <div class="flex items-center">
                                 <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
                                     @change="toggleSelectAll">
                             </div>
-                        </th>
+                        </th> -->
                         <template x-for="header in headers" :key="header">
                             <th scope="col" class="px-6 py-4 font-sans font-semibold text-sm leading-3">
                                 <span x-text="header"></span>
@@ -173,12 +174,12 @@
                 <tbody>
                     <template x-for="(row, index) in paginatedRows" :key="index">
                         <tr class="bg-white border-b">
-                            <td class="w-4 p-4">
+                            <!-- <td class="w-4 p-4">
                                 <div class="flex items-center">
                                     <input type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
                                         x-model="row.selected">
                                 </div>
-                            </td>
+                            </td> -->
                             <template x-if="row.isEditing && row.id.value != ''">
                                 <input type="hidden" name="id" :value="row.id.value" x-model="row.id.value">
                             </template>
@@ -390,6 +391,10 @@
     </div>
     {% endif %}
     <script>
+        function removeField(button) {
+            button.parentNode.parentNode.remove();
+        };
+        
         function subModelRelationData(initialRows = [], initialHeaders = []) {
             // to be used in x-data for tableData
             return {

@@ -634,7 +634,7 @@ class CustomTableView:
         status_filter_field=None,
         tailwind_classes=None,
         status_classes={},
-        order_by_field="id",
+        order_by_field="",
     ):
         """
         Args:
@@ -674,7 +674,7 @@ class CustomTableView:
         if hasattr(self.model, self.order_by_field):
             return self.model.objects.all().order_by(self.order_by_field)
 
-        return self.model.objects.all().order_by("id")
+        return self.model.objects.all().order_by("id")[::-1]
 
     def get_custom_field_json_data(self, instance=None):
         # get custom field json data in two rows one is headers which are keys(convert in captilize and replace "_" with " ", and values as data)
@@ -893,7 +893,11 @@ class CustomTableView:
         for instance in paginated_data.object_list:
             row_data = []
             for field in self.fields:
-                if "status" in field:
+                if field == "order":
+                    # to get order field value and increment it by 1
+                    value = getattr(instance, field) + 1
+                    row_data.append(value)
+                elif "status" in field:
                     value = (
                         f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
                         f'{getattr(instance, "get_" + self.model_name + "_status_display")() if hasattr(instance, "get_" + self.model_name + "_status_display") else self.status_classes.get(getattr(instance, field))}</span>',
