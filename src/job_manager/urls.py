@@ -1,14 +1,16 @@
 from django.urls import path
 
+from job_manager.api.chart_data import JobGanttAPIView
+
 from .views import (
-    JOB_VIEWS,
-    TASK_VIEWS,
-    DEPENDENCY_VIEWS,
-    JOB_TYPE_VIEWS,
-    TASK_TYPE_VIEWS,
     DEPENDENCY_TYPE_VIEWS,
-    WORK_CENTER_VIEWS,
+    DEPENDENCY_VIEWS,
     ITEM_VIEWS,
+    JOB_TYPE_VIEWS,
+    JOB_VIEWS,
+    TASK_TYPE_VIEWS,
+    TASK_VIEWS,
+    WORK_CENTER_VIEWS,
 )
 
 urlpatterns = [
@@ -215,5 +217,10 @@ urlpatterns = [
         "items/view/<int:id>/field=<str:field>",
         ITEM_VIEWS.show_model_form,
         name="items_relationships",
+    ),
+    path(
+        "api/job/gantt",
+        JobGanttAPIView.as_view(),
+        name="job_gantt_api",
     ),
 ]

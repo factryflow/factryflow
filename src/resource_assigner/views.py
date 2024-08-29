@@ -1,9 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
-
-from common.views import CRUDView, CustomTableView
 from common.utils.views import add_notification_headers
+from common.views import CRUDView, CustomTableView
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse
+from job_manager.models import JobStatusChoices, Task, TaskStatusChoices
 
 # Create your views here.
 from .forms import (
