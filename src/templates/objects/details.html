@@ -63,7 +63,7 @@
 
     {% if button_text == "Create" %}
     {% if formset_form %}
-    <div class="flex flex-wrap overflow-x-auto h-auto max-h-80">
+    <div class="flex flex-wrap overflow-x-auto h-auto max-h-80 mt-5">
         {{ formset_form.management_form }}
 
         <table class="w-full text-sm text-center">
@@ -78,6 +78,7 @@
                     {% endfor %}
                     {% endif %}
                     {% endfor %}
+                    <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,17 +86,20 @@
                 <tr class="bg-white border-b">
                     {% for field in formset %}
                     {% if not field.is_hidden %}
-                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">{{ field }}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299] text-center">{{ field }}</td>
                     {% endif %}
                     {% endfor %}
-                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                    <td class="px-6 py-4 text-sm font-medium text-center text-[#7E8299]">
                         <button 
                             type="button" 
                             class="removeButton {% if forloop.first %} text-grey-500 {% else %} text-red-500 {% endif %} bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1" 
                             onclick="removeField(this)"
                             {% if forloop.first %} disabled {% endif %}
                             >
+                            <a
+                                href="{{ remove_formset_url }}" hx-get="{{ remove_formset_url }}" hx-swap="outerHTML" hx-target="body" {% if forloop.first %} style="pointer-events: none;" {% endif %}>
                                 Remove
+                            </a>
                         </button>
                     </td>
                 </tr>
@@ -394,7 +398,7 @@
         function removeField(button) {
             button.parentNode.parentNode.remove();
         };
-        
+
         function subModelRelationData(initialRows = [], initialHeaders = []) {
             // to be used in x-data for tableData
             return {

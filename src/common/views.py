@@ -143,7 +143,7 @@ class CRUDView:
         page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator = self.table_view.table_rows(
+        table_rows, paginator, num_pages = self.table_view.table_rows(
             status_filter=status_filter,
             search_query=search_query,
             page_number=page_number,
@@ -168,6 +168,7 @@ class CRUDView:
             "view_only": self.view_only,
             "button_text": self.button_text,
             "ordered_model": self.ordered_model,
+            "num_pages": num_pages,
         }
 
         return render(request, template_name, context)
@@ -861,13 +862,14 @@ class CustomTableView:
         """
         instances = self.filtered_instances(status_filter, search_query)
         paginator = Paginator(instances, self.page_size)
+        num_pages = paginator.num_pages
         try:
             paginated_instances = paginator.page(page_number)
         except PageNotAnInteger:
             paginated_instances = paginator.page(1)
         except EmptyPage:
             paginated_instances = paginator.page(paginator.num_pages)
-        return paginated_instances
+        return paginated_instances, num_pages
 
     def table_rows(
         self,
@@ -885,7 +887,7 @@ class CustomTableView:
         Returns:
             List: Rows of data for the table based on the filtered instances.
         """
-        paginated_data = self.get_paginated_instances(
+        paginated_data, num_pages = self.get_paginated_instances(
             page_number, status_filter, search_query
         )
 
@@ -918,7 +920,7 @@ class CustomTableView:
 
             rows.append(row_data)
 
-        return rows, paginated_data
+        return rows, paginated_data, num_pages
 
     def get_status_colored_text(self, model_status):
         """
