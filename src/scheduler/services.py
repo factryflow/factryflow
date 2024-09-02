@@ -338,15 +338,6 @@ class SchedulingService:
             axis=1,
         )
 
-        # task["resource_intervals"] = list(task["resource_intervals"])
-
-        # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
-
-        # save to TaskResourceAssigment model
-        # Add start datetime and end datetime to the job
-        # Job start time is earliest task start time
-        # Job end time is latest task end time
-
         return result.to_dict()
 
     def _create_scheduler_task_objects(self, resources_dict: dict):

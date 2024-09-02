@@ -254,7 +254,7 @@
                                             class="font-medium text-green-600 text-green-500 hover:underline">
                                             <img 
                                                 @click="saveRow(index)"
-                                                src="{% static 'images/save.svg' %}" 
+                                                src="{% static 'images/checkmark.svg' %}" 
                                                 alt="Save" 
                                             />
                                         </button>
@@ -479,7 +479,9 @@
                     if (response.ok) {
                         const responseData = await response.json();
                         this.updateRowData(responseData);
-                    }
+                    };
+
+                    this.paginatedRows[index].isEditing = false;
                 },
 
                 // Add new row to the table

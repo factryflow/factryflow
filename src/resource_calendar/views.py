@@ -45,7 +45,7 @@ WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "model_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
         "show_edit_actions": False,
     },
 }
@@ -105,7 +105,7 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "model_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
     },
 }
 
@@ -147,7 +147,7 @@ OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "model_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
         "show_edit_actions": False,
     },
 }
@@ -211,7 +211,7 @@ OPERATIONAL_EXCEPTION_MODEL_RELATION_FIELDS = {
         "related_name": "history",
         "model_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
     },
 }
 

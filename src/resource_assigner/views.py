@@ -123,7 +123,7 @@ ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
         "show_edit_actions": False,
     },
 }
@@ -252,7 +252,7 @@ ASSIGNMENT_CONSTRAINT_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "History Date", "History Type", "History User"],
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
         "show_edit_actions": False,
     },
 }

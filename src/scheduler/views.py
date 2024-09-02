@@ -87,7 +87,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
             "History User",
         ],
         "fields": [
-            "id",
+            "history_id",
             "resource",
             "interval_start",
             "interval_end",
@@ -161,7 +161,7 @@ RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
             "History User",
         ],
         "fields": [
-            "id",
+            "history_id",
             "resource",
             "task",
             "interval_start",

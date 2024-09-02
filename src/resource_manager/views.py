@@ -35,7 +35,7 @@ RESOURCE_MODEL_RELATION_FIELDS = {
     "history": {
         "model_name": "history",
         "related_name": "history",
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
         "headers": ["ID", "History Date", "History Type", "History User"],
         "show_edit_actions": False,
     }
@@ -89,7 +89,7 @@ RESOURCE_Group_MODEL_RELATION_FIELDS = {
     "history": {
         "model_name": "history",
         "related_name": "history",
-        "fields": ["id", "history_date", "history_type", "history_user"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
         "headers": ["ID", "History Date", "History Type", "History User"],
         "show_edit_actions": False,
     },

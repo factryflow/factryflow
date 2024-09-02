@@ -53,7 +53,7 @@ WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
-        "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
         "show_edit_actions": False,
     },
 }
@@ -92,7 +92,7 @@ JOB_TYPE_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
-        "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
         "show_edit_actions": False,
     },
 }
@@ -220,7 +220,7 @@ JOB_MODEL_RELATION_FIELDS = {
             "History Date",
         ],
         "fields": [
-            "id",
+            "history_id",
             "name",
             "history_user",
             "customer",
@@ -274,7 +274,7 @@ TASK_TYPE_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
-        "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
         "show_edit_actions": False,
     },
 }
@@ -409,7 +409,7 @@ TASK_MODEL_RELATION_FIELDS = {
             "History Date",
         ],
         "fields": [
-            "id",
+            "history_id",
             "name",
             "history_user",
             "item",
@@ -474,7 +474,7 @@ DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
-        "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
         "show_edit_actions": False,
     },
 }
@@ -603,7 +603,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "History Date",
         ],
         "fields": [
-            "id",
+            "history_id",
             "name",
             "history_user",
             "expected_close_datetime",
@@ -654,7 +654,7 @@ ITEM_MODEL_RELATION_FIELDS = {
         "model_name": "history",
         "related_name": "history",
         "headers": ["ID", "Name", "User", "Notes", "History Date"],
-        "fields": ["id", "name", "history_user", "notes", "history_date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
         "show_edit_actions": False,
     },
 }
