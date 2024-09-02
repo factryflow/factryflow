@@ -36,7 +36,7 @@ from .services import (
     JobTypeService,
 )
 
-from resource_assigner.models import TaskRuleAssignment
+from resource_assigner.models import TaskRuleAssignment, AssignmentConstraint
 
 
 # ------------------------------------------------------------------------------
@@ -341,7 +341,7 @@ TASK_TABLE_HEADERS = [
     "Status",
 ]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "RULES"]
+TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "CONSTRAINTS", "RULES"]
 TASK_MODEL_RELATION_FIELDS = {
     "dependencies": {
         "model_name": "tasks",
@@ -431,6 +431,26 @@ TASK_MODEL_RELATION_FIELDS = {
         "model_name": "task_rule_assignment",
         "headers": ["ID", "Assignment Rule", "Is Applied"],
         "fields": ["id", "assigment_rule", "is_applied"],
+        "show_edit_actions": False,
+    },
+    "constraints": {
+        "model": AssignmentConstraint,
+        "model_name": "constraint",
+        "related_name": "task",
+        "headers": [
+            "ID",
+            "Assignment Rule",
+            "Resource Group",
+            "Resource Count",
+            "Use All Resources",
+        ],
+        "fields": [
+            "id",
+            "assignment_rule",
+            "resource_group",
+            "resource_count",
+            "use_all_resources",
+        ],
         "show_edit_actions": False,
     },
 }
