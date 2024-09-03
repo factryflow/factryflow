@@ -9,6 +9,7 @@ from job_manager.models import (
     Dependency,
     DependencyType,
     Item,
+    Item,
     Job,
     JobStatusChoices,
     JobType,
@@ -572,7 +573,6 @@ class JobGanttChartService:
 
         job_data = []
         jobs = Job.objects.prefetch_related("tasks")
-        print(jobs)
         gantt_pid = 0
 
         for job in jobs:

@@ -306,12 +306,12 @@ class AssigmentRuleService:
     @transaction.atomic
     def create(
         self,
-        external_id: str,
         notes: str,
         name: str,
         description: str,
         is_active: bool,
         work_center: WorkCenter,
+        external_id: str = "",
         assignment_constraints: list[dict] = [],
         criteria: list[dict] = [],
         custom_fields: dict = None,

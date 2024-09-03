@@ -131,7 +131,7 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
             # get all assignment rules
             assignment_rules = AssigmentRule.objects.filter(
                 work_center=task.work_center, is_active=True
-            )
+            ).order_by("order")
 
             if assignment_rules:
                 for rule in assignment_rules:
@@ -149,11 +149,25 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                                 matching_task_count += 1
 
                     if criteria_match:
-                        # if criteria match store it in the TaskRuleAssignment model
-                        TaskRuleAssignment.objects.create(
-                            task=task,
-                            assigment_rule=rule,
+                        is_rule_applied = True if rule.order == 0 else False
+
+                        task_rule_instance = TaskRuleAssignment.objects.filter(
+                            assigment_rule=rule, task=task
                         )
+
+                        if task_rule_instance.exists():
+                            task_rule_instance.first().is_applied = is_rule_applied
+                            task_rule_instance.first().save()
+
+                        else:
+                            # if criteria match store it in the TaskRuleAssignment model
+                            task_rule_instance = TaskRuleAssignment.objects.create(
+                                task=task,
+                                assigment_rule=rule,
+                                is_applied=is_rule_applied,
+                            )
+                            task_rule_instance.save()
+
                     else:
                         # if not criteria match, delete the TaskRuleAssignment model instance if exists
                         task_rule_assignment = TaskRuleAssignment.objects.filter(
