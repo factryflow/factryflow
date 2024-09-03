@@ -53,7 +53,7 @@ class FieldType(models.TextChoices):
     NUMBER = "number", "number"
     DATE = "date", "Date"
     TIME = "time", "Time"
-    DATETIME = "datetime", "Datetime"
+    DATETIME = "datetime-local", "Datetime-local"
     # Add more field types here if required
 
     @classmethod
@@ -74,7 +74,7 @@ class CustomField(BaseModel):
     name = models.CharField(max_length=150)
     label = models.CharField(max_length=150)
     description = models.TextField(blank=True)
-    field_type = models.CharField(max_length=10, choices=FieldType.choices)
+    field_type = models.CharField(max_length=20, choices=FieldType.choices)
     is_required = models.BooleanField(default=False)
 
     history = HistoricalRecords(table_name="custom_field_history")

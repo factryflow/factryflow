@@ -36,24 +36,26 @@ from .services import (
     JobTypeService,
 )
 
-from resource_assigner.models import TaskRuleAssignment
+from resource_assigner.models import TaskRuleAssignment, AssignmentConstraint
 
 
 # ------------------------------------------------------------------------------
 # WorkCenter Views
 # ------------------------------------------------------------------------------
 
-WORK_CENTER_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
+WORK_CENTER_MODEL_FIELDS = ["id", "name", "notes"]
 WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
-WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "External ID", "Notes"]
+WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "Notes"]
 
 WORK_CENTER_MODEL_RELATION_HEADERS = ["HISTORY"]
 WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 WorkCenterTableView = CustomTableView(
@@ -79,18 +81,20 @@ WORK_CENTER_VIEWS = CRUDView(
 # Job Type Views
 # ------------------------------------------------------------------------------
 
-JOB_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
+JOB_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-JOB_TYPE_TABLE_HEADERS = ["ID", "External ID", "Job Type Name", "Notes"]
+JOB_TYPE_TABLE_HEADERS = ["ID", "Job Type Name", "Notes"]
 JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 JOB_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 JOB_TYPE_TABLE_VIEW = CustomTableView(
@@ -153,10 +157,11 @@ JOB_MODEL_RELATION_HEADERS = ["TASKS", "DEPENDENCIES", "HISTORY"]
 
 JOB_MODEL_RELATION_FIELDS = {
     # model_name: [model, related_name, [headers], [fields]]
-    "tasks": [
-        Task,
-        "job",
-        [
+    "tasks": {
+        "model": Task,
+        "model_name": "task",
+        "related_name": "job",
+        "headers": [
             "ID",
             "Task Name",
             "Item",
@@ -167,7 +172,7 @@ JOB_MODEL_RELATION_FIELDS = {
             "Task Type",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "item",
@@ -178,11 +183,20 @@ JOB_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
-    ],
-    "dependencies": [
-        "dependencies",
-        ["ID", "Dependency Name", "Expected Close", "Actual Close", "Type", "Status"],
-        [
+        "show_edit_actions": False,
+    },
+    "dependencies": {
+        "model_name": "dependency",
+        "related_name": "dependencies",
+        "headers": [
+            "ID",
+            "Dependency Name",
+            "Expected Close",
+            "Actual Close",
+            "Type",
+            "Status",
+        ],
+        "fields": [
             "id",
             "name",
             "expected_close_datetime",
@@ -190,10 +204,12 @@ JOB_MODEL_RELATION_FIELDS = {
             "dependency_type",
             "dependency_status",
         ],
-    ],
-    "history": [
-        "history",
-        [
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Name",
             "User",
@@ -203,8 +219,8 @@ JOB_MODEL_RELATION_FIELDS = {
             "Notes",
             "History Date",
         ],
-        [
-            "id",
+        "fields": [
+            "history_id",
             "name",
             "history_user",
             "customer",
@@ -213,7 +229,8 @@ JOB_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
-    ],
+        "show_edit_actions": False,
+    },
 }
 
 
@@ -246,18 +263,20 @@ JOB_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 
 
-TASK_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
-TASK_TYPE_TABLE_HEADERS = ["ID", "External ID", "Task Type Name", "Notes"]
+TASK_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
+TASK_TYPE_TABLE_HEADERS = ["ID", "Task Type Name", "Notes"]
 
 TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
 TASK_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 TASK_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 
@@ -322,12 +341,20 @@ TASK_TABLE_HEADERS = [
     "Status",
 ]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "RULES"]
+TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "CONSTRAINTS", "RULES"]
 TASK_MODEL_RELATION_FIELDS = {
-    "dependencies": [
-        "dependencies",
-        ["ID", "Dependency Name", "Expected Close", "Actual Close", "Type", "Status"],
-        [
+    "dependencies": {
+        "model_name": "tasks",
+        "related_name": "dependencies",
+        "headers": [
+            "ID",
+            "Dependency Name",
+            "Expected Close",
+            "Actual Close",
+            "Type",
+            "Status",
+        ],
+        "fields": [
             "id",
             "name",
             "expected_close_datetime",
@@ -335,10 +362,12 @@ TASK_MODEL_RELATION_FIELDS = {
             "dependency_type",
             "dependency_status",
         ],
-    ],
-    "predecessors": [
-        "predecessors",
-        [
+        "show_edit_actions": False,
+    },
+    "predecessors": {
+        "model_name": "tasks",
+        "related_name": "predecessors",
+        "headers": [
             "ID",
             "Predecessor Name",
             "Item",
@@ -349,7 +378,7 @@ TASK_MODEL_RELATION_FIELDS = {
             "Task Type",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "item",
@@ -360,10 +389,12 @@ TASK_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
-    ],
-    "history": [
-        "history",
-        [
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Name",
             "User",
@@ -377,8 +408,8 @@ TASK_MODEL_RELATION_FIELDS = {
             "Notes",
             "History Date",
         ],
-        [
-            "id",
+        "fields": [
+            "history_id",
             "name",
             "history_user",
             "item",
@@ -391,13 +422,37 @@ TASK_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
-    ],
-    "rules": [
-        TaskRuleAssignment,
-        "task",
-        ["ID", "Assignment Rule", "Is Applied"],
-        ["id", "assigment_rule", "is_applied"],
-    ],
+        "show_edit_actions": False,
+    },
+    "rules": {
+        "model": TaskRuleAssignment,
+        "model_name": "task_rule_assignments",
+        "related_name": "task",
+        "model_name": "task_rule_assignment",
+        "headers": ["ID", "Assignment Rule", "Is Applied"],
+        "fields": ["id", "assigment_rule", "is_applied"],
+        "show_edit_actions": False,
+    },
+    "constraints": {
+        "model": AssignmentConstraint,
+        "model_name": "constraint",
+        "related_name": "task",
+        "headers": [
+            "ID",
+            "Assignment Rule",
+            "Resource Group",
+            "Resource Count",
+            "Use All Resources",
+        ],
+        "fields": [
+            "id",
+            "assignment_rule",
+            "resource_group",
+            "resource_count",
+            "use_all_resources",
+        ],
+        "show_edit_actions": False,
+    },
 }
 
 
@@ -428,18 +483,20 @@ TASK_VIEWS = CRUDView(
 # Dependecy Type Views
 # ------------------------------------------------------------------------------
 
-DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
-DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "External ID", "Dependency Type Name", "notes"]
+DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
+DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "Dependency Type Name", "notes"]
 
 DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
 DEPENDENCY_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 DEPENDENCY_TYPE_TABLE_VIEW = CustomTableView(
@@ -495,10 +552,11 @@ DEPENDENCY_TABLE_HEADERS = [
 DEPENDENCY_MODEL_RELATION_HEADERS = ["TASKS", "JOBS", "HISTORY"]
 
 DEPENDENCY_MODEL_RELATION_FIELDS = {
-    "tasks": [
-        Task,
-        "dependencies",
-        [
+    "tasks": {
+        "model": Task,
+        "model_name": "task",
+        "related_name": "dependencies",
+        "headers": [
             "ID",
             "Task Name",
             "Item",
@@ -509,7 +567,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "Task Type",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "item",
@@ -520,11 +578,13 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
-    ],
-    "jobs": [
-        Job,
-        "dependencies",
-        [
+        "show_edit_actions": False,
+    },
+    "jobs": {
+        "model": Job,
+        "model_name": "job",
+        "related_name": "dependencies",
+        "headers": [
             "ID",
             "Job Name",
             "Description",
@@ -535,7 +595,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "Priority",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "description",
@@ -546,10 +606,12 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "priority",
             "job_status",
         ],
-    ],
-    "history": [
-        "history",
-        [
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Name",
             "User",
@@ -560,8 +622,8 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "Notes",
             "History Date",
         ],
-        [
-            "id",
+        "fields": [
+            "history_id",
             "name",
             "history_user",
             "expected_close_datetime",
@@ -571,7 +633,8 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
-    ],
+        "show_edit_actions": False,
+    },
 }
 
 DependencyTableView = CustomTableView(
@@ -600,18 +663,20 @@ DEPENDENCY_VIEWS = CRUDView(
 # Item Views
 # ------------------------------------------------------------------------------
 
-ITEM_MODEL_FIELDS = ["id", "external_id", "name", "description", "notes"]
-ITEM_TABLE_HEADERS = ["ID", "External ID", "Item Name", "Description", "Notes"]
+ITEM_MODEL_FIELDS = ["id", "name", "description", "notes"]
+ITEM_TABLE_HEADERS = ["ID", "Item Name", "Description", "Notes"]
 
 ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
 
 ITEM_MODEL_RELATION_HEADERS = ["HISTORY"]
 ITEM_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 ITEM_TABLE_VIEW = CustomTableView(

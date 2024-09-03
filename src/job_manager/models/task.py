@@ -3,6 +3,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from job_manager.models.job import Job
+
 from .item import Item
 
 
@@ -93,3 +94,10 @@ class Task(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
+
+    @property
+    def resource_count(self):
+        if hasattr(self, "taskresourceassigment"):
+            return self.taskresourceassigment.count()
+        else:
+            return 0

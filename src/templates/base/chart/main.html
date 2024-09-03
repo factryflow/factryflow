@@ -6,322 +6,56 @@
 
 {% load static %}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"
-    integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css"
-    integrity="sha512-57KPd8WI3U+HC1LxsxWPL2NKbW82g0BH+0PuktNNSgY1E50mnIc0F0cmWxdnvrWx09l8+PU2Kj+Vz33I+0WApw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.js"
-    integrity="sha512-mj3FaXymKAzsh3QgyBsejuPvzkQcAwUdLgxydNUd10YGRFY2VYrmv8FOELWR5uaxdqt/d4mGSRmJKbMHCD7U3Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.css"
-    integrity="sha512-b6CPl1eORfMoZgwWGEYWNxYv79KG0dALXfVu4uReZJOXAfkINSK4UhA0ELwGcBBY7VJN7sykwrCGQnbS8qTKhQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-<style>
-    body {
-        font-family: sans-serif;
-        /* background: #ccc; */
-    }
-
-  
-
-    /* button:hover,
-    button:focus {
-        background: #a3a3ff;
-    }
-
-    button {
-        border: solid thin grey;
-        border-radius: 3px;
-    }
-
-    button.selected {
-        background: #a3a3ff;
-    } */
-
-    /* task custom class */
-    .gantt-target .bar-milestone .bar {
-        fill: tomato;
-    }
-
-    /* bar collapsed */
-    .parent>.bar-group>.bar {
-        outline: outset 1px #a3a3ff;
-        border-radius: 2px;
-        outline-offset: 2px;
-    }
-
-    .gantt-target .details-container {
-        padding: 0px 12px;
-    }
-</style>
-
-<div class="rounded-xl bg-white px-8 py-8 w-full">
-    <div>
-        <h1 class="text-xl font-semibold text-[#5E6278] pb-8">Chart Details</h1>
-    </div>
+<script src="
+    https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js
+    "></script>
+    <link href="
+    https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.css
+    " rel="stylesheet">
 
 
-    <div class="container">
-        <div style="display: inline;" class="js-view">
-            <button type="button" data-view="Quarter Day" class="selected">Quarter Day</button>
-            <button type="button" data-view="Half Day">Half Day</button>
-            <button type="button" data-view="Day">Day</button>
-            <button type="button" data-view="Week">Week</button>
-            <button type="button" data-view="Month">Month</button>
-        </div>
-        <div style="display: inline;float: right;">
-            <button type="button" onclick="collapseAll();">Collapse all</button>
-            <button type="button" onclick="expandBars();">Expand all</button>
-        </div>
-        <div class="gantt-target"></div>
+    <div style="position:relative" class="gantt" id="GanttChartDIV"></div>
 
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
 
-</div>
-
-<script>
-    // Your Gantt chart initialization code here
-    const locale = navigator.language.substring(0, 2);
-
-    let jobs = [
-            {
-                start: new Date('2022-01-22T08:00:00'),
-                end: new Date('2022-01-23T12:00:00'),
-                name: 'Job 1',
-                id: 'Job 1',
-                // other job properties
-            },
-            {
-                start: new Date('2022-01-23T13:30:00'),
-                end: new Date('2022-01-25T16:00:00'),
-                name: 'Job 2',
-                id: 'Job 2',
-                // other job properties
-            },
-            // ... other jobs
-        ];
-
-        // Array representing tasks
-        let tasks = [
-            {
-                start: new Date('2022-01-24T13:30:00'),
-                end: new Date('2022-01-25T16:00:00'),
-                name: 'Task 1',
-                id: 'Task 1',
-                progress: 100,
-                dependencies: ['Job 1'], // Connect Task 1 to Job 1
-                // other task properties
-            },
-            {
-                start: new Date('2022-01-25T16:30:00'),
-                end: new Date('2022-01-27T10:00:00'),
-                name: 'Task 2',
-                id: 'Task 2',
-                dependencies: ['Job 1'], // Connect Task 2 to Task 1
-                // other task properties
-            },
-            // ... other tasks
-        ];
-
-        // Combine jobs and tasks into a single array
-        let allTasks = [...jobs, ...tasks];
-
-    const gantt_chart = new Gantt(".gantt-target", allTasks, {
-        on_click: function (task) {
-            toggleBars(task);
-        },
-        on_date_change: function (task, start, end) {
-            if (!task.collapsed) {
-                task.start = start;
-                task.end = end;
-            }
-        },
-        on_progress_change: function (task, progress) {
-            console.log('on_progress_change', task, progress);
-        },
-        on_view_change: function (mode) {
-            console.log(mode);
-        },
-        view_mode: 'Quarter Day',
-        language: locale,
-        popup_trigger: 'mouseover', // default 'click'
-        // custom_popup_html: function (task) {
-        //     const end_date = new Intl.DateTimeFormat().format(task._end);
-        //     return `
-        //       <div class="details-container">
-        //         <p>${task.name}</p>
-        //         <p>Expected to finish by ${end_date}<br>
-        //         ${task.progress}% completed!</p>
-        //       </div>
-        //     `;
-        // }
-    });
-
-    console.log(gantt_chart);
-
-    (function () {
-        tasks.forEach(task => {
-            task.children = gantt_chart.get_all_dependent_tasks(task.id);
-            task.display = "";
-            task.parent = "";
-            task.collapsed = "";
-        });
-        let tasks_all = {}
-        gantt_chart.tasks.forEach(item => {
-            tasks_all[item.id] = item;
-        });
-        gantt_chart.tasks_all = tasks_all;
-        gantt_chart.parents = [];
-        gantt_chart.tasks_to_display = gantt_chart.tasks;
-    })();
-
-    function toggleBars(task) {
-        let children = task.children;
-
-        let index = gantt_chart.parents.indexOf(task.id);
-        (index === -1) ? gantt_chart.parents.push(task.id): gantt_chart.parents.splice(index, 1);
-
-        gantt_chart.tasks_to_display.map(item => {
-            let indexChild = children.indexOf(item.id);
-            if (indexChild !== -1) {
-                if (!item.display && !item.parent) {
-                    item.display = "none";
-                    item.parent = task.id;
-                } else if (!item.display && item.parent) {
-                    item.display = item.display;
-                    item.parent = item.parent;
-                } else if (item.display && item.parent !== task.id) {
-                    item.display = item.display;
-                    item.parent = item.parent;
-                } else {
-                    item.display = "";
-                    item.parent = "";
+        var g = new JSGantt.GanttChart(document.getElementById('GanttChartDIV'), 'day');
+    
+        g.setOptions({
+            vCaptionType: 'Complete',  // Set to Show Caption : None,Caption,Resource,Duration,Complete,     
+            vQuarterColWidth: 36,
+            vDateTaskDisplayFormat: 'day dd month yyyy', // Shown in tool tip box
+            vDayMajorDateDisplayFormat: 'mon yyyy - Week ww',// Set format to dates in the "Major" header of the "Day" view
+            vWeekMinorDateDisplayFormat: 'dd mon', // Set format to display dates in the "Minor" header of the "Week" view
+            vLang: 'en',
+            vShowTaskInfoLink: 1, // Show link in tool tip (0/1)
+            vShowEndWeekDate: 0,  // Show/Hide the date for the last day of the week in header for daily
+            vAdditionalHeaders: { // Add data columns to your table
+                category: {
+                    title: 'Category'
+                },
+                sector: {
+                    title: 'Sector'
                 }
-            } else if (item.id === task.id) {
-                item.collapsed = (!item.collapsed) ? true : "";
-            } else if (item.id !== task.id) {
-                item.collapsed = item.collapsed;
-            }
-
-            gantt_chart.tasks_all[item.id] = item;
-
-            return item;
+            },
+            vUseSingleCell: 10000, // Set the threshold cell per table row (Helps performance for large data.
+            vFormatArr: ['Day', 'Week', 'Month', 'Quarter'], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers,
+    
         });
 
-        gantt_chart.refresh(gantt_chart.tasks_to_display.filter(task => !task.display));
 
-        let check = (gantt_chart.tasks_to_display.length !== gantt_chart.tasks.length);
-        gantt_chart.parents = !check ? [] : gantt_chart.parents;
-
-        toggleClassBars(check);
-    }
-
-    // add or remove class to element bar
-    function toggleClassBars(check) {
-        document.querySelectorAll('.bar-wrapper')
-            .forEach(el => (gantt_chart.parents.indexOf(el.dataset.id) !== -1 && check) ?
-                el.classList.add('parent') : el.classList.remove('parent')
-            );
-    }
-
-    function collapseAll() {
-        let tasks = gantt_chart.tasks_to_display ? gantt_chart.tasks_to_display : gantt_chart.tasks;
-        tasks.map(task => {
-            if (!task.collapsed) {
-                toggleBars(task);
-            }
-        });
-    }
-
-    function expandBars(task) {
-        let tasks = gantt_chart.tasks_to_display ? gantt_chart.tasks_to_display : gantt_chart.tasks;
-        let tasks_to_display;
-
-        if (!task) {
-            tasks_to_display = tasks.map(item => {
-                item.display = "";
-                item.parent = "";
-                item.collapsed = "";
-                gantt_chart.tasks_all[item.id] = item;
-                return item;
+        // to get data from the api and display it in the gantt chart
+        axios.get('http://localhost:8000/api/job/gantt')
+            .then(response => {
+            let tasks = response.data;
+            tasks.forEach(task => {
+                g.AddTaskItemObject(task);
             });
-            gantt_chart.parents = [];
-        } else {
-            let index = gantt_chart.parents.indexOf(task.id);
-            if (task.collapsed && index !== -1)
-                gantt_chart.parents.splice(index, 1);
-
-            tasks_to_display = tasks.map(item => {
-                if (task.children.indexOf(item.id) !== -1) {
-                    index = gantt_chart.parents.indexOf(item.id);
-                    if (index !== -1) gantt_chart.parents.splice(index, 1);
-
-                    item.display = "";
-                    item.parent = "";
-                    item.collapsed = "";
-                } else if (task.id === item.id) {
-                    item.display = "";
-                    item.parent = "";
-                    item.collapsed = "";
-                } else {
-                    item.display = item.display;
-                    item.parent = item.parent;
-                    item.collapsed = item.collapsed;
-                }
-
-                gantt_chart.tasks_all[item.id] = item;
-
-                return item;
+            g.Draw();
+            })
+            .catch(error => {
+            console.error(error);
             });
-        }
-
-        gantt_chart.tasks_to_display = tasks_to_display;
-        let check = (gantt_chart.tasks_to_display.length !== gantt_chart.tasks.length);
-        gantt_chart.refresh(tasks_to_display.filter(task => !task.display));
-
-        toggleClassBars(check);
-    }
-
-    // mousedown event to capture gantt_chart property "bar_being_dragged" 
-    document.addEventListener("mousedown", handleMouseDown, false);
-
-    document.querySelector('.js-view').addEventListener('click', changeView, false);
-
-    function handleMouseDown(event) {
-        if (!event.target.parentNode.classList.contains('bar-group')) return;
-
-        let taskId = gantt_chart.bar_being_dragged;
-        let task = gantt_chart.get_task(taskId);
-
-        let children = task.children
-            .map(item => gantt_chart.tasks_all[item])
-            .filter(item => item.collapsed);
-
-        if (task.collapsed) {
-            expandBars(task);
-        } else if (!task.collapsed && children.length >= 1) {
-            children.forEach(item => expandBars(item));
-        }
-    }
-
-    function changeView(event) {
-        event.target.parentNode.childNodes.forEach(childNode => {
-            let view = event.target.dataset.view;
-            if (childNode.tagName === "BUTTON") {
-                if (childNode.dataset.view === view) {
-                    gantt_chart.change_view_mode(view);
-                    childNode.classList.add("selected");
-                } else {
-                    childNode.classList.remove("selected");
-                }
-            }
-        });
-    }
-</script>
+    </script>
 
 {% endblock %}
