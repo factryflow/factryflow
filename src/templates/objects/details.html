@@ -214,8 +214,8 @@
                                             <template x-if="field.type === 'select'">
                                                 <select x-model="row[key].value" :name="key"
                                                     class="border border-gray-300 rounded-md p-2">
-                                                    <template x-for="option in field.options" :key="option">
-                                                        <option x-text="option"></option>
+                                                    <template x-for="(optionText, optionValue) in field.options" :key="optionValue">
+                                                        <option :value="optionValue" x-text="optionText"></option>
                                                     </template>
                                                 </select>
                                             </template>

@@ -36,7 +36,7 @@ WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
         "headers": ["ID", "Day of Week", "Start Time", "End Time"],
         "fields": ["id", "day_of_week", "start_time", "end_time"],
         "select_fields": {
-            "day_of_week": DaysOfWeek.choices,
+            "day_of_week": dict(DaysOfWeek.choices),
         },
         "relationship_fields": "weekly_shift_template",
         "show_edit_actions": True,
