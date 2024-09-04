@@ -574,64 +574,64 @@ class JobGanttChartService:
         jobs = Job.objects.prefetch_related("tasks")
 
         gantt_pid = 0
-
-        for job in jobs:
-            job_pid = gantt_pid
-            job_data.append(
-                {
-                    "pID": job_pid,
-                    "pName": job.name,
-                    "pStart": "",
-                    "pEnd": "",
-                    "pClass": "gtaskblue",
-                    "pLink": "",
-                    "pMile": 0,
-                    "pRes": "",
-                    "pComp": 0,
-                    "pGroup": 1,
-                    "pOpen": 1,
-                    "pDepend": "",
-                    "pCaption": "",
-                    "pNotes": "Some Notes text",
-                    "category": "Planning",
-                    "sector": "CMO",
-                    "pPlanStart": job.planned_start_datetime,
-                    "pPlanEnd": job.planned_end_datetime,
-                }
-            )
-
-            gantt_pid += 1
-
-            for task in job.tasks.all():
-                if hasattr(task, "taskresourceassigment"):
-                    resource_name = task.taskresourceassigment.resource.name
-                else:
-                    resource_name = ""
-
+        for i in range(100):
+            for job in jobs:
+                job_pid = gantt_pid
                 job_data.append(
                     {
-                        "pID": gantt_pid,
-                        "pName": task.name,
+                        "pID": job_pid,
+                        "pName": job.name,
                         "pStart": "",
                         "pEnd": "",
                         "pClass": "gtaskblue",
                         "pLink": "",
                         "pMile": 0,
-                        "pRes": resource_name,
+                        "pRes": "",
                         "pComp": 0,
-                        "pGroup": 0,
-                        "pParent": job_pid,
+                        "pGroup": 1,
                         "pOpen": 1,
-                        "pDepend": list(task.predecessors.values_list("id", flat=True)),
+                        "pDepend": "",
                         "pCaption": "",
                         "pNotes": "Some Notes text",
                         "category": "Planning",
                         "sector": "CMO",
-                        "pPlanStart": task.planned_start_datetime,
-                        "pPlanEnd": task.planned_end_datetime,
+                        "pPlanStart": job.planned_start_datetime,
+                        "pPlanEnd": job.planned_end_datetime,
                     }
                 )
 
                 gantt_pid += 1
+
+                for task in job.tasks.all():
+                    if hasattr(task, "taskresourceassigment"):
+                        resource_name = task.taskresourceassigment.resource.name
+                    else:
+                        resource_name = ""
+
+                    job_data.append(
+                        {
+                            "pID": gantt_pid,
+                            "pName": task.name,
+                            "pStart": "",
+                            "pEnd": "",
+                            "pClass": "gtaskblue",
+                            "pLink": "",
+                            "pMile": 0,
+                            "pRes": resource_name,
+                            "pComp": 0,
+                            "pGroup": 0,
+                            "pParent": job_pid,
+                            "pOpen": 1,
+                            "pDepend": list(task.predecessors.values_list("id", flat=True)),
+                            "pCaption": "",
+                            "pNotes": "Some Notes text",
+                            "category": "Planning",
+                            "sector": "CMO",
+                            "pPlanStart": task.planned_start_datetime,
+                            "pPlanEnd": task.planned_end_datetime,
+                        }
+                    )
+
+                    gantt_pid += 1
 
         return job_data
