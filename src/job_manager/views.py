@@ -1,4 +1,5 @@
 # views.py
+from django.shortcuts import render
 
 from common.views import CRUDView, CustomTableView
 
@@ -631,3 +632,14 @@ ITEM_VIEWS = CRUDView(
     model_form=ItemForm,
     model_table_view=ITEM_TABLE_VIEW,
 )
+
+# ------------------------------------------------------------------------------
+# JOB-TASK gantt-chart View
+# ------------------------------------------------------------------------------
+
+def dashboard_gantt_chart_view(request):
+    """
+    Dashboard
+        Job Task gantt chart data view
+    """
+    return render(request, "base/chart/main.html")

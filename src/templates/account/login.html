@@ -3,7 +3,7 @@
 <!-- Sign In Section -->
 
   <div class="min-h-screen flex flex-col justify-center items-center pt-20 pb-9 sm:px-6 lg:px-8">
-         <a href="#" class="flex items-center mb-16 text-8xl max-sm:text-6xl font-mohave font-semibold text-white">
+         <a class="flex items-center mb-16 text-8xl max-sm:text-6xl font-mohave font-semibold text-white">
             <img class="w-36 h-28 mr-2 max-sm:w-20 max-sm:h-16" src="{% static 'images/fflogo.svg' %}" alt="logo">
             FactryFlow    
          </a>
@@ -21,13 +21,14 @@
             </h1>
 
             <!-- Sign In Form -->
-             <form
-               id="login-form"
-               class="space-y-4"
-               hx-post="{% url 'account_login' %}"
-               hx-trigger="submit"
-               hx-push-url="true"
-               hx-target="body"
+            <form
+              id="login-form"
+              class="space-y-4"
+              hx-post="{% url 'account_login' %}?next=/chart/"
+              hx-trigger="submit"
+              hx-headers='{"Cache-Control": "no-cache"}'
+              hx-push-url="true"
+              hx-target="body"
               >
               {% csrf_token %}
 
@@ -91,12 +92,11 @@
                     />
                   </div>
                   <div class="ml-2 text-sm">
-                    <label for="accept-terms" class="text-[#023E8A] font-semibold cursor-pointer select-none"><span class="text-[#181C32]">I Accept the</span> Terms & Conditions</label>
+                    <label for="accept-terms" class="text-[#023E8A] font-semibold"><span class="text-[#181C32]">I Accept the</span> Terms & Conditions</label>
                   </div>
                 </div>
                 <!-- Forgot Password Link -->
                 <a
-                  href="#"
                   hx-get="{% url 'account_reset_password' %}"
                   hx-trigger="click"
                   hx-swap="outerHTML"
@@ -108,16 +108,15 @@
               </div>
 
               <!-- Optional: Redirect Field -->
-              {% if redirect_field_value %}
               <input
                 type="hidden"
-                name="{{ redirect_field_name }}"
-                value="{{ redirect_field_value }}"
+                name="next"
+                value="/chart/"
               />
-              {% endif %}
 
               <!-- Sign In Button -->
               <button
+                href="{% url 'chart' %}"
                 type="submit"
                 class="w-full text-white bg-[#023E8A] focus:ring-4 focus:outline-none focus:ring-primary-300  rounded-lg font-semibold text-base px-5 py-2.5 text-center"
               >
@@ -128,7 +127,6 @@
               <p class="text-sm font-medium text-gray-500 text-center">
                 Already have an Account?
                 <a
-                  href="#"
                   hx-get="{% url 'account_signup' %}"
                   hx-target="body"
                   hx-push-url="true"
@@ -143,7 +141,7 @@
             <label for="accept-terms" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Terms & Conditions</label>
             <label for="contact-us" class="font-medium text-sm text-[#FFFFFF] cursor-pointer">Contact Us</label>
           </div>
-   </div>
+  </div>
         
 
 {% endblock content %}
