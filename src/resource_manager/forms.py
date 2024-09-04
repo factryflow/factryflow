@@ -11,7 +11,6 @@ class ResourceForm(forms.ModelForm):
     class Meta:
         model = Resource
         fields = [
-            "external_id",
             "name",
             "resource_type",
             "weekly_shift_template",
@@ -27,11 +26,6 @@ class ResourceForm(forms.ModelForm):
         }
 
         widgets = {
-            "external_id": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
             "name": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
@@ -68,21 +62,15 @@ class ResourceForm(forms.ModelForm):
 class ResourceGroupForm(forms.ModelForm):
     class Meta:
         model = ResourceGroup
-        fields = ["external_id", "name", "parent", "resources", "notes"]
+        fields = ["name", "parent", "resources", "notes"]
         labels = {
             "name": "Resource Pool Name",
-            "external_id": "External ID",
             "parent": "Select Parent Resource Pool",
             "resources": "Resources",
             "notes": "Notes",
         }
         widgets = {
             "name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "external_id": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }

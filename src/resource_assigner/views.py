@@ -18,6 +18,7 @@ from .models import (
     AssignmentConstraint,
     TaskResourceAssigment,
     TaskRuleAssignment,
+    Operator,
 )
 from .services import (
     AssigmentRuleCriteriaService,
@@ -25,7 +26,9 @@ from .services import (
     AssignmentConstraintService,
     TaskResourceAssigmentService,
 )
-from .utils import get_matching_assignment_rules_with_tasks
+
+from job_manager.models import Task, TaskStatusChoices, JobStatusChoices
+from .utils import get_matching_assignment_rules_with_tasks, get_model_fields
 
 # ------------------------------------------------------------------------------
 # Task Resource Assignement Views
@@ -68,9 +71,8 @@ TASK_RESOURCE_ASSIGNMENT_VIEWS = CRUDView(
 ASSIGMENT_RULE_MODEL_FIELDS = [
     "id",
     "order",
-    "external_id",
-    "notes",
     "name",
+    "notes",
     "description",
     "work_center",
     "is_active",
@@ -78,9 +80,8 @@ ASSIGMENT_RULE_MODEL_FIELDS = [
 ASSIGMENT_RULE_TABLE_HEADERS = [
     "ID",
     "Priority",
-    "External ID",
-    "Notes",
     "Name",
+    "Notes",
     "Description",
     "Work Center",
     "Is Active",
@@ -91,21 +92,40 @@ ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
 ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
     "RULE CRITERIA",
     "TASK",
+    "HISTORY",
 ]
 
 ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
-    "rule_criteria": [
-        AssigmentRuleCriteria,
-        "assigment_rule",
-        ["ID", "field", "operator", "value"],
-        ["id", "field", "operator", "value"],
-    ],
-    "task": [
-        TaskRuleAssignment,
-        "assigment_rule",
-        ["ID", "Task", "Rule Applied"],
-        ["id", "task", "is_applied"],
-    ],
+    "rule_criteria": {
+        "model": AssigmentRuleCriteria,
+        "model_name": "assigment_rule_criteria",
+        "related_name": "assigment_rule",
+        "headers": ["ID", "field", "operator", "value"],
+        "fields": ["id", "field", "operator", "value"],
+        "select_fields": {
+            "field": get_model_fields(
+                "Task", "job_manager", ["item", "task_type", "job", "work_center"]
+            ),
+            "operator": Operator.choices,
+        },
+        "relationship_fields": "assigment_rule",
+        "show_edit_actions": True,
+    },
+    "task": {
+        "model": TaskRuleAssignment,
+        "model_name": "task_rule_assignment",
+        "related_name": "assigment_rule",
+        "headers": ["ID", "Task", "Rule Applied"],
+        "fields": ["id", "task", "is_applied"],
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "History Date", "History Type", "History User"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
+        "show_edit_actions": False,
+    },
 }
 
 ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS = ["field", "operator", "value"]
@@ -115,6 +135,7 @@ ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS = [
     AssigmentRuleCriteriaForm,
     "criteria",
     ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS,
+    "assigment_rule_criteria",
 ]
 
 ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
@@ -177,6 +198,7 @@ ASSIGMENT_RULE_CRITERIA_VIEWS = CRUDView(
     model_service=AssigmentRuleCriteriaService,
     model_form=AssigmentRuleCriteriaForm,
     model_table_view=ASSIGMENT_RULE_CRITERIA_TABLE_VIEW,
+    sub_model_relation=True,
 )
 
 
@@ -213,12 +235,26 @@ ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS = [
     "use_all_resources",
 ]
 
-ASSIGNMENT_CONSTRAINT_RELATION_HEADERS = [
+ASSIGNMENT_CONSTRAINT_MODEL_RELATION_HEADERS = [
     "Resources",
+    "History",
 ]
 
-ASSIGNMENT_CONSTRAINT_RELATION_FIELDS = {
-    "resources": ["resources", ["ID", "Resource Name"], ["id", "name"]],
+ASSIGNMENT_CONSTRAINT_MODEL_RELATION_FIELDS = {
+    "resources": {
+        "model_name": "resources",
+        "related_name": "resources",
+        "headers": ["ID", "Resource Name"],
+        "fields": ["id", "name"],
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "History Date", "History Type", "History User"],
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
+        "show_edit_actions": False,
+    },
 }
 
 
@@ -228,8 +264,8 @@ ASSIGNMENT_CONSTRAINT_TABLE_VIEW = CustomTableView(
     fields=ASSIGNMENT_CONSTRAINT_MODEL_FIELDS,
     headers=ASSIGNMENT_CONSTRAINT_TABLE_HEADERS,
     search_fields_list=ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS,
-    model_relation_headers=ASSIGNMENT_CONSTRAINT_RELATION_HEADERS,
-    model_relation_fields=ASSIGNMENT_CONSTRAINT_RELATION_FIELDS,
+    model_relation_headers=ASSIGNMENT_CONSTRAINT_MODEL_RELATION_HEADERS,
+    model_relation_fields=ASSIGNMENT_CONSTRAINT_MODEL_RELATION_FIELDS,
 )
 
 ASSIGNMENT_CONSTRAINT_VIEWS = CRUDView(

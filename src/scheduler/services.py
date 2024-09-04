@@ -14,6 +14,7 @@ from resource_assigner.models import (
     AssignmentConstraint,
     TaskResourceAssigment,
     TaskRuleAssignment,
+    TaskRuleAssignment,
 )
 from resource_calendar.models import OperationalException, WeeklyShiftTemplate
 from resource_manager.models import Resource
@@ -328,7 +329,18 @@ class SchedulingService:
         # convert result to dataframe
         res_df = result.to_dataframe()
 
+        # convert result to dataframe
+        res_df = result.to_dataframe()
+
         # convert 'task_start' and task_end and 'resource_intervals': dict_values to time
+        res_df["planned_task_start"] = res_df.apply(
+            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_start"]),
+            axis=1,
+        )
+        res_df["planned_task_end"] = res_df.apply(
+            lambda scheduled_task: self._int_to_datetime(scheduled_task["task_end"]),
+            axis=1,
+        )
         res_df["planned_task_start"] = res_df.apply(
             lambda scheduled_task: self._int_to_datetime(scheduled_task["task_start"]), axis=1
         )
@@ -380,7 +392,11 @@ class SchedulingService:
             # CHECK HERE: (This does not exist yet, in this context)
             rule_assignment = TaskRuleAssignment.objects.filter(task=task).first()
             # resource_assignment = TaskResourceAssignment.objects.filter(task=task).first()
+            # CHECK HERE: (This does not exist yet, in this context)
+            rule_assignment = TaskRuleAssignment.objects.filter(task=task).first()
+            # resource_assignment = TaskResourceAssignment.objects.filter(task=task).first()
 
+            if rule_assignment and len(constraints) == 0:
             if rule_assignment and len(constraints) == 0:
                 # check for assignments
                 scheduler_group_list = []
@@ -390,9 +406,21 @@ class SchedulingService:
                     resource_count = assignment_constraint.resource_count
                     scheduler_assignment = None
 
+                    assigned_resources = (
+                        assignment_constraint.resource_group.resources.all()
+                        if assignment_constraint.resource_group
+                        else assignment_constraint.resources.all()
+                    )
+
+                if hasattr(rule_assignment.task, "assignmentconstraint"):
+                    assignment_constraint = rule_assignment.task.assignmentconstraint
+                    resource_count = assignment_constraint.resource_count
+                    scheduler_assignment = None
+
                     assigned_resources = assignment_constraint.resource_group.resources.all() if assignment_constraint.resource_group else assignment_constraint.resources.all()
 
                     group_resources = []
+                    for resource in assigned_resources:
                     for resource in assigned_resources:
                         available_windows = (
                             self.weekly_shift_templates_windows_dict.get(
@@ -416,13 +444,29 @@ class SchedulingService:
                             resource_groups=[scheduler_resource_group],
                             resource_count=resource_count,
                         )
+                    if (
+                        resource_count > 0
+                        and not assignment_constraint.use_all_resources
+                    ):
+                        scheduler_assignment = Assignment(
+                            resource_groups=[scheduler_resource_group],
+                            resource_count=resource_count,
+                        )
 
                     if assignment_constraint.use_all_resources:
                         scheduler_assignment = Assignment(
                             resource_groups=[scheduler_resource_group],
                             use_all_resources=assignment_constraint.use_all_resources,
                         )
+                    if assignment_constraint.use_all_resources:
+                        scheduler_assignment = Assignment(
+                            resource_groups=[scheduler_resource_group],
+                            use_all_resources=assignment_constraint.use_all_resources,
+                        )
 
+                    # append all the scheduler assignment to the scheduler_assignments list
+                    if scheduler_assignment:
+                        scheduler_assignments.append(scheduler_assignment)
                     # append all the scheduler assignment to the scheduler_assignments list
                     if scheduler_assignment:
                         scheduler_assignments.append(scheduler_assignment)
@@ -445,7 +489,16 @@ class SchedulingService:
             task=task
         ).first()
 
+
         if constraint_resource_tasks:
+            # if resources is not empty, get all resources from the resources field else get all resources from the resource_group field
+            assigned_resources = (
+                constraint_resource_tasks.resource_group.resources.all()
+                if constraint_resource_tasks.resource_group
+                else constraint_resource_tasks.resources.all()
+            )
+
+            for resource in assigned_resources:
             # if resources is not empty, get all resources from the resources field else get all resources from the resource_group field
             assigned_resources = constraint_resource_tasks.resource_group.resources.all() if constraint_resource_tasks.resource_group else constraint_resource_tasks.resources.all()
 

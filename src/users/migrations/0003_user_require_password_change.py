@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0002_user_created_at_user_updated_at_user_updated_by'),
+        ("users", "0002_user_created_at_user_updated_at_user_updated_by"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='require_password_change',
+            model_name="user",
+            name="require_password_change",
             field=models.BooleanField(default=False),
         ),
     ]

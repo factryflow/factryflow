@@ -32,11 +32,13 @@ RESOURCE_TABLE_HEADERS = [
 
 RESOURCE_MODEL_RELATION_HEADERS = ["HISTORY"]
 RESOURCE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "History Date", "History Type", "History User"],
-        ["id", "history_date", "history_type", "history_user"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
+        "headers": ["ID", "History Date", "History Type", "History User"],
+        "show_edit_actions": False,
+    }
 }
 
 ResourceTableView = CustomTableView(
@@ -65,24 +67,32 @@ RESOURCE_VIEWS = CRUDView(
 # ResourcePool VIEWS
 # ------------------------------------------------------------------------------
 
-RESOURCE_Group_MODEL_FIELDS = ["id", "external_id", "notes", "name", "parent"]
+RESOURCE_Group_MODEL_FIELDS = ["id", "notes", "name", "parent"]
 RESOURCE_Group_SEARCH_FIELDS = ["name", "id"]
 RESOURCE_Group_TABLE_HEADERS = [
     "ID",
-    "External ID",
     "Notes",
     "Resource Group Name",
     "Parent",
 ]
 
 
-RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources"]
+RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "History"]
 RESOURCE_Group_MODEL_RELATION_FIELDS = {
-    "resources": [
-        "resources",
-        ["ID", "Resource Name", "Resource Type", "Weekly Shift Template"],
-        ["id", "name", "resource_type", "weekly_shift_template"],
-    ],
+    "resources": {
+        "model_name": "resources",
+        "related_name": "resources",
+        "fields": ["id", "name", "resource_type", "weekly_shift_template"],
+        "headers": ["ID", "Resource Name", "Resource Type", "Weekly Shift Template"],
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "fields": ["history_id", "history_date", "history_type", "history_user"],
+        "headers": ["ID", "History Date", "History Type", "History User"],
+        "show_edit_actions": False,
+    },
 }
 
 ResourceGroupTableView = CustomTableView(

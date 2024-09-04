@@ -1,10 +1,10 @@
 {% load static %}
 {% load user_role %}
 
-{% partialdef _menu_items %}
-      <a href="{{menu_item_url}}" class="flex items-center hover:text-gray-800 focus-visible:bg-gray-300 focus-visible:text-gray-800 focus-visible:outline-none block px-4 py-2 p-1 text-sm text-gray-900 hover:bg-gray-200">
-        <img src="{% static menu_item_icon %}" class="h-6 w-6" />
-        <span class="ml-2">{{ menu_item_name }}</span>
+{% partialdef _menu_items_names %}
+      <a id="{{user_menu_item_id}}" href="{{user_menu_item_url}}" class="flex items-center hover:text-gray-800 focus-visible:bg-gray-300 focus-visible:text-gray-800 focus-visible:outline-none block px-4 py-2 p-1 text-sm text-gray-900 hover:bg-gray-200">
+        <img src="{% static user_menu_item_icon %}" class="h-6 w-6" />
+        <span class="ml-2">{{ user_menu_item_name }}</span>
       </a>
 {% endpartialdef %}
 
@@ -58,39 +58,55 @@
     </div> -->
 
       <!-- Desktop Menu -->
-      <ul class="hidden items-center gap-4 sm:flex">
-        <li x-data="{ userDropDownIsOpen: false, openWithKeyboard: false }" @keydown.esc.window="userDropDownIsOpen = false, openWithKeyboard = false" class="relative flex items-center">
-          <button @click="userDropDownIsOpen = ! userDropDownIsOpen" :aria-expanded="userDropDownIsOpen" @keydown.space.prevent="openWithKeyboard = true" @keydown.enter.prevent="openWithKeyboard = true" @keydown.down.prevent="openWithKeyboard = true" class="inline-flex items-center bg-[#181c320d] py-4 px-5 rounded-full" aria-controls="userMenu">
+    <ul id="user-menu" class="hidden items-center gap-4 sm:flex">
+      <li x-data="{ userDropDownIsOpen: false, openWithKeyboard: false }" 
+        @keydown.esc.window="userDropDownIsOpen = false, openWithKeyboard = false" 
+        class="relative flex items-center">
+        
+        <button id="userDropDown" @click="userDropDownIsOpen = ! userDropDownIsOpen" 
+                :aria-expanded="userDropDownIsOpen" 
+                class="inline-flex items-center bg-[#181c320d] py-4 px-5 rounded-full" 
+                aria-controls="userMenu">
             <h1 class="text-lg leading-4 font-semibold text-[#2884EF]"> 
-              {% if user.first_name %}
-                {{ user.first_name.0 }}
-              {% elif user.last_name %}
-                {{ user.last_name.0 }}
-              {% else %}
-                {{ user.username.0 }}
-              {% endif %}
+                {% if user.first_name %}
+                    {{ user.first_name.0 }}
+                {% elif user.last_name %}
+                    {{ user.last_name.0 }}
+                {% else %}
+                    {{ user.username.0 }}
+                {% endif %}
             </h1>
-          </button>
-
-          <!-- User Dropdown -->
-          <ul x-cloak x-show="userDropDownIsOpen || openWithKeyboard" x-transition.opacity x-trap="openWithKeyboard" @click.outside="userDropDownIsOpen = false, openWithKeyboard = false" @keydown.down.prevent="$focus.wrap().next()" @keydown.up.prevent="$focus.wrap().previous()" id="userMenu" class="absolute right-0 top-20 flex w-full min-w-[18rem] flex-col overflow-hidden rounded-xl border border-gray-300 py-1.5 bg-gray-100">
+        </button>
+        
+        <!-- User Dropdown -->
+        <ul x-cloak 
+            x-show="userDropDownIsOpen || openWithKeyboard" 
+            x-transition.opacity 
+            x-trap="openWithKeyboard" 
+            @click.outside="userDropDownIsOpen = false, openWithKeyboard = false" 
+            @keydown.down.prevent="$focus.wrap().next()" 
+            @keydown.up.prevent="$focus.wrap().previous()" 
+            id="userMenu" 
+            class="absolute right-0 top-20 flex w-full min-w-[18rem] flex-col overflow-hidden rounded-xl border border-gray-300 py-1.5 bg-gray-100">
+            
             <li class="border-b border-gray-300">
-              <div class="flex flex-col px-4 py-2 space-y-1 justify-center items-center">  
-                <div  class="inline-flex items-center bg-[#181c320d] py-4 px-5 rounded-full" >
-                  <h1 class="text-lg leading-4 font-semibold text-[#2884EF]"> 
-                    {% if user.first_name %}
-                      {{ user.first_name.0 }}
-                    {% elif user.last_name %}
-                      {{ user.last_name.0 }}
-                    {% else %}
-                      {{ user.username.0 }}
-                    {% endif %}
-                  </h1>
-                </div>  
-                <span class="text-sm font-medium text-gray-900">
-                  Hello, {{ user.first_name }} - {% get_current_user_role user %} </span>
-                <p class="text-xs text-gray-700">{{ user.email }}</p>
-              </div>
+                <div class="flex flex-col px-4 py-2 space-y-1 justify-center items-center">  
+                    <div class="inline-flex items-center bg-[#181c320d] py-4 px-5 rounded-full">
+                        <h1 class="text-lg leading-4 font-semibold text-[#2884EF]"> 
+                            {% if user.first_name %}
+                                {{ user.first_name.0 }}
+                            {% elif user.last_name %}
+                                {{ user.last_name.0 }}
+                            {% else %}
+                                {{ user.username.0 }}
+                            {% endif %}
+                        </h1>
+                    </div>  
+                    <span class="text-sm font-medium text-gray-900">
+                        Hello, {{ user.first_name }} - {% get_current_user_role user %} 
+                    </span>
+                    <p class="text-xs text-gray-700">{{ user.email }}</p>
+                </div>
             </li>
             <li class="border-b border-gray-300">
                 {% with menu_item_id='dashboard' menu_item_url="/dashboard" menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' %}
@@ -98,22 +114,22 @@
                 {% endwith %}            
             </li>
             <li>
-              {% with menu_item_id='user-settings' menu_item_url="/settings" menu_item_icon='images/user_settings.svg' menu_item_name='User Settings' %}
-                {% partial _menu_items %}
-              {% endwith %}
+                {% with user_menu_item_id="user-settings" user_menu_item_url="/settings" user_menu_item_icon='images/user_settings.svg' user_menu_item_name='User Settings' %}
+                    {% partial _menu_items_names %}
+                {% endwith %}
             </li>
             <li class="border-b border-gray-300">
-              {% with menu_item_id='settings' menu_item_url="/settings" menu_item_icon='images/Setting.svg' menu_item_name='Settings' %}
-                {% partial _menu_items %}
-              {% endwith %}
+                {% with user_menu_item_id="all-settings" user_menu_item_url="/settings" user_menu_item_icon='images/Setting.svg' user_menu_item_name='Settings' %}
+                    {% partial _menu_items_names %}
+                {% endwith %}
             </li>
             <li>
-              {% with menu_item_id='/logout' menu_item_url="/accounts/logout" menu_item_icon='images/logout.svg' menu_item_name='Logout' %}
-                {% partial _menu_items %}
-              {% endwith %}
+                {% with user_menu_item_id="user-logout" user_menu_item_url="/accounts/logout" user_menu_item_icon='images/logout.svg' user_menu_item_name='Logout' %}
+                    {% partial _menu_items_names %}
+                {% endwith %}
             </li>
-          </ul>
-        </li>
-      </ul>
+        </ul>
+    </li>
+    </ul>
   </div>
   </div>
