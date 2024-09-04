@@ -9,7 +9,6 @@ from job_manager.models import (
     Dependency,
     DependencyType,
     Item,
-    Item,
     Job,
     JobStatusChoices,
     JobType,

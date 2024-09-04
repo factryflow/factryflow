@@ -313,6 +313,7 @@ class SchedulingService:
             self._get_weekly_shift_template_windows_dict()
         )
 
+    @transaction.atomic
     def run(self):
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
         scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict)
@@ -343,48 +344,51 @@ class SchedulingService:
             axis=1,
         )
 
-        # breakpoint()
-        print(result.to_dict())
-
-        # task["resource_intervals"] = list(task["resource_intervals"])
-
-        # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
+        # Clear TaskResourceAssigment model before creating new ones
+        TaskResourceAssigment.objects.all().delete()
 
         # save to TaskResourceAssigment model
         task_resource_assignments = []
 
         for task in result.to_dict():
             task_id = task["task_id"]
-
-            # Update task planned start and end datetime
             task_obj = Task.objects.get(id=task_id)
-            task_obj.planned_start_datetime = self._int_to_datetime(
-                int(task["task_start"])
-            )
-            task_obj.planned_end_datetime = self._int_to_datetime(int(task["task_end"]))
-            task_obj.save()
 
-            resource_ids = task["assigned_resource_ids"]
-            resources = Resource.objects.filter(id__in=resource_ids)
+            if not task.get("error_message") == "No solution found.":
+                # Update task planned start and end datetime
+                task_obj.planned_start_datetime = self._int_to_datetime(
+                    int(task["task_start"])
+                )
+                task_obj.planned_end_datetime = self._int_to_datetime(
+                    int(task["task_end"])
+                )
+                task_obj.save()
 
-            # Create TaskResourceAssigment object
-            task_resource_assignment = TaskResourceAssigment(task_id=task_id)
-            task_resource_assignment.save()
-            task_resource_assignment.resources.set(resources)
-            task_resource_assignments.append(task_resource_assignment)
+                # Create TaskResourceAssigment object
+                task_resource_assignment = TaskResourceAssigment(task_id=task_id)
+                task_resource_assignment.save()
 
-            # Set Task Job planned start and end datetime
-            if task_obj == Task.objects.filter(job=task_obj.job).earliest(
-                "planned_start_datetime"
-            ):
-                task_obj.job.planned_start_datetime = task_obj.planned_start_datetime
-                task_obj.job.save()
+                if task.get("assigned_resource_ids"):
+                    resource_ids = task["assigned_resource_ids"]
+                    resources = Resource.objects.filter(id__in=resource_ids)
+                    task_resource_assignment.resources.set(resources)
 
-            if task_obj == Task.objects.filter(job=task_obj.job).latest(
-                "planned_end_datetime"
-            ):
-                task_obj.job.planned_end_datetime = task_obj.planned_end_datetime
-                task_obj.job.save()
+                task_resource_assignments.append(task_resource_assignment)
+
+                # Set Task Job planned start and end datetime
+                if task_obj == Task.objects.filter(job=task_obj.job).earliest(
+                    "planned_start_datetime"
+                ):
+                    task_obj.job.planned_start_datetime = (
+                        task_obj.planned_start_datetime
+                    )
+                    task_obj.job.save()
+
+                if task_obj == Task.objects.filter(job=task_obj.job).latest(
+                    "planned_end_datetime"
+                ):
+                    task_obj.job.planned_end_datetime = task_obj.planned_end_datetime
+                    task_obj.job.save()
 
         return res_df.to_dict("records")
 
@@ -416,9 +420,7 @@ class SchedulingService:
                 # add constraints to dictionary
                 scheduler_task_dict["constraints"] = constraints
 
-            # CHECK HERE: (This does not exist yet, in this context)
             rule_assignment = TaskRuleAssignment.objects.filter(task=task).first()
-            # resource_assignment = TaskResourceAssignment.objects.filter(task=task).first()
 
             if rule_assignment and len(constraints) == 0:
                 # check for assignments
