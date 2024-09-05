@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
 
 from common.utils.views import (
     add_notification_headers,
@@ -546,7 +547,8 @@ class CRUDView:
         obj = get_object_or_404(self.model, id=id)
 
         # Delete the instance and check if deletion was successful
-        deletion_successful = self.model_service(user=request.user).delete(obj)
+        with transaction.atomic():
+            deletion_successful = self.model_service(user=request.user).delete(obj)
 
         # Retrieve updated instance list
         status_filter = request.GET.get("status", "all")
@@ -554,7 +556,7 @@ class CRUDView:
         page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator = self.table_view.table_rows(
+        table_rows, paginator, num_pages = self.table_view.table_rows(
             status_filter=status_filter,
             search_query=search_query,
             page_number=page_number,
@@ -575,6 +577,7 @@ class CRUDView:
                 "headers": self.table_view.table_headers,
                 "status_filter_dict": self.table_view.status_filter_dict,
                 "rows": table_rows,
+                "num_pages": num_pages,
                 "paginator": paginator,
                 "show_actions": True and self.user_rule_permission,
                 "crud_action_rules": self.crud_action_rules,
@@ -801,7 +804,9 @@ class CustomTableView:
                             in self.model_relation_fields[field_name]["select_fields"]
                         ):
                             value = {
-                                "value": str(getattr(instance, field)),
+                                "value": self.model_relation_fields[field_name][
+                                    "select_fields"
+                                ][field][str(getattr(instance, field))],
                                 "type": "select",
                                 "options": self.model_relation_fields[field_name][
                                     "select_fields"

@@ -1232,9 +1232,9 @@
         "pk": 1,
         "fields": {
             "assigment_rule": 1,
-            "field": "task_name",
+            "field": "item",
             "operator": "equals",
-            "value": "Task 1",
+            "value": "Item 1",
             "created_at": "2024-05-20T12:45:20.459Z",
             "updated_at": "2024-05-20T12:45:20.459Z",
             "created_by": null,
@@ -1277,7 +1277,7 @@
         "pk": 4,
         "fields": {
             "assigment_rule": 2,
-            "field": "description",
+            "field": "notes",
             "operator": "contains",
             "value": "due before June 2024",
             "created_at": "2024-05-20T12:45:20.459Z",
