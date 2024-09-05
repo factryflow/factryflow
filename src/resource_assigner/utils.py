@@ -149,16 +149,25 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                                 matching_task_count += 1
 
                     if criteria_match:
-                        is_rule_applied = True if rule.order == 0 else False
+                        is_rule_applied = True
+                        task_instance = TaskRuleAssignment.objects.filter(task=task, is_applied=True).exclude(assigment_rule=rule)
+                        
+                        if task_instance.exists():
+                            existing_rule_order = task_instance.first().assigment_rule.order
 
-                        task_rule_instance = TaskRuleAssignment.objects.filter(
-                            assigment_rule=rule, task=task
-                        )
+                            if existing_rule_order > rule.order:
+                                task_instance.first().is_applied = False
+                                task_instance.first().save()
 
+                            if existing_rule_order < rule.order:
+                                is_rule_applied = False
+                                
+                        task_rule_instance = TaskRuleAssignment.objects.filter(task=task, assigment_rule=rule)
                         if task_rule_instance.exists():
-                            task_rule_instance.first().is_applied = is_rule_applied
-                            task_rule_instance.first().save()
-
+                            instance = task_rule_instance.first()
+                            instance.is_applied = is_rule_applied
+                            instance.save()
+                        
                         else:
                             # if criteria match store it in the TaskRuleAssignment model
                             task_rule_instance = TaskRuleAssignment.objects.create(
@@ -176,12 +185,12 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                         if task_rule_assignment.exists():
                             task_rule_assignment.delete()
 
-            result["message"] = (
-                f"Matched {matching_task_count} tasks with assignment rules"
-            )
-            result["status"] = "success"
+        result["message"] = (
+            f"Matched {matching_task_count} tasks with assignment rules"
+        )
+        result["status"] = "success"
 
-            return result
+        return result
     except Exception as e:
         result["message"] = str(e)
         result["status"] = "error"

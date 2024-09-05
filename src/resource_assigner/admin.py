@@ -3,6 +3,7 @@ from ordered_model.admin import OrderedModelAdmin
 
 from resource_assigner.models import (
     AssigmentRule,
+    AssigmentRuleCriteria,
     AssignmentConstraint,
     TaskResourceAssigment,
     TaskRuleAssignment,
@@ -60,3 +61,6 @@ class TaskResourceAssigment(admin.ModelAdmin):
 class TaskRuleAssignment(admin.ModelAdmin):
     list_display = ["task", "assigment_rule", "is_applied"]
     list_filter = ["is_applied"]
+
+
+admin.site.register(AssigmentRuleCriteria)
