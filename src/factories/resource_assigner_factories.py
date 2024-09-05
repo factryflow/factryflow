@@ -67,11 +67,8 @@ class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
         model = TaskResourceAssigment
 
     task = factory.SubFactory(TaskFactory)
-    assigment_rule = factory.SubFactory(AssigmentRuleFactory)
 
     class Params:
-        with_resource_group = factory.Trait(
-            resource_group=factory.lazy_attribute(
-                lambda _: ResourceGroupFactory.create_batch(2)
-            )
+        with_resources = factory.Trait(
+            resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
         )
