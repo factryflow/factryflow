@@ -29,8 +29,7 @@ class TaskResourceAssigmentService:
     def create(
         self,
         task: Task,
-        assigment_rule: AssigmentRule,
-        resource: Resource = None,
+        resources: list[Resource] = [],
         custom_fields: dict = None,
     ) -> TaskResourceAssigment:
         # check permissions for create task resource assignment
@@ -41,13 +40,13 @@ class TaskResourceAssigmentService:
 
         instance = TaskResourceAssigment.objects.create(
             task=task,
-            assigment_rule=assigment_rule,
-            resource=resource,
             custom_fields=custom_fields,
         )
 
         instance.full_clean()
         instance.save(user=self.user)
+
+        instance.resources.set(resources)
 
         return instance
 

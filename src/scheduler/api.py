@@ -1,8 +1,8 @@
 import datetime
 
+from django.db import transaction
 from django.http import HttpResponse
 from django.urls import reverse
-from job_manager.models import Task
 
 from .models import (
     ResourceAllocations,
@@ -15,8 +15,7 @@ from .services import (
 )
 
 
-# # scheduler router
-# scheduler_router = Router()
+@transaction.atomic
 def save_scheduler_run(
     scheduled_task,
     scheduler_details,
@@ -42,26 +41,25 @@ def save_scheduler_run(
 
         if scheduler_status == SchedulerStatusChoices.COMPLETED:
             for task in scheduled_task:
-                task_obj = Task.objects.get(id=task["task_id"])
-                for resource_id in task["assigned_resource_ids"]:
-                    # store resource allocations
-                    ResourceAllocations.objects.create(
-                        resource_id=resource_id,
-                        task_id=task["task_id"],
-                        run_id=scheduler_run,
-                    )
-
-                    # store resource intervals
-                    ResourceIntervals.objects.create(
-                        resource_id=resource_id,
-                        task_id=task["task_id"],
-                        run_id=scheduler_run,
-                        interval_start=task.get("task_start").isoformat(),
-                        interval_end=task.get("task_end").isoformat(),
-                    )
+                assigned_resources = task.get("assigned_resource_ids", [])
+                if assigned_resources:
+                    for resource_id in assigned_resources:
+                        # store resource allocations
+                        ResourceAllocations.objects.create(
+                            resource_id=resource_id,
+                            task_id=task["task_id"],
+                            run_id=scheduler_run,
+                        )
+                        # store resource intervals
+                        ResourceIntervals.objects.create(
+                            resource_id=resource_id,
+                            task_id=task["task_id"],
+                            run_id=scheduler_run,
+                            interval_start=task.get("planned_task_start"),
+                            interval_end=task.get("planned_task_end"),
+                        )
 
     except Exception as e:
-        # raise the error as exception
         raise e
 
 
