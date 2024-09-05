@@ -604,7 +604,11 @@ class JobGanttChartService:
 
             for task in job.tasks.all():
                 if hasattr(task, "taskresourceassigment"):
-                    resource_name = task.taskresourceassigment.resource.name
+                    assignment = task.taskresourceassigment
+                    if assignment.resources:
+                        resource_name = ", ".join(
+                            [resource.name for resource in assignment.resources.all()]
+                        )
                 else:
                     resource_name = ""
 
