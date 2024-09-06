@@ -79,7 +79,7 @@
   <nav class="text-[#5E6278] ml-2.5">
     <ul class="space-y-5 font-semibold">
       {% comment %} dashboard menu {% endcomment %}
-      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_itme_url="/" %}
+      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_item_url="/dashboard/" %}
         {% partial _menu_item %}
       {% endwith %}
       {% comment %} Production Menu {% endcomment %}
@@ -89,7 +89,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -105,9 +106,6 @@
           {% with menu_item_id='item' menu_item_name='Item' menu_item_url="/items" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
-            {% partial _dropdown_menu_item %}
-          {% endwith %}
         </ul>
       </div>
       {% comment %} Resource Management Menu {% endcomment %}
@@ -117,7 +115,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -133,7 +132,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly-shift-templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -152,7 +152,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='resources-assignment' menu_item_name='Resources Assignment' menu_item_url="/task-resource-assigments" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -174,7 +175,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='scheduler_runs' menu_item_name='Scheduler History' menu_item_url="/scheduler-runs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -187,7 +189,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='job-type' menu_item_name='Job Type' menu_item_url="/job-types" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -212,7 +215,8 @@
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
           {% with menu_item_id='job-type' menu_item_name='Users' menu_item_url="/users" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}

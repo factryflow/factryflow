@@ -150,10 +150,14 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
 
                     if criteria_match:
                         is_rule_applied = True
-                        task_instance = TaskRuleAssignment.objects.filter(task=task, is_applied=True).exclude(assigment_rule=rule)
-                        
+                        task_instance = TaskRuleAssignment.objects.filter(
+                            task=task, is_applied=True
+                        ).exclude(assigment_rule=rule)
+
                         if task_instance.exists():
-                            existing_rule_order = task_instance.first().assigment_rule.order
+                            existing_rule_order = (
+                                task_instance.first().assigment_rule.order
+                            )
 
                             if existing_rule_order > rule.order:
                                 task_instance.first().is_applied = False
@@ -161,13 +165,15 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
 
                             if existing_rule_order < rule.order:
                                 is_rule_applied = False
-                                
-                        task_rule_instance = TaskRuleAssignment.objects.filter(task=task, assigment_rule=rule)
+
+                        task_rule_instance = TaskRuleAssignment.objects.filter(
+                            task=task, assigment_rule=rule
+                        )
                         if task_rule_instance.exists():
                             instance = task_rule_instance.first()
                             instance.is_applied = is_rule_applied
                             instance.save()
-                        
+
                         else:
                             # if criteria match store it in the TaskRuleAssignment model
                             task_rule_instance = TaskRuleAssignment.objects.create(
@@ -185,9 +191,7 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                         if task_rule_assignment.exists():
                             task_rule_assignment.delete()
 
-        result["message"] = (
-            f"Matched {matching_task_count} tasks with assignment rules"
-        )
+        result["message"] = f"Matched {matching_task_count} tasks with assignment rules"
         result["status"] = "success"
 
         return result

@@ -4,24 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_manager', '0002_historicalresource_weekly_shift_template_and_more'),
-        ('resource_assigner', '0002_alter_assigmentrule_options_assigmentrule_order_and_more'),
+        ("resource_manager", "0002_historicalresource_weekly_shift_template_and_more"),
+        (
+            "resource_assigner",
+            "0002_alter_assigmentrule_options_assigmentrule_order_and_more",
+        ),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='taskresourceassigment',
-            name='assigment_rule',
+            model_name="taskresourceassigment",
+            name="assigment_rule",
         ),
         migrations.RemoveField(
-            model_name='taskresourceassigment',
-            name='resource',
+            model_name="taskresourceassigment",
+            name="resource",
         ),
         migrations.AddField(
-            model_name='taskresourceassigment',
-            name='resources',
-            field=models.ManyToManyField(blank=True, related_name='task_resource_assignments', to='resource_manager.resource'),
+            model_name="taskresourceassigment",
+            name="resources",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="task_resource_assignments",
+                to="resource_manager.resource",
+            ),
         ),
     ]

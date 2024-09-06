@@ -11,6 +11,7 @@ from .views import (
     TASK_TYPE_VIEWS,
     TASK_VIEWS,
     WORK_CENTER_VIEWS,
+    dashboard_gantt_chart_view,
 )
 
 urlpatterns = [
@@ -222,5 +223,10 @@ urlpatterns = [
         "api/job/gantt",
         JobGanttAPIView.as_view(),
         name="job_gantt_api",
+    ),
+    path(
+        "dashboard/",
+        dashboard_gantt_chart_view,
+        name="dashboard",
     ),
 ]
