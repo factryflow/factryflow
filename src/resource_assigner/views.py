@@ -16,9 +16,9 @@ from .models import (
     AssigmentRule,
     AssigmentRuleCriteria,
     AssignmentConstraint,
+    Operator,
     TaskResourceAssigment,
     TaskRuleAssignment,
-    Operator,
 )
 from .services import (
     AssigmentRuleCriteriaService,
@@ -26,8 +26,6 @@ from .services import (
     AssignmentConstraintService,
     TaskResourceAssigmentService,
 )
-
-from job_manager.models import Task, TaskStatusChoices, JobStatusChoices
 from .utils import get_matching_assignment_rules_with_tasks, get_model_fields
 
 # ------------------------------------------------------------------------------
@@ -37,13 +35,11 @@ from .utils import get_matching_assignment_rules_with_tasks, get_model_fields
 TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS = [
     "id",
     "task",
-    "assigment_rule",
 ]
 
 TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS = [
     "ID",
     "Task",
-    "Assigment Rule",
 ]
 
 TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
@@ -103,9 +99,11 @@ ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
         "headers": ["ID", "field", "operator", "value"],
         "fields": ["id", "field", "operator", "value"],
         "select_fields": {
-            "field": dict(get_model_fields(
-                "Task", "job_manager", ["item", "task_type", "job", "work_center"]
-            )),
+            "field": dict(
+                get_model_fields(
+                    "Task", "job_manager", ["item", "task_type", "job", "work_center"]
+                )
+            ),
             "operator": dict(Operator.choices),
         },
         "relationship_fields": "assigment_rule",
