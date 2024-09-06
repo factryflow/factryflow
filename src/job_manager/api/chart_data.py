@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from django.views import View
 from job_manager.services import JobGanttChartService
 
-
 class JobGanttAPIView(View):
     def get(self, request):
         """Use JobGanttChartService to map jobs to
