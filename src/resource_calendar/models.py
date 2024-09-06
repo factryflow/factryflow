@@ -52,7 +52,9 @@ class WeeklyShiftTemplateDetail(BaseModel):
                 fields=["day_of_week"],
             )
         ]
-        unique_together = [["weekly_shift_template", "day_of_week", "start_time", "end_time"]]
+        unique_together = [
+            ["weekly_shift_template", "day_of_week", "start_time", "end_time"]
+        ]
         db_table = "weekly_shift_template_detail"
 
     def __str__(self):

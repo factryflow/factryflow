@@ -342,7 +342,13 @@ TASK_TABLE_HEADERS = [
     "Status",
 ]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "PREDECESSORS", "HISTORY", "CONSTRAINTS", "RULES"]
+TASK_MODEL_RELATION_HEADERS = [
+    "DEPENDENCIES",
+    "PREDECESSORS",
+    "HISTORY",
+    "CONSTRAINTS",
+    "RULES",
+]
 TASK_MODEL_RELATION_FIELDS = {
     "dependencies": {
         "model_name": "tasks",
@@ -701,6 +707,7 @@ ITEM_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 # JOB-TASK gantt-chart View
 # ------------------------------------------------------------------------------
+
 
 def dashboard_gantt_chart_view(request):
     """

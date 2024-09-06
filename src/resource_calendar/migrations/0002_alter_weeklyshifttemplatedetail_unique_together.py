@@ -4,14 +4,15 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_calendar', '0001_initial'),
+        ("resource_calendar", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='weeklyshifttemplatedetail',
-            unique_together={('weekly_shift_template', 'day_of_week', 'start_time', 'end_time')},
+            name="weeklyshifttemplatedetail",
+            unique_together={
+                ("weekly_shift_template", "day_of_week", "start_time", "end_time")
+            },
         ),
     ]

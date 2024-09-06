@@ -103,9 +103,11 @@ ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
         "headers": ["ID", "field", "operator", "value"],
         "fields": ["id", "field", "operator", "value"],
         "select_fields": {
-            "field": dict(get_model_fields(
-                "Task", "job_manager", ["item", "task_type", "job", "work_center"]
-            )),
+            "field": dict(
+                get_model_fields(
+                    "Task", "job_manager", ["item", "task_type", "job", "work_center"]
+                )
+            ),
             "operator": dict(Operator.choices),
         },
         "relationship_fields": "assigment_rule",
