@@ -9,7 +9,7 @@ from users.services import UserService
 
 
 class AdminChangePasswordView(FormView):
-    template_name = "account/change_password.html"
+    template_name = "account/admin_change_password.html"
     form_class = AdminChangePasswordForm
 
     def post(self, request, id):

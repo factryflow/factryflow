@@ -210,23 +210,36 @@
       </div>
       {% comment %} User Management Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='datatype' menu_item_icon='images/Rm.svg' menu_item_name='User Management' %}
+        {% with menu_item_id='user_management' menu_item_icon='images/Rm.svg' menu_item_name='User Management' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
             style="display: none;">
-          {% with menu_item_id='job-type' menu_item_name='Users' menu_item_url="/users" %}
+          {% with menu_item_id='user_settings' menu_item_name='Users' menu_item_url="/users" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
       </div>
-      <!-- Operator View menu -->
+      <!-- Settings menu -->
       {% comment %} setting menu {% endcomment %}
-      {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='/settings' %}
-        {% partial _menu_item %}
-      {% endwith %}
+      <div x-data="dropdown">
+        {% with menu_item_id='settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none;">
+          {% with menu_item_id='scheduler_settings' menu_item_name='Scheduler' menu_item_url="/settings" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='user_settings' menu_item_name='Change Password' menu_item_url="/users/change-password" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+        </ul>
+      </div>
       {% comment %} Help and Support manu {% endcomment %}
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
         {% partial _menu_item %}

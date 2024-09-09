@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 
 class ChangePasswordView(PasswordChangeView):
     form_class = PasswordChangeForm
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("dashboard")
     template_name = "account/change_password.html"
 
     def post(self, *args, **kwargs):
