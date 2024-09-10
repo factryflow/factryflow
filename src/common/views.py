@@ -678,7 +678,7 @@ class CustomTableView:
         if hasattr(self.model, self.order_by_field):
             return self.model.objects.all().order_by(self.order_by_field)
 
-        return self.model.objects.all().order_by("id")[::-1]
+        return self.model.objects.all().order_by("-id")
 
     def get_custom_field_json_data(self, instance=None):
         # get custom field json data in two rows one is headers which are keys(convert in captilize and replace "_" with " ", and values as data)

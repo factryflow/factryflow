@@ -52,7 +52,7 @@ class UserTableView:
         """
         Retrieve all instances of the model.
         """
-        return User.objects.all().order_by("id")[::-1]
+        return User.objects.all().order_by("-id")
 
     def filtered_instances(
         self,
