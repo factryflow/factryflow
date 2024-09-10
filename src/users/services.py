@@ -45,6 +45,7 @@ class UserService:
         user.full_clean()
         user.save()
 
+        user.set_password(kwargs["password"])
         user.groups.set(groups)
         user.save()
 
