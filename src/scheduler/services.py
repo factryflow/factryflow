@@ -303,9 +303,9 @@ class SchedulingService:
             plan_start_date.weekday() if self.plan_start_date else None
         )
         self.plan_start_minutes = (
-            self.plan_start_weekday * DAY_IN_MINUTES
-            if self.plan_start_weekday
-            else None
+            None
+            if self.plan_start_weekday is None
+            else self.plan_start_weekday * DAY_IN_MINUTES
         )
         self.horizon_weeks = horizon_weeks if horizon_weeks else 20
         self.horizon_minutes = horizon_weeks * WEEK_IN_MINUTES
