@@ -52,7 +52,7 @@ class UserTableView:
         """
         Retrieve all instances of the model.
         """
-        return User.objects.all().order_by("id")
+        return User.objects.all().order_by("-id")
 
     def filtered_instances(
         self,
@@ -103,13 +103,14 @@ class UserTableView:
         """
         instances = self.filtered_instances(status_filter, search_query)
         paginator = Paginator(instances, self.page_size)
+        num_pages = paginator.num_pages
         try:
             paginated_instances = paginator.page(page_number)
         except PageNotAnInteger:
             paginated_instances = paginator.page(1)
         except EmptyPage:
             paginated_instances = paginator.page(paginator.num_pages)
-        return paginated_instances
+        return paginated_instances, num_pages
 
     def table_rows(
         self,
@@ -127,7 +128,7 @@ class UserTableView:
         Returns:
             List: Rows of data for the table based on the filtered instances.
         """
-        paginated_data = self.get_paginated_instances(
+        paginated_data, num_pages = self.get_paginated_instances(
             page_number, status_filter, search_query
         )
 
@@ -149,7 +150,7 @@ class UserTableView:
 
             rows.append(row_data)
 
-        return rows, paginated_data
+        return rows, paginated_data, num_pages
 
 
 USER_MODEL_FIELDS = ["id", "email", "first_name", "last_name", "is_active"]
