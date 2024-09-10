@@ -19,6 +19,7 @@ class AdminChangePasswordView(FormView):
     Returns:
         The response indicating success or failure of the operation.
     """
+
     template_name = "account/admin_change_password.html"
     form_class = AdminChangePasswordForm
 
@@ -29,12 +30,18 @@ class AdminChangePasswordView(FormView):
             form_errors = []
             for _, errors in form.errors.items():
                 for error in errors:
-                    form_errors.append({
-                        "type": "error",
-                        "success": False,
-                        "message": error,
-                    })
-            return render(self.request, self.template_name, {"form": form, "form_errors": form_errors})
+                    form_errors.append(
+                        {
+                            "type": "error",
+                            "success": False,
+                            "message": error,
+                        }
+                    )
+            return render(
+                self.request,
+                self.template_name,
+                {"form": form, "form_errors": form_errors},
+            )
 
         if form.is_valid():
             user = get_object_or_404(User, id=id)

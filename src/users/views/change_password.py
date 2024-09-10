@@ -17,6 +17,7 @@ class ChangePasswordView(PasswordChangeView):
     Returns:
         The response indicating success or failure of the operation.
     """
+
     form_class = PasswordChangeForm
     success_url = reverse_lazy("dashboard")
     template_name = "account/change_password.html"
@@ -37,13 +38,18 @@ class ChangePasswordView(PasswordChangeView):
                 form_errors = []
                 for _, errors in form.errors.items():
                     for error in errors:
-                        form_errors.append({
-                            "type": "error",
-                            "success": False,
-                            "message": error,
-                        })
-                return render(self.request, self.template_name, {"form": form, "form_errors": form_errors})
+                        form_errors.append(
+                            {
+                                "type": "error",
+                                "success": False,
+                                "message": error,
+                            }
+                        )
+                return render(
+                    self.request,
+                    self.template_name,
+                    {"form": form, "form_errors": form_errors},
+                )
 
         except Exception as e:
             return HttpResponseServerError("Internal Server Error")
-
