@@ -46,7 +46,7 @@ class AdminChangePasswordView(FormView):
         if form.is_valid():
             user = get_object_or_404(User, id=id)
 
-            user_service = UserService(user)
+            user_service = UserService(user=user, request_user=request.user)
             user_service.change_password(data=request.POST)
 
             response = redirect(reverse("users:view_users", args=[id]))
