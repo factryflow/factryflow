@@ -131,13 +131,9 @@ Operator view
 
         <section id="bottom-navigation" class="xl:hidden lg:hidden  block fixed inset-x-0 bottom-0 z-10 bg-white shadow">
           <div id="tabs" class="flex justify-between">
-            {% include 'partials/bottomtabs.html' with name='task' menu_item_icon='images/Dashboard.svg' url="/operatorview/" %}
-            {% include 'partials/bottomtabs.html' with name='operation' menu_item_icon='images/Dashboard.svg' url="/operatorview/operationexception/" %}
-            {% include 'partials/bottomtabs.html' with name='issue' menu_item_icon='images/Dashboard.svg' url="/operatorview/issue/" %}
+            {% include 'partials/bottomtabs.html' with name='task' menu_item_icon='images/dashboard.svg' url="/operatorview/" %}
+            {% include 'partials/bottomtabs.html' with name='operation' menu_item_icon='images/dashboard.svg' url="/operatorview/operationexception/" %}
+            {% include 'partials/bottomtabs.html' with name='issue' menu_item_icon='images/dashboard.svg' url="/operatorview/issue/" %}
         </section>
 </div>
-
-
-
- 
 {% endblock %}

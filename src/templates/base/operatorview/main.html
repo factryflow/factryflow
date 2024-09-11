@@ -10,9 +10,6 @@
 
 {% load partials %}
 <style>[data-trix-button-group="file-tools"] { display: none !important; }</style>
-
-
-
 <div class="w-full h-screen" x-data="{ modelOpen: false,menuOpen:false }">
   
      <div x-cloak x-show="menuOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-hidden">
@@ -53,8 +50,6 @@
             </div>
         </div>
     </div>
-
-
 
     {% comment %} model open when click Report issue button  {% endcomment %}
     <div x-show="modelOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -189,8 +184,7 @@
       </div>
     </div>
 
-
-   <!-- Pagination Section -->
+    <!-- Pagination Section -->
       <div class="flex justify-center items-center gap-3 mt-6">
         <a href="#" class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180">
             <span class="sr-only">Previous Page</span>
@@ -213,15 +207,13 @@
         </a>
       </div>
 
-
       <section id="bottom-navigation" class="xl:hidden lg:hidden  block fixed inset-x-0 bottom-0 z-10 bg-white shadow">
         <div id="tabs" class="flex justify-between">
-          {% include 'partials/bottomtabs.html' with name='task' menu_item_icon='images/Dashboard.svg' url="/operatorview/" %}
-          {% include 'partials/bottomtabs.html' with name='operation' menu_item_icon='images/Dashboard.svg' url="/operatorview/operationexception/" %}
-          {% include 'partials/bottomtabs.html' with name='issue' menu_item_icon='images/Dashboard.svg' url="/operatorview/issue/" %}
+          {% include 'partials/bottomtabs.html' with name='task' menu_item_icon='images/dashboard.svg' url="/operatorview/" %}
+          {% include 'partials/bottomtabs.html' with name='operation' menu_item_icon='images/dashboard.svg' url="/operatorview/operationexception/" %}
+          {% include 'partials/bottomtabs.html' with name='issue' menu_item_icon='images/dashboard.svg' url="/operatorview/issue/" %}
       </section>
 </div>
-
 
 <script>
   function sanitize(html) {
@@ -233,9 +225,5 @@
     return html; // Fallback to prevent errors
   }
 }
-
-
-
 </script>
- 
 {% endblock %}

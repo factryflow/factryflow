@@ -109,12 +109,12 @@
                 </div>
             </li>
             <li class="border-b border-gray-300">
-                {% with user_menu_item_id="user-dashboard" user_menu_item_url="/dashboard" user_menu_item_icon='images/Dashboard.svg' user_menu_item_name='Dashboard' %}
+                {% with user_menu_item_id="user-dashboard" user_menu_item_url="/dashboard" user_menu_item_icon='images/dashboard.svg' user_menu_item_name='Dashboard' %}
                     {% partial _menu_items_names %}
                 {% endwith %}
             </li>
             <li>
-                {% with user_menu_item_id="user-settings" user_menu_item_url="/users/change-password" user_menu_item_icon='images/user_settings.svg' user_menu_item_name='User Settings' %}
+                {% with user_menu_item_id="user-settings" user_menu_item_url="/users/change-password" user_menu_item_icon='images/user_settings.svg' user_menu_item_name='My Account' %}
                     {% partial _menu_items_names %}
                 {% endwith %}
             </li>
