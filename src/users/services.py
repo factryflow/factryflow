@@ -13,9 +13,12 @@ from users.models import User
 
 
 class UserService:
-    def __init__(self, user) -> None:
+    def __init__(self, user, request_user=None) -> None:
         self.user = user
-        self.permission_service = AbstractPermissionService(user=user)
+        if request_user:
+            self.permission_service = AbstractPermissionService(user=request_user)
+        else:
+            self.permission_service = AbstractPermissionService(user=user)
 
     @staticmethod
     def _string_is_email(email_string):

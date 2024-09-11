@@ -1,44 +1,42 @@
 # views.py
-from django.shortcuts import render
-
 from common.views import CRUDView, CustomTableView
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from resource_assigner.models import AssignmentConstraint, TaskRuleAssignment
 
 from .forms import (
     DependencyForm,
     DependencyTypeForm,
     ItemForm,
     JobForm,
+    JobTypeForm,
     TaskForm,
     TaskTypeForm,
     WorkCenterForm,
-    JobTypeForm,
 )
 from .models import (
     Dependency,
+    DependencyStatusChoices,
     DependencyType,
     Item,
     Job,
+    JobStatusChoices,
+    JobType,
     Task,
+    TaskStatusChoices,
     TaskType,
     WorkCenter,
-    JobType,
-    TaskStatusChoices,
-    JobStatusChoices,
-    DependencyStatusChoices,
 )
 from .services import (
     DependencyService,
     DependencyTypeService,
     ItemService,
     JobService,
+    JobTypeService,
     TaskService,
     TaskTypeService,
     WorkCenterService,
-    JobTypeService,
 )
-
-from resource_assigner.models import TaskRuleAssignment, AssignmentConstraint
-
 
 # ------------------------------------------------------------------------------
 # WorkCenter Views
@@ -714,4 +712,6 @@ def dashboard_gantt_chart_view(request):
     Dashboard
         Job Task gantt chart data view
     """
+    if request.user.require_password_change:
+        return redirect(reverse("users:change_password"))
     return render(request, "base/chart/main.html")
