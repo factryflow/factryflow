@@ -27,7 +27,7 @@ Operator view
                   <ul class="list-none text-center text-2xl">
                     <li class="py-3">
                         <a href="/operatorview/">
-                         Tasks
+                          Tasks
                         </a>
                     </li>
                     <li class="py-3">
@@ -51,12 +51,11 @@ Operator view
         </div>
     </div>
 
-
     <div class="flex justify-between items-center mb-2">
       <div class="flex gap-6 items-center">
         <img src={% static 'images/menuicon.svg' %} class="h-8 w-7 cursor-pointer" @click="menuOpen = true"/>
         <h2 class="text-lg font-medium text-gray-700 max-sm:text-sm">Operation Exception</h2>
-       </div>
+      </div>
         <div class="flex space-x-2 items-center">
             <label
             for="sorting"
@@ -68,7 +67,6 @@ Operator view
             class="bg-gray-50 outline-0 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1"
           >
             <option value="" selected>Planned Start Date</option>
-         
           </select>
         </div>
     </div>
@@ -89,9 +87,7 @@ Operator view
             <img src={%static 'images/testing.png'%} alt="images" class="w-28 h-28 object-cover rounded-xl">
           </div>
         </div>  
- 
 
-     
         <div class="flex justify-between w-full items-center rounded-xl border-2 px-4 py-4 max-sm:px-2.5 max-sm:py-2.5 bg-white">
           <!-- First div box with labels -->
           <div class="rounded-md">
@@ -107,8 +103,7 @@ Operator view
           </div>
         </div> 
 
-
-           <!-- Pagination Section -->
+          <!-- Pagination Section -->
             <div class="flex justify-center items-center gap-3 mt-6">
               <a href="#" class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180">
                   <span class="sr-only">Previous Page</span>
@@ -131,17 +126,11 @@ Operator view
               </a>
             </div>
 
-  
-
         <section id="bottom-navigation" class="xl:hidden lg:hidden  block fixed inset-x-0 bottom-0 z-10 bg-white shadow">
           <div id="tabs" class="flex justify-between">
-            {% include 'partials/bottomtabs.html' with name='task' menu_item_icon='images/Dashboard.svg' url="/operatorview/" %}
-            {% include 'partials/bottomtabs.html' with name='operation' menu_item_icon='images/Dashboard.svg' url="/operatorview/operationexception/" %}
-            {% include 'partials/bottomtabs.html' with name='issue' menu_item_icon='images/Dashboard.svg' url="/operatorview/issue/" %}
+            {% include 'partials/bottomtabs.html' with name='task' menu_item_icon='images/dashboard.svg' url="/operatorview/" %}
+            {% include 'partials/bottomtabs.html' with name='operation' menu_item_icon='images/dashboard.svg' url="/operatorview/operationexception/" %}
+            {% include 'partials/bottomtabs.html' with name='issue' menu_item_icon='images/dashboard.svg' url="/operatorview/issue/" %}
         </section>
 </div>
-
-
-
- 
 {% endblock %}

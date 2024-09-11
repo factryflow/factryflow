@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, date, time
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -696,8 +696,28 @@ class CustomTableView:
                 field_info["id"] = id
                 field_info["name"] = custom_field_instance.name
                 field_info["label"] = custom_field_instance.label
-                field_info["type"] = custom_field_instance.field_type
-                field_info["value"] = value
+                field_info["type"] = (
+                    custom_field_instance.field_type.title()
+                    .replace("-", " ")
+                    .replace("_", " ")
+                )
+                if custom_field_instance.field_type == "datetime-local":
+                    # convert datetime field to readable string
+                    field_info["value"] = str(
+                        convert_datetime_to_readable_string(
+                            datetime.strptime(value, "%Y-%m-%dT%H:%M")
+                        )
+                    )
+                elif custom_field_instance.field_type == "date":
+                    # convert date field to readable string
+                    field_info["value"] = str(
+                        convert_date_to_readable_string(
+                            datetime.strptime(value, "%Y-%m-%d")
+                        )
+                    )
+                else:
+                    field_info["value"] = value
+
                 data.append(field_info)
         return data
 
@@ -744,7 +764,7 @@ class CustomTableView:
                             "type": "text",
                         }
                         row_data[field] = value
-                    elif isinstance(getattr(instance, field), datetime.datetime):
+                    elif isinstance(getattr(instance, field), datetime):
                         # if field is datetime then convert it to readable string and type is datetime-local
                         value = {
                             "value": str(
@@ -755,7 +775,7 @@ class CustomTableView:
                             "type": "datetime-local",
                         }
                         row_data[field] = value
-                    elif isinstance(getattr(instance, field), datetime.date):
+                    elif isinstance(getattr(instance, field), date):
                         # if field is date then convert it to readable string and type is date
                         value = {
                             "value": str(
@@ -766,7 +786,7 @@ class CustomTableView:
                             "type": "datetime-local",
                         }
                         row_data[field] = value
-                    elif isinstance(getattr(instance, field), datetime.time):
+                    elif isinstance(getattr(instance, field), time):
                         # if field is time then convert it to readable string and type is time
                         value = {
                             "value": str(getattr(instance, field).strftime("%H:%M")),
@@ -911,12 +931,12 @@ class CustomTableView:
                     )
                     # value = getattr(instance, field)
                     row_data.append(value[0])
-                elif isinstance(getattr(instance, field), datetime.datetime):
+                elif isinstance(getattr(instance, field), datetime):
                     value = convert_datetime_to_readable_string(
                         getattr(instance, field)
                     )
                     row_data.append(value)
-                elif isinstance(getattr(instance, field), datetime.date):
+                elif isinstance(getattr(instance, field), date):
                     value = convert_date_to_readable_string(getattr(instance, field))
                     row_data.append(value)
                 else:

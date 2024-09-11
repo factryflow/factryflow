@@ -79,12 +79,12 @@
   <nav class="text-[#5E6278] ml-2.5">
     <ul class="space-y-5 font-semibold">
       {% comment %} dashboard menu {% endcomment %}
-      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' menu_item_url="/dashboard/" %}
+      {% with menu_item_id='dashboard' menu_item_icon='images/dashboard.svg' menu_item_name='Dashboard' menu_item_url="/dashboard/" %}
         {% partial _menu_item %}
       {% endwith %}
       {% comment %} Production Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='Production' menu_item_icon='images/Rm.svg' menu_item_name='Production' %}
+        {% with menu_item_id='Production' menu_item_icon='images/production.svg' menu_item_name='Production' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -110,7 +110,7 @@
       </div>
       {% comment %} Resource Management Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RM' menu_item_icon='images/Rm.svg' menu_item_name='Resource Management' %}
+        {% with menu_item_id='RM' menu_item_icon='images/resource-management.svg' menu_item_name='Resource Management' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -127,7 +127,7 @@
       </div>
       {% comment %} Resource Calender Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RC' menu_item_icon='images/Rm.svg' menu_item_name='Resource Calender' %}
+        {% with menu_item_id='RC' menu_item_icon='images/resource-calender.svg' menu_item_name='Resource Calender' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -147,7 +147,7 @@
       </div>
       {% comment %} Resource Assigner Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RA' menu_item_icon='images/Rm.svg' menu_item_name='Resource Assigner' %}
+        {% with menu_item_id='RA' menu_item_icon='images/resource-assigner.svg' menu_item_name='Resource Assigner' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -170,7 +170,7 @@
       </div>
       <!-- Scheduler View Menu -->
       <div x-data="dropdown">
-        {% with menu_item_id='SS' menu_item_icon='images/Rm.svg' menu_item_name='Scheduler' %}
+        {% with menu_item_id='SS' menu_item_icon='images/scheduler.svg' menu_item_name='Scheduler' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -184,7 +184,7 @@
       </div>
       {% comment %} Types Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='datatype' menu_item_icon='images/Rm.svg' menu_item_name='Data Type & Custom fields' %}
+        {% with menu_item_id='datatype' menu_item_icon='images/data-types.svg' menu_item_name='Data Type & Custom fields' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
@@ -208,20 +208,7 @@
           {% endwith %}
         </ul>
       </div>
-      {% comment %} User Management Menu {% endcomment %}
-      <div x-data="dropdown">
-        {% with menu_item_id='user_management' menu_item_icon='images/Rm.svg' menu_item_name='User Management' %}
-          {% partial _dropdown_menu %}
-        {% endwith %}
-        <ul x-show="open"
-            @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
-          {% with menu_item_id='user_settings' menu_item_name='Users' menu_item_url="/users" %}
-            {% partial _dropdown_menu_item %}
-          {% endwith %}
-        </ul>
-      </div>
+
       <!-- Settings menu -->
       {% comment %} setting menu {% endcomment %}
       <div x-data="dropdown">
@@ -235,19 +222,25 @@
           {% with menu_item_id='scheduler_settings' menu_item_name='Scheduler' menu_item_url="/settings" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='user_settings' menu_item_name='Change Password' menu_item_url="/users/change-password" %}
+
+          {% with menu_item_id='account_settings' menu_item_name='My Account' menu_item_url="/users/change-password" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+
+          {% with menu_item_id='user_management' menu_item_name='User Management' menu_item_url="/users" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
       </div>
-      {% comment %} Help and Support manu {% endcomment %}
+      <!-- TODO -->
+      <!-- {% comment %} Help and Support manu {% endcomment %}
       {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
         {% partial _menu_item %}
-      {% endwith %}
-      {% comment %} operator menu {% endcomment %}
+      {% endwith %} -->
+      <!-- {% comment %} operator menu {% endcomment %}
       {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
         {% partial _menu_item %}
-      {% endwith %}
+      {% endwith %} -->
       {% comment %} Logout {% endcomment %}
       {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='/accounts/logout/' %}
         {% partial _menu_item %}

@@ -43,21 +43,21 @@
         {% endfor %}
         
         {% if custom_field_data %}
-        {% for field_info in custom_field_data %}
-        <div class="md:w-1/2 px-3 mb-6">
-            <label for="{{ field_info.name }}"
-                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                {{ field_info.label }}
-                {% if field_info.is_required %}<span class="text-red-500">*</span>{% endif %}
-            </label>
-            <input id="{{ field_info.name }}"
-                class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                type="{{ field_info.type }}" name="{{ field_info.name }}" value="{{ field_info.value }}" 
-                {% if field_info.is_required %} required="required" {% endif %}>
-            {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-            {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-        </div>
-        {% endfor %}
+            {% for field_info in custom_field_data %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <label for="{{ field_info.name }}"
+                        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        {{ field_info.label }}
+                        {% if field_info.is_required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    <input id="{{ field_info.name }}"
+                        class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
+                        type="{{ field_info.type }}" name="{{ field_info.name }}" value="{{ field_info.value }}" 
+                        {% if field_info.is_required %} required="required" {% endif %} {% if view_only %} disabled {% endif %}>
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% endfor %}
         {% endif %}
     </div>
 
