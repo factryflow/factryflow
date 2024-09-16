@@ -317,6 +317,8 @@ class SchedulingService:
     def run(self):
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
         scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict)
+        scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
+        log_messages = []
 
         if "error" in scheduler_tasks:
             return {"error": scheduler_tasks["error"]}
@@ -325,6 +327,8 @@ class SchedulingService:
             tasks=scheduler_tasks, resources=scheduler_resources_dict.values()
         )
         result = scheduler.schedule()
+        scheduler_summary = result.summary().split("\n")
+        log_messages.extend(scheduler_summary)
 
         # convert result to dataframe
         res_df = result.to_dataframe()
@@ -346,11 +350,15 @@ class SchedulingService:
 
         # Clear TaskResourceAssigment model before creating new ones
         TaskResourceAssigment.objects.all().delete()
+        log_messages.append("TaskResourceAssigment model cleared.")
 
         # save to TaskResourceAssigment model
         task_resource_assignments = []
 
-        for task in result.to_dict():
+        scheduler_results = result.to_dict()
+        scheduler_logs["tasks_found"] = len(scheduler_results)
+
+        for task in scheduler_results:
             task_id = task["task_id"]
             task_obj = Task.objects.get(id=task_id)
 
@@ -363,15 +371,23 @@ class SchedulingService:
                     int(task["task_end"])
                 )
                 task_obj.save()
+                scheduler_logs["tasks_assigned"] += 1
+                log_messages.append(f"Task with ID: {task_id} schedule updated.")
 
                 # Create TaskResourceAssigment object
                 task_resource_assignment = TaskResourceAssigment(task_id=task_id)
                 task_resource_assignment.save()
+                log_messages.append(
+                    f"TaskResourceAssigment {task_resource_assignment.id} created for Task with ID: {task_id}."
+                )
 
                 if task.get("assigned_resource_ids"):
                     resource_ids = task["assigned_resource_ids"]
                     resources = Resource.objects.filter(id__in=resource_ids)
                     task_resource_assignment.resources.set(resources)
+                    log_messages.append(
+                        f"TaskResourceAssigment {task_resource_assignment.id} assigned to resources: {resource_ids}."
+                    )
 
                 task_resource_assignments.append(task_resource_assignment)
 
@@ -383,14 +399,21 @@ class SchedulingService:
                         task_obj.planned_start_datetime
                     )
                     task_obj.job.save()
+                    log_messages.append(
+                        f"Job with ID {task_obj.job.id} planned_start_datetime updated."
+                    )
 
                 if task_obj == Task.objects.filter(job=task_obj.job).latest(
                     "planned_end_datetime"
                 ):
                     task_obj.job.planned_end_datetime = task_obj.planned_end_datetime
                     task_obj.job.save()
+                    log_messages.append(
+                        f"Job with ID {task_obj.job.id} planned_end_datetime updated."
+                    )
 
-        return res_df.to_dict("records")
+        scheduler_logs["log_messages"] = log_messages
+        return {"data": res_df.to_dict("records"), "logs": scheduler_logs}
 
     def _create_scheduler_task_objects(self, resources_dict: dict):
         tasks = Task.objects.filter(job__isnull=False)
