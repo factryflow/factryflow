@@ -567,7 +567,7 @@ class JobGanttChartService:
 
     def map_jobs_to_gantt(self) -> list:
         # check for permission to view job gantt chart
-        if not self.permission_service.check_for_permission("view_job_gantt_chart"):
+        if not self.user.is_authenticated:
             raise PermissionDenied()
 
         job_data = []
