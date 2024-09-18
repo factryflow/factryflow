@@ -571,7 +571,7 @@ class JobGanttChartService:
             raise PermissionDenied()
 
         job_data = []
-        jobs = Job.objects.all().order_by("priority")
+        jobs = Job.objects.prefetch_related("tasks").order_by("priority")
 
         gantt_pid = 0
 
@@ -632,8 +632,6 @@ class JobGanttChartService:
                             "priority": job.priority,
                             "pCaption": "",
                             "pNotes": "Some Notes text",
-                            "category": "Planning",
-                            "sector": "CMO",
                             "pPlanStart": task.planned_start_datetime,
                             "pPlanEnd": task.planned_end_datetime,
                         }
