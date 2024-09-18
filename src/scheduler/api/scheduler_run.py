@@ -4,13 +4,14 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.urls import reverse
 
-from .models import (
+from ..models import (
     ResourceAllocations,
     ResourceIntervals,
+    SchedulerLog,
     SchedulerRuns,
     SchedulerStatusChoices,
 )
-from .services import (
+from ..services import (
     SchedulingService,
 )
 
@@ -19,6 +20,7 @@ from .services import (
 def save_scheduler_run(
     scheduled_task,
     scheduler_details,
+    scheduler_logs,
     scheduler_start_time,
     scheduler_end_time,
     scheduler_status,
@@ -37,7 +39,10 @@ def save_scheduler_run(
             status=scheduler_status,
         )
 
-        scheduler_run.save()
+        SchedulerLog.objects.create(
+            scheduler_run=scheduler_run,
+            logs=scheduler_logs,
+        )
 
         if scheduler_status == SchedulerStatusChoices.COMPLETED:
             for task in scheduled_task:
@@ -82,8 +87,9 @@ def start_scheduler_run(request):
             scheduler_details = "Scheduler run completed successfully."
 
         save_scheduler_run(
-            scheduled_task,
+            scheduled_task["data"],
             scheduler_details,
+            scheduled_task["logs"],
             scheduler_start_time,
             scheduler_end_time,
             scheduler_status,

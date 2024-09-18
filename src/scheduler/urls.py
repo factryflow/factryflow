@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import SchedulerRuns_VIEWS, ResourceIntervals_VIEWS
-from .api import start_scheduler_run
-
+from .api.scheduler_logs import SchedulerLogsAPIView
+from .api.scheduler_run import start_scheduler_run
+from .views import ResourceIntervals_VIEWS, SchedulerRuns_VIEWS
 
 urlpatterns = [
     # scheduler runs urls
@@ -32,4 +32,9 @@ urlpatterns = [
     ),
     # Scheduler Run route
     path("scheduler-runs/start/", start_scheduler_run, name="start_scheduler_run"),
+    path(
+        "scheduler-logs/view/<int:scheduler_run_id>/",
+        SchedulerLogsAPIView.as_view(),
+        name="get_scheduler_logs",
+    ),
 ]

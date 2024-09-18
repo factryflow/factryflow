@@ -1,7 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import SchedulerRuns, ResourceIntervals, ResourceAllocations
+from .models import ResourceAllocations, ResourceIntervals, SchedulerLog, SchedulerRuns
+
+admin.site.register(SchedulerLog)
 
 
 @admin.register(SchedulerRuns)
