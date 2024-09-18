@@ -1,6 +1,6 @@
 from django.urls import path
 
-from job_manager.api.chart_data import JobGanttAPIView
+from job_manager.api.chart_data import JobGanttAPIView, ResourceGanttAPIView
 
 from .views import (
     DEPENDENCY_TYPE_VIEWS,
@@ -223,6 +223,11 @@ urlpatterns = [
         "api/job/gantt",
         JobGanttAPIView.as_view(),
         name="job_gantt_api",
+    ),
+    path(
+        "api/resource/gantt",
+        ResourceGanttAPIView.as_view(),
+        name="resource_gantt_api",
     ),
     path(
         "dashboard/",
