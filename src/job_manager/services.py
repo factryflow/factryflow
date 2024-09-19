@@ -595,9 +595,7 @@ class JobGanttChartService:
                         "pOpen": 1,
                         "pDepend": "",
                         "pCaption": "",
-                        "pNotes": "Some Notes text",
-                        "category": "Planning",
-                        "sector": "CMO",
+                        "pNotes": "",
                         "pPlanStart": job.planned_start_datetime,
                         "pPlanEnd": job.planned_end_datetime,
                     }
@@ -635,10 +633,9 @@ class JobGanttChartService:
                             "pDepend": list(
                                 task.predecessors.values_list("id", flat=True)
                             ),
-                            "pNotes": task.notes,
+                            "pNotes": "",
                             "priority": job.priority,
                             "pCaption": "",
-                            "pNotes": "Some Notes text",
                             "pPlanStart": task.planned_start_datetime,
                             "pPlanEnd": task.planned_end_datetime,
                         }
@@ -659,8 +656,10 @@ class ResourceGanttChartService:
         if not self.user.is_authenticated:
             raise PermissionDenied()
 
+        chart_data = []
+        gantt_pid = 0  # Counter for object ID in Gantt chart
+
         resources = Resource.objects.all()
-        resource_list = []
 
         # Get all TaskResourceAssigment and group by resources
         for resource in resources:
@@ -669,31 +668,11 @@ class ResourceGanttChartService:
                 resources__id__contains=resource.id
             ).values_list("task_id", flat=True)
 
-            jobs = Job.objects.none()
+            resource_pid = gantt_pid
 
-            if task_ids:
-                for task_id in task_ids:
-                    jobs = jobs | Job.objects.filter(tasks__id__contains=task_id)
-                breakpoint()
-                # jobs = Job.objects.filter(tasks__id__contains=task_ids).distinct()
-                # tasks = job.tasks.filter(id__in=task_ids)
-
-            # jobs = Job.objects.filter(task_ids__contains=task_ids).distinct()
-            print(str(resource))
-            print(str(task_ids))
-            # breakpoint()
-            # CONTINUE HERE
-
-        job_data = []
-        # jobs = Job.objects.prefetch_related("tasks")
-
-        gantt_pid = 0
-
-        for job in jobs:
-            job_pid = gantt_pid
-            job_data.append(
+            chart_data.append(
                 {
-                    "pID": job_pid,
+                    "pID": resource_pid,
                     "pName": resource.name,
                     "pStart": "",
                     "pEnd": "",
@@ -702,54 +681,88 @@ class ResourceGanttChartService:
                     "pMile": 0,
                     "pRes": "",
                     "pComp": 0,
-                    "pGroup": 1,
+                    "pGroup": 0,
                     "pOpen": 1,
                     "pDepend": "",
                     "pCaption": "",
-                    "pNotes": "Some Notes text",
-                    "category": "Planning",
-                    "sector": "CMO",
-                    "pPlanStart": job.planned_start_datetime,
-                    "pPlanEnd": job.planned_end_datetime,
+                    "pNotes": "",
                 }
             )
 
             gantt_pid += 1
+            resource_jobs = Job.objects.none()
 
-            for task in job.tasks.all():
-                if hasattr(task, "taskresourceassigment"):
-                    assignment = task.taskresourceassigment
-                    if assignment.resources:
-                        resource_name = ", ".join(
-                            [resource.name for resource in assignment.resources.all()]
-                        )
-                else:
-                    resource_name = ""
+            if task_ids:
+                for task_id in (
+                    task_ids
+                ):  # Get all jobs for each resource based on the assigned tasks
+                    resource_jobs = resource_jobs | Job.objects.filter(
+                        tasks__id__contains=task_id
+                    )
 
-                job_data.append(
+            for job in resource_jobs.distinct():
+                job_pid = gantt_pid
+                chart_data.append(
                     {
-                        "pID": gantt_pid,
-                        "pName": task.name,
+                        "pID": job_pid,
+                        "pName": job.name,
                         "pStart": "",
                         "pEnd": "",
                         "pClass": "gtaskblue",
                         "pLink": "",
                         "pMile": 0,
-                        "pRes": resource_name,
+                        "pRes": "",
                         "pComp": 0,
                         "pGroup": 0,
-                        "pParent": job_pid,
                         "pOpen": 1,
-                        "pDepend": list(task.predecessors.values_list("id", flat=True)),
+                        "pParent": resource_pid,
+                        "pDepend": "",
                         "pCaption": "",
-                        "pNotes": "Some Notes text",
-                        "category": "Planning",
-                        "sector": "CMO",
-                        "pPlanStart": task.planned_start_datetime,
-                        "pPlanEnd": task.planned_end_datetime,
+                        "pNotes": "",
+                        "pPlanStart": job.planned_start_datetime,
+                        "pPlanEnd": job.planned_end_datetime,
                     }
                 )
 
                 gantt_pid += 1
 
-        return job_data
+                for task in job.tasks.filter(id__in=task_ids):
+                    if hasattr(task, "taskresourceassigment"):
+                        assignment = task.taskresourceassigment
+                        if assignment.resources:
+                            resource_name = ", ".join(
+                                [
+                                    resource.name
+                                    for resource in assignment.resources.all()
+                                ]
+                            )
+                    else:
+                        resource_name = ""
+
+                    chart_data.append(
+                        {
+                            "pID": gantt_pid,
+                            "pName": task.name,
+                            "pStart": "",
+                            "pEnd": "",
+                            "pClass": "gtaskblue",
+                            "pLink": "",
+                            "pMile": 0,
+                            "pRes": resource_name,
+                            "pComp": 0,
+                            "pGroup": 0,
+                            "pParent": job_pid,
+                            "pOpen": 1,
+                            "pDepend": list(
+                                task.predecessors.values_list("id", flat=True)
+                            ),
+                            "pCaption": "",
+                            "pNotes": "",
+                            "pPlanStart": task.planned_start_datetime,
+                            "pPlanEnd": task.planned_end_datetime,
+                        }
+                    )
+
+                    gantt_pid += 1
+
+        return chart_data
