@@ -48,7 +48,7 @@
                         {% endfor %}
                         {% if show_actions %}
                             <td class="px-6 py-4">
-                                {% if user|can:'actions_rule[0]' %}
+                                {% if user|can:actions_rule.0 %}
                                     <a href="{% url 'users:view_'|add:model_name id=row.0 %}">
                                         <button id="view-{{ row.0 }}"
                                                 type="button"
@@ -58,7 +58,7 @@
                                     </a>
                                 {% endif %}
                                 {% if not view_only %}
-                                    {% if user|can:'actions_rule[2]' %}
+                                    {% if user|can:actions_rule.1 %}
                                         <a href="{% url 'users:edit_'|add:model_name id=row.0 edit='true' %}">
                                             <button id="edit-{{ row.0 }}"
                                                     type="button"

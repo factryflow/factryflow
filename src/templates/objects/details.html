@@ -123,7 +123,7 @@
             <a href="{% url model_name %}" class="text-[#181C32]">Cancel</a>
         </button>
         {% if view_mode %}
-        {% if user|can:'crud_action_rules[0]' %}
+        {% if user|can:crud_action_rules.0 %}
         <button>
             <a href="{{ edit_url }}"
                 class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
@@ -132,7 +132,7 @@
         </button>
         {% endif %}
         {% else %}
-        {% if user|can:'crud_action_rules[1]' %}
+        {% if user|can:crud_action_rules.1 %}
         <button type="submit"
             class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
             {{ button_text }}
@@ -230,13 +230,13 @@
                             <td class="flex items-center justify-center px-6 py-4">
                                 <template x-data="{'rowID': row.id.value}" x-if="!row.isEditing">
                                     <div class="flex items-center justify-center gap-3">
-                                        {% if user|can:'crud_action_rules[2]' %}
+                                        {% if user|can:crud_action_rules.2 %}
                                         <button @click="editRow(index)" type="button"
                                             class="font-medium text-blue-600 text-blue-500 hover:underline">
                                             <img src="{% static 'images/edit.svg' %}" alt="Edit" />
                                         </button>
                                         {% endif %}
-                                        {% if user|can:'crud_action_rules[3]' %}
+                                        {% if user|can:crud_action_rules.3 %}
                                         <button type="button"
                                             @click="deleteRow(rowID)"
                                             :hx-delete="`{% url 'delete_'|add:model_name_for_crud 0 %}`.replace('/0/', '/' + rowID + '/')"
@@ -249,7 +249,7 @@
                                 </template>
                                 <template x-if="row.isEditing">
                                     <div class="flex items-center justify-center gap-3">
-                                        {% if user|can:'crud_action_rules[2]' %}
+                                        {% if user|can:crud_action_rules.2 %}
                                         <button type="submit"
                                             class="font-medium text-green-600 text-green-500 hover:underline">
                                             <img 

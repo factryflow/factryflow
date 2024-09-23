@@ -85,7 +85,7 @@
                         <!-- Buttons -->
                         <div class="px-9 py-5 flex justify-center items-center gap-3">
                             {% if show_actions %}
-                            {% if user|can:'crud_action_rules[3]' %}
+                            {% if user|can:crud_action_rules.3 %}
                             <button type="button" hx-delete="{% url 'delete_'|add:model_name_for_crud id=row.0 %}"
                                 hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML"
                                 class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
@@ -105,7 +105,7 @@
                         <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                     </div>
                 </td> -->
-                {% for cell in row %}
+                {% for cell in row %}   
                     <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
                         {% if not cell %}
                             <span class="text-[#7E8299]">None</span>
@@ -116,7 +116,7 @@
                 {% endfor %}
                 {% if show_actions %}
                 <td class="flex justify-center items-center px-6 py-4">
-                    {% if user|can:'crud_action_rules[0]' %}
+                    {% if user|can:crud_action_rules.0 %}
                     <a href="{% url 'view_'|add:model_name_for_crud id=row.0 %}">
                         <button id="view-{{ row.0 }}" type="button"
                             class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
@@ -125,7 +125,7 @@
                     </a>
                     {% endif %}
                     {% if not view_only %}
-                    {% if user|can:'crud_action_rules[2]' %}
+                    {% if user|can:crud_action_rules.2 %}
                     <a href="{% url 'edit_'|add:model_name_for_crud id=row.0 edit='true' %}">
                         <button id="edit-{{ row.0 }}" type="button"
                             class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
@@ -133,7 +133,7 @@
                         </button>
                     </a>
                     {% endif %}
-                    {% if user|can:'crud_action_rules[3]' %}
+                    {% if user|can:crud_action_rules.3 %}
                     <button id="delete-{{ row.0 }}" type="button"
                         class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
                         @click="showModal = {{ row.0 }}">
@@ -144,7 +144,7 @@
                 </td>
                 {% if ordered_model %}
                 <td class="px-6 py-4">
-                    {% if user|can:'crud_action_rules[2]' %}
+                    {% if user|can:crud_action_rules.2 %}
                     <button id="move-up-{{ row.0 }}"
                         hx-post="{% url 'change_assignment_rule_priority' id=row.0 direction='up' %}"
                         hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
@@ -299,7 +299,7 @@
     </div>
 
     {% else %}
-    {% if user|can:'crud_action_rules[1]' %}
+    {% if user|can:crud_action_rules.1 %}
     <div class="flex gap-2">
         {% if model_name == 'assigment_rules' %}
         <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"

@@ -608,7 +608,10 @@ class JobGanttChartService:
                         assignment = task.taskresourceassigment
                         if assignment.resources:
                             resource_name = ", ".join(
-                                [resource.name for resource in assignment.resources.all()]
+                                [
+                                    resource.name
+                                    for resource in assignment.resources.all()
+                                ]
                             )
                     else:
                         resource_name = ""
@@ -627,7 +630,9 @@ class JobGanttChartService:
                             "pGroup": 0,
                             "pParent": job_pid,
                             "pOpen": 1,
-                            "pDepend": list(task.predecessors.values_list("id", flat=True)),
+                            "pDepend": list(
+                                task.predecessors.values_list("id", flat=True)
+                            ),
                             "pNotes": task.notes,
                             "priority": job.priority,
                             "pCaption": "",

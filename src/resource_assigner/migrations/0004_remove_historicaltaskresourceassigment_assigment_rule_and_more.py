@@ -4,18 +4,20 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_assigner', '0003_remove_taskresourceassigment_assigment_rule_and_more'),
+        (
+            "resource_assigner",
+            "0003_remove_taskresourceassigment_assigment_rule_and_more",
+        ),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='historicaltaskresourceassigment',
-            name='assigment_rule',
+            model_name="historicaltaskresourceassigment",
+            name="assigment_rule",
         ),
         migrations.RemoveField(
-            model_name='historicaltaskresourceassigment',
-            name='resource',
+            model_name="historicaltaskresourceassigment",
+            name="resource",
         ),
     ]
