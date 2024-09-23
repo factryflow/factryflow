@@ -368,7 +368,10 @@ class CRUDView:
             "page_label": page_label,
             "model_name": self.model_name,
             "model_name_for_crud": relation_model_name,
-            "crud_action_rules": self.get_models_crud_permissions(relation_model_name),
+            "crud_action_rules": self.crud_action_rules,
+            "relation_model_crud_action_rules": self.get_models_crud_permissions(
+                relation_model_name
+            ),
             "model_title": self.model_title,
             "field_url": self.model_name.replace("_", "-").lower(),
             "custom_field_data": custom_field_form_data
