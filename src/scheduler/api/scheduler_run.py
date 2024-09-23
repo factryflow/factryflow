@@ -91,7 +91,7 @@ def start_scheduler_run(request):
 
         if "error" in scheduled_task:
             scheduler_results = scheduled_task["error"]
-            scheduler_logs = scheduled_task["error"]
+            scheduler_logs = {"scheduler_error": scheduled_task["error"]}
 
         else:
             scheduler_results = scheduled_task["data"]
