@@ -87,9 +87,9 @@ def start_scheduler_run(request):
             scheduler_details = "Scheduler run completed successfully."
 
         save_scheduler_run(
-            scheduled_task["data"],
+            scheduled_task.get("data", scheduled_task["error"]),
             scheduler_details,
-            scheduled_task["logs"],
+            scheduled_task.get("logs", {}),
             scheduler_start_time,
             scheduler_end_time,
             scheduler_status,

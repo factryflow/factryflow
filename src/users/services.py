@@ -4,6 +4,7 @@ from api.permission_checker import AbstractPermissionService
 from common.services import model_update
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from rolepermissions.roles import assign_role, clear_roles
 
 from users.models import User
 
@@ -50,6 +51,10 @@ class UserService:
 
         user.set_password(kwargs["password"])
         user.groups.set(groups)
+
+        for group in groups:
+            assign_role(user, group.name)
+
         user.save()
 
         return user
@@ -71,6 +76,11 @@ class UserService:
         user, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
+
+        clear_roles(user)
+
+        for group in data["groups"]:
+            assign_role(user, group.name)
 
         return user
 

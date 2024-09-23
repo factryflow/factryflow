@@ -13,30 +13,30 @@
                x-cloak>
             <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
                 <tr class="text-[#181C32]">
-                    <th scope="col" class="p-4">
+                    <!-- <th scope="col" class="p-4">
                         <div class="flex items-center">
                             <input id="checkbox-all-search"
                                    type="checkbox"
                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                         </div>
-                    </th>
+                    </th> -->
                     {% for header in headers %}
                         <th scope="col"
                             class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
                     {% endfor %}
-                    {% if show_actions %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
+                    {% if show_actions and user|can:actions_rule.1 %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for row in rows %}
                     <tr class="bg-white border-b">
-                        <td class="w-4 p-4">
+                        <!-- <td class="w-4 p-4">
                             <div class="flex items-center">
                                 <input id="checkbox-table-search-1"
-                                       type="checkbox"
-                                       class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                                    type="checkbox"
+                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                             </div>
-                        </td>
+                        </td> -->
                         {% for cell in row %}
                             <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
                                 {% if not cell %}
@@ -48,7 +48,7 @@
                         {% endfor %}
                         {% if show_actions %}
                             <td class="px-6 py-4">
-                                {% if user|can:'actions_rule[0]' %}
+                                {% if user|can:actions_rule.0 %}
                                     <a href="{% url 'users:view_'|add:model_name id=row.0 %}">
                                         <button id="view-{{ row.0 }}"
                                                 type="button"
@@ -58,7 +58,7 @@
                                     </a>
                                 {% endif %}
                                 {% if not view_only %}
-                                    {% if user|can:'actions_rule[2]' %}
+                                    {% if user|can:actions_rule.1 %}
                                         <a href="{% url 'users:edit_'|add:model_name id=row.0 edit='true' %}">
                                             <button id="edit-{{ row.0 }}"
                                                     type="button"
@@ -204,18 +204,20 @@
                 <div class="flex-1">
                     <h1 class="text-2xl font-semibold text-[#181C32] pb-5">User Management</h1>
                 </div>
-                <div class="flex-2">
-                    <a href="{% url 'users:users_form' %}"
-                       class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
-                    User</a>
-                </div>
+                {% if user|can:actions_rule.1 %}
+                    <div class="flex-2">
+                        <a href="{% url 'users:users_form' %}"
+                        class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New
+                        User</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
     <!-- Tabs -->
     <div x-data="{ activeTab: 'tab1' }"
-         class="border-x border-y border-[#e1e3ea80] rounded-xl"
-         x-cloak>
+        class="border-x border-y border-[#e1e3ea80] rounded-xl"
+        x-cloak>
         <!-- Tabs -->
         <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
             <div class="md:flex flex-wrap text-sm md:text-base">

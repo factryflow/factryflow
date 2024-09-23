@@ -61,8 +61,8 @@ class UserDetailView:
         self.detail_template_name = "users/details.html"
         self.cud_actions_rule = cud_actions_rule
         self.actions_rule = [
-            f"view_{model_name.lower()}",
-            f"change_{model_name.lower()}",
+            f"view_{self.model._meta.model_name.lower()}",
+            f"change_{self.model._meta.model_name.lower()}",
         ]
         self.button_text = button_text
 
