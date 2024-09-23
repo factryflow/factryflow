@@ -43,6 +43,7 @@ class Planner(AbstractUserRole):
     permissions = get_all_permissions()
 
     for permission in permissions:
+        # exclude user-related permissions
         if "user" not in permission:
             available_permissions[permission] = True
 
