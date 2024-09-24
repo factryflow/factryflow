@@ -449,8 +449,10 @@ class SchedulingService:
                 # check for assignments
                 scheduler_group_list = []
 
-                if hasattr(rule_assignment.task, "assignmentconstraint"):
-                    assignment_constraint = rule_assignment.task.assignmentconstraint
+                if hasattr(rule_assignment.assigment_rule, "assignmentconstraint"):
+                    assignment_constraint = (
+                        rule_assignment.assigment_rule.assignmentconstraint
+                    )
                     resource_count = assignment_constraint.resource_count
                     scheduler_assignment = None
 
