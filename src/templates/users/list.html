@@ -9,15 +9,15 @@
 <div>
     {% if rows %}
         <table class="w-full text-sm text-center"
-               id="all-{{ model_name }}s-table"
-               x-cloak>
+                id="all-{{ model_name }}s-table"
+                x-cloak>
             <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
                 <tr class="text-[#181C32]">
                     <!-- <th scope="col" class="p-4">
                         <div class="flex items-center">
                             <input id="checkbox-all-search"
-                                   type="checkbox"
-                                   class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                                    type="checkbox"
+                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                         </div>
                     </th> -->
                     {% for header in headers %}
@@ -153,22 +153,22 @@
 {% endpartialdef %}
 {% partialdef partial-search-filter %}
 <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7"
-     x-cloak>
+        x-cloak>
     <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
         <div class="relative w-full md:w-[600px]">
             <!-- Inline SVG Icon -->
             <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
-                 src="{% static 'images/search.svg' %}"
-                 alt="image_search" />
+                    src="{% static 'images/search.svg' %}"
+                    alt="image_search" />
             <!-- Search Input -->
             <input type="text"
-                   id="all_search_bar"
-                   placeholder="Search {{ model_title }} ID / {{ model_title }} Name"
-                   hx-get="{% url 'users:list' %}"
-                   hx-target="#all-{{ model_name }}s-table"
-                   hx-trigger="keyup delayed:500ms"
-                   name="query"
-                   class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
+                id="all_search_bar"
+                placeholder="Search {{ model_title }} ID / {{ model_title }} Name"
+                hx-get="{% url 'users:list' %}"
+                hx-target="#all-{{ model_name }}s-table"
+                hx-trigger="keyup delayed:500ms"
+                name="query"
+                class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
         </div>
     </div>
 </div>
@@ -180,8 +180,8 @@
             <nav class="flex pb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
-                        <a href="/"
-                           class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                        <a href="/dashboard/gantt-type=job/home=true"
+                            class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
                             <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
                         </a>
                     </li>
@@ -189,7 +189,7 @@
                         <div class="flex items-center">
                             <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
                             <a href="/{{ model_name }}"
-                               class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
+                                class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                         </div>
                     </li>
                     <li aria-current="page">

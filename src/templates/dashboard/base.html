@@ -1,0 +1,75 @@
+{% extends 'base/main.html' %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+{% load static %}
+
+    <!-- Breadcrumb Section -->
+    <div class="flex-wrap">
+        <nav class="flex pb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="/dashboard/gantt-type=job/home=true"
+                        class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                        <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                        <a href="/dashboard/gantt-type=job/home=true"
+                            class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Dashboard</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                        <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Overview</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Button Group -->
+    <div x-data="{ activeChart: 'job' }" class="flex justify-between items-center pb-5">
+        <div class="flex space-x-4">
+            <!-- Job Gantt Chart Button -->
+            <button 
+                :class="activeChart === 'job' ? 'bg-[#023E8A] text-white' : 'bg-[#F1F1F2] text-[#181C32]'"
+                @click="activeChart = 'job'"
+                class="focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center"
+                hx-get="{% url 'dashboard' gantt_type='job' home='false' %}" 
+                hx-swap="innerHTML" 
+                hx-target="#gantt-chart">
+                Job Chart
+            </button>
+
+            <!-- Resource Gantt Chart Button -->
+            <button 
+                :class="activeChart === 'resource' ? 'bg-[#023E8A] text-white' : 'bg-[#F1F1F2] text-[#181C32]'"
+                @click="activeChart = 'resource'"
+                class="focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center"
+                hx-get="{% url 'dashboard' gantt_type='resource' home='false' %}" 
+                hx-swap="innerHTML" 
+                hx-target="#gantt-chart">
+                Resource Chart
+            </button>
+        </div>
+    </div>
+    
+    <!-- Gantt Chart Section -->
+    <div id="gantt-chart">
+        <h1 class="text-2xl font-semibold text-[#181C32]">{{ gantt_chart_title }} Gantt Chart</h1>
+        {% include gantt_chart %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiBaseUrl = "{{ API_BASE_URL }}";
+            localStorage.setItem('API_BASE_URL', apiBaseUrl);
+        });
+    </script>
+
+{% endblock %}

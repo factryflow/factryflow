@@ -111,12 +111,12 @@
               <input
                 type="hidden"
                 name="next"
-                value="/chart/"
+                value="/dashboard/gantt-type=job/home=true"
               />
 
               <!-- Sign In Button -->
               <button
-                href="{% url 'chart' %}"
+                href="{% url 'dashboard' gantt_type='job' home='true' %}"
                 type="submit"
                 class="w-full text-white bg-[#023E8A] focus:ring-4 focus:outline-none focus:ring-primary-300  rounded-lg font-semibold text-base px-5 py-2.5 text-center"
               >

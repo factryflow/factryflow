@@ -26,10 +26,6 @@ def taskform(request):
     return render(request, "base/task/form.html")
 
 
-def dashboard(request):
-    return render(request, "base/chart/main.html")
-
-
 def settingsPage(request):
     return render(request, "base/settings/form.html")
 
@@ -51,7 +47,6 @@ if settings.DEBUG:
 
 urlpatterns = [
     path("", home, name="home"),
-    path("chart/", dashboard, name="chart"),
     path("settings/", settingsPage, name="settings"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
