@@ -68,6 +68,7 @@ def test_can_update_user(user_data):
             "first_name": "first-name",
             "last_name": "last-name",
             "require_password_change": True,
+            "groups": [],
         },
     )
 

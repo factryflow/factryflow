@@ -53,37 +53,37 @@ urlpatterns = [
     path(
         "weekly-shift-template-details/new/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="weekly_shift_template_details_form",
+        name="weekly_shift_template_detail_form",
     ),
     path(
         "weekly-shift-template-details-create/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.create_or_update_model_instance,
-        name="weekly_shift_template_details_create",
+        name="weekly_shift_template_detail_create",
     ),
     path(
         "weekly-shift-template-details/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.get_all_instances,
-        name="weekly_shift_template_details",
+        name="weekly_shift_template_detail",
     ),
     path(
         "weekly-shift-template-details/delete/<int:id>/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.delete_obj_instance,
-        name="delete_weekly_shift_template_details",
+        name="delete_weekly_shift_template_detail",
     ),
     path(
         "weekly-shift-template-details/view/<int:id>/",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="view_weekly_shift_template_details",
+        name="view_weekly_shift_template_detail",
     ),
     path(
         "weekly-shift-template-details/view/<int:id>/edit=<str:edit>",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="edit_weekly_shift_template_details",
+        name="edit_weekly_shift_template_detail",
     ),
     path(
         "weekly-shift-template-details/view/<int:id>/field=<str:field>",
         WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS.show_model_form,
-        name="weekly_shift_template_details_relationships",
+        name="weekly_shift_template_detail_relationships",
     ),
     # operational exception type urls
     path(

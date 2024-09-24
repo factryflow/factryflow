@@ -67,7 +67,9 @@ class CRUDView:
         self.list_template_name = "objects/list.html"
         self.detail_template_name = "objects/details.html"
         self.user_rule_permission = user_rule_permission
-        self.crud_action_rules = self.get_models_crud_permissions(model_name)
+        self.crud_action_rules = self.get_models_crud_permissions(
+            self.model._meta.model_name
+        )
         self.button_text = button_text
         self.ordered_model = ordered_model
         self.formset_options = formset_options
@@ -88,10 +90,10 @@ class CRUDView:
     def get_models_crud_permissions(self, model_name):
         permissions_list = (
             [
-                f"view_{model_name.lower().replace('_', '')[:-1]}",
-                f"add_{model_name.lower().replace('_', '')[:-1]}",
-                f"change_{model_name.lower().replace('_', '')[:-1]}",
-                f"delete_{model_name.lower().replace('_', '')[:-1]}",
+                f"view_{model_name.lower().replace('_', '')}",
+                f"add_{model_name.lower().replace('_', '')}",
+                f"change_{model_name.lower().replace('_', '')}",
+                f"delete_{model_name.lower().replace('_', '')}",
             ]
             if model_name
             else None
@@ -366,7 +368,10 @@ class CRUDView:
             "page_label": page_label,
             "model_name": self.model_name,
             "model_name_for_crud": relation_model_name,
-            "crud_action_rules": self.get_models_crud_permissions(relation_model_name),
+            "crud_action_rules": self.crud_action_rules,
+            "relation_model_crud_action_rules": self.get_models_crud_permissions(
+                relation_model_name
+            ),
             "model_title": self.model_title,
             "field_url": self.model_name.replace("_", "-").lower(),
             "custom_field_data": custom_field_form_data

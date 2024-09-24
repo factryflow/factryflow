@@ -32,7 +32,7 @@ WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS = [
 WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS = {
     "template_details": {
         "related_name": "weekly_shift_template_details",
-        "model_name": "weekly_shift_template_details",
+        "model_name": "weekly_shift_template_detail",
         "headers": ["ID", "Day of Week", "Start Time", "End Time"],
         "fields": ["id", "day_of_week", "start_time", "end_time"],
         "select_fields": {

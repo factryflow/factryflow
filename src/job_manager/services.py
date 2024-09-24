@@ -633,7 +633,7 @@ class JobGanttChartService:
                             "pDepend": list(
                                 task.predecessors.values_list("id", flat=True)
                             ),
-                            "pNotes": "",
+                            "pNotes": task.notes,
                             "priority": job.priority,
                             "pCaption": "",
                             "pPlanStart": task.planned_start_datetime,

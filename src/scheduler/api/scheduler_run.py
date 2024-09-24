@@ -86,10 +86,21 @@ def start_scheduler_run(request):
             scheduler_status = SchedulerStatusChoices.COMPLETED
             scheduler_details = "Scheduler run completed successfully."
 
+        scheduler_results = {}
+        scheduler_logs = {}
+
+        if "error" in scheduled_task:
+            scheduler_results = scheduled_task["error"]
+            scheduler_logs = {"scheduler_error": scheduled_task["error"]}
+
+        else:
+            scheduler_results = scheduled_task["data"]
+            scheduler_logs = scheduled_task["logs"]
+
         save_scheduler_run(
-            scheduled_task["data"],
+            scheduler_results,
             scheduler_details,
-            scheduled_task["logs"],
+            scheduler_logs,
             scheduler_start_time,
             scheduler_end_time,
             scheduler_status,
