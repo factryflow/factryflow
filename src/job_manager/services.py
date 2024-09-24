@@ -575,7 +575,7 @@ class JobGanttChartService:
         job_data = []
         jobs = Job.objects.prefetch_related("tasks").order_by("priority")
 
-        gantt_pid = 0
+        gantt_pid = 1
 
         for job in jobs:
             if job.tasks.count() > 0:
@@ -658,7 +658,7 @@ class ResourceGanttChartService:
             raise PermissionDenied()
 
         chart_data = []
-        gantt_pid = 0  # Counter for object ID in Gantt chart
+        gantt_pid = 1  # Counter for object ID in Gantt chart
 
         resources = Resource.objects.all()
 
