@@ -230,7 +230,7 @@ urlpatterns = [
         name="resource_gantt_api",
     ),
     path(
-        "dashboard/",
+        "dashboard/gantt-type=<str:gantt_type>/home=<str:home>/",
         dashboard_gantt_chart_view,
         name="dashboard",
     ),

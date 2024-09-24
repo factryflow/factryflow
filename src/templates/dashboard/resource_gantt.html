@@ -1,0 +1,39 @@
+<div style="position:relative; max-height: 75vh; overflow-y: auto;" class="gantt bg-white p-6 rounded-lg shadow-xl" id="GanttChartDIV"></div>
+
+<script>
+
+    var g = new JSGantt.GanttChart(document.getElementById('GanttChartDIV'), 'day');
+
+    g.setOptions({
+        vCaptionType: 'Complete',  // Set to Show Caption : None,Caption,Resource,Duration,Complete,     
+        vQuarterColWidth: 36,
+        vDateTaskDisplayFormat: 'day dd month yyyy', // Shown in tool tip box
+        vDayMajorDateDisplayFormat: 'mon yyyy - Week ww',// Set format to dates in the "Major" header of the "Day" view
+        vWeekMinorDateDisplayFormat: 'dd mon', // Set format to display dates in the "Minor" header of the "Week" view
+        vLang: 'en',
+        vShowTaskInfoLink: 1, // Show link in tool tip (0/1)
+        vShowEndWeekDate: 0,  // Show/Hide the date for the last day of the week in header for daily
+        vShowEndDate: 0,
+        vShowStartDate: 0,
+        vShowComp: 0,
+        vShowTaskInfoComp: 0,
+        vUseSingleCell: 10000, // Set the threshold cell per table row (Helps performance for large data.
+        vFormatArr: ['Day', 'Week', 'Month', 'Quarter'], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers,
+
+        vMinGpLen: 20,
+    });
+
+
+    // to get data from the api and display it in the gantt chart
+    axios.get('http://localhost:8000/api/resource/gantt')
+        .then(response => {
+        let tasks = response.data;
+        tasks.forEach(task => {
+            g.AddTaskItemObject(task);
+        });
+        g.Draw();
+        })
+        .catch(error => {
+        console.error(error);
+        });
+</script>
