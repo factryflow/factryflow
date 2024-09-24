@@ -65,4 +65,11 @@
         {% include gantt_chart %}
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiBaseUrl = "{{ API_BASE_URL }}";
+            localStorage.setItem('API_BASE_URL', apiBaseUrl);
+        });
+    </script>
+
 {% endblock %}

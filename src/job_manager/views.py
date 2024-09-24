@@ -1,4 +1,5 @@
 # views.py
+from django.conf import settings
 from common.views import CRUDView, CustomTableView
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -727,13 +728,13 @@ def dashboard_gantt_chart_view(request, gantt_type: str = "job", home: str = "tr
             return render(
                 request,
                 "dashboard/job_task_gantt.html",
-                {"gantt_chart_title": "Job Task"},
+                {"gantt_chart_title": "Job Task", "API_BASE_URL": settings.API_BASE_URL},
             )
         else:
             return render(
                 request,
                 "dashboard/resource_gantt.html",
-                {"gantt_chart_title": "Resource"},
+                {"gantt_chart_title": "Resource", "API_BASE_URL": settings.API_BASE_URL},
             )
 
     return render(
@@ -742,5 +743,6 @@ def dashboard_gantt_chart_view(request, gantt_type: str = "job", home: str = "tr
         {
             "gantt_chart_title": "Job Task",
             "gantt_chart": "dashboard/job_task_gantt.html",
+            "API_BASE_URL": settings.API_BASE_URL
         },
     )

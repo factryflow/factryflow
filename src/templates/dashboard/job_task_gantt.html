@@ -30,8 +30,8 @@
     });
 
 
-    // to get data from the api and display it in the gantt chart
-    axios.get('http://localhost:8000/api/job/gantt')
+    // to get data from the api and display it in the gantt chart    
+    axios.get(`${localStorage.getItem('API_BASE_URL')}/api/job/gantt`)
         .then(response => {
         let tasks = response.data;
         tasks.forEach(task => {
