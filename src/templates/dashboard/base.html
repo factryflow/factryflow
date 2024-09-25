@@ -32,36 +32,51 @@
         </nav>
     </div>
 
-    <!-- Button Group -->
-    <div x-data="{ activeChart: 'job' }" class="flex justify-between items-center pb-5">
-        <div class="flex space-x-4">
-            <!-- Job Gantt Chart Button -->
-            <button 
-                :class="activeChart === 'job' ? 'bg-[#023E8A] text-white' : 'bg-[#F1F1F2] text-[#181C32]'"
-                @click="activeChart = 'job'"
-                class="focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center"
-                hx-get="{% url 'dashboard' gantt_type='job' home='false' %}" 
-                hx-swap="innerHTML" 
-                hx-target="#gantt-chart">
-                Job Chart
+    <div x-data="{ selectedTab: 'jobGantt' }" class="w-full">
+        <div @keydown.right.prevent="$focus.wrap().next()" @keydown.left.prevent="$focus.wrap().previous()" 
+            class="flex gap-4 overflow-x-auto border-b-2 border-gray-300 dark:border-slate-700" 
+            role="tablist" aria-label="Gantt chart options">
+
+            <!-- Job Task Gantt Chart Tab -->
+            <button @click="selectedTab = 'jobGantt'" 
+                    hx-get="{% url 'dashboard' gantt_type='job' home='false' %}" 
+                    hx-swap="innerHTML" 
+                    hx-target="#gantt-chart"
+                    :aria-selected="selectedTab === 'jobGantt'" 
+                    :tabindex="selectedTab === 'jobGantt' ? '0' : '-1'"
+                    :class="selectedTab === 'jobGantt' 
+                        ? 'font-bold text-[#023E8A] border-b-2 border-[#023E8A]' 
+                        : 'text-[#181C32] font-small border-b-2 border-transparent hover:border-[#F1F1F2] hover:text-[#023E8A]'" 
+                    class="h-min px-4 py-3 text-md" type="button" role="tab" aria-controls="tabpanelJobGantt">
+                Job Gantt Chart
             </button>
 
-            <!-- Resource Gantt Chart Button -->
-            <button 
-                :class="activeChart === 'resource' ? 'bg-[#023E8A] text-white' : 'bg-[#F1F1F2] text-[#181C32]'"
-                @click="activeChart = 'resource'"
-                class="focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center"
-                hx-get="{% url 'dashboard' gantt_type='resource' home='false' %}" 
-                hx-swap="innerHTML" 
-                hx-target="#gantt-chart">
-                Resource Chart
+            <!-- Resource Gantt Chart Tab -->
+            <button @click="selectedTab = 'resourceGantt'" 
+                    hx-get="{% url 'dashboard' gantt_type='resource' home='false' %}" 
+                    hx-swap="innerHTML" 
+                    hx-target="#gantt-chart"
+                    :aria-selected="selectedTab === 'resourceGantt'" 
+                    :tabindex="selectedTab === 'resourceGantt' ? '0' : '-1'"
+                    :class="selectedTab === 'resourceGantt' 
+                        ? 'font-bold text-[#023E8A] border-b-2 border-[#023E8A]' 
+                        : 'text-[#181C32] font-small border-b-2 border-transparent hover:border-[#F1F1F2] hover:text-[#023E8A]'" 
+                    class="h-min px-4 py-3 text-md" type="button" role="tab" aria-controls="tabpanelResourceGantt">
+                Resource Gantt Chart
             </button>
+        </div>
+        <div class="px-4 py-6 text-slate-700 dark:text-violet-200 text-lg">
+            <div x-show="selectedTab === 'jobGantt'" id="tabpanelJobGantt" role="tabpanel" aria-label="Job Gantt Chart">
+                <h1 class="text-2xl font-semibold text-[#181C32]">Job-Task Gantt Chart</h1>
+            </div>
+            <div x-show="selectedTab === 'resourceGantt'" id="tabpanelResourceGantt" role="tabpanel" aria-label="Resource Gantt Chart">
+                <h1 class="text-2xl font-semibold text-[#181C32]">Resource Gantt Chart</h1>
+            </div>
         </div>
     </div>
     
     <!-- Gantt Chart Section -->
     <div id="gantt-chart">
-        <h1 class="text-2xl font-semibold text-[#181C32]">{{ gantt_chart_title }} Gantt Chart</h1>
         {% include gantt_chart %}
     </div>
 

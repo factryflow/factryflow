@@ -1,6 +1,9 @@
 {% load static %}
 {% load partials %}
+
+{% load permission_tags %}
 {% load user_role %}
+
 {% partialdef _menu_item %}
 <li>
   <a href="{{ menu_item_url }}"
@@ -226,10 +229,11 @@
           {% with menu_item_id='account_settings' menu_item_name='My Account' menu_item_url="/users/change-password" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-
-          {% with menu_item_id='user_management' menu_item_name='User Management' menu_item_url="/users" %}
-            {% partial _dropdown_menu_item %}
-          {% endwith %}
+          {% if user|can:'view_user' %}
+            {% with menu_item_id='user_management' menu_item_name='User Management' menu_item_url="/users" %}
+              {% partial _dropdown_menu_item %}
+            {% endwith %}
+          {% endif %}
         </ul>
       </div>
       <!-- TODO -->

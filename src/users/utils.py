@@ -102,7 +102,7 @@ def get_view_only_permissions():
     try:
         permissions = get_all_permissions()
         for permission in permissions:
-            if permission.startswith("view") and not permission.startswith("user"):
+            if permission.startswith("view") and "user" not in permission:
                 data_dict[permission] = True
         return data_dict
     except Exception:
