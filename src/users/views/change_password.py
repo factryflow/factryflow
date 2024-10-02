@@ -19,7 +19,7 @@ class ChangePasswordView(PasswordChangeView):
     """
 
     form_class = PasswordChangeForm
-    success_url = reverse_lazy("dashboard")
+    success_url = reverse_lazy("dashboard", kwargs={"home": "true", "gantt_type": "job"})
     template_name = "account/change_password.html"
 
     def post(self, *args, **kwargs):
@@ -52,4 +52,5 @@ class ChangePasswordView(PasswordChangeView):
                 )
 
         except Exception as e:
+            print(str(e))
             return HttpResponseServerError("Internal Server Error")

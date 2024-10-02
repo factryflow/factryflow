@@ -58,7 +58,7 @@
     </div> -->
 
       <!-- Desktop Menu -->
-    <ul id="user-menu" class="hidden items-center gap-4 sm:flex">
+    <ul id="user-menu" class="hidden items-center gap-4 sm:flex"  x-cloak>
       <li x-data="{ userDropDownIsOpen: false, openWithKeyboard: false }" 
         @keydown.esc.window="userDropDownIsOpen = false, openWithKeyboard = false" 
         class="relative flex items-center">

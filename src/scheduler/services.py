@@ -431,10 +431,10 @@ class SchedulingService:
 
             predecessor_ids = [
                 predecessor.id for predecessor in task.predecessors.all()
-            ]
+            ] if task.predecessors else []
 
             if len(predecessor_ids) > 0:
-                scheduler_task_dict["predecessor_ids"] = predecessor_ids
+                scheduler_task_dict["predecessor_ids"] = predecessor_ids if len(predecessor_ids) > 0 else []
 
             # get constraints related to task if there are any
             constraints = self._get_task_constraints(task)
