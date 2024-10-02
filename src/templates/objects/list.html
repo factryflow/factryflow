@@ -197,11 +197,11 @@
     
                     <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Page</span>
                     <a aria-current="page"
-                        class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
+                        class="relative z-0 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
                         {{ paginator.number }}
                     </a>
                     <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Of</span>
-                    <span class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">{{ num_pages }}</span>
+                    <span class="relative z-0 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">{{ num_pages }}</span>
                     {% if paginator.has_next %}
                     <a href="{% url model_name %}?page={{ paginator.next_page_number }}"
                         hx-get="{% url model_name %}?page={{ paginator.next_page_number }}"

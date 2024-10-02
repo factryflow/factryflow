@@ -7,7 +7,7 @@
 {% partialdef _menu_item %}
 <li>
   <a href="{{ menu_item_url }}"
-     hx-target="body"
+     hx-target="#main-content"
      hx-push-url="true"
      class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center"
      x-data="{isHovered:false}"
