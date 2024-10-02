@@ -636,7 +636,7 @@ class CustomTableView:
         fields,
         headers,
         search_fields_list,
-        page_size=5,
+        page_size=25,
         model_relation_headers=[],
         model_relation_fields={},
         status_choices_class=None,
