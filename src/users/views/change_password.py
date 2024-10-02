@@ -52,5 +52,4 @@ class ChangePasswordView(PasswordChangeView):
                 )
 
         except Exception as e:
-            print(str(e))
             return HttpResponseServerError("Internal Server Error")
