@@ -19,7 +19,9 @@ class ChangePasswordView(PasswordChangeView):
     """
 
     form_class = PasswordChangeForm
-    success_url = reverse_lazy("dashboard", kwargs={"home": "true", "gantt_type": "job"})
+    success_url = reverse_lazy(
+        "dashboard", kwargs={"home": "true", "gantt_type": "job"}
+    )
     template_name = "account/change_password.html"
 
     def post(self, *args, **kwargs):
