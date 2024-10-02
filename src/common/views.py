@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
+from django.db.utils import IntegrityError
 
 from common.utils.views import (
     add_notification_headers,
@@ -551,9 +552,12 @@ class CRUDView:
         """
         obj = get_object_or_404(self.model, id=id)
 
-        # Delete the instance and check if deletion was successful
-        with transaction.atomic():
-            deletion_successful = self.model_service(user=request.user).delete(obj)
+        try:
+            # Delete the instance and check if deletion was successful
+            with transaction.atomic():
+                deletion_successful = self.model_service(user=request.user).delete(obj)
+        except IntegrityError as e:
+            deletion_successful = False
 
         # Retrieve updated instance list
         status_filter = request.GET.get("status", "all")
