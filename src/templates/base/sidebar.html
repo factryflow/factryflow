@@ -1,9 +1,7 @@
 {% load static %}
 {% load partials %}
-
 {% load permission_tags %}
 {% load user_role %}
-
 {% partialdef _menu_item %}
 <li>
   <a href="{{ menu_item_url }}"
@@ -93,7 +91,7 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -119,11 +117,25 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% with menu_item_id='RG' menu_item_name='Resources Group' menu_item_url="/resource-groups" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+        </ul>
+      </div>
+      {% comment %} Microbatching Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='RM' menu_item_icon='images/resource-management.svg' menu_item_name='Microbatching' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
+          {% with menu_item_id='microbatching' menu_item_name='Microbatch Rules' menu_item_url="/microbatch-rules" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
@@ -136,7 +148,7 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly-shift-templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -156,7 +168,7 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='resources-assignment' menu_item_name='Resources Assignment' menu_item_url="/task-resource-assigments" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -179,7 +191,7 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='scheduler_runs' menu_item_name='Scheduler History' menu_item_url="/scheduler-runs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -193,7 +205,7 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='job-type' menu_item_name='Job Type' menu_item_url="/job-types" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -211,7 +223,6 @@
           {% endwith %}
         </ul>
       </div>
-
       <!-- Settings menu -->
       {% comment %} setting menu {% endcomment %}
       <div x-data="dropdown">
@@ -221,11 +232,10 @@
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
-            style="display: none;">
+            style="display: none">
           {% with menu_item_id='scheduler_settings' menu_item_name='Scheduler' menu_item_url="/settings" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-
           {% with menu_item_id='account_settings' menu_item_name='My Account' menu_item_url="/users/change-password" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -238,13 +248,13 @@
       </div>
       <!-- TODO -->
       <!-- {% comment %} Help and Support manu {% endcomment %}
-      {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
-        {% partial _menu_item %}
-      {% endwith %} -->
+                                                                  {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
+                                                                    {% partial _menu_item %}
+                                                                  {% endwith %} -->
       <!-- {% comment %} operator menu {% endcomment %}
-      {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
-        {% partial _menu_item %}
-      {% endwith %} -->
+                                                                  {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
+                                                                    {% partial _menu_item %}
+                                                                  {% endwith %} -->
       {% comment %} Logout {% endcomment %}
       {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='/accounts/logout/' %}
         {% partial _menu_item %}
