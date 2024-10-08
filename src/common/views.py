@@ -148,7 +148,7 @@ class CRUDView:
         num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator, num_pages = self.table_view.table_rows(
+        table_rows, paginator, num_pages, total_instances_count = self.table_view.table_rows(
             status_filter=status_filter,
             search_query=search_query,
             page_number=page_number,
@@ -918,7 +918,7 @@ class CustomTableView:
         Returns:
             List: Rows of data for the table based on the filtered instances.
         """
-        paginated_data, num_pages = self.get_paginated_instances(
+        paginated_data, num_pages, total_instances_count = self.get_paginated_instances(
             page_number, status_filter, search_query, num_of_rows_per_page
         )
 
