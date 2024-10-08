@@ -92,16 +92,25 @@
             </div>
             {% endif %}
             <tr class="bg-white border-b">
-                {% for cell in row %}
-                <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-[#7E8299]">
-                    {% if not cell %}
-                    <span class="text-[#7E8299]">None</span>
-                    {% elif "span" in cell %}
-                        {{ cell|safe }}
-                    {% else %}
-                        {{ cell|safe|truncatechars:10 }}
-                    {% endif %}
-                </td>
+                <!-- <td class="w-4 p-4">
+                    <div class="flex items-center">
+                        <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    </div>
+                </td> -->
+                {% for cell in row %}   
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {% if not cell %}
+                            <span class="text-[#7E8299]">None</span>
+                        {% elif "span" in cell %}
+                            {{ cell|safe }}
+                        {% else %}
+                            <span
+                                x-tooltip="{{cell|safe}}"
+                                class="cursor-pointer">
+                                {{ cell|safe|truncatechars:10 }}
+                            </span>
+                        {% endif %}
+                    </td>
                 {% endfor %}
                 {% if show_actions %}
                 <td class="flex justify-center items-center px-2 py-2">
@@ -180,7 +189,7 @@
                         to
                         <span class="font-medium">{{ paginator.end_index }}</span>
                         of
-                        <span class="font-medium">{{ paginator.count }}</span>
+                        <span class="font-medium">{{ total_instances_count }}</span>
                         entries
                     </p>
                 </div>
