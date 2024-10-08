@@ -1,6 +1,6 @@
 from django.urls import path
 
-from microbatching.views import (
+from microbatching.views.microbatch_rule import (
     MICROBATCH_RULE_VIEWS,
 )
 
