@@ -59,30 +59,33 @@
             {% if not view_only %}
             <div x-show="showModal === {{ row.0 }}" x-on:keydown.escape.prevent.stop="showModal = false"
                 role="dialog" aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto" x-cloak>
+                <!-- Overlay -->
                 <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-opacity ease-in duration-150"
                     x-transition:leave="transition-opacity ease-out duration-150"
                     class="fixed inset-0 bg-black bg-opacity-50" x-cloak>
+                <!-- Panel -->
                     <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-transform ease-out duration-150"
                         x-transition:leave="transition-transform ease-in duration-150" x-on:click="showModal = false"
                         class="relative flex min-h-screen items-center justify-center p-4" x-cloak>
                         <div x-on:click.stop
-                            class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg"
-                            x-cloak>
+                            class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg" x-cloak>
+                            <!-- Title -->
                             <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
-                                <div class="bg-haxred h-[80px] w-[80px] flex items-center justify-center rounded-full">
+                                <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
                                     <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
                                 </div>
                                 <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{ model_title }} model instance with id {{ row.0 }}</p>
                             </div>
+                            <!-- Buttons -->
                             <div class="px-9 py-5 flex justify-center items-center gap-3">
                                 {% if show_actions %}
                                 {% if user|can:crud_action_rules.3 %}
                                 <button type="button" hx-delete="{% url 'delete_'|add:model_name_for_crud id=row.0 %}"
                                     hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML"
-                                    class="rounded-md bg-[#FF4D4F] py-2 px-4 text-white"
+                                    class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
                                     x-on:click="showModal = false">Delete</button>
                                 <button type="button" x-on:click="showModal = false"
-                                    class="rounded-md bg-[#F9F9F9] py-2 px-4 text-[#7E8299]">Cancel</button>
+                                    class="rounded-md bg-[#F9F9F9] py-4 px-10 text-[#7E8299]">Cancel</button>
                                 {% endif %}
                                 {% endif %}
                             </div>
@@ -92,16 +95,25 @@
             </div>
             {% endif %}
             <tr class="bg-white border-b">
-                {% for cell in row %}
-                <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-[#7E8299]">
-                    {% if not cell %}
-                    <span class="text-[#7E8299]">None</span>
-                    {% elif "span" in cell %}
-                        {{ cell|safe }}
-                    {% else %}
-                        {{ cell|safe|truncatechars:10 }}
-                    {% endif %}
-                </td>
+                <!-- <td class="w-4 p-4">
+                    <div class="flex items-center">
+                        <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    </div>
+                </td> -->
+                {% for cell in row %}   
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {% if not cell %}
+                            <span class="text-[#7E8299]">None</span>
+                        {% elif "span" in cell %}
+                            {{ cell|safe }}
+                        {% else %}
+                            <span
+                                x-tooltip="{{cell|safe}}"
+                                class="cursor-pointer">
+                                {{ cell|safe|truncatechars:10 }}
+                            </span>
+                        {% endif %}
+                    </td>
                 {% endfor %}
                 {% if show_actions %}
                 <td class="flex justify-center items-center px-2 py-2">
@@ -180,7 +192,7 @@
                         to
                         <span class="font-medium">{{ paginator.end_index }}</span>
                         of
-                        <span class="font-medium">{{ paginator.count }}</span>
+                        <span class="font-medium">{{ total_instances_count }}</span>
                         entries
                     </p>
                 </div>
