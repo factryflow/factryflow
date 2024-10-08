@@ -35,12 +35,34 @@
     {% comment %} add alpine trix editor in css and javascript library {% endcomment %}
     <link rel="stylesheet"
           href="https://unpkg.com/trix@2.0.0-alpha.1/dist/trix.css"></link>
-  <script src="https://unpkg.com/trix@2.0.0-alpha.1/dist/trix.umd.js"></script>
-  <script src=" https://alpinejs.dev/plugins/focus"></script>
-  {% include "base/theme.html" %}
-  {% include "base/styles.html" %}
-  
-</head>
+    <script src="https://unpkg.com/trix@2.0.0-alpha.1/dist/trix.umd.js"></script>
+    <script src=" https://alpinejs.dev/plugins/focus"></script>
+    <!-- Tippy.js -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    {% include "base/theme.html" %}
+    {% include "base/styles.html" %}
+    
+    <!-- Custom CSS -->
+    <style>
+      [x-cloak] { display: none !important; }
+      /* Custom styles for tooltip */
+      .tippy-box[data-theme~='custom'] {
+            background-color: #1a202c;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        /* Tooltip arrow customization */
+        .tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow {
+            border-top-color: #1a202c;
+        }
+        .tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow {
+            border-bottom-color: #1a202c;
+        }
+    </style>
+  </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data hx-debug="true">
   {% include "base/header.html" %}
   <div class="flex">
@@ -54,28 +76,44 @@
   {% include "base/notifications.html" %}
   {% block scripts %}
   
-{% endblock scripts %}
-<script>
-  function Openbar() {
-    document.querySelector('.sidebar').classList.toggle('left-[-300px]')
-  }
-  document.addEventListener("alpine:init", () => {
-    // Stores variable globally
-    Alpine.store("sidebar", {
-      full: true,
-      active: "",
-      navOpen: false,
-    });
-    // Creating component Dropdown
-    Alpine.data("dropdown", () => ({
-      open: false,
-      active:'',
-      toggle(tab) {
-        this.open = !this.open;
-        Alpine.store("sidebar").active = tab;
-      },
-    }));
-  });  
-</script>
+  {% endblock scripts %}
+  <script>
+    function Openbar() {
+      document.querySelector('.sidebar').classList.toggle('left-[-300px]')
+    }
+    document.addEventListener("alpine:init", () => {
+      // Stores variable globally
+      Alpine.store("sidebar", {
+        full: true,
+        active: "",
+        navOpen: false,
+      });
+      // Creating component Dropdown
+      Alpine.data("dropdown", () => ({
+        open: false,
+        active:'',
+        toggle(tab) {
+          this.open = !this.open;
+          Alpine.store("sidebar").active = tab;
+        },
+      }));
+    });  
+
+    // Tippy.js integration with Alpine.js
+    document.addEventListener('alpine:init', () => {
+            // Directive: x-tooltip with custom theme
+            Alpine.directive('tooltip', (el, { expression }) => {
+                console.log(expression);
+                tippy(el, { 
+                    content: expression,
+                    theme: 'custom',
+                    placement: 'top',
+                    arrow: true,
+                    animation: 'fade',
+                    duration: [200, 200],
+                });
+            });
+        });
+  </script>
 </body>
 </html>

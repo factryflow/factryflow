@@ -14,7 +14,7 @@ from django.db.utils import IntegrityError
 from common.utils.views import (
     add_notification_headers,
     convert_date_to_readable_string,
-    convert_datetime_to_readable_string,
+    convert_timestamp,
 )
 
 from .forms import CustomFieldForm
@@ -147,10 +147,12 @@ class CRUDView:
         page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator, num_pages = self.table_view.table_rows(
-            status_filter=status_filter,
-            search_query=search_query,
-            page_number=page_number,
+        table_rows, paginator, num_pages, total_instances_count = (
+            self.table_view.table_rows(
+                status_filter=status_filter,
+                search_query=search_query,
+                page_number=page_number,
+            )
         )
 
         template_name = self.list_template_name
@@ -173,6 +175,7 @@ class CRUDView:
             "button_text": self.button_text,
             "ordered_model": self.ordered_model,
             "num_pages": num_pages,
+            "total_instances_count": total_instances_count,
         }
 
         return render(request, template_name, context)
@@ -565,10 +568,12 @@ class CRUDView:
         page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator, num_pages = self.table_view.table_rows(
-            status_filter=status_filter,
-            search_query=search_query,
-            page_number=page_number,
+        table_rows, paginator, num_pages, total_instances_count = (
+            self.table_view.table_rows(
+                status_filter=status_filter,
+                search_query=search_query,
+                page_number=page_number,
+            )
         )
 
         # template name based on is_redirect variable
@@ -587,6 +592,7 @@ class CRUDView:
                 "status_filter_dict": self.table_view.status_filter_dict,
                 "rows": table_rows,
                 "num_pages": num_pages,
+                "total_instances_count": total_instances_count,
                 "paginator": paginator,
                 "show_actions": True and self.user_rule_permission,
                 "crud_action_rules": self.crud_action_rules,
@@ -713,17 +719,11 @@ class CustomTableView:
                 if custom_field_instance.field_type == "datetime-local":
                     # convert datetime field to readable string
                     field_info["value"] = str(
-                        convert_datetime_to_readable_string(
-                            datetime.strptime(value, "%Y-%m-%dT%H:%M")
-                        )
+                        convert_timestamp(datetime.strptime(value, "%Y-%m-%dT%H:%M"))
                     )
                 elif custom_field_instance.field_type == "date":
                     # convert date field to readable string
-                    field_info["value"] = str(
-                        convert_date_to_readable_string(
-                            datetime.strptime(value, "%Y-%m-%d")
-                        )
-                    )
+                    field_info["value"] = str(datetime.strptime(value, "%Y-%m-%d"))
                 else:
                     field_info["value"] = value
 
@@ -776,22 +776,14 @@ class CustomTableView:
                     elif isinstance(getattr(instance, field), datetime):
                         # if field is datetime then convert it to readable string and type is datetime-local
                         value = {
-                            "value": str(
-                                convert_datetime_to_readable_string(
-                                    getattr(instance, field)
-                                )
-                            ),
+                            "value": str(convert_timestamp(getattr(instance, field))),
                             "type": "datetime-local",
                         }
                         row_data[field] = value
                     elif isinstance(getattr(instance, field), date):
                         # if field is date then convert it to readable string and type is date
                         value = {
-                            "value": str(
-                                convert_date_to_readable_string(
-                                    getattr(instance, field)
-                                )
-                            ),
+                            "value": str(getattr(instance, field)),
                             "type": "datetime-local",
                         }
                         row_data[field] = value
@@ -897,13 +889,15 @@ class CustomTableView:
         instances = self.filtered_instances(status_filter, search_query)
         paginator = Paginator(instances, self.page_size)
         num_pages = paginator.num_pages
+        total_instances_count = paginator.count
+
         try:
             paginated_instances = paginator.page(page_number)
         except PageNotAnInteger:
             paginated_instances = paginator.page(1)
         except EmptyPage:
             paginated_instances = paginator.page(paginator.num_pages)
-        return paginated_instances, num_pages
+        return paginated_instances, num_pages, total_instances_count
 
     def table_rows(
         self,
@@ -921,7 +915,7 @@ class CustomTableView:
         Returns:
             List: Rows of data for the table based on the filtered instances.
         """
-        paginated_data, num_pages = self.get_paginated_instances(
+        paginated_data, num_pages, total_instances_count = self.get_paginated_instances(
             page_number, status_filter, search_query
         )
 
@@ -941,12 +935,10 @@ class CustomTableView:
                     # value = getattr(instance, field)
                     row_data.append(value[0])
                 elif isinstance(getattr(instance, field), datetime):
-                    value = convert_datetime_to_readable_string(
-                        getattr(instance, field)
-                    )
+                    value = convert_timestamp(getattr(instance, field))
                     row_data.append(value)
                 elif isinstance(getattr(instance, field), date):
-                    value = convert_date_to_readable_string(getattr(instance, field))
+                    value = str(getattr(instance, field))
                     row_data.append(value)
                 else:
                     value = getattr(instance, field)
@@ -954,7 +946,7 @@ class CustomTableView:
 
             rows.append(row_data)
 
-        return rows, paginated_data, num_pages
+        return rows, paginated_data, num_pages, total_instances_count
 
     def get_status_colored_text(self, model_status):
         """
