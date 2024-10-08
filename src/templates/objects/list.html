@@ -59,33 +59,30 @@
             {% if not view_only %}
             <div x-show="showModal === {{ row.0 }}" x-on:keydown.escape.prevent.stop="showModal = false"
                 role="dialog" aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto" x-cloak>
-                <!-- Overlay -->
                 <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-opacity ease-in duration-150"
                     x-transition:leave="transition-opacity ease-out duration-150"
                     class="fixed inset-0 bg-black bg-opacity-50" x-cloak>
-                <!-- Panel -->
                     <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-transform ease-out duration-150"
                         x-transition:leave="transition-transform ease-in duration-150" x-on:click="showModal = false"
                         class="relative flex min-h-screen items-center justify-center p-4" x-cloak>
                         <div x-on:click.stop
-                            class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg" x-cloak>
-                            <!-- Title -->
+                            class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg"
+                            x-cloak>
                             <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
-                                <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
+                                <div class="bg-haxred h-[80px] w-[80px] flex items-center justify-center rounded-full">
                                     <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
                                 </div>
                                 <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{ model_title }} model instance with id {{ row.0 }}</p>
                             </div>
-                            <!-- Buttons -->
                             <div class="px-9 py-5 flex justify-center items-center gap-3">
                                 {% if show_actions %}
                                 {% if user|can:crud_action_rules.3 %}
                                 <button type="button" hx-delete="{% url 'delete_'|add:model_name_for_crud id=row.0 %}"
                                     hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML"
-                                    class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
+                                    class="rounded-md bg-[#FF4D4F] py-2 px-4 text-white"
                                     x-on:click="showModal = false">Delete</button>
                                 <button type="button" x-on:click="showModal = false"
-                                    class="rounded-md bg-[#F9F9F9] py-4 px-10 text-[#7E8299]">Cancel</button>
+                                    class="rounded-md bg-[#F9F9F9] py-2 px-4 text-[#7E8299]">Cancel</button>
                                 {% endif %}
                                 {% endif %}
                             </div>
@@ -223,6 +220,28 @@
                         <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" alt="Next" />
                     </a>
                     {% endif %}
+                </div>
+
+                <!-- Dropdown for rows per page -->
+                <div x-data="{ open: false, selected: localStorage.getItem('rowsPerPage') || 25 }" class="relative inline-block text-left">
+                    <div>
+                        <button @click="open = !open" class="inline-flex justify-between items-center w-full rounded-lg border border-[#E1E3EA80] bg-white px-5 py-3 text-sm font-semibold text-[#181C32]">
+                            <span x-text="selected"></span>
+                            <svg class="ml-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Dropdown options -->
+                    <div x-show="open" @click.away="open = false" class="absolute bottom-full mb-2 w-20 bg-white border border-[#E1E3EA80] rounded-lg shadow-lg z-10">
+                        <ul class="py-1">
+                            <li @click="selected = 25; open = false; localStorage.setItem('rowsPerPage', 25)" hx-get="{% url model_name %}?num_of_rows_per_page=25" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">25</li>
+                            <li @click="selected = 50; open = false; localStorage.setItem('rowsPerPage', 50)" hx-get="{% url model_name %}?num_of_rows_per_page=50" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">50</li>
+                            <li @click="selected = 75; open = false; localStorage.setItem('rowsPerPage', 75)" hx-get="{% url model_name %}?num_of_rows_per_page=75" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">75</li>
+                            <li @click="selected = 100; open = false; localStorage.setItem('rowsPerPage', 100)" hx-get="{% url model_name %}?num_of_rows_per_page=100" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">100</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

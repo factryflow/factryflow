@@ -145,14 +145,14 @@ class CRUDView:
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
         page_number = request.GET.get("page", 1)
+        num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator, num_pages, total_instances_count = (
-            self.table_view.table_rows(
-                status_filter=status_filter,
-                search_query=search_query,
-                page_number=page_number,
-            )
+        table_rows, paginator, num_pages, total_instances_count = self.table_view.table_rows(
+            status_filter=status_filter,
+            search_query=search_query,
+            page_number=page_number,
+            num_of_rows_per_page=num_of_rows_per_page,
         )
 
         template_name = self.list_template_name
@@ -175,7 +175,7 @@ class CRUDView:
             "button_text": self.button_text,
             "ordered_model": self.ordered_model,
             "num_pages": num_pages,
-            "total_instances_count": total_instances_count,
+            "num_of_rows_per_page": num_of_rows_per_page,
         }
 
         return render(request, template_name, context)
@@ -646,7 +646,6 @@ class CustomTableView:
         fields,
         headers,
         search_fields_list,
-        page_size=25,
         model_relation_headers=[],
         model_relation_fields={},
         status_choices_class=None,
@@ -681,7 +680,6 @@ class CustomTableView:
         )
         self.model_relation_fields = model_relation_fields
         self.table_headers = headers
-        self.page_size = page_size
         self.status_classes = status_classes
         self.order_by_field = order_by_field
 
@@ -873,7 +871,11 @@ class CustomTableView:
         return all_instances
 
     def get_paginated_instances(
-        self, page_number, status_filter=None, search_query=None
+        self,
+        page_number,
+        status_filter=None,
+        search_query=None,
+        num_of_rows_per_page=25,
     ):
         """
         Get paginated instances based on the page number and filtering.
@@ -887,7 +889,7 @@ class CustomTableView:
             List: Paginated instances based on the provided page number and filtering.
         """
         instances = self.filtered_instances(status_filter, search_query)
-        paginator = Paginator(instances, self.page_size)
+        paginator = Paginator(instances, num_of_rows_per_page)
         num_pages = paginator.num_pages
         total_instances_count = paginator.count
 
@@ -902,6 +904,7 @@ class CustomTableView:
     def table_rows(
         self,
         page_number,
+        num_of_rows_per_page,
         status_filter=None,
         search_query=None,
     ):
@@ -916,7 +919,7 @@ class CustomTableView:
             List: Rows of data for the table based on the filtered instances.
         """
         paginated_data, num_pages, total_instances_count = self.get_paginated_instances(
-            page_number, status_filter, search_query
+            page_number, status_filter, search_query, num_of_rows_per_page
         )
 
         rows = []
