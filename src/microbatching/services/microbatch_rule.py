@@ -7,7 +7,10 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from job_manager.models import WorkCenter
 
-from microbatching.models.microbatch_rule import MicrobatchRule, MicrobatchRuleCriteria
+from microbatching.models.microbatch_rule import (
+    MicrobatchRule,
+    MicrobatchRuleCriteria,
+)
 
 
 class MicrobatchRuleCriteriaService:
