@@ -12,11 +12,11 @@ Operator view
 
 <div class="w-full h-screen" x-data="{ menuOpen:false }">
 
-	<div x-cloak x-show="menuOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-hidden">
+	<div x-cloak x-show="menuOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 overflow-hidden">
         <div @click="menuOpen = false" class="absolute inset-0 bg-white"></div>
 
-        <div class="modal-container fixed inset-0 z-50 flex items-center justify-center">
-            <div @click.stop="menuOpen = false" class="modal-close absolute lg:top-0 max-sm:top-24 sm:top-24 lg:right-0 max-sm:right-auto sm:right-auto cursor-pointer flex flex-col items-center mt-4 mr-4 text-black text-sm z-50">
+        <div class="modal-container fixed inset-0 z-40 flex items-center justify-center">
+            <div @click.stop="menuOpen = false" class="modal-close absolute lg:top-0 max-sm:top-24 sm:top-24 lg:right-0 max-sm:right-auto sm:right-auto cursor-pointer flex flex-col items-center mt-4 mr-4 text-black text-sm z-40">
                 <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 18 18">
                     <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
                 </svg>

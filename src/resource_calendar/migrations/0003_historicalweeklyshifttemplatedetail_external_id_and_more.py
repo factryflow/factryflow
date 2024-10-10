@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_calendar', '0002_alter_weeklyshifttemplatedetail_unique_together'),
+        ("resource_calendar", "0002_alter_weeklyshifttemplatedetail_unique_together"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='historicalweeklyshifttemplatedetail',
-            name='external_id',
+            model_name="historicalweeklyshifttemplatedetail",
+            name="external_id",
             field=models.CharField(blank=True, max_length=50),
         ),
         migrations.AddField(
-            model_name='historicalweeklyshifttemplatedetail',
-            name='notes',
+            model_name="historicalweeklyshifttemplatedetail",
+            name="notes",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='weeklyshifttemplatedetail',
-            name='external_id',
+            model_name="weeklyshifttemplatedetail",
+            name="external_id",
             field=models.CharField(blank=True, max_length=50),
         ),
         migrations.AddField(
-            model_name='weeklyshifttemplatedetail',
-            name='notes',
+            model_name="weeklyshifttemplatedetail",
+            name="notes",
             field=models.TextField(blank=True),
         ),
     ]

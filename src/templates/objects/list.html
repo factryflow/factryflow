@@ -58,7 +58,7 @@
             {% for row in rows %}
             {% if not view_only %}
             <div x-show="showModal === {{ row.0 }}" x-on:keydown.escape.prevent.stop="showModal = false"
-                role="dialog" aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto" x-cloak>
+                role="dialog" aria-modal="true" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
                 <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-opacity ease-in duration-150"
                     x-transition:leave="transition-opacity ease-out duration-150"
                     class="fixed inset-0 bg-black bg-opacity-50" x-cloak>
