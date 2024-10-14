@@ -177,9 +177,9 @@ class AssignmentConstraintForm(forms.ModelForm):
             "created_at",
             "updated_at",
             "custom_fields",
+            "task",
         ]
         labels = {
-            "task": "Task",
             "assignment_rule": "Assignment Rule",
             "resource_group": "Resource Group",
             "resources": "Resources",
@@ -187,11 +187,6 @@ class AssignmentConstraintForm(forms.ModelForm):
             "use_all_resources": "Use All Resources",
         }
         widgets = {
-            "task": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
             "assignment_rule": forms.Select(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
@@ -230,15 +225,4 @@ class AssignmentConstraintForm(forms.ModelForm):
         elif not resource_group_set and not resources_set:
             raise forms.ValidationError(
                 "You must set either resource_group or resources."
-            )
-
-        # ensure that either task or assignment_rule is set
-        if not (self.cleaned_data.get("task")) and not (
-            self.cleaned_data.get("assignment_rule")
-        ):
-            raise forms.ValidationError("task or assignment_rule must be set.")
-
-        if self.cleaned_data.get("task") and self.cleaned_data.get("assignment_rule"):
-            raise forms.ValidationError(
-                "Assignment constraints directly assigned to tasks cannot have assignment rules."
             )

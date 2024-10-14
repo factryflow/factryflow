@@ -32,6 +32,7 @@ class CRUDView:
         model_form,
         model_table_view,
         formset_options=[],
+        inline_formset=[],
         model_type=None,
         view_only=False,
         sub_model_relation=False,
@@ -75,7 +76,9 @@ class CRUDView:
         self.button_text = button_text
         self.ordered_model = ordered_model
         self.formset_options = formset_options
+        self.inline_formset = inline_formset
         self.model_formset = None
+        self.model_inline_formset = None
         self.sub_model_relation = sub_model_relation
 
     @method_decorator(csrf_exempt)
@@ -273,6 +276,17 @@ class CRUDView:
                 f"/{formset_model_name.replace('_', '-').lower()}-create/"
             )
 
+        if len(self.inline_formset) > 0:
+            self.model_inline_formset = inlineformset_factory(
+                self.model,
+                self.inline_formset[0],
+                form=self.inline_formset[1],
+                extra=1,
+                can_delete=False,
+            )
+
+            inline_formset_model_name = self.inline_formset[-1]
+
         custom_field_form_data = self.get_custom_field_json_data(
             content_type=model_content_type
         )
@@ -398,6 +412,16 @@ class CRUDView:
             "remove_formset_url": remove_formset_url
             if "remove_formset_url" in locals()
             else None,
+            "inline_formset_form": (
+                self.model_inline_formset(instance=instance_obj)
+                if id
+                else self.model_inline_formset()
+            )
+            if self.model_inline_formset
+            else None,
+            "inline_formset_title": inline_formset_model_name.replace("_", " ").title()
+            if self.model_inline_formset
+            else None,
             "show_edit_actions": show_edit_actions,
             "model_relation_field_name": model_relation_field_name
             if "model_relation_field_name" in locals()
@@ -480,8 +504,17 @@ class CRUDView:
             request.POST, instance=instance_obj if instance_obj else None
         )
 
-        if len(form.errors) > 0:
-            errors = {f: e.get_json_data() for f, e in form.errors.items()}
+        # check if model_inline_formset is valid or not
+        model_inline_form = self.model_inline_formset(
+            request.POST, instance=instance_obj if instance_obj else None
+        )
+
+        if len(form.errors) > 0 or len(model_inline_form.errors[0]) > 0:
+            errors_list = list(form.errors.items()) + list(
+                model_inline_form.errors[0].items()
+            )
+
+            errors = {f: e.get_json_data() for f, e in errors_list}
             for field, error in errors.items():
                 response = HttpResponse(status=400)
                 message = f"{field}: {error[0]['message']}"
@@ -491,7 +524,6 @@ class CRUDView:
 
         # inline formset validation and data fetching
         formset_data = []
-
         # check if formset form is available
         if len(self.formset_options) > 0:
             # get total number of forms in formset
@@ -528,6 +560,10 @@ class CRUDView:
         if form.is_valid():
             # Extract data from the form
             obj_data = form.cleaned_data
+
+            # add data from model_inline_formset data
+            if model_inline_form and model_inline_form.is_valid():
+                obj_data[self.inline_formset[2]] = model_inline_form.cleaned_data
 
             # if custom_fields_data != {}:
             obj_data["custom_fields"] = custom_fields_data
@@ -580,7 +616,8 @@ class CRUDView:
                     message,
                     "success",
                 )
-                return response
+
+            return response
 
     def delete_obj_instance(self, request, id):
         """
