@@ -8,213 +8,668 @@ import simple_history.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('job_manager', '0001_initial'),
+        ("job_manager", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MicrobatchRule',
+            name="MicrobatchRule",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=50)),
-                ('notes', models.TextField(blank=True)),
-                ('item_name', models.CharField(max_length=150)),
-                ('batch_size', models.IntegerField()),
-                ('is_active', models.BooleanField(default=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.workcenter')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("external_id", models.CharField(blank=True, max_length=50)),
+                ("notes", models.TextField(blank=True)),
+                ("item_name", models.CharField(max_length=150)),
+                ("batch_size", models.IntegerField()),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'microbatch_rule',
+                "db_table": "microbatch_rule",
             },
         ),
         migrations.CreateModel(
-            name='MicrobatchRuleTaskMatch',
+            name="MicrobatchRuleTaskMatch",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('is_applied', models.BooleanField(default=False)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('microbatch_rule', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='microbatching.microbatchrule')),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='job_manager.task')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("is_applied", models.BooleanField(default=False)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "microbatch_rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "task",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="job_manager.task",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'microbatch_rule_task_match',
+                "db_table": "microbatch_rule_task_match",
             },
         ),
         migrations.CreateModel(
-            name='MicrobatchRuleCriteria',
+            name="MicrobatchRuleCriteria",
             fields=[
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('field', models.CharField(max_length=100)),
-                ('operator', models.CharField(choices=[('equals', 'Equals'), ('contains', 'Contains'), ('starts_with', 'Starts With'), ('ends_with', 'Ends With'), ('gt', 'Greater Than'), ('lt', 'Less Than')], default='equals', max_length=20)),
-                ('value', models.CharField(blank=True, max_length=254, null=True)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('microbatch_rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='criteria', to='microbatching.microbatchrule')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("field", models.CharField(max_length=100)),
+                (
+                    "operator",
+                    models.CharField(
+                        choices=[
+                            ("equals", "Equals"),
+                            ("contains", "Contains"),
+                            ("starts_with", "Starts With"),
+                            ("ends_with", "Ends With"),
+                            ("gt", "Greater Than"),
+                            ("lt", "Less Than"),
+                        ],
+                        default="equals",
+                        max_length=20,
+                    ),
+                ),
+                ("value", models.CharField(blank=True, max_length=254, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "microbatch_rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="criteria",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'microbatch_rule_criteria',
+                "db_table": "microbatch_rule_criteria",
             },
         ),
         migrations.CreateModel(
-            name='MicrobatchFlow',
+            name="MicrobatchFlow",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=50)),
-                ('notes', models.TextField(blank=True)),
-                ('name', models.CharField(max_length=150)),
-                ('description', models.TextField()),
-                ('min_flow_length', models.PositiveIntegerField()),
-                ('max_flow_length', models.PositiveIntegerField()),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('end_rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='flow_end_rule', to='microbatching.microbatchrule')),
-                ('start_rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='flow_start_rule', to='microbatching.microbatchrule')),
-                ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.workcenter')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("external_id", models.CharField(blank=True, max_length=50)),
+                ("notes", models.TextField(blank=True)),
+                ("name", models.CharField(max_length=150)),
+                ("description", models.TextField()),
+                ("min_flow_length", models.PositiveIntegerField()),
+                ("max_flow_length", models.PositiveIntegerField()),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "end_rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="flow_end_rule",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "start_rule",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="flow_start_rule",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="updated_%(class)s_objects",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'microbatch_flows',
+                "db_table": "microbatch_flows",
             },
         ),
         migrations.CreateModel(
-            name='HistoricalMicrobatchRuleTaskMatch',
+            name="HistoricalMicrobatchRuleTaskMatch",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('is_applied', models.BooleanField(default=False)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('microbatch_rule', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='microbatching.microbatchrule')),
-                ('task', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.task')),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("is_applied", models.BooleanField(default=False)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "microbatch_rule",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "task",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.task",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical microbatch rule task match',
-                'verbose_name_plural': 'historical microbatch rule task matchs',
-                'db_table': 'microbatch_rule_task_match_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical microbatch rule task match",
+                "verbose_name_plural": "historical microbatch rule task matchs",
+                "db_table": "microbatch_rule_task_match_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalMicrobatchRuleCriteria',
+            name="HistoricalMicrobatchRuleCriteria",
             fields=[
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('id', models.IntegerField(blank=True, db_index=True)),
-                ('field', models.CharField(max_length=100)),
-                ('operator', models.CharField(choices=[('equals', 'Equals'), ('contains', 'Contains'), ('starts_with', 'Starts With'), ('ends_with', 'Ends With'), ('gt', 'Greater Than'), ('lt', 'Less Than')], default='equals', max_length=20)),
-                ('value', models.CharField(blank=True, max_length=254, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('microbatch_rule', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='microbatching.microbatchrule')),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("id", models.IntegerField(blank=True, db_index=True)),
+                ("field", models.CharField(max_length=100)),
+                (
+                    "operator",
+                    models.CharField(
+                        choices=[
+                            ("equals", "Equals"),
+                            ("contains", "Contains"),
+                            ("starts_with", "Starts With"),
+                            ("ends_with", "Ends With"),
+                            ("gt", "Greater Than"),
+                            ("lt", "Less Than"),
+                        ],
+                        default="equals",
+                        max_length=20,
+                    ),
+                ),
+                ("value", models.CharField(blank=True, max_length=254, null=True)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "microbatch_rule",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical microbatch rule criteria',
-                'verbose_name_plural': 'historical microbatch rule criterias',
-                'db_table': 'microbatch_rule_criteria_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical microbatch rule criteria",
+                "verbose_name_plural": "historical microbatch rule criterias",
+                "db_table": "microbatch_rule_criteria_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalMicrobatchRule',
+            name="HistoricalMicrobatchRule",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=50)),
-                ('notes', models.TextField(blank=True)),
-                ('item_name', models.CharField(max_length=150)),
-                ('batch_size', models.IntegerField()),
-                ('is_active', models.BooleanField(default=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.workcenter')),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("external_id", models.CharField(blank=True, max_length=50)),
+                ("notes", models.TextField(blank=True)),
+                ("item_name", models.CharField(max_length=150)),
+                ("batch_size", models.IntegerField()),
+                ("is_active", models.BooleanField(default=True)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical microbatch rule',
-                'verbose_name_plural': 'historical microbatch rules',
-                'db_table': 'microbatch_rule_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical microbatch rule",
+                "verbose_name_plural": "historical microbatch rules",
+                "db_table": "microbatch_rule_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalMicrobatchFlow',
+            name="HistoricalMicrobatchFlow",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('custom_fields', models.JSONField(blank=True, default=dict, null=True)),
-                ('external_id', models.CharField(blank=True, max_length=50)),
-                ('notes', models.TextField(blank=True)),
-                ('name', models.CharField(max_length=150)),
-                ('description', models.TextField()),
-                ('min_flow_length', models.PositiveIntegerField()),
-                ('max_flow_length', models.PositiveIntegerField()),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('created_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('end_rule', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='microbatching.microbatchrule')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('start_rule', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='microbatching.microbatchrule')),
-                ('updated_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('work_center', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='job_manager.workcenter')),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        db_index=True, default=django.utils.timezone.now
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "custom_fields",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
+                ("external_id", models.CharField(blank=True, max_length=50)),
+                ("notes", models.TextField(blank=True)),
+                ("name", models.CharField(max_length=150)),
+                ("description", models.TextField()),
+                ("min_flow_length", models.PositiveIntegerField()),
+                ("max_flow_length", models.PositiveIntegerField()),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "end_rule",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "start_rule",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="microbatching.microbatchrule",
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "work_center",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="job_manager.workcenter",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical microbatch flow',
-                'verbose_name_plural': 'historical microbatch flows',
-                'db_table': 'microbatch_flow_history',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical microbatch flow",
+                "verbose_name_plural": "historical microbatch flows",
+                "db_table": "microbatch_flow_history",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.AddConstraint(
-            model_name='microbatchruletaskmatch',
-            constraint=models.UniqueConstraint(fields=('task', 'microbatch_rule'), name='unique_task_microbatch_rule'),
+            model_name="microbatchruletaskmatch",
+            constraint=models.UniqueConstraint(
+                fields=("task", "microbatch_rule"), name="unique_task_microbatch_rule"
+            ),
         ),
     ]

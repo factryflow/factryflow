@@ -260,7 +260,7 @@ class CRUDView:
 
         if field:
             relation_field_name = field.lower()
-
+            print(relation_field_name)
         # model inline formset for one-to-many relation
         if len(self.formset_options) > 0:
             self.model_formset = inlineformset_factory(

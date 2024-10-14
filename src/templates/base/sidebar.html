@@ -128,17 +128,17 @@
       </div>
       {% comment %} Microbatching Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RM' menu_item_icon='images/resource-management.svg' menu_item_name='Microbatching' %}
+        {% with menu_item_id='MB' menu_item_icon='images/resource-management.svg' menu_item_name='Microbatching' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
             class="w-full space-y-2.5 ml-5 mt-4"
             style="display: none">
-          {% with menu_item_id='microbatching' menu_item_name='Microbatch Flows' menu_item_url="/microbatch-flows" %}
+          {% with menu_item_id='MF' menu_item_name='Microbatch Flows' menu_item_url="/microbatch-flows" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='microbatching' menu_item_name='Microbatch Rules' menu_item_url="/microbatch-rules" %}
+          {% with menu_item_id='MR' menu_item_name='Microbatch Rules' menu_item_url="/microbatch-rules" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
         </ul>
