@@ -14,6 +14,7 @@ from .forms import (
     TaskForm,
     TaskTypeForm,
     WorkCenterForm,
+    AssignmentConstraintForm,
 )
 from .models import (
     Dependency,
@@ -38,6 +39,8 @@ from .services import (
     TaskTypeService,
     WorkCenterService,
 )
+
+from resource_assigner.models import AssignmentConstraint
 
 # ------------------------------------------------------------------------------
 # WorkCenter Views
@@ -461,6 +464,21 @@ TASK_MODEL_RELATION_FIELDS = {
     },
 }
 
+# AssigmentConstraint Formset Options
+ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = [
+    "resource_group",
+    "resources",
+    "resource_count",
+    "use_all_resources",
+]
+
+ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
+    AssignmentConstraint,
+    AssignmentConstraintForm,
+    "constraints",
+    ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS,
+    "assignment_constraint",
+]
 
 TaskTableView = CustomTableView(
     model=Task,
@@ -481,6 +499,7 @@ TASK_VIEWS = CRUDView(
     model_name="tasks",
     model_service=TaskService,
     model_form=TaskForm,
+    inline_formset=ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS,
     model_table_view=TaskTableView,
 )
 

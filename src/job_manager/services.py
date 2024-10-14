@@ -2,6 +2,7 @@ from datetime import datetime
 
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
+from common.utils import get_object
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from resource_assigner.models import TaskResourceAssigment
@@ -18,6 +19,9 @@ from job_manager.models import (
     TaskType,
     WorkCenter,
 )
+
+from resource_assigner.models import AssignmentConstraint
+from resource_assigner.services import AssignmentConstraintService
 
 # ------------------------------------------------------------------------------
 # WorkCenter Services
@@ -126,6 +130,35 @@ class TaskService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
+        self.assignment_constraint_service = AssignmentConstraintService(user=user)
+
+    def _create_or_update_constraints(
+        self, assignment_constraints: list[dict], instance: Task
+    ):
+        # Create or update assignment constraints
+        for assignment_constraint_dict in assignment_constraints:
+            assignment_constraint_id = (
+                assignment_constraint_dict.get("id").id
+                if assignment_constraint_dict.get("id")
+                else None
+            )
+            assignment_constraint_instance = get_object(
+                model_or_queryset=AssignmentConstraint, id=assignment_constraint_id
+            )
+            if assignment_constraint_instance:
+                self.assignment_constraint_service.update(
+                    instance=assignment_constraint_instance,
+                    data=assignment_constraint_dict,
+                )
+            else:
+                assignment_constraint_dict.pop("task", instance)
+                assignment_constraint_dict.pop("id", None)
+
+                self.assignment_constraint_service.create(
+                    task=instance,
+                    **assignment_constraint_dict,
+                )
+
     @transaction.atomic
     def create(
         self,
@@ -146,6 +179,7 @@ class TaskService:
         predecessors: list[Task] = None,
         successors: list[Task] = None,
         custom_fields: dict = None,
+        constraints: list[dict] = [],
     ) -> Task:
         # check for permission to create task
         if not self.permission_service.check_for_permission("add_task"):
@@ -170,6 +204,18 @@ class TaskService:
 
         task.full_clean()
         task.save(user=self.user)
+
+        # Create assignment constraints
+        for assignment_constraint_dict in constraints:
+            # delete assignment rule object as it already been created
+            assignment_constraint_dict.pop("task", task)
+            assignment_constraint_dict.pop("id", None)
+
+            self.assignment_constraint_service.create(
+                task=task,
+                **assignment_constraint_dict,
+                custom_fields=custom_fields,
+            )
 
         if dependencies:
             task.dependencies.set(dependencies)
@@ -210,6 +256,15 @@ class TaskService:
         task, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
+
+        # update assignment constraints
+        assignment_constraints = data.get("constraints", [])
+
+        if assignment_constraints:
+            # create or update assignment constraints
+            self._create_or_update_constraints(
+                assignment_constraints=assignment_constraints, instance=instance
+            )
 
         return task
 
