@@ -126,6 +126,8 @@ ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
     },
 }
 
+
+# AssigmentRule Formset Options 
 ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS = ["field", "operator", "value"]
 
 ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS = [
@@ -134,6 +136,17 @@ ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS = [
     "criteria",
     ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS,
     "assigment_rule_criteria",
+]
+
+# AssigmentConstraint Formset Options
+ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = ["resource_group", "resources", "resource_count", "use_all_resources"]
+
+ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
+    AssignmentConstraint,
+    AssignmentConstraintForm,
+    "assignment_constraints",
+    ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS,
+    "assignment_constraint",
 ]
 
 ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
@@ -155,6 +168,7 @@ ASSIGMENT_RULE_VIEWS = CRUDView(
     model_table_view=ASSIGMENT_RULE_TABLE_VIEW,
     ordered_model=True,
     formset_options=ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS,
+    inline_formset=ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS,
 )
 
 
