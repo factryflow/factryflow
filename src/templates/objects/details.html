@@ -58,7 +58,6 @@
     </div>
 {% endpartialdef %}
 
-
 {% partialdef partial-form %}
 <form method="post" hx-post="{{ form_action_url }}" hx-redirect="true" hx-trigger="submit once" x-cloak>
     {% csrf_token %}
@@ -98,7 +97,6 @@
             {% endif %}
         {% endfor %}
     </div>
-
 
     <!-- Inline Formset Fields -->
     {% comment %} Inline Formset Form {% endcomment %}
@@ -146,7 +144,6 @@
         {% endfor %}
     {% endif %}
 
-
     <!-- Custom Field Form -->
     {% if custom_field_data %}
         <hr>
@@ -169,7 +166,6 @@
             {% endfor %}
         </div>
     {% endif %}
-
 
     <!-- Formset Form Table - multiple objects -->
     {% if button_text == "Create" %}
@@ -229,7 +225,6 @@
         </div>
         {% endif %}
     {% endif %}
-
 
     <hr class="pb-4 mt-8">
     <!-- Submit buttons -->

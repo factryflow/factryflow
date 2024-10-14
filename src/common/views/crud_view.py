@@ -419,7 +419,9 @@ class CRUDView:
             )
             if self.model_inline_formset
             else None,
-            "inline_formset_title": inline_formset_model_name.replace("_", " ").title() if self.model_inline_formset else None,
+            "inline_formset_title": inline_formset_model_name.replace("_", " ").title()
+            if self.model_inline_formset
+            else None,
             "show_edit_actions": show_edit_actions,
             "model_relation_field_name": model_relation_field_name
             if "model_relation_field_name" in locals()
@@ -508,7 +510,9 @@ class CRUDView:
         )
 
         if len(form.errors) > 0 or len(model_inline_form.errors[0]) > 0:
-            errors_list = list(form.errors.items()) + list(model_inline_form.errors[0].items())
+            errors_list = list(form.errors.items()) + list(
+                model_inline_form.errors[0].items()
+            )
 
             errors = {f: e.get_json_data() for f, e in errors_list}
             for field, error in errors.items():

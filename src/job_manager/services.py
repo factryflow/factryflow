@@ -137,7 +137,11 @@ class TaskService:
     ):
         # Create or update assignment constraints
         for assignment_constraint_dict in assignment_constraints:
-            assignment_constraint_id = assignment_constraint_dict.get("id").id if assignment_constraint_dict.get("id") else None
+            assignment_constraint_id = (
+                assignment_constraint_dict.get("id").id
+                if assignment_constraint_dict.get("id")
+                else None
+            )
             assignment_constraint_instance = get_object(
                 model_or_queryset=AssignmentConstraint, id=assignment_constraint_id
             )

@@ -269,9 +269,11 @@ class TaskForm(forms.ModelForm):
             ),
         }
 
+
 # ------------------------------------------------------------------------------
 # Task Assignment Constraint Forms
 # ------------------------------------------------------------------------------
+
 
 class AssignmentConstraintForm(forms.ModelForm):
     class Meta:
@@ -332,9 +334,6 @@ class AssignmentConstraintForm(forms.ModelForm):
             raise forms.ValidationError(
                 "You must set either resource_group or resources."
             )
-
-
-
 
 
 # ------------------------------------------------------------------------------

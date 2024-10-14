@@ -127,7 +127,7 @@ ASSIGMENT_RULE_MODEL_RELATION_FIELDS = {
 }
 
 
-# AssigmentRule Formset Options 
+# AssigmentRule Formset Options
 ASSIGMENT_RULE_CRITERIA_FORMSET_FORM_FIELDS = ["field", "operator", "value"]
 
 ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS = [
@@ -139,7 +139,12 @@ ASSIGMENT_RULE_CRITERIA_FORMSET_OPTIONS = [
 ]
 
 # AssigmentConstraint Formset Options
-ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = ["resource_group", "resources", "resource_count", "use_all_resources"]
+ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = [
+    "resource_group",
+    "resources",
+    "resource_count",
+    "use_all_resources",
+]
 
 ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
     AssignmentConstraint,

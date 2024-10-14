@@ -465,7 +465,12 @@ TASK_MODEL_RELATION_FIELDS = {
 }
 
 # AssigmentConstraint Formset Options
-ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = ["resource_group", "resources", "resource_count", "use_all_resources"]
+ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = [
+    "resource_group",
+    "resources",
+    "resource_count",
+    "use_all_resources",
+]
 
 ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
     AssignmentConstraint,
