@@ -8,72 +8,75 @@
 {% partialdef partial-table-template %}
 <div>
     {% if rows %}
-        <table class="w-full text-sm text-center"
-                id="all-{{ model_name }}s-table"
-                x-cloak>
-            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y  border-[#e1e3ea80]">
-                <tr class="text-[#181C32]">
-                    <!-- <th scope="col" class="p-4">
+    <table class="w-full text-sm text-center"
+            id="all-{{ model_name }}s-table"
+            x-cloak>
+        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+            <tr class="text-[#181C32]">
+                <!-- <th scope="col" class="p-4">
+                    <div class="flex items-center">
+                        <input id="checkbox-all-search"
+                                type="checkbox"
+                                class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                    </div>
+                </th> -->
+                {% for header in headers %}
+                    <th scope="col"
+                        class="px-4 py-2 font-sans font-semibold text-sm leading-3">{{ header }}</th>
+                {% endfor %}
+                {% if show_actions and user|can:actions_rule.1 %}
+                    <th scope="col" class="px-4 py-2">Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr class="bg-white border-b">
+                    <!-- <td class="w-4 p-4">
                         <div class="flex items-center">
-                            <input id="checkbox-all-search"
-                                    type="checkbox"
-                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                            <input id="checkbox-table-search-1"
+                                type="checkbox"
+                                class="w-7 h-7 rounded-md bg-[#F1F1F2]">
                         </div>
-                    </th> -->
-                    {% for header in headers %}
-                        <th scope="col"
-                            class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
+                    </td> -->
+                    {% for cell in row %}
+                        <td class="px-4 py-2 text-sm font-medium text-[#7E8299]">
+                            {% if not cell %}
+                                <span class="text-[#7E8299]">None</span>
+                            {% else %}
+                                {{ cell|safe }}
+                            {% endif %}
+                        </td>
                     {% endfor %}
-                    {% if show_actions and user|can:actions_rule.1 %}<th scope="col" class="px-6 py-4">Actions</th>{% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in rows %}
-                    <tr class="bg-white border-b">
-                        <!-- <td class="w-4 p-4">
-                            <div class="flex items-center">
-                                <input id="checkbox-table-search-1"
-                                    type="checkbox"
-                                    class="w-7 h-7 rounded-md bg-[#F1F1F2]">
-                            </div>
-                        </td> -->
-                        {% for cell in row %}
-                            <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
-                                {% if not cell %}
-                                    <span class="text-[#7E8299]">None</span>
-                                {% else %}
-                                    {{ cell|safe }}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                        {% if show_actions %}
-                            <td class="px-6 py-4">
-                                {% if user|can:actions_rule.0 %}
-                                    <a href="{% url 'users:view_'|add:model_name id=row.0 %}">
-                                        <button id="view-{{ row.0 }}"
+                    {% if show_actions %}
+                        <td class="px-4 py-2">
+                            {% if user|can:actions_rule.0 %}
+                                <a href="{% url 'users:view_'|add:model_name id=row.0 %}">
+                                    <button id="view-{{ row.0 }}"
+                                            type="button"
+                                            class="font-medium focus:outline-none bg-transparent border-none h-5 w-5">
+                                        <img src="{% static 'images/visibility.svg' %}" alt="View" />
+                                    </button>
+                                </a>
+                            {% endif %}
+                            {% if not view_only %}
+                                {% if user|can:actions_rule.1 %}
+                                    <a href="{% url 'users:edit_'|add:model_name id=row.0 edit='true' %}">
+                                        <button id="edit-{{ row.0 }}"
                                                 type="button"
-                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                            <img src="{% static 'images/visibility.svg' %}" alt="View" />
+                                                class="font-medium focus:outline-none bg-transparent border-none h-5 w-5">
+                                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
                                         </button>
                                     </a>
                                 {% endif %}
-                                {% if not view_only %}
-                                    {% if user|can:actions_rule.1 %}
-                                        <a href="{% url 'users:edit_'|add:model_name id=row.0 edit='true' %}">
-                                            <button id="edit-{{ row.0 }}"
-                                                    type="button"
-                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                                <img src="{% static 'images/edit.svg' %}" alt="Edit" />
-                                            </button>
-                                        </a>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
         <div class="mx-3 my-3">
             <div class="flex items-center justify-between pt-7">
                 <div class="flex flex-1 justify-between sm:hidden">

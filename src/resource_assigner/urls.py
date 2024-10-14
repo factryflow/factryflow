@@ -53,7 +53,7 @@ urlpatterns = [
         name="assigment_rules_form",
     ),
     path(
-        "assigment-rules/new/<int:formset_count>",
+        "assigment-rules/new/formset-count=<int:formset_count>",
         ASSIGMENT_RULE_VIEWS.show_model_form,
         name="assigment_rules_formset",
     ),

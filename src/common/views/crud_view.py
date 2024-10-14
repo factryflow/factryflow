@@ -1,7 +1,4 @@
-from datetime import datetime, date, time
-
 from django.contrib.contenttypes.models import ContentType
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.forms import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -9,16 +6,13 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
+from django.db.utils import IntegrityError
 
 from common.utils.views import (
     add_notification_headers,
-    convert_date_to_readable_string,
-    convert_datetime_to_readable_string,
 )
 
-from .forms import CustomFieldForm
-from .models import CustomField, FieldType
-from .services import CustomFieldService
+from common.models import CustomField
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -28,16 +22,6 @@ from .services import CustomFieldService
 class CRUDView:
     """
     A generic CRUD (Create, Read, Update, Delete) view for handling various models.
-
-    Attributes:
-        model: The model.
-        model_type: The type of model (optional).
-        model_name: The name of the model.
-        model_service: The service class handling model operations.
-        model_form: The form class for the model.
-        table_view: The view class for rendering model data in a tabular format.
-        list_template_name: The name of the template for listing model instances.
-        detail_template_name: The name of the template for displaying model details.
     """
 
     def __init__(
@@ -56,6 +40,24 @@ class CRUDView:
         ordered_model=False,
         user_rule_permission=True,
     ):
+        """
+        Attributes:
+            model: The model class.
+            model_type: The type of model (optional).
+            model_name: The name of the model.
+            model_service: The service class handling model operations.
+            model_form: The form class for the model.
+            table_view: The view class for rendering model data in a tabular format.
+            list_template_name: The name of the template for listing model instances.
+            detail_template_name: The name of the template for displaying model details.
+            user_rule_permission: Flag indicating if user has permission for CRUD actions.
+            crud_action_rules: List of CRUD permissions for the model.
+            button_text: Text for the action button.
+            ordered_model: Flag indicating if the model is ordered.
+            formset_options: Options for inline formsets.
+            model_formset: Inline formset for the model.
+            sub_model_relation: Flag indicating if the model has sub-model relations.
+        """
         self.model = model
         self.model_type = model_type
         self.view_only = view_only
@@ -86,11 +88,29 @@ class CRUDView:
 
     @staticmethod
     def check_change_password(user):
+        """
+        Check if the user is required to change their password.
+
+        Args:
+            user: The user object.
+
+        Returns:
+            True if the user is required to change their password, False otherwise.
+        """
         if user.require_password_change:
             return True
         return False
 
     def get_models_crud_permissions(self, model_name):
+        """
+        Get the CRUD permissions for a given model.
+
+        Args:
+            model_name: The name of the model.
+
+        Returns:
+            A list of CRUD permissions for the model.
+        """
         permissions_list = (
             [
                 f"view_{model_name.lower().replace('_', '')}",
@@ -104,8 +124,19 @@ class CRUDView:
         return permissions_list
 
     def get_custom_field_json_data(self, content_type, instance=None):
-        # to get custom field json data
+        """
+        Retrieve custom field data in JSON format for a given content type and instance.
+
+        Args:
+            content_type: The content type of the model.
+            instance: The model instance (optional).
+
+        Returns:
+            A list of dictionaries containing custom field data.
+        """
         data = []
+
+        # Get custom fields from the instance if available, otherwise get default custom fields
         custom_fields = (
             instance.custom_fields
             if instance and instance.custom_fields != {}
@@ -115,6 +146,7 @@ class CRUDView:
             }
         )
 
+        # Iterate over custom fields and construct the data list
         for id, (key, value) in enumerate(custom_fields.items(), start=1):
             custom_field_instance = CustomField.objects.get(
                 name=key, content_type=content_type
@@ -136,6 +168,9 @@ class CRUDView:
         """
         View function to display all instances with optional filtering.
 
+        Args:
+            request: The HTTP request object.
+
         Returns:
             The rendered response displaying all instances.
         """
@@ -147,12 +182,16 @@ class CRUDView:
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
         page_number = request.GET.get("page", 1)
+        num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator, num_pages = self.table_view.table_rows(
-            status_filter=status_filter,
-            search_query=search_query,
-            page_number=page_number,
+        table_rows, paginator, num_pages, total_instances_count = (
+            self.table_view.table_rows(
+                status_filter=status_filter,
+                search_query=search_query,
+                page_number=page_number,
+                num_of_rows_per_page=num_of_rows_per_page,
+            )
         )
 
         template_name = self.list_template_name
@@ -175,6 +214,8 @@ class CRUDView:
             "button_text": self.button_text,
             "ordered_model": self.ordered_model,
             "num_pages": num_pages,
+            "num_of_rows_per_page": num_of_rows_per_page,
+            "total_instances_count": total_instances_count,
         }
 
         return render(request, template_name, context)
@@ -188,12 +229,14 @@ class CRUDView:
         formset_count: int = 1,
     ):
         """
-        View function to display a form for creating or editing a model instance.
+        Display a form for creating or editing a model instance.
 
         Args:
             request: The HTTP request object.
             id: The ID of the model instance (optional).
             edit: Flag indicating whether the form is in edit mode (optional).
+            field: The field name for relation (optional).
+            formset_count: The number of forms in the formset (optional).
 
         Returns:
             The rendered response displaying the model form.
@@ -290,7 +333,6 @@ class CRUDView:
                 if relation_field_name
                 else []
             )
-
         else:
             form = self.model_form()
             button_text = "Create"
@@ -336,7 +378,7 @@ class CRUDView:
             add_formset_url = (
                 reverse(
                     f"{self.model_name.lower()}_formset",
-                    args=[formset_count + 1],
+                    kwargs={"formset_count": formset_count + 1},
                 )
                 if self.user_rule_permission
                 else None
@@ -345,7 +387,9 @@ class CRUDView:
             remove_formset_url = (
                 reverse(
                     f"{self.model_name.lower()}_formset",
-                    args=[formset_count - 1 if formset_count > 0 else 0],
+                    kwargs={
+                        "formset_count": formset_count - 1 if formset_count > 0 else 0
+                    },
                 )
                 if self.user_rule_permission
                 else None
@@ -418,7 +462,7 @@ class CRUDView:
             if "formset" in str(request.path):
                 return render(
                     request,
-                    f"{self.detail_template_name}",
+                    f"{self.detail_template_name}#inline-model-form",
                     context,
                 )
 
@@ -584,9 +628,12 @@ class CRUDView:
         """
         obj = get_object_or_404(self.model, id=id)
 
-        # Delete the instance and check if deletion was successful
-        with transaction.atomic():
-            deletion_successful = self.model_service(user=request.user).delete(obj)
+        try:
+            # Delete the instance and check if deletion was successful
+            with transaction.atomic():
+                deletion_successful = self.model_service(user=request.user).delete(obj)
+        except IntegrityError as e:
+            deletion_successful = False
 
         # Retrieve updated instance list
         status_filter = request.GET.get("status", "all")
@@ -594,10 +641,12 @@ class CRUDView:
         page_number = request.GET.get("page", 1)
 
         # Generate table view based on filter and search parameters
-        table_rows, paginator, num_pages = self.table_view.table_rows(
-            status_filter=status_filter,
-            search_query=search_query,
-            page_number=page_number,
+        table_rows, paginator, num_pages, total_instances_count = (
+            self.table_view.table_rows(
+                status_filter=status_filter,
+                search_query=search_query,
+                page_number=page_number,
+            )
         )
 
         # template name based on is_redirect variable
@@ -616,6 +665,7 @@ class CRUDView:
                 "status_filter_dict": self.table_view.status_filter_dict,
                 "rows": table_rows,
                 "num_pages": num_pages,
+                "total_instances_count": total_instances_count,
                 "paginator": paginator,
                 "show_actions": True and self.user_rule_permission,
                 "crud_action_rules": self.crud_action_rules,
@@ -650,425 +700,3 @@ class CRUDView:
             return response
 
         return response
-
-
-# ------------------------------------------------------------------------------
-# CustomTableView for any model
-# ------------------------------------------------------------------------------
-
-
-class CustomTableView:
-    """
-    Class representing a custom view for displaying tables in a generic format.
-    """
-
-    def __init__(
-        self,
-        model,
-        model_name,
-        fields,
-        headers,
-        search_fields_list,
-        page_size=5,
-        model_relation_headers=[],
-        model_relation_fields={},
-        status_choices_class=None,
-        status_filter_field=None,
-        tailwind_classes=None,
-        status_classes={},
-        order_by_field="",
-    ):
-        """
-        Args:
-            model: The Django model class for which the table view is created.
-            model_name: The name of the model.
-            fields: List of fields to be displayed in the table.
-            headers: List of headers for the table columns.
-            status_filter_field: The field used for filtering by status.
-            search_fields_list: List of fields to be searched.
-            tailwind_classes: Dictionary mapping model statuses to Tailwind CSS classes.
-        """
-        self.model = model
-        self.model_name = model_name
-        self.status_filter_field = status_filter_field
-        self.search_fields_list = search_fields_list
-        self.status_filter_dict = (
-            status_choices_class.to_dict() if status_choices_class else {}
-        )
-        self.tailwind_classes = tailwind_classes
-        self.fields = fields
-        self.model_relation_headers = (
-            model_relation_headers + ["CUSTOM_FIELDS"]
-            if hasattr(self.model, "custom_fields")
-            else []
-        )
-        self.model_relation_fields = model_relation_fields
-        self.table_headers = headers
-        self.page_size = page_size
-        self.status_classes = status_classes
-        self.order_by_field = order_by_field
-
-    @property
-    def all_instances(self):
-        """
-        Retrieve all instances of the model.
-        """
-        if hasattr(self.model, self.order_by_field):
-            return self.model.objects.all().order_by(self.order_by_field)
-
-        return self.model.objects.all().order_by("-id")
-
-    def get_custom_field_json_data(self, instance=None):
-        # get custom field json data in two rows one is headers which are keys(convert in captilize and replace "_" with " ", and values as data)
-        # each model has extras_field as a custom field
-        custom_field_data = instance.custom_fields
-        data = []
-        id = 0
-        if custom_field_data:
-            for key, value in custom_field_data.items():
-                id += 1
-                field_info = {}
-                custom_field_instance = CustomField.objects.get(
-                    name=key, content_type=ContentType.objects.get_for_model(instance)
-                )
-                field_info["id"] = id
-                field_info["name"] = custom_field_instance.name
-                field_info["label"] = custom_field_instance.label
-                field_info["type"] = (
-                    custom_field_instance.field_type.title()
-                    .replace("-", " ")
-                    .replace("_", " ")
-                )
-                if custom_field_instance.field_type == "datetime-local":
-                    # convert datetime field to readable string
-                    field_info["value"] = str(
-                        convert_datetime_to_readable_string(
-                            datetime.strptime(value, "%Y-%m-%dT%H:%M")
-                        )
-                    )
-                elif custom_field_instance.field_type == "date":
-                    # convert date field to readable string
-                    field_info["value"] = str(
-                        convert_date_to_readable_string(
-                            datetime.strptime(value, "%Y-%m-%d")
-                        )
-                    )
-                else:
-                    field_info["value"] = value
-
-                data.append(field_info)
-        return data
-
-    def get_all_many_to_many_field_instances(self, obj_instance, field_name=None):
-        rows = []
-
-        if field_name == "custom_fields":
-            data = self.get_custom_field_json_data(obj_instance)
-            formatted_data = []
-            for item in data:
-                formatted_item = {}
-                for key, value in item.items():
-                    field_type = type(value).__name__
-                    formatted_item[key] = {"value": str(value), "type": field_type}
-                formatted_data.append(formatted_item)
-            return formatted_data
-
-        if field_name:
-            if "model" in self.model_relation_fields[field_name].keys():
-                # if model is provided in model_relation_fields then get data from that model
-                data = self.model_relation_fields[field_name]["model"].objects.filter(
-                    **{
-                        self.model_relation_fields[field_name][
-                            "related_name"
-                        ]: obj_instance
-                    }
-                )
-            else:
-                # if model is not provided in model_relation_fields then get data from related_name
-                data = getattr(
-                    obj_instance, self.model_relation_fields[field_name]["related_name"]
-                ).all()
-
-            for instance in data:
-                # get data for each field in the model
-                row_data = {}
-                for field in self.model_relation_fields[field_name]["fields"]:
-                    if "status" in field:
-                        # if field is status field then get the colored text
-                        value = {
-                            "value": str(
-                                getattr(instance, "get_" + field + "_display")()
-                            ),
-                            "type": "text",
-                        }
-                        row_data[field] = value
-                    elif isinstance(getattr(instance, field), datetime):
-                        # if field is datetime then convert it to readable string and type is datetime-local
-                        value = {
-                            "value": str(
-                                convert_datetime_to_readable_string(
-                                    getattr(instance, field)
-                                )
-                            ),
-                            "type": "datetime-local",
-                        }
-                        row_data[field] = value
-                    elif isinstance(getattr(instance, field), date):
-                        # if field is date then convert it to readable string and type is date
-                        value = {
-                            "value": str(
-                                convert_date_to_readable_string(
-                                    getattr(instance, field)
-                                )
-                            ),
-                            "type": "datetime-local",
-                        }
-                        row_data[field] = value
-                    elif isinstance(getattr(instance, field), time):
-                        # if field is time then convert it to readable string and type is time
-                        value = {
-                            "value": str(getattr(instance, field).strftime("%H:%M")),
-                            "type": "time",
-                        }
-                        row_data[field] = value
-                    else:
-                        # if field is not status or datetime then get the value and type
-                        field_type = type(getattr(instance, field)).__name__
-                        value = {
-                            "value": str(getattr(instance, field)),
-                        }
-
-                        if field_type == "str":
-                            # if field type is str then type is text
-                            value["type"] = "text"
-                        elif (
-                            field_type == "int"
-                            or field_type == "AutoField"
-                            or field_type == "PositiveIntegerField"
-                            or field_type == "IntegerField"
-                        ):
-                            # if field type is int then type is number
-                            value["type"] = "number"
-                        else:
-                            # if field type is not str or int then type is field type
-                            value["type"] = field_type
-
-                        row_data[field] = value
-
-                    if "select_fields" in self.model_relation_fields[field_name]:
-                        # if select_fields is provided in model_relation_fields
-                        if (
-                            field
-                            in self.model_relation_fields[field_name]["select_fields"]
-                        ):
-                            value = {
-                                "value": self.model_relation_fields[field_name][
-                                    "select_fields"
-                                ][field][str(getattr(instance, field))],
-                                "type": "select",
-                                "options": self.model_relation_fields[field_name][
-                                    "select_fields"
-                                ][field],
-                            }
-                            row_data[field] = value
-
-                rows.append(row_data)
-
-        return rows
-
-    def filtered_instances(
-        self,
-        status_filter=None,
-        search_query=None,
-    ):
-        """
-        Get filtered instances based on status and search query.
-
-        Args:
-            status_filter: Optional. The status filter to be applied.
-            search_query: Optional. The search query to be applied.
-
-        Returns:
-            List: Filtered instances based on the provided status and search query.
-        """
-        all_instances = self.all_instances
-        if status_filter != "all":
-            all_instances = [
-                instance
-                for instance in all_instances
-                if instance.__dict__[self.status_filter_field] == status_filter
-            ]
-        if search_query:
-            all_instances = [
-                instance
-                for instance in all_instances
-                if any(
-                    search_query.lower() in str(getattr(instance, field)).lower()
-                    for field in self.search_fields_list
-                )
-            ]
-        return all_instances
-
-    def get_paginated_instances(
-        self, page_number, status_filter=None, search_query=None
-    ):
-        """
-        Get paginated instances based on the page number and filtering.
-
-        Args:
-            page_number: The page number for paginating the instances.
-            status_filter: Optional. The status filter to be applied.
-            search_query: Optional. The search query to be applied.
-
-        Returns:
-            List: Paginated instances based on the provided page number and filtering.
-        """
-        instances = self.filtered_instances(status_filter, search_query)
-        paginator = Paginator(instances, self.page_size)
-        num_pages = paginator.num_pages
-        try:
-            paginated_instances = paginator.page(page_number)
-        except PageNotAnInteger:
-            paginated_instances = paginator.page(1)
-        except EmptyPage:
-            paginated_instances = paginator.page(paginator.num_pages)
-        return paginated_instances, num_pages
-
-    def table_rows(
-        self,
-        page_number,
-        status_filter=None,
-        search_query=None,
-    ):
-        """
-        Get the rows of data for the table based on the model and fields.
-
-        Args:
-            status_filter: Optional. The status filter to be applied.
-            search_query: Optional. The search query to be applied.
-
-        Returns:
-            List: Rows of data for the table based on the filtered instances.
-        """
-        paginated_data, num_pages = self.get_paginated_instances(
-            page_number, status_filter, search_query
-        )
-
-        rows = []
-        for instance in paginated_data.object_list:
-            row_data = []
-            for field in self.fields:
-                if field == "order":
-                    # to get order field value and increment it by 1
-                    value = getattr(instance, field) + 1
-                    row_data.append(value)
-                elif "status" in field:
-                    value = (
-                        f'<span class="{self.get_status_colored_text(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
-                        f'{getattr(instance, "get_" + self.model_name + "_status_display")() if hasattr(instance, "get_" + self.model_name + "_status_display") else self.status_classes.get(getattr(instance, field))}</span>',
-                    )
-                    # value = getattr(instance, field)
-                    row_data.append(value[0])
-                elif isinstance(getattr(instance, field), datetime):
-                    value = convert_datetime_to_readable_string(
-                        getattr(instance, field)
-                    )
-                    row_data.append(value)
-                elif isinstance(getattr(instance, field), date):
-                    value = convert_date_to_readable_string(getattr(instance, field))
-                    row_data.append(value)
-                else:
-                    value = getattr(instance, field)
-                    row_data.append(value)
-
-            rows.append(row_data)
-
-        return rows, paginated_data, num_pages
-
-    def get_status_colored_text(self, model_status):
-        """
-        Get the colored text based on model status.
-
-        Args:
-            model_status: The status of the model.
-
-        Returns:
-            str: The Tailwind CSS class for the given model status.
-        """
-        return self.tailwind_classes.get(model_status)
-
-
-# ------------------------------------------------------------------------------
-# Custom Field Views
-# ------------------------------------------------------------------------------
-
-CUSTOM_FIELD_MODEL_FIELDS = [
-    "id",
-    "name",
-    "label",
-    "content_type",
-    "field_type",
-    "is_required",
-    "description",
-]
-CUSTOM_FIELD_TABLE_HEADERS = [
-    "ID",
-    "Field Name",
-    "Label",
-    "Content Type",
-    "Field Type",
-    "Is Required",
-    "Description",
-]
-
-CUSTOM_FIELD_SEARCH_FIELDS = ["name", "field_type", "label", "description"]
-
-
-CUSTOM_FIELD_STATUS_FILTER_FIELD = "field_type"
-
-CUSTOM_FIELD_MODEL_RELATION_HEADERS = ["HISTORY"]
-CUSTOM_FIELD_MODEL_RELATION_FIELDS = {
-    "history": {
-        "model_name": "history",
-        "related_name": "history",
-        "headers": [
-            "ID",
-            "Name",
-            "User",
-            "Label",
-            "Type",
-            "Description",
-            "History Date",
-        ],
-        "fields": [
-            "history_id",
-            "name",
-            "history_user",
-            "label",
-            "field_type",
-            "description",
-            "history_date",
-        ],
-    },
-}
-
-
-CustomFieldTableView = CustomTableView(
-    model=CustomField,
-    model_name="custom_field",
-    fields=CUSTOM_FIELD_MODEL_FIELDS,
-    headers=CUSTOM_FIELD_TABLE_HEADERS,
-    model_relation_headers=CUSTOM_FIELD_MODEL_RELATION_HEADERS,
-    model_relation_fields=CUSTOM_FIELD_MODEL_RELATION_FIELDS,
-    status_filter_field=CUSTOM_FIELD_STATUS_FILTER_FIELD,
-    status_choices_class=FieldType,
-    search_fields_list=CUSTOM_FIELD_SEARCH_FIELDS,
-)
-
-CUSTOM_FIELD_VIEWS = CRUDView(
-    model=CustomField,
-    model_name="custom_fields",
-    model_service=CustomFieldService,
-    model_form=CustomFieldForm,
-    model_table_view=CustomFieldTableView,
-)

@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models.dependency import DependencyType, Dependency
-from .models.job import JobType, Job
-from .models.task import TaskType, Task, WorkCenter
+
+from .models.dependency import Dependency, DependencyType
+from .models.item import Item
+from .models.job import Job, JobType
+from .models.task import Task, TaskType, WorkCenter
 
 
 @admin.register(DependencyType)
@@ -69,3 +71,6 @@ class Task(admin.ModelAdmin):
     ]
     list_filter = ["task_type", "created_at", "created_by"]
     search_fields = ["name"]
+
+
+admin.site.register(Item)

@@ -1,4 +1,4 @@
-from common.models import BaseModel, BaseModelWithExtras
+from common.models import BaseModelWithExtras
 from django.core.exceptions import ValidationError
 from django.db import models
 from simple_history.models import HistoricalRecords
@@ -31,7 +31,7 @@ class DaysOfWeek(models.TextChoices):
     SUNDAY = "Sunday", "Sunday"
 
 
-class WeeklyShiftTemplateDetail(BaseModel):
+class WeeklyShiftTemplateDetail(BaseModelWithExtras):
     weekly_shift_template = models.ForeignKey(
         WeeklyShiftTemplate,
         on_delete=models.CASCADE,

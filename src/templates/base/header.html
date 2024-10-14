@@ -8,7 +8,7 @@
       </a>
 {% endpartialdef %}
 
-<div class="flex items-center justify-between h-16 bg-white fixed top-0 z-50 w-full ">
+<div class="flex items-center justify-between h-16 bg-white fixed top-0 z-40 w-full ">
   <div class="flex items-center px-4">
     <div class="p-2.5 mt-1 flex items-center rounded-md ">
       <!-- Logo -->
@@ -57,8 +57,8 @@
       </div>
     </div> -->
 
-      <!-- Desktop Menu -->
-    <ul id="user-menu" class="hidden items-center gap-4 sm:flex">
+    <!-- Desktop Menu -->
+    <ul id="user-menu" class="hidden items-center gap-4 sm:flex"  x-cloak>
       <li x-data="{ userDropDownIsOpen: false, openWithKeyboard: false }" 
         @keydown.esc.window="userDropDownIsOpen = false, openWithKeyboard = false" 
         class="relative flex items-center">

@@ -40,60 +40,52 @@
 
     <div id="all-{{ model_name }}s-table">
     {% if rows %}
-    <table class="w-full text-sm text-center" x-cloak>
+    <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center" x-cloak>
         <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
             <tr class="text-[#181C32]">
-                <!-- <th scope="col" class="p-4">
-                    <div class="flex items-center">
-                        <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
-                            x-model="selectAll">
-                    </div>
-                </th> -->
                 {% for header in headers %}
-                <th scope="col" class="px-6 py-4 font-sans font-semibold text-sm line leading-3">{{ header }}</th>
+                <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">{{ header }}</th>
                 {% endfor %}
                 {% if show_actions %}
-                <th scope="col" class="px-6 py-4">Actions</th>
+                <th scope="col" class="whitespace-nowrap py-3.5 px-2">Actions</th>
                 {% if ordered_model %}
-                <th scope="col" class="px-6 py-4">Change Priority</th>
+                <th scope="col" class="whitespace-nowrap py-3.5 px-2">Change Priority</th>
                 {% endif %}
                 {% endif %}
             </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-200 bg-white">
             {% for row in rows %}
             {% if not view_only %}
-            <div x-show="showModal === {{ row.0 }}" x-cloak x-on:keydown.escape.prevent.stop="showModal = false"
-                role="dialog" aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto">
-                <!-- Overlay -->
+            <div x-show="showModal === {{ row.0 }}" x-on:keydown.escape.prevent.stop="showModal = false"
+                role="dialog" aria-modal="true" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
                 <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-opacity ease-in duration-150"
                     x-transition:leave="transition-opacity ease-out duration-150"
-                    class="fixed inset-0 bg-black bg-opacity-50"></div>
-                <!-- Panel -->
-                <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-transform ease-out duration-150"
-                    x-transition:leave="transition-transform ease-in duration-150" x-on:click="showModal = false"
-                    class="relative flex min-h-screen items-center justify-center p-4">
-                    <div x-on:click.stop
-                        class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
-                        <!-- Title -->
-                        <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
-                            <div class="bg-haxred h-[100px] w-[100px] flex items-center justify-center rounded-full">
-                                <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
+                    class="fixed inset-0 bg-black bg-opacity-50" x-cloak>
+                    <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-transform ease-out duration-150"
+                        x-transition:leave="transition-transform ease-in duration-150" x-on:click="showModal = false"
+                        class="relative flex min-h-screen items-center justify-center p-4" x-cloak>
+                        <div x-on:click.stop
+                            class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg"
+                            x-cloak>
+                            <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
+                                <div class="bg-haxred h-[80px] w-[80px] flex items-center justify-center rounded-full">
+                                    <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
+                                </div>
+                                <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{ model_title }} model instance with id {{ row.0 }}</p>
                             </div>
-                            <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{ model_title }} model instance with id {{ row.0 }}</p>
-                        </div>
-                        <!-- Buttons -->
-                        <div class="px-9 py-5 flex justify-center items-center gap-3">
-                            {% if show_actions %}
-                            {% if user|can:crud_action_rules.3 %}
-                            <button type="button" hx-delete="{% url 'delete_'|add:model_name_for_crud id=row.0 %}"
-                                hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML"
-                                class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white"
-                                x-on:click="showModal = false">Delete</button>
-                            <button type="button" x-on:click="showModal = false"
-                                class="rounded-md bg-[#F9F9F9] py-4 px-10 text-[#7E8299]">Cancel</button>
-                            {% endif %}
-                            {% endif %}
+                            <div class="px-9 py-5 flex justify-center items-center gap-3">
+                                {% if show_actions %}
+                                {% if user|can:crud_action_rules.3 %}
+                                <button type="button" hx-delete="{% url 'delete_'|add:model_name_for_crud id=row.0 %}"
+                                    hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML"
+                                    class="rounded-md bg-[#FF4D4F] py-2 px-4 text-white"
+                                    x-on:click="showModal = false">Delete</button>
+                                <button type="button" x-on:click="showModal = false"
+                                    class="rounded-md bg-[#F9F9F9] py-2 px-4 text-[#7E8299]">Cancel</button>
+                                {% endif %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -109,13 +101,19 @@
                     <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
                         {% if not cell %}
                             <span class="text-[#7E8299]">None</span>
-                        {% else %}
+                        {% elif "span" in cell %}
                             {{ cell|safe }}
+                        {% else %}
+                            <span
+                                x-tooltip="{{cell|safe}}"
+                                class="cursor-pointer">
+                                {{ cell|safe|truncatechars:10 }}
+                            </span>
                         {% endif %}
                     </td>
                 {% endfor %}
                 {% if show_actions %}
-                <td class="flex justify-center items-center px-6 py-4">
+                <td class="flex justify-center items-center px-2 py-2">
                     {% if user|can:crud_action_rules.0 %}
                     <a href="{% url 'view_'|add:model_name_for_crud id=row.0 %}">
                         <button id="view-{{ row.0 }}" type="button"
@@ -143,7 +141,7 @@
                     {% endif %}
                 </td>
                 {% if ordered_model %}
-                <td class="px-6 py-4">
+                <td class="whitespace-nowrap px-2 py-2">
                     {% if user|can:crud_action_rules.2 %}
                     <button id="move-up-{{ row.0 }}"
                         hx-post="{% url 'change_assignment_rule_priority' id=row.0 direction='up' %}"
@@ -151,7 +149,6 @@
                         class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
                         <img src="{% static 'images/up-arrow.svg' %}" alt="Move Up" />
                     </button>
-
                     <button id="move-down-{{ row.0 }}"
                         hx-post="{% url 'change_assignment_rule_priority' id=row.0 direction='down' %}"
                         hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
@@ -165,7 +162,7 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table>    
 
     <div class="mx-3 my-3">
         <div class="flex items-center justify-between pt-7">
@@ -192,7 +189,7 @@
                         to
                         <span class="font-medium">{{ paginator.end_index }}</span>
                         of
-                        <span class="font-medium">{{ paginator.count }}</span>
+                        <span class="font-medium">{{ total_instances_count }}</span>
                         entries
                     </p>
                 </div>
@@ -209,11 +206,11 @@
     
                     <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Page</span>
                     <a aria-current="page"
-                        class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
+                        class="relative z-0 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
                         {{ paginator.number }}
                     </a>
                     <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Of</span>
-                    <span class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">{{ num_pages }}</span>
+                    <span class="relative z-0 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">{{ num_pages }}</span>
                     {% if paginator.has_next %}
                     <a href="{% url model_name %}?page={{ paginator.next_page_number }}"
                         hx-get="{% url model_name %}?page={{ paginator.next_page_number }}"
@@ -223,6 +220,28 @@
                         <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" alt="Next" />
                     </a>
                     {% endif %}
+                </div>
+
+                <!-- Dropdown for rows per page -->
+                <div x-data="{ open: false, selected: localStorage.getItem('rowsPerPage') || 25 }" class="relative inline-block text-left">
+                    <div>
+                        <button @click="open = !open" class="inline-flex justify-between items-center w-full rounded-lg border border-[#E1E3EA80] bg-white px-5 py-3 text-sm font-semibold text-[#181C32]">
+                            <span x-text="selected"></span>
+                            <svg class="ml-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Dropdown options -->
+                    <div x-show="open" @click.away="open = false" class="absolute bottom-full mb-2 w-20 bg-white border border-[#E1E3EA80] rounded-lg shadow-lg z-10">
+                        <ul class="py-1">
+                            <li @click="selected = 25; open = false; localStorage.setItem('rowsPerPage', 25)" hx-get="{% url model_name %}?num_of_rows_per_page=25" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">25</li>
+                            <li @click="selected = 50; open = false; localStorage.setItem('rowsPerPage', 50)" hx-get="{% url model_name %}?num_of_rows_per_page=50" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">50</li>
+                            <li @click="selected = 75; open = false; localStorage.setItem('rowsPerPage', 75)" hx-get="{% url model_name %}?num_of_rows_per_page=75" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">75</li>
+                            <li @click="selected = 100; open = false; localStorage.setItem('rowsPerPage', 100)" hx-get="{% url model_name %}?num_of_rows_per_page=100" hx-target="#all-{{ model_name }}s-table" class="block px-4 py-2 text-sm text-[#181C32] hover:bg-gray-100 cursor-pointer">100</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
