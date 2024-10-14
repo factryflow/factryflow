@@ -455,7 +455,11 @@
 
                 // Cancel editing row
                 cancelEdit(index) {
-                    this.paginatedRows[index].isEditing = false;
+                    if (this.paginatedRows[index].id.value === '') {
+                        this.rows.splice((this.currentPage - 1) * this.rowsPerPage + index, 1);
+                    } else {
+                        this.paginatedRows[index].isEditing = false;
+                    }
                 },
 
                 // Update row data after saving or deleting
@@ -493,6 +497,13 @@
 
                 // Add new row to the table
                 addNewRow() {
+                    // Check if there is already a row in editing mode
+                    const editingRow = this.paginatedRows.find(row => row.isEditing);
+                    if (editingRow) {
+                        alert('Please save or cancel the current editing row before adding a new one.');
+                        return;
+                    }
+
                     this.paginatedRows.forEach(row => row.isEditing = false);
 
                     const newRow = {};
