@@ -504,14 +504,24 @@ class CRUDView:
             request.POST, instance=instance_obj if instance_obj else None
         )
 
-        # check if model_inline_formset is valid or not
-        model_inline_form = self.model_inline_formset(
-            request.POST, instance=instance_obj if instance_obj else None
+        model_inline_form = (
+            self.model_inline_formset(
+                request.POST, instance=instance_obj if instance_obj else None
+            )
+            if self.model_inline_formset
+            else None
         )
 
-        if len(form.errors) > 0 or len(model_inline_form.errors[0]) > 0:
-            errors_list = list(form.errors.items()) + list(
-                model_inline_form.errors[0].items()
+        # form validation
+        model_inline_form_errors_len = (
+            len(model_inline_form.errors[0]) if model_inline_form else 0
+        )
+
+        if len(form.errors) > 0 or model_inline_form_errors_len > 0:
+            errors_list = (
+                list(form.errors.items()) + list(model_inline_form.errors[0].items())
+                if self.model_inline_formset
+                else list(form.errors.items())
             )
 
             errors = {f: e.get_json_data() for f, e in errors_list}
