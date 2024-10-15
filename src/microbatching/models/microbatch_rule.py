@@ -1,7 +1,6 @@
 from common.models import BaseModel, BaseModelWithExtras, Operator
 from django.core.exceptions import ValidationError
 from django.db import models
-from job_manager.models import WorkCenter
 from job_manager.models.task import Task
 from simple_history.models import HistoricalRecords
 
@@ -12,8 +11,7 @@ class MicrobatchRule(BaseModelWithExtras):
     The tasks in a MicrobatchRule are then processed in a MicrobatchFlow.
     """
 
-    item_name = models.CharField(max_length=150)
-    work_center = models.ForeignKey(WorkCenter, on_delete=models.CASCADE)
+    name = models.CharField(max_length=150)
     batch_size = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
@@ -23,7 +21,7 @@ class MicrobatchRule(BaseModelWithExtras):
         db_table = "microbatch_rule"
 
     def __str__(self):
-        return f"{self.item_name} - {self.work_center}"
+        return self.name
 
 
 class MicrobatchRuleCriteria(BaseModel):

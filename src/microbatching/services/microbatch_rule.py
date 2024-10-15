@@ -5,7 +5,6 @@ from common.utils import get_object
 # validation error
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from job_manager.models import WorkCenter
 
 from microbatching.models.microbatch_rule import (
     MicrobatchRule,
@@ -126,8 +125,7 @@ class MicrobatchRuleService:
     @transaction.atomic
     def create(
         self,
-        item_name: str,
-        work_center: WorkCenter,
+        name: str,
         batch_size: int,
         criteria: list[dict] = [],
         custom_fields: dict = None,
@@ -141,9 +139,8 @@ class MicrobatchRuleService:
         )
 
         instance = MicrobatchRule.objects.create(
-            item_name=item_name,
+            name=name,
             batch_size=batch_size,
-            work_center=work_center,
             custom_fields=custom_fields,
         )
 
@@ -167,9 +164,8 @@ class MicrobatchRuleService:
             raise PermissionDenied()
 
         fields = [
-            "item_name",
+            "name",
             "batch_size",
-            "work_center",
             "custom_fields",
         ]
         instance, _ = model_update(

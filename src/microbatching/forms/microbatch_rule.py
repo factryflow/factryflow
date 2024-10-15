@@ -11,8 +11,7 @@ class MicrobatchRuleForm(forms.ModelForm):
     class Meta:
         model = MicrobatchRule
         fields = [
-            "item_name",
-            "work_center",
+            "name",
             "batch_size",
         ]
         exclude = [
@@ -23,17 +22,11 @@ class MicrobatchRuleForm(forms.ModelForm):
             "custom_fields",
         ]
         labels = {
-            "item_name": "Item Name",
-            "work_center": "Work Center",
+            "name": "Name",
             "batch_size": "Batch Size",
         }
         widgets = {
-            "item_name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "work_center": forms.Select(
+            "name": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
