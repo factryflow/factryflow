@@ -46,7 +46,7 @@ MICROBATCH_RULE_SEARCH_FIELDS = ["item_name", "work_center", "batch_size"]
 
 MICROBATCH_RULE_MODEL_RELATION_HEADERS = [
     "RULE CRITERIA",
-    "TASKS",
+    "MATCHING_TASKS",
     "HISTORY",
 ]
 
@@ -68,7 +68,7 @@ MICROBATCH_RULE_MODEL_RELATION_FIELDS = {
         "relationship_fields": "microbatch_rule",
         "show_edit_actions": True,
     },
-    "tasks": {
+    "matching_tasks": {
         "model": MicrobatchRuleTaskMatch,
         "model_name": "microbatch_rule_task_match",
         "related_name": "microbatch_rule",
