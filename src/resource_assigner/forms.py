@@ -1,3 +1,4 @@
+from common.utils.services import get_model_fields
 from django import forms
 
 from resource_assigner.models import (
@@ -6,7 +7,6 @@ from resource_assigner.models import (
     AssignmentConstraint,
     TaskResourceAssigment,
 )
-from resource_assigner.utils import get_model_fields
 
 # ------------------------------------------------------------------------------
 # TaskResource Assignment Forms

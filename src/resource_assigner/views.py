@@ -1,3 +1,4 @@
+from common.utils.services import get_model_fields
 from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
@@ -26,7 +27,7 @@ from .services import (
     AssignmentConstraintService,
     TaskResourceAssigmentService,
 )
-from .utils import get_matching_assignment_rules_with_tasks, get_model_fields
+from .utils import get_matching_assignment_rules_with_tasks
 
 # ------------------------------------------------------------------------------
 # Task Resource Assignement Views

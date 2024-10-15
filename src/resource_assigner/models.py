@@ -1,4 +1,4 @@
-from common.models import BaseModel, BaseModelWithExtras
+from common.models import BaseModel, BaseModelWithExtras, Operator
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
@@ -45,15 +45,6 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
 
     def __str__(self):
         return self.name
-
-
-class Operator(models.TextChoices):
-    EQUALS = "equals", "Equals"
-    CONTAINS = "contains", "Contains"
-    STARTS_WITH = "starts_with", "Starts With"
-    ENDS_WITH = "ends_with", "Ends With"
-    GREATER_THAN = "gt", "Greater Than"
-    LESS_THAN = "lt", "Less Than"
 
 
 class AssigmentRuleCriteria(BaseModel):

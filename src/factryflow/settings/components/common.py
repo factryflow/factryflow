@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "api",
     "rolepermissions",
     "scheduler",
+    "microbatching",
 ]
 
 MIDDLEWARE = [

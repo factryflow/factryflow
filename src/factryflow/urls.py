@@ -62,6 +62,7 @@ urlpatterns = [
     path("", include("issue.urls")),
     path("", include("scheduler.urls")),
     path("", include("common.urls")),
+    path("", include("microbatching.urls")),
     path("api/", api.urls),
     path("", TemplateView.as_view(template_name="index.html")),
 ]

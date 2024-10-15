@@ -324,6 +324,10 @@
         <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
             hx-post="{% url 'match_rules_with_tasks' %}" type="button">Match Rules</button>
         {% endif %}
+        {% if model_name == 'microbatch_rules' %}
+        <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
+            hx-post="{% url 'match_microbatch_rules_with_tasks' %}" type="button">Match Rules</button>
+        {% endif %}
 
         <a href="{% url model_name|add:'_form' %}"
             class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New {{ model_title | title }}</a>

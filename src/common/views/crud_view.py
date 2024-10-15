@@ -1,18 +1,17 @@
 from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
+from django.db.utils import IntegrityError
 from django.forms import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.db import transaction
-from django.db.utils import IntegrityError
 
+from common.models import CustomField
 from common.utils.views import (
     add_notification_headers,
 )
-
-from common.models import CustomField
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -260,7 +259,6 @@ class CRUDView:
 
         if field:
             relation_field_name = field.lower()
-
         # model inline formset for one-to-many relation
         if len(self.formset_options) > 0:
             self.model_formset = inlineformset_factory(
@@ -646,7 +644,7 @@ class CRUDView:
             # Delete the instance and check if deletion was successful
             with transaction.atomic():
                 deletion_successful = self.model_service(user=request.user).delete(obj)
-        except IntegrityError as e:
+        except IntegrityError:
             deletion_successful = False
 
         # Retrieve updated instance list
