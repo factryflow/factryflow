@@ -21,9 +21,7 @@ from microbatching.services.microbatch_rule import (
     MicrobatchRuleCriteriaService,
     MicrobatchRuleService,
 )
-from microbatching.utils import (
-    create_microbatch_rule_matches,
-)
+from microbatching.utils.microbatch_rule import create_microbatch_rule_matches
 
 # ------------------------------------------------------------------------------
 # Microbatch Views
@@ -31,18 +29,19 @@ from microbatching.utils import (
 
 MICROBATCH_RULE_MODEL_FIELDS = [
     "id",
-    "item_name",
-    "work_center",
+    "name",
     "batch_size",
 ]
 MICROBATCH_RULE_TABLE_HEADERS = [
     "ID",
-    "Item Name",
-    "Work Center",
+    "Name",
     "Batch Size",
 ]
 
-MICROBATCH_RULE_SEARCH_FIELDS = ["item_name", "work_center", "batch_size"]
+MICROBATCH_RULE_SEARCH_FIELDS = [
+    "name",
+    "batch_size",
+]
 
 MICROBATCH_RULE_MODEL_RELATION_HEADERS = [
     "RULE CRITERIA",

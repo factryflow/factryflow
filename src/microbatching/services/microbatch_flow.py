@@ -4,7 +4,6 @@ from common.services import model_update
 # validation error
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from job_manager.models import WorkCenter
 
 from microbatching.models.microbatch_flow import MicrobatchFlow
 from microbatching.models.microbatch_rule import MicrobatchRule
@@ -20,7 +19,6 @@ class MicrobatchFlowService:
         self,
         name: str,
         description: str,
-        work_center: WorkCenter,
         start_rule: MicrobatchRule,
         end_rule: MicrobatchRule,
         min_flow_length: int,
@@ -34,7 +32,6 @@ class MicrobatchFlowService:
         instance = MicrobatchFlow.objects.create(
             name=name,
             description=description,
-            work_center=work_center,
             start_rule=start_rule,
             end_rule=end_rule,
             min_flow_length=min_flow_length,
@@ -56,7 +53,6 @@ class MicrobatchFlowService:
         fields = [
             "name",
             "description",
-            "work_center",
             "start_rule",
             "end_rule",
             "min_flow_length",

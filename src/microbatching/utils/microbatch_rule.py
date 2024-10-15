@@ -16,9 +16,7 @@ def create_microbatch_rule_matches(tasks) -> list:
         for task in tasks:
             # check if task is already matched with other rules
             # get all microbatch rules
-            microbatch_rules = MicrobatchRule.objects.filter(
-                work_center=task.work_center, is_active=True
-            )
+            microbatch_rules = MicrobatchRule.objects.filter(is_active=True)
 
             if microbatch_rules:
                 for rule in microbatch_rules:

@@ -95,6 +95,14 @@ class Task(BaseModelWithExtras):
     def __str__(self):
         return self.name
 
+    def get_successors(self):
+        """Returns all nodes that have this node as a predecessor."""
+        return Task.objects.filter(predecessors=self)
+
+    @property
+    def has_successors(self):
+        return self.get_successors().exists()
+
     @property
     def resource_count(self):
         if hasattr(self, "taskresourceassigment"):
