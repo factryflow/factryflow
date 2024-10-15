@@ -1,10 +1,10 @@
+from common.utils.services import get_model_fields
 from django import forms
 
 from microbatching.models.microbatch_rule import (
     MicrobatchRule,
     MicrobatchRuleCriteria,
 )
-from microbatching.utils import get_model_fields
 
 
 class MicrobatchRuleForm(forms.ModelForm):

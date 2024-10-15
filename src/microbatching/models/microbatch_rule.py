@@ -1,18 +1,9 @@
-from common.models import BaseModel, BaseModelWithExtras
+from common.models import BaseModel, BaseModelWithExtras, Operator
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import WorkCenter
 from job_manager.models.task import Task
 from simple_history.models import HistoricalRecords
-
-
-class Operator(models.TextChoices):
-    EQUALS = "equals", "Equals"
-    CONTAINS = "contains", "Contains"
-    STARTS_WITH = "starts_with", "Starts With"
-    ENDS_WITH = "ends_with", "Ends With"
-    GREATER_THAN = "gt", "Greater Than"
-    LESS_THAN = "lt", "Less Than"
 
 
 class MicrobatchRule(BaseModelWithExtras):

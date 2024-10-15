@@ -8,7 +8,7 @@ from microbatching.models.microbatch_rule import MicrobatchRule
 
 class MicrobatchFlow(BaseModelWithExtras):
     name = models.CharField(max_length=150)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     work_center = models.ForeignKey(WorkCenter, on_delete=models.CASCADE)
     start_rule = models.ForeignKey(
         MicrobatchRule, on_delete=models.CASCADE, related_name="flow_start_rule"

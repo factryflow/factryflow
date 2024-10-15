@@ -1,3 +1,5 @@
+from common.models import Operator
+from common.utils.services import get_model_fields
 from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
@@ -14,7 +16,6 @@ from microbatching.models.microbatch_rule import (
     MicrobatchRule,
     MicrobatchRuleCriteria,
     MicrobatchRuleTaskMatch,
-    Operator,
 )
 from microbatching.services.microbatch_rule import (
     MicrobatchRuleCriteriaService,
@@ -22,7 +23,6 @@ from microbatching.services.microbatch_rule import (
 )
 from microbatching.utils import (
     create_microbatch_rule_matches,
-    get_model_fields,
 )
 
 # ------------------------------------------------------------------------------

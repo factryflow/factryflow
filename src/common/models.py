@@ -67,6 +67,15 @@ class FieldType(models.TextChoices):
         return {choice[0]: choice[1] for choice in cls.choices}
 
 
+class Operator(models.TextChoices):
+    EQUALS = "equals", "Equals"
+    CONTAINS = "contains", "Contains"
+    STARTS_WITH = "starts_with", "Starts With"
+    ENDS_WITH = "ends_with", "Ends With"
+    GREATER_THAN = "gt", "Greater Than"
+    LESS_THAN = "lt", "Less Than"
+
+
 class CustomField(BaseModel):
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, related_name="custom_fields"

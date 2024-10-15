@@ -42,22 +42,6 @@ MICROBATCH_FLOW_MODEL_RELATION_FIELDS = {
     },
 }
 
-# MICROBATCH_FLOW_STEP_FORMSET_FORM_FIELDS = [
-#     "name",
-#     "description",
-#     "batch_size",
-#     "predecessor_rule",
-#     "current_rule",
-# ]
-
-# MICROBATCH_FLOW_STEP_FORMSET_OPTIONS = [
-#     MicrobatchFlowStep,
-#     MicrobatchFlowStepForm,
-#     "steps",
-#     MICROBATCH_FLOW_STEP_FORMSET_FORM_FIELDS,
-#     "microbatch_flow_steps",
-# ]
-
 MICROBATCH_FLOW_TABLE_VIEW = CustomTableView(
     model=MicrobatchFlow,
     model_name="microbatch_flow",
