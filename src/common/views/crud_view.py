@@ -79,6 +79,8 @@ class CRUDView:
         self.model_formset = None
         self.model_inline_formset = None
         self.sub_model_relation = sub_model_relation
+        self.sort_by = "desc"
+        self.num_of_rows_per_page = 25
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -181,7 +183,10 @@ class CRUDView:
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
         page_number = request.GET.get("page", 1)
-        num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
+        self.num_of_rows_per_page = request.GET.get(
+            "num_of_rows_per_page", self.num_of_rows_per_page
+        )
+        self.sort_by = request.GET.get("sort_by", self.sort_by)
 
         # Generate table view based on filter and search parameters
         table_rows, paginator, num_pages, total_instances_count = (
@@ -189,7 +194,8 @@ class CRUDView:
                 status_filter=status_filter,
                 search_query=search_query,
                 page_number=page_number,
-                num_of_rows_per_page=num_of_rows_per_page,
+                sort_by=self.sort_by,
+                num_of_rows_per_page=self.num_of_rows_per_page,
             )
         )
 
@@ -213,7 +219,7 @@ class CRUDView:
             "button_text": self.button_text,
             "ordered_model": self.ordered_model,
             "num_pages": num_pages,
-            "num_of_rows_per_page": num_of_rows_per_page,
+            "num_of_rows_per_page": self.num_of_rows_per_page,
             "total_instances_count": total_instances_count,
         }
 
@@ -651,6 +657,7 @@ class CRUDView:
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
         page_number = request.GET.get("page", 1)
+        self.sort_by = request.GET.get("sort_by", self.sort_by)
 
         # Generate table view based on filter and search parameters
         table_rows, paginator, num_pages, total_instances_count = (
@@ -658,6 +665,7 @@ class CRUDView:
                 status_filter=status_filter,
                 search_query=search_query,
                 page_number=page_number,
+                sort_by=self.sort_by,
             )
         )
 

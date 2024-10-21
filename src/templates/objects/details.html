@@ -172,7 +172,7 @@
         {% if formset_form %}
         <hr>
         <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">Add {{ formset_title|title }}</h2>
-        <div class="flex flex-wrap overflow-x-auto h-auto max-h-80">
+        <div id="model-inline-formset" class="flex flex-wrap overflow-x-auto h-auto max-h-80">
             {{ formset_form.management_form }}
 
             <table class="w-full text-sm text-center">
@@ -206,7 +206,7 @@
                                     {% if forloop.first %} disabled {% endif %}
                                     >
                                     <a
-                                        href="{{ remove_formset_url }}" hx-get="{{ remove_formset_url }}" hx-swap="outerHTML" hx-target="body" {% if forloop.first %} style="pointer-events: none;" {% endif %}>
+                                        href="{{ remove_formset_url }}" hx-get="{{ remove_formset_url }}" hx-swap="outerHTML" hx-target="#model-inline-formset" {% if forloop.first %} style="pointer-events: none;" {% endif %}>
                                         Remove
                                     </a>
                                 </button>
@@ -218,7 +218,7 @@
 
             <div class="flex-auto flex items-center mt-3">
                 <a class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1"
-                    href="{{ add_formset_url }}" hx-get="{{ add_formset_url }}" hx-swap="outerHTML" hx-target="body">
+                    href="{{ add_formset_url }}" hx-get="{{ add_formset_url }}" hx-swap="outerHTML" hx-target="#model-inline-formset">
                     Add
                 </a>
             </div>
