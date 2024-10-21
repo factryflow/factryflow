@@ -79,10 +79,7 @@ class CustomTableView:
         Returns:
             QuerySet: A Django QuerySet containing all instances of the model, ordered by the specified field.
         """
-        if hasattr(self.model, self.order_by_field):
-            return self.model.objects.all().order_by(self.order_by_field)
-
-        return self.model.objects.all().order_by("-id")
+        return self.model.objects.all()
 
     def get_custom_field_json_data(self, instance=None):
         """
@@ -254,6 +251,7 @@ class CustomTableView:
         self,
         status_filter=None,
         search_query=None,
+        sort_by="desc",
     ):
         """
         Get filtered instances based on status and search query.
@@ -266,12 +264,12 @@ class CustomTableView:
             list: A list of filtered instances based on the provided status and search query.
         """
         all_instances = self.all_instances
-        if status_filter != "all":
-            all_instances = [
-                instance
-                for instance in all_instances
-                if instance.__dict__[self.status_filter_field] == status_filter
-            ]
+
+        if status_filter and status_filter != "all":
+            all_instances = all_instances.filter(
+                **{self.status_filter_field: status_filter}
+            )
+
         if search_query:
             all_instances = [
                 instance
@@ -281,6 +279,16 @@ class CustomTableView:
                     for field in self.search_fields_list
                 )
             ]
+            return all_instances
+
+        if sort_by == "desc":
+            all_instances = all_instances.order_by("-id")
+        else:
+            all_instances = all_instances.order_by("id")
+
+        if self.order_by_field:
+            all_instances = all_instances.order_by(self.order_by_field)
+
         return all_instances
 
     def get_paginated_instances(
@@ -289,6 +297,7 @@ class CustomTableView:
         status_filter=None,
         search_query=None,
         num_of_rows_per_page=25,
+        sort_by="desc",
     ):
         """
         Get paginated instances based on the page number and filtering.
@@ -305,7 +314,7 @@ class CustomTableView:
                 - num_pages (int): The total number of pages.
                 - total_instances_count (int): The total number of instances.
         """
-        instances = self.filtered_instances(status_filter, search_query)
+        instances = self.filtered_instances(status_filter, search_query, sort_by)
         paginator = Paginator(instances, num_of_rows_per_page)
         num_pages = paginator.num_pages
         total_instances_count = paginator.count
@@ -322,6 +331,7 @@ class CustomTableView:
         self,
         page_number,
         num_of_rows_per_page=25,
+        sort_by="desc",
         status_filter=None,
         search_query=None,
     ):
@@ -342,7 +352,7 @@ class CustomTableView:
                 - total_instances_count (int): The total number of instances.
         """
         paginated_data, num_pages, total_instances_count = self.get_paginated_instances(
-            page_number, status_filter, search_query, num_of_rows_per_page
+            page_number, status_filter, search_query, num_of_rows_per_page, sort_by
         )
 
         rows = []
