@@ -11,7 +11,6 @@ class MicrobatchFlowForm(forms.ModelForm):
         fields = [
             "name",
             "description",
-            "work_center",
             "start_rule",
             "end_rule",
             "min_flow_length",
@@ -25,9 +24,8 @@ class MicrobatchFlowForm(forms.ModelForm):
             "custom_fields",
         ]
         labels = {
-            "item_name": "Item Name",
+            "name": "Name",
             "description": "Description",
-            "work_center": "Work Center",
             "start_rule": "Start Rule",
             "end_rule": "End Rule",
             "min_flow_length": "Min Flow Length",
@@ -42,11 +40,6 @@ class MicrobatchFlowForm(forms.ModelForm):
             "description": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                }
-            ),
-            "work_center": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
             "start_rule": forms.Select(
