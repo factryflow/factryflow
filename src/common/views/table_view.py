@@ -1,13 +1,12 @@
-from datetime import datetime, date, time
+from datetime import date, datetime, time
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
+from common.models import CustomField
 from common.utils.views import (
     convert_timestamp,
 )
-
-from common.models import CustomField
 
 # ------------------------------------------------------------------------------
 # CustomTableView:
@@ -208,7 +207,13 @@ class CustomTableView:
                         value = {
                             "value": str(getattr(instance, field)),
                         }
-
+                        if field_type == "RelatedManager":
+                            # if field type is RelatedManager then type is many_to_many
+                            value["type"] = "many_to_many"
+                            if hasattr(instance, "name"):
+                                value["value"] = instance.name
+                            else:
+                                value["value"] = instance.id
                         if field_type == "str":
                             # if field type is str then type is text
                             value["type"] = "text"
