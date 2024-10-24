@@ -18,11 +18,6 @@ from .services import *
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS = ["id", "name", "notes"]
 WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id"]
-WEEKLY_SHIFT_TEMPLATE_TABLE_HEADERS = [
-    "ID",
-    "Weekly Shift Template Name",
-    "Notes",
-]
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS = [
     "TEMPLATE DETAILS",
@@ -65,7 +60,6 @@ WeeklyShiftTemplateTableView = CustomTableView(
     model=WeeklyShiftTemplate,
     model_name="weekly_shift_template",
     fields=WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS,
-    headers=WEEKLY_SHIFT_TEMPLATE_TABLE_HEADERS,
     search_fields_list=WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS,
     model_relation_headers=WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS,
     model_relation_fields=WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_FIELDS,
@@ -92,12 +86,6 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_FIELDS = [
     "end_time",
 ]
 WEEKLY_SHIFT_TEMPLATE_DETAIL_SEARCH_FIELDS = ["day_of_week", "id"]
-WEEKLY_SHIFT_TEMPLATE_DETAIL_TABLE_HEADERS = [
-    "ID",
-    "Day of Week",
-    "Start Time",
-    "End Time",
-]
 
 WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_HEADERS = ["HISTORY"]
 WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_FIELDS = {
@@ -113,7 +101,6 @@ WeeklyShiftTemplateDetailTableView = CustomTableView(
     model=WeeklyShiftTemplateDetail,
     model_name="weekly_shift_template_detail",
     fields=WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_FIELDS,
-    headers=WEEKLY_SHIFT_TEMPLATE_DETAIL_TABLE_HEADERS,
     model_relation_headers=WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_HEADERS,
     model_relation_fields=WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_FIELDS,
     search_fields_list=WEEKLY_SHIFT_TEMPLATE_DETAIL_SEARCH_FIELDS,
@@ -135,11 +122,6 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS = CRUDView(
 
 OPERATIONAL_EXCEPTION_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 OPERATIONAL_EXCEPTION_TYPE_SEARCH_FIELDS = ["name", "id"]
-OPERATIONAL_EXCEPTION_TYPE_TABLE_HEADERS = [
-    "ID",
-    "Operational Exception Type Name",
-    "Notes",
-]
 
 OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_FIELDS = {
@@ -156,7 +138,6 @@ OperationalExceptionTypeTableView = CustomTableView(
     model=OperationalExceptionType,
     model_name="operational_exception_type",
     fields=OPERATIONAL_EXCEPTION_TYPE_MODEL_FIELDS,
-    headers=OPERATIONAL_EXCEPTION_TYPE_TABLE_HEADERS,
     model_relation_headers=OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_HEADERS,
     model_relation_fields=OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_FIELDS,
     search_fields_list=OPERATIONAL_EXCEPTION_TYPE_SEARCH_FIELDS,
@@ -195,16 +176,6 @@ OPERATIONAL_EXCEPTION_SEARCH_FIELDS = [
     "notes",
 ]
 
-OPERATIONAL_EXCEPTION_TABLE_HEADERS = [
-    "ID",
-    "Resource",
-    "Operational Exception Type",
-    "Weekly Shift Template",
-    "Start Datetime",
-    "End Datetime",
-    "Notes",
-]
-
 OPERATIONAL_EXCEPTION_MODEL_RELATION_HEADERS = ["HISTORY"]
 OPERATIONAL_EXCEPTION_MODEL_RELATION_FIELDS = {
     "history": {
@@ -219,7 +190,6 @@ OperationalExceptionTableView = CustomTableView(
     model=OperationalException,
     model_name="operational_exception",
     fields=OPERATIONAL_EXCEPTION_MODEL_FIELDS,
-    headers=OPERATIONAL_EXCEPTION_TABLE_HEADERS,
     model_relation_headers=OPERATIONAL_EXCEPTION_MODEL_RELATION_HEADERS,
     model_relation_fields=OPERATIONAL_EXCEPTION_MODEL_RELATION_FIELDS,
     search_fields_list=OPERATIONAL_EXCEPTION_SEARCH_FIELDS,

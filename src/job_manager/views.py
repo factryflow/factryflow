@@ -48,7 +48,6 @@ from resource_assigner.models import AssignmentConstraint
 
 WORK_CENTER_MODEL_FIELDS = ["id", "name", "notes"]
 WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
-WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "Notes"]
 
 WORK_CENTER_MODEL_RELATION_HEADERS = ["HISTORY"]
 WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
@@ -65,7 +64,6 @@ WorkCenterTableView = CustomTableView(
     model=WorkCenter,
     model_name="work_center",
     fields=WORK_CENTER_MODEL_FIELDS,
-    headers=WORK_CENTER_TABLE_HEADERS,
     model_relation_headers=WORK_CENTER_MODEL_RELATION_HEADERS,
     model_relation_fields=WORK_CENTER_FIELD_MODEL_RELATION_FIELDS,
     search_fields_list=WORK_CENTER_SEARCH_FIELDS,
@@ -86,7 +84,6 @@ WORK_CENTER_VIEWS = CRUDView(
 
 JOB_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-JOB_TYPE_TABLE_HEADERS = ["ID", "Job Type Name", "Notes"]
 JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
@@ -104,7 +101,6 @@ JOB_TYPE_TABLE_VIEW = CustomTableView(
     model=JobType,
     model_name="job_type",
     fields=JOB_TYPE_MODEL_FIELDS,
-    headers=JOB_TYPE_TABLE_HEADERS,
     model_relation_headers=JOB_TYPE_MODEL_RELATION_HEADERS,
     model_relation_fields=JOB_TYPE_MODEL_RELATION_FIELDS,
     search_fields_list=JOB_TYPE_SEARCH_FIELDS,
@@ -144,17 +140,6 @@ JOB_MODEL_FIELDS = [
 
 JOB_STATUS_FILTER_FIELD = "job_status"
 JOB_SEARCH_FIELDS = ["name", "description", "customer", "id"]
-JOB_TABLE_HEADERS = [
-    "Job ID",
-    "Job Name",
-    "Description",
-    "Customer",
-    "Due Date",
-    "Planned Start",
-    "Planned End",
-    "Priority",
-    "Status",
-]
 
 JOB_MODEL_RELATION_HEADERS = ["TASKS", "DEPENDENCIES", "HISTORY"]
 
@@ -242,7 +227,6 @@ JobTableView = CustomTableView(
     model_name="job",
     fields=JOB_MODEL_FIELDS,
     status_choices_class=JobStatusChoices,
-    headers=JOB_TABLE_HEADERS,
     model_relation_headers=JOB_MODEL_RELATION_HEADERS,
     model_relation_fields=JOB_MODEL_RELATION_FIELDS,
     status_filter_field=JOB_STATUS_FILTER_FIELD,
@@ -267,7 +251,6 @@ JOB_VIEWS = CRUDView(
 
 
 TASK_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
-TASK_TYPE_TABLE_HEADERS = ["ID", "Task Type Name", "Notes"]
 
 TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
@@ -287,7 +270,6 @@ TASK_TYPE_TABLE_VIEW = CustomTableView(
     model=TaskType,
     model_name="task_type",
     fields=TASK_TYPE_MODEL_FIELDS,
-    headers=TASK_TYPE_TABLE_HEADERS,
     model_relation_fields=TASK_TYPE_MODEL_RELATION_FIELDS,
     model_relation_headers=TASK_TYPE_MODEL_RELATION_HEADERS,
     search_fields_list=TASK_TYPE_SEARCH_FIELDS,
@@ -329,20 +311,6 @@ TASK_TAILWIND_CLASSES = {
 
 TASK_STATUS_FILTER_FIELD = "task_status"
 TASK_SEARCH_FIELDS = ["name", "item", "id"]
-TASK_TABLE_HEADERS = [
-    "Task ID",
-    "Name",
-    "Job Name",
-    "Item",
-    "Quantity",
-    "Run Time",
-    "Setup Time",
-    "Planned Start",
-    "Planned End",
-    "Task Type",
-    # TODO: Add assigned resources
-    "Status",
-]
 
 TASK_MODEL_RELATION_HEADERS = [
     "DEPENDENCIES",
@@ -487,7 +455,6 @@ TaskTableView = CustomTableView(
     status_choices_class=TaskStatusChoices,
     model_relation_headers=TASK_MODEL_RELATION_HEADERS,
     model_relation_fields=TASK_MODEL_RELATION_FIELDS,
-    headers=TASK_TABLE_HEADERS,
     status_filter_field=TASK_STATUS_FILTER_FIELD,
     search_fields_list=TASK_SEARCH_FIELDS,
     tailwind_classes=TASK_TAILWIND_CLASSES,
@@ -509,7 +476,6 @@ TASK_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 
 DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
-DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "Dependency Type Name", "notes"]
 
 DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
 
@@ -528,7 +494,6 @@ DEPENDENCY_TYPE_TABLE_VIEW = CustomTableView(
     model=DependencyType,
     model_name="dependency_type",
     fields=DEPENDENCY_TYPE_MODEL_FIELDS,
-    headers=DEPENDENCY_TYPE_TABLE_HEADERS,
     model_relation_headers=DEPENDENCY_TYPE_MODEL_RELATION_HEADERS,
     model_relation_fields=DEPENDENCY_TYPE_MODEL_RELATION_FIELDS,
     search_fields_list=DEPENDENCY_TYPE_SEARCH_FIELDS,
@@ -565,14 +530,6 @@ DEPENDENCY_TAILWIND_CLASSES = {
 
 DEPENDENCY_STATUS_FILTER_FIELD = "dependency_status"
 DEPENDENCY_SEARCH_FIELDS = ["name", "id"]
-DEPENDENCY_TABLE_HEADERS = [
-    "Dependency ID",
-    "Dependency Name",
-    "Expected Close",
-    "Actual Close",
-    "Type",
-    "Status",
-]
 
 DEPENDENCY_MODEL_RELATION_HEADERS = ["TASKS", "JOBS", "HISTORY"]
 
@@ -669,7 +626,6 @@ DependencyTableView = CustomTableView(
     status_choices_class=DependencyStatusChoices,
     model_relation_fields=DEPENDENCY_MODEL_RELATION_FIELDS,
     model_relation_headers=DEPENDENCY_MODEL_RELATION_HEADERS,
-    headers=DEPENDENCY_TABLE_HEADERS,
     status_filter_field=DEPENDENCY_STATUS_FILTER_FIELD,
     search_fields_list=DEPENDENCY_SEARCH_FIELDS,
     tailwind_classes=DEPENDENCY_TAILWIND_CLASSES,
@@ -689,7 +645,6 @@ DEPENDENCY_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 
 ITEM_MODEL_FIELDS = ["id", "name", "description", "notes"]
-ITEM_TABLE_HEADERS = ["ID", "Item Name", "Description", "Notes"]
 
 ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
 
@@ -708,7 +663,6 @@ ITEM_TABLE_VIEW = CustomTableView(
     model=Item,
     model_name="item",
     fields=ITEM_MODEL_FIELDS,
-    headers=ITEM_TABLE_HEADERS,
     model_relation_headers=ITEM_MODEL_RELATION_HEADERS,
     model_relation_fields=ITEM_MODEL_RELATION_FIELDS,
     search_fields_list=ITEM_SEARCH_FIELDS,

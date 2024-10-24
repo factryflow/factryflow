@@ -35,12 +35,6 @@ MICROBATCH_RULE_MODEL_FIELDS = [
     "work_center",
     "batch_size",
 ]
-MICROBATCH_RULE_TABLE_HEADERS = [
-    "ID",
-    "Item Name",
-    "Work Center",
-    "Batch Size",
-]
 
 MICROBATCH_RULE_SEARCH_FIELDS = ["item_name", "work_center", "batch_size"]
 
@@ -99,7 +93,6 @@ MICROBATCH_RULE_TABLE_VIEW = CustomTableView(
     model=MicrobatchRule,
     model_name="microbatch_rule",
     fields=MICROBATCH_RULE_MODEL_FIELDS,
-    headers=MICROBATCH_RULE_TABLE_HEADERS,
     model_relation_headers=MICROBATCH_RULE_MODEL_RELATION_HEADERS,
     model_relation_fields=MICROBATCH_RULE_MODEL_RELATION_FIELDS,
     search_fields_list=MICROBATCH_RULE_SEARCH_FIELDS,
@@ -125,13 +118,6 @@ MICROBATCH_RULE_CRITERIA_MODEL_FIELDS = [
     "operator",
     "value",
 ]
-MICROBATCH_RULE_CRITERIA_TABLE_HEADERS = [
-    "ID",
-    "Microbatch Rule",
-    "Field",
-    "Operator",
-    "Value",
-]
 
 MICROBATCH_RULE_CRITERIA_SEARCH_FIELDS = [
     "microbatch_rule",
@@ -145,7 +131,6 @@ MICROBATCH_RULE_CRITERIA_TABLE_VIEW = CustomTableView(
     model=MicrobatchRuleCriteria,
     model_name="microbatch_rule_criteria",
     fields=MICROBATCH_RULE_CRITERIA_MODEL_FIELDS,
-    headers=MICROBATCH_RULE_CRITERIA_TABLE_HEADERS,
     search_fields_list=MICROBATCH_RULE_CRITERIA_SEARCH_FIELDS,
 )
 

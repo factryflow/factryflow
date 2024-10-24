@@ -38,18 +38,12 @@ TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS = [
     "task",
 ]
 
-TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS = [
-    "ID",
-    "Task",
-]
-
 TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
 
 TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW = CustomTableView(
     model=TaskResourceAssigment,
     model_name="task_resource_assigment",
     fields=TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS,
-    headers=TASK_RESOURCE_ASSIGNMENT_TABLE_HEADERS,
     search_fields_list=TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS,
 )
 
@@ -73,15 +67,6 @@ ASSIGMENT_RULE_MODEL_FIELDS = [
     "description",
     "work_center",
     "is_active",
-]
-ASSIGMENT_RULE_TABLE_HEADERS = [
-    "ID",
-    "Priority",
-    "Name",
-    "Notes",
-    "Description",
-    "Work Center",
-    "Is Active",
 ]
 
 ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
@@ -159,7 +144,6 @@ ASSIGMENT_RULE_TABLE_VIEW = CustomTableView(
     model=AssigmentRule,
     model_name="assigment_rule",
     fields=ASSIGMENT_RULE_MODEL_FIELDS,
-    headers=ASSIGMENT_RULE_TABLE_HEADERS,
     model_relation_headers=ASSIGMENT_RULE_MODEL_RELATION_HEADERS,
     model_relation_fields=ASSIGMENT_RULE_MODEL_RELATION_FIELDS,
     search_fields_list=ASSIGMENT_RULE_SEARCH_FIELDS,
@@ -189,13 +173,6 @@ ASSIGMENT_RULE_CRITERIA_MODEL_FIELDS = [
     "operator",
     "value",
 ]
-ASSIGMENT_RULE_CRITERIA_TABLE_HEADERS = [
-    "ID",
-    "Assigment Rule",
-    "Field",
-    "Operator",
-    "Value",
-]
 
 ASSIGMENT_RULE_CRITERIA_SEARCH_FIELDS = ["assigment_rule", "field", "operator", "value"]
 
@@ -205,7 +182,6 @@ ASSIGMENT_RULE_CRITERIA_TABLE_VIEW = CustomTableView(
     model=AssigmentRuleCriteria,
     model_name="assigment_rule_criteria",
     fields=ASSIGMENT_RULE_CRITERIA_MODEL_FIELDS,
-    headers=ASSIGMENT_RULE_CRITERIA_TABLE_HEADERS,
     search_fields_list=ASSIGMENT_RULE_CRITERIA_SEARCH_FIELDS,
     status_filter_field=ASSIGNMENT_STATUS_FILTER_FIELD,
 )
@@ -232,16 +208,6 @@ ASSIGNMENT_CONSTRAINT_MODEL_FIELDS = [
     "resources",
     "resource_count",
     "use_all_resources",
-]
-
-ASSIGNMENT_CONSTRAINT_TABLE_HEADERS = [
-    "ID",
-    "Task",
-    "Assignment Rule",
-    "Resource Group",
-    "Resources",
-    "Resource Count",
-    "Use All Resources",
 ]
 
 ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS = [
@@ -280,7 +246,6 @@ ASSIGNMENT_CONSTRAINT_TABLE_VIEW = CustomTableView(
     model=AssignmentConstraint,
     model_name="assignment_constraint",
     fields=ASSIGNMENT_CONSTRAINT_MODEL_FIELDS,
-    headers=ASSIGNMENT_CONSTRAINT_TABLE_HEADERS,
     search_fields_list=ASSIGNMENT_CONSTRAINT_SEARCH_FIELDS,
     model_relation_headers=ASSIGNMENT_CONSTRAINT_MODEL_RELATION_HEADERS,
     model_relation_fields=ASSIGNMENT_CONSTRAINT_MODEL_RELATION_FIELDS,

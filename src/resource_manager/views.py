@@ -23,12 +23,6 @@ RESOURCE_MODEL_FIELDS = [
 
 RESOURCE_STATUS_FILTER_FIELD = "resource_type"
 RESOURCE_SEARCH_FIELDS = ["name", "id"]
-RESOURCE_TABLE_HEADERS = [
-    "ID",
-    "Resource Name",
-    "Resource Type",
-    "Weekly Shift Template",
-]
 
 RESOURCE_MODEL_RELATION_HEADERS = ["HISTORY"]
 RESOURCE_MODEL_RELATION_FIELDS = {
@@ -46,7 +40,6 @@ ResourceTableView = CustomTableView(
     model_name="resource",
     fields=RESOURCE_MODEL_FIELDS,
     status_choices_class=ResourceTypeChoices,
-    headers=RESOURCE_TABLE_HEADERS,
     model_relation_headers=RESOURCE_MODEL_RELATION_HEADERS,
     model_relation_fields=RESOURCE_MODEL_RELATION_FIELDS,
     status_filter_field=RESOURCE_STATUS_FILTER_FIELD,
@@ -69,13 +62,6 @@ RESOURCE_VIEWS = CRUDView(
 
 RESOURCE_Group_MODEL_FIELDS = ["id", "name", "parent", "notes"]
 RESOURCE_Group_SEARCH_FIELDS = ["name", "id"]
-RESOURCE_Group_TABLE_HEADERS = [
-    "ID",
-    "Resource Group Name",
-    "Parent",
-    "Notes",
-]
-
 
 RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "History"]
 RESOURCE_Group_MODEL_RELATION_FIELDS = {
@@ -101,7 +87,6 @@ ResourceGroupTableView = CustomTableView(
     fields=RESOURCE_Group_MODEL_FIELDS,
     model_relation_headers=RESOURCE_Group_MODEL_RELATION_HEADERS,
     model_relation_fields=RESOURCE_Group_MODEL_RELATION_FIELDS,
-    headers=RESOURCE_Group_TABLE_HEADERS,
     search_fields_list=RESOURCE_Group_SEARCH_FIELDS,
 )
 
