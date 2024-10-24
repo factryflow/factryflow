@@ -1,6 +1,9 @@
 from django.urls import path
 
-from microbatching.views.microbatch_flow import MICROBATCH_FLOW_VIEWS
+from microbatching.views.microbatch_flow import (
+    MICROBATCH_FLOW_VIEWS,
+    match_flows_with_tasks,
+)
 from microbatching.views.microbatch_rule import (
     MICROBATCH_RULE_CRITERIA_VIEWS,
     MICROBATCH_RULE_VIEWS,
@@ -126,5 +129,10 @@ urlpatterns = [
         "microbatch-rules/match-rules-with-tasks/",
         match_rules_with_tasks,
         name="match_microbatch_rules_with_tasks",
+    ),
+    path(
+        "microbatch-flows/generate-task-flows/",
+        match_flows_with_tasks,
+        name="generate_task_flows",
     ),
 ]
