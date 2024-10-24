@@ -1,5 +1,6 @@
 {% extends 'base/main.html' %}
 {% load permission_tags %}
+{% load common_filters %}
 {% block title %} {{ model_title }} {% endblock title %}
 {% load static %}
 {% load partials %}
@@ -281,7 +282,7 @@
                         </th> -->
                         <template x-for="header in headers" :key="header">
                             <th scope="col" class="px-6 py-4 font-sans font-semibold text-sm leading-3">
-                                <span x-text="header"></span>
+                                <span x-text="header.replace('_', ' ')"></span>
                             </th>
                         </template>
                         {% if show_edit_actions and not view_mode %}
@@ -489,19 +490,19 @@
     <!-- Tabs -->
     <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
         <div class="md:flex flex-wrap text-sm md:text-base">
-            {% for i in relations_headers %}
-            <button hx-get="/{{ field_url }}/view/{{ id }}/field={{ i|lower }}" hx-target="#{{ i }}" hx-trigger="click"
+            {% for header in relations_headers %}
+            <button hx-get="/{{ field_url }}/view/{{ id }}/field={{ header|lower }}" hx-target="#{{ header }}" hx-trigger="click"
                 x-on:click="activeTab = 'tab{{ forloop.counter }}'"
                 :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab{{ forloop.counter }}' }"
                 class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">
-                {{ i }}
+                {{ header|table_header }}
             </button>
             {% endfor %}
         </div>
         <!-- Tab Content -->
         <div class="bg-white pt-6 rounded-b-xl flex h-screen">
-            {% for i in relations_headers %}
-            <div id={{ i }} x-show="activeTab === 'tab{{ forloop.counter }}'" class="w-full">
+            {% for header in relations_headers %}
+            <div id={{ header }} x-show="activeTab === 'tab{{ forloop.counter }}'" class="w-full">
                 {% partial model-relation-editable-table %}
             </div>
             {% endfor %}

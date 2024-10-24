@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_%(class)s_objects', to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'db_table': 'microbatch_flows',
+                "db_table": "microbatch_flows",
             },
         ),
         migrations.CreateModel(

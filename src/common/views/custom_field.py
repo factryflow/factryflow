@@ -18,15 +18,6 @@ CUSTOM_FIELD_MODEL_FIELDS = [
     "is_required",
     "description",
 ]
-CUSTOM_FIELD_TABLE_HEADERS = [
-    "ID",
-    "Field Name",
-    "Label",
-    "Content Type",
-    "Field Type",
-    "Is Required",
-    "Description",
-]
 
 CUSTOM_FIELD_SEARCH_FIELDS = ["name", "field_type", "label", "description"]
 
@@ -64,7 +55,6 @@ CustomFieldTableView = CustomTableView(
     model=CustomField,
     model_name="custom_field",
     fields=CUSTOM_FIELD_MODEL_FIELDS,
-    headers=CUSTOM_FIELD_TABLE_HEADERS,
     model_relation_headers=CUSTOM_FIELD_MODEL_RELATION_HEADERS,
     model_relation_fields=CUSTOM_FIELD_MODEL_RELATION_FIELDS,
     status_filter_field=CUSTOM_FIELD_STATUS_FILTER_FIELD,

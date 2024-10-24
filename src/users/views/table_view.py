@@ -16,7 +16,6 @@ class UserTableView:
     def __init__(
         self,
         fields,
-        headers,
         search_fields_list,
         page_size=5,
         status_choices_class=None,
@@ -43,7 +42,7 @@ class UserTableView:
         )
         self.tailwind_classes = tailwind_classes
         self.fields = fields
-        self.table_headers = headers
+        self.table_headers = fields
         self.page_size = page_size
         self.status_classes = status_classes
 
@@ -156,10 +155,8 @@ class UserTableView:
 USER_MODEL_FIELDS = ["id", "email", "first_name", "last_name", "is_active"]
 
 USER_SEARCH_FIELDS = ["email", "first_name", "last_name", "is_active"]
-USER_TABLE_HEADERS = ["ID", "E-mail", "First Name", "Last Name", "Active"]
 
 USER_TABLE_VIEW = UserTableView(
     fields=USER_MODEL_FIELDS,
-    headers=USER_TABLE_HEADERS,
     search_fields_list=USER_SEARCH_FIELDS,
 )
