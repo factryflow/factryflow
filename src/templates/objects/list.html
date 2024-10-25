@@ -1,5 +1,6 @@
 {% extends "base/main.html" %}
 {% load permission_tags %}
+{% load common_filters %}
 {% block title %}
 {{ model_title }}
 {% endblock title %}
@@ -44,12 +45,26 @@
         <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
             <tr class="text-[#181C32]">
                 {% for header in headers %}
-                <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">{{ header }}</th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        <button 
+                            hx-get="{% url model_name %}?sort_by={{ header|lower }}&sort_direction={% if sort_by == header and sort_direction == 'desc' %}asc{% else %}desc{% endif %}" 
+                            hx-push-url="{% url model_name %}?{{ header|lower }}={% if sort_by == header and sort_direction == 'desc' %}asc{% else %}desc{% endif %}" 
+                            hx-target="#all-{{ model_name }}s-table"
+                            x-data="{ sort_by: '{{ sort_by }}', sort_direction: '{{ sort_direction }}' }"
+                        >
+                            {{ header|table_header }}
+                            <img 
+                                :src="sort_by === '{{ header|lower }}' && sort_direction === 'desc' ? '{% static 'images/down-arrow.svg' %}' : '{% static 'images/up-arrow.svg' %}'" 
+                                alt="Sort Icon" 
+                                class="inline-block ml-1 h-4 w-4"
+                            >
+                        </button>
+                    </th>
                 {% endfor %}
                 {% if show_actions %}
-                <th scope="col" class="whitespace-nowrap py-3.5 px-2">Actions</th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2">Actions</th>
                 {% if ordered_model %}
-                <th scope="col" class="whitespace-nowrap py-3.5 px-2">Change Priority</th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2">Change Priority</th>
                 {% endif %}
                 {% endif %}
             </tr>
@@ -269,52 +284,16 @@
                 class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
         </div>
     </div>
-    <div class="flex flex-nowrap gap-x-5">
-        <!-- <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
+    <!-- <div class="flex flex-nowrap gap-x-5">
+        <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
             <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
             <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
         </div>
         <div class="flex bg-[#00B4D8] py-3.5 px-4 md:px-6 rounded-md">
             <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
             <span class="text-base font-semibold text-white">Filter</span>
-        </div> -->
-        <div class="col-start-1 row-start-1 py-4">
-            <div class="mx-auto flex max-w-7xl justify-end px-7">
-                <div class="relative inline-block" x-data="{ open: false, selected: 'Most Recent' }">
-                    <div class="flex">
-                        <button type="button" @click="open = !open" class="inline-flex justify-center text-base font-semibold text-gray-600 hover:text-gray-900" id="menu-button" aria-expanded="false" aria-haspopup="true">
-                            <span x-text="selected"></span>
-                            <svg class="-mr-1 ml-1 h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1" x-show="open" @click.outside="open = false" x-transition>
-                        <div class="py-1" role="none">
-                            <a @click="selected = 'Oldest first'; open = false;"
-                                hx-get="{% url model_name %}?sort_by=asc"
-                                hx-target="#all-{{ model_name }}s-table"
-                                class="block px-4 py-2 text-base text-gray-500"
-                                role="menuitem" 
-                                tabindex="-1" 
-                                id="menu-item-1">
-                                    Oldest first
-                            </a>
-                            <a @click="selected = 'Most Recent'; open = false;"
-                                hx-get="{% url model_name %}?sort_by=desc"
-                                hx-target="#all-{{ model_name }}s-table"
-                                class="block px-4 py-2 text-base text-gray-500"
-                                role="menuitem" 
-                                tabindex="-1" 
-                                id="menu-item-2">
-                                    Most Recent
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    </div>
+    </div> -->
 </div>
 {% endpartialdef %}
 {% block content %}

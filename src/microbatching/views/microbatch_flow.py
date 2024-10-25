@@ -27,11 +27,6 @@ MICROBATCH_FLOW_MODEL_FIELDS = [
     "name",
     "description",
 ]
-MICROBATCH_FLOW_TABLE_HEADERS = [
-    "ID",
-    "Name",
-    "Description",
-]
 
 MICROBATCH_FLOW_SEARCH_FIELDS = ["name"]
 
@@ -59,7 +54,6 @@ MICROBATCH_FLOW_TABLE_VIEW = CustomTableView(
     model=MicrobatchFlow,
     model_name="microbatch_flow",
     fields=MICROBATCH_FLOW_MODEL_FIELDS,
-    headers=MICROBATCH_FLOW_TABLE_HEADERS,
     model_relation_headers=MICROBATCH_FLOW_MODEL_RELATION_HEADERS,
     model_relation_fields=MICROBATCH_FLOW_MODEL_RELATION_FIELDS,
     search_fields_list=MICROBATCH_FLOW_SEARCH_FIELDS,

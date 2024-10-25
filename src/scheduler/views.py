@@ -40,14 +40,6 @@ SCHEDULER_MODEL_FIELDS = [
 
 SCHEDULER_STATUS_FILTER_FIELD = "status"
 SCHEDULER_SEARCH_FIELDS = ["id", "details", "status"]
-SCHEDULER_TABLE_HEADERS = [
-    "Run ID",
-    "Start Time",
-    "End Time",
-    "Run Duration",
-    "Details",
-    "Status",
-]
 
 SCHEDULER_MODEL_RELATION_HEADERS = [
     "RESOURCE_ALLOCATIONS",
@@ -105,7 +97,6 @@ SchedulerRunsView = CustomTableView(
     model_name="scheduler_runs",
     fields=SCHEDULER_MODEL_FIELDS,
     status_choices_class=SchedulerStatusChoices,
-    headers=SCHEDULER_TABLE_HEADERS,
     tailwind_classes=SCHEDULER_TAILWIND_CLASSES,
     search_fields_list=SCHEDULER_SEARCH_FIELDS,
     model_relation_headers=SCHEDULER_MODEL_RELATION_HEADERS,
@@ -137,12 +128,6 @@ RESOURCE_INTERVALS_MODEL_FIELDS = [
 ]
 
 RESOURCE_INTERVALS_SEARCH_FIELDS = ["resource", "task"]
-RESOURCE_INTERVALS_TABLE_HEADERS = [
-    "Resource",
-    "Task",
-    "Interval Start",
-    "Interval End",
-]
 
 RESOURCE_INTERVALS_MODELS_RELATION_HEADERS = ["HISTORY"]
 
@@ -178,7 +163,6 @@ ResourceIntervalsView = CustomTableView(
     model=ResourceIntervals,
     model_name="resource_intervals",
     fields=RESOURCE_INTERVALS_MODEL_FIELDS,
-    headers=RESOURCE_INTERVALS_TABLE_HEADERS,
     model_relation_headers=RESOURCE_INTERVALS_MODELS_RELATION_HEADERS,
     model_relation_fields=RESOURCE_INTERVALS_MODELS_RELATION_FIELDS,
     search_fields_list=RESOURCE_INTERVALS_SEARCH_FIELDS,

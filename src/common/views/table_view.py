@@ -26,7 +26,6 @@ class CustomTableView:
         model,
         model_name,
         fields,
-        headers,
         search_fields_list,
         model_relation_headers=[],
         model_relation_fields={},
@@ -66,7 +65,7 @@ class CustomTableView:
             else []
         )
         self.model_relation_fields = model_relation_fields
-        self.table_headers = headers
+        self.table_headers = fields
         self.status_classes = status_classes
         self.order_by_field = order_by_field
 
@@ -254,6 +253,8 @@ class CustomTableView:
 
     def filtered_instances(
         self,
+        sort_direction,
+        sort_field,
         status_filter=None,
         search_query=None,
         sort_by="desc",
@@ -286,10 +287,9 @@ class CustomTableView:
             ]
             return all_instances
 
-        if sort_by == "desc":
-            all_instances = all_instances.order_by("-id")
-        else:
-            all_instances = all_instances.order_by("id")
+        if sort_field:
+            sort_prefix = "" if sort_direction == "asc" else "-"
+            all_instances = all_instances.order_by(f"{sort_prefix}{sort_field}")
 
         if self.order_by_field:
             all_instances = all_instances.order_by(self.order_by_field)
@@ -299,6 +299,8 @@ class CustomTableView:
     def get_paginated_instances(
         self,
         page_number,
+        sort_direction,
+        sort_field,
         status_filter=None,
         search_query=None,
         num_of_rows_per_page=25,
@@ -319,7 +321,9 @@ class CustomTableView:
                 - num_pages (int): The total number of pages.
                 - total_instances_count (int): The total number of instances.
         """
-        instances = self.filtered_instances(status_filter, search_query, sort_by)
+        instances = self.filtered_instances(
+            sort_direction, sort_field, status_filter, search_query
+        )
         paginator = Paginator(instances, num_of_rows_per_page)
         num_pages = paginator.num_pages
         total_instances_count = paginator.count
@@ -335,6 +339,8 @@ class CustomTableView:
     def table_rows(
         self,
         page_number,
+        sort_direction,
+        sort_field,
         num_of_rows_per_page=25,
         sort_by="desc",
         status_filter=None,
@@ -357,7 +363,12 @@ class CustomTableView:
                 - total_instances_count (int): The total number of instances.
         """
         paginated_data, num_pages, total_instances_count = self.get_paginated_instances(
-            page_number, status_filter, search_query, num_of_rows_per_page, sort_by
+            page_number,
+            sort_direction,
+            sort_field,
+            status_filter,
+            search_query,
+            num_of_rows_per_page,
         )
 
         rows = []
