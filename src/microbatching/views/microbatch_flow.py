@@ -1,6 +1,10 @@
 from common.utils.views import add_notification_headers
+from common.utils.ordered_models import change_obj_priority
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
+
+from django.shortcuts import render
+from django.urls import reverse
 
 # Create your views here.
 from job_manager.models.job import JobStatusChoices
@@ -24,6 +28,7 @@ from microbatching.utils.microbatch_flow import create_task_flows
 
 MICROBATCH_FLOW_MODEL_FIELDS = [
     "id",
+    "order",
     "name",
     "description",
 ]
@@ -57,6 +62,7 @@ MICROBATCH_FLOW_TABLE_VIEW = CustomTableView(
     model_relation_headers=MICROBATCH_FLOW_MODEL_RELATION_HEADERS,
     model_relation_fields=MICROBATCH_FLOW_MODEL_RELATION_FIELDS,
     search_fields_list=MICROBATCH_FLOW_SEARCH_FIELDS,
+    order_by_field="order",
 )
 
 MICROBATCH_FLOW_VIEWS = CRUDView(
@@ -65,6 +71,7 @@ MICROBATCH_FLOW_VIEWS = CRUDView(
     model_service=MicrobatchFlowService,
     model_form=MicrobatchFlowForm,
     model_table_view=MICROBATCH_FLOW_TABLE_VIEW,
+    ordered_model=True,
 )
 
 
@@ -101,4 +108,53 @@ def match_flows_with_tasks(request):
             str(e),
             "error",
         )
+        return response
+
+
+
+def change_microbatch_flow_priority(request, id: int, direction: str):
+    """
+    Move the rule up or down in the order.
+
+    Parameters:
+    -----------
+        id: int - The id of the rule.
+        direction: str - The direction to move the rule. It can be either "up" or "down".
+
+    Returns:
+    --------
+        dict: A dictionary containing the message of the operation.
+    """
+
+    response = HttpResponse(status=302)
+    response["Location"] = reverse("microbatch_flows")
+
+    if direction not in ["up", "down"]:
+        response = HttpResponse(status=400)
+        message = "Invalid direction. Use 'up' or 'down'."
+        add_notification_headers(response, message, "error")
+        return response
+
+    try:
+        change_obj_priority(model_class=MicrobatchFlow, id=id, direction=direction)
+
+        if request.htmx:
+            response = render(
+                request,
+                "objects/list.html#all-microbatch_flows-table",
+                {"rows": MicrobatchFlow.objects.all().order_by("order")},
+            )
+            return response
+
+        return response
+
+    except MicrobatchFlow.DoesNotExist:
+        response = HttpResponse(status=404)
+        message = "Microbatch flow not found."
+        add_notification_headers(response, message, "error")
+        return response
+
+    except Exception as e:
+        message = f"An error occurred: {str(e)}"
+        add_notification_headers(response, message, "error")
         return response

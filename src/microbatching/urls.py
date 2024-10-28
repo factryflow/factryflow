@@ -3,6 +3,7 @@ from django.urls import path
 from microbatching.views.microbatch_flow import (
     MICROBATCH_FLOW_VIEWS,
     match_flows_with_tasks,
+    change_microbatch_flow_priority,
 )
 from microbatching.views.microbatch_rule import (
     MICROBATCH_RULE_CRITERIA_VIEWS,
@@ -134,5 +135,11 @@ urlpatterns = [
         "microbatch-flows/generate-task-flows/",
         match_flows_with_tasks,
         name="generate_task_flows",
+    ),
+    # change assignment rule priority
+    path(
+        "change-microbatch-flow-priority/<int:id>/direction=<str:direction>",
+        change_microbatch_flow_priority,
+        name="change_microbatch_flow_priority",
     ),
 ]
