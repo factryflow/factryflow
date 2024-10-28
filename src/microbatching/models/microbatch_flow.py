@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 from microbatching.models.microbatch_rule import MicrobatchRule
 
 
-class MicrobatchFlow(BaseModelWithExtras):
+class MicrobatchFlow(BaseModelWithExtras, OrderedModel):
     """Main model for determining the flow of tasks in a microbatch."""
 
     name = models.CharField(max_length=150)
@@ -23,7 +23,7 @@ class MicrobatchFlow(BaseModelWithExtras):
 
     history = HistoricalRecords(table_name="microbatch_flow_history")
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         db_table = "microbatch_flows"
 
     def __str__(self):

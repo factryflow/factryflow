@@ -1,3 +1,4 @@
+from common.utils.ordered_models import change_obj_priority
 from common.utils.services import get_model_fields
 from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
@@ -317,7 +318,6 @@ def change_assignment_rule_priority(request, id: int, direction: str):
     --------
         dict: A dictionary containing the message of the operation.
     """
-    max_order_count = AssigmentRule.objects.count() - 1
 
     response = HttpResponse(status=302)
     response["Location"] = reverse("assigment_rules")
@@ -329,13 +329,7 @@ def change_assignment_rule_priority(request, id: int, direction: str):
         return response
 
     try:
-        rule = AssigmentRule.objects.get(id=id)
-
-        if direction == "up" and rule.order > 0:
-            rule.up()
-
-        elif direction == "down" and rule.order < max_order_count:
-            rule.down()
+        change_obj_priority(model_class=AssigmentRule, id=id, direction=direction)
 
         if request.htmx:
             response = render(
