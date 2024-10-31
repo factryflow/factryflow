@@ -445,7 +445,6 @@ ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
     AssignmentConstraintForm,
     "constraints",
     ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS,
-    "task",
     "assignment_constraint",
 ]
 

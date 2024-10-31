@@ -508,13 +508,6 @@ class CRUDView:
         # Get the instance object if updating, otherwise None
         instance_obj = get_object_or_404(self.model, id=id) if id else None
 
-        # model inline object instance
-        model_inline_object_query = (
-            self.inline_formset[0].objects.filter(**{self.inline_formset[4]: id})
-            if self.inline_formset
-            else None
-        )
-
         # Initiate the form with POST data and optionally the instance object
         form = self.model_form(
             request.POST, instance=instance_obj if instance_obj else None
@@ -594,13 +587,6 @@ class CRUDView:
                 and model_inline_form.cleaned_data != [{}]
             ):
                 obj_data[self.inline_formset[2]] = model_inline_form.cleaned_data
-
-            # delete model inline object instance if all fields related to them are empty
-            if (
-                model_inline_object_query.exists()
-                and model_inline_form.cleaned_data != [{}]
-            ):
-                model_inline_object_query.delete()
 
             # if custom_fields_data != {}:
             obj_data["custom_fields"] = custom_fields_data
