@@ -39,7 +39,7 @@ TASK_RESOURCE_ASSIGNMENT_MODEL_FIELDS = [
     "task",
 ]
 
-TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["task", "assigment_rule"]
+TASK_RESOURCE_ASSIGNMENT_SEARCH_FIELDS = ["id", "task", "assigment_rule"]
 
 TASK_RESOURCE_ASSIGNMENT_TABLE_VIEW = CustomTableView(
     model=TaskResourceAssigment,
@@ -70,7 +70,7 @@ ASSIGMENT_RULE_MODEL_FIELDS = [
     "is_active",
 ]
 
-ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "external_id"]
+ASSIGMENT_RULE_SEARCH_FIELDS = ["name", "description", "id", "notes", "work_center"]
 
 ASSIGMENT_RULE_MODEL_RELATION_HEADERS = [
     "RULE CRITERIA",

@@ -22,7 +22,7 @@ RESOURCE_MODEL_FIELDS = [
 ]
 
 RESOURCE_STATUS_FILTER_FIELD = "resource_type"
-RESOURCE_SEARCH_FIELDS = ["name", "id"]
+RESOURCE_SEARCH_FIELDS = ["name", "id", "notes", "weekly_shift_template"]
 
 RESOURCE_MODEL_RELATION_HEADERS = ["HISTORY"]
 RESOURCE_MODEL_RELATION_FIELDS = {
@@ -35,7 +35,7 @@ RESOURCE_MODEL_RELATION_FIELDS = {
     }
 }
 
-ResourceTableView = CustomTableView(
+RESOURCE_TABLE_VIEWS = CustomTableView(
     model=Resource,
     model_name="resource",
     fields=RESOURCE_MODEL_FIELDS,
@@ -52,7 +52,7 @@ RESOURCE_VIEWS = CRUDView(
     model_name="resources",
     model_service=ResourceService,
     model_form=ResourceForm,
-    model_table_view=ResourceTableView,
+    model_table_view=RESOURCE_TABLE_VIEWS,
 )
 
 
@@ -60,11 +60,11 @@ RESOURCE_VIEWS = CRUDView(
 # ResourcePool VIEWS
 # ------------------------------------------------------------------------------
 
-RESOURCE_Group_MODEL_FIELDS = ["id", "name", "parent", "notes"]
-RESOURCE_Group_SEARCH_FIELDS = ["name", "id"]
+RESOURCE_GROUP_MODEL_FIELDS = ["id", "name", "parent", "notes"]
+RESOURCE_GROUP_SEARCH_FIELDS = ["name", "id", "notes"]
 
-RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "History"]
-RESOURCE_Group_MODEL_RELATION_FIELDS = {
+RESOURCE_GROUP_MODEL_RELATION_HEADERS = ["Resources", "History"]
+RESOURCE_GROUP_MODEL_RELATION_FIELDS = {
     "resources": {
         "model_name": "resources",
         "related_name": "resources",
@@ -81,13 +81,13 @@ RESOURCE_Group_MODEL_RELATION_FIELDS = {
     },
 }
 
-ResourceGroupTableView = CustomTableView(
+RESOURCE_GROUP_TABLE_VIEWS = CustomTableView(
     model=ResourceGroup,
     model_name="resource_group",
-    fields=RESOURCE_Group_MODEL_FIELDS,
-    model_relation_headers=RESOURCE_Group_MODEL_RELATION_HEADERS,
-    model_relation_fields=RESOURCE_Group_MODEL_RELATION_FIELDS,
-    search_fields_list=RESOURCE_Group_SEARCH_FIELDS,
+    fields=RESOURCE_GROUP_MODEL_FIELDS,
+    model_relation_headers=RESOURCE_GROUP_MODEL_RELATION_HEADERS,
+    model_relation_fields=RESOURCE_GROUP_MODEL_RELATION_FIELDS,
+    search_fields_list=RESOURCE_GROUP_SEARCH_FIELDS,
 )
 
 RESOURCE_GROUP_VIEWS = CRUDView(
@@ -95,5 +95,5 @@ RESOURCE_GROUP_VIEWS = CRUDView(
     model_name="resource_groups",
     model_service=ResourceGroupService,
     model_form=ResourceGroupForm,
-    model_table_view=ResourceGroupTableView,
+    model_table_view=RESOURCE_GROUP_TABLE_VIEWS,
 )

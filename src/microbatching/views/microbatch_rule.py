@@ -34,7 +34,9 @@ MICROBATCH_RULE_MODEL_FIELDS = [
 ]
 
 MICROBATCH_RULE_SEARCH_FIELDS = [
+    "id",
     "name",
+    "notes",
     "batch_size",
 ]
 
@@ -120,6 +122,7 @@ MICROBATCH_RULE_CRITERIA_MODEL_FIELDS = [
 ]
 
 MICROBATCH_RULE_CRITERIA_SEARCH_FIELDS = [
+    "id",
     "microbatch_rule",
     "field",
     "operator",

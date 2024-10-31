@@ -47,7 +47,7 @@ from resource_assigner.models import AssignmentConstraint
 # ------------------------------------------------------------------------------
 
 WORK_CENTER_MODEL_FIELDS = ["id", "name", "notes"]
-WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
+WORK_CENTER_SEARCH_FIELDS = ["name", "id", "notes"]
 
 WORK_CENTER_MODEL_RELATION_HEADERS = ["HISTORY"]
 WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
@@ -60,7 +60,7 @@ WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
     },
 }
 
-WorkCenterTableView = CustomTableView(
+WORK_CENTER_TABLE_VIEW = CustomTableView(
     model=WorkCenter,
     model_name="work_center",
     fields=WORK_CENTER_MODEL_FIELDS,
@@ -74,7 +74,7 @@ WORK_CENTER_VIEWS = CRUDView(
     model_name="work_centers",
     model_service=WorkCenterService,
     model_form=WorkCenterForm,
-    model_table_view=WorkCenterTableView,
+    model_table_view=WORK_CENTER_TABLE_VIEW,
 )
 
 
@@ -84,7 +84,7 @@ WORK_CENTER_VIEWS = CRUDView(
 
 JOB_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 JOB_TYPE_MODEL_RELATION_FIELDS = {
@@ -222,7 +222,7 @@ JOB_MODEL_RELATION_FIELDS = {
 }
 
 
-JobTableView = CustomTableView(
+JOB_TABLE_VIEW = CustomTableView(
     model=Job,
     model_name="job",
     fields=JOB_MODEL_FIELDS,
@@ -241,7 +241,7 @@ JOB_VIEWS = CRUDView(
     model_name="jobs",
     model_service=JobService,
     model_form=JobForm,
-    model_table_view=JobTableView,
+    model_table_view=JOB_TABLE_VIEW,
 )
 
 
@@ -252,7 +252,7 @@ JOB_VIEWS = CRUDView(
 
 TASK_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 TASK_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 TASK_TYPE_MODEL_RELATION_FIELDS = {
@@ -299,7 +299,6 @@ TASK_MODEL_FIELDS = [
     "planned_start_datetime",
     "planned_end_datetime",
     "task_type",
-    # TODO: Add assigned resources
     "task_status",
 ]
 
@@ -310,7 +309,7 @@ TASK_TAILWIND_CLASSES = {
 }
 
 TASK_STATUS_FILTER_FIELD = "task_status"
-TASK_SEARCH_FIELDS = ["name", "item", "id"]
+TASK_SEARCH_FIELDS = ["id", "name", "item", "job", "task_type", "work_center", "notes"]
 
 TASK_MODEL_RELATION_HEADERS = [
     "DEPENDENCIES",
@@ -448,7 +447,7 @@ ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
     "assignment_constraint",
 ]
 
-TaskTableView = CustomTableView(
+TASK_TABLE_VIEW = CustomTableView(
     model=Task,
     model_name="task",
     fields=TASK_MODEL_FIELDS,
@@ -467,7 +466,7 @@ TASK_VIEWS = CRUDView(
     model_service=TaskService,
     model_form=TaskForm,
     inline_formset=ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS,
-    model_table_view=TaskTableView,
+    model_table_view=TASK_TABLE_VIEW,
 )
 
 
@@ -477,7 +476,7 @@ TASK_VIEWS = CRUDView(
 
 DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 DEPENDENCY_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
@@ -529,7 +528,7 @@ DEPENDENCY_TAILWIND_CLASSES = {
 }
 
 DEPENDENCY_STATUS_FILTER_FIELD = "dependency_status"
-DEPENDENCY_SEARCH_FIELDS = ["name", "id"]
+DEPENDENCY_SEARCH_FIELDS = ["name", "id", "dependency_type", "notes"]
 
 DEPENDENCY_MODEL_RELATION_HEADERS = ["TASKS", "JOBS", "HISTORY"]
 
@@ -619,7 +618,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
     },
 }
 
-DependencyTableView = CustomTableView(
+DEPENDENCY_TABLE_VIEW = CustomTableView(
     model=Dependency,
     model_name="dependencies",
     fields=DEPENDENCY_MODEL_FIELDS,
@@ -637,7 +636,7 @@ DEPENDENCY_VIEWS = CRUDView(
     model_name="dependencies",
     model_service=DependencyService,
     model_form=DependencyForm,
-    model_table_view=DependencyTableView,
+    model_table_view=DEPENDENCY_TABLE_VIEW,
 )
 
 # ------------------------------------------------------------------------------
@@ -646,7 +645,7 @@ DEPENDENCY_VIEWS = CRUDView(
 
 ITEM_MODEL_FIELDS = ["id", "name", "description", "notes"]
 
-ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
+ITEM_SEARCH_FIELDS = ["name", "description", "notes", "id"]
 
 ITEM_MODEL_RELATION_HEADERS = ["HISTORY"]
 ITEM_MODEL_RELATION_FIELDS = {

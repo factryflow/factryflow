@@ -92,7 +92,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
 }
 
 
-SchedulerRunsView = CustomTableView(
+SCHEDULER_RUNS_TABLE_VIEW = CustomTableView(
     model=SchedulerRuns,
     model_name="scheduler_runs",
     fields=SCHEDULER_MODEL_FIELDS,
@@ -104,12 +104,12 @@ SchedulerRunsView = CustomTableView(
     status_classes=SCHEDULER_STATUS,
 )
 
-SchedulerRuns_VIEWS = CRUDView(
+SCHEDULER_RUNS_VIEW = CRUDView(
     model=SchedulerRuns,
     model_name="scheduler_runs",
     model_form=SchedulerRunsForm,
     model_service=SchedulerRunsService,
-    model_table_view=SchedulerRunsView,
+    model_table_view=SCHEDULER_RUNS_TABLE_VIEW,
     view_only=True,
     button_text="Run Scheduler",
     user_rule_permission=False,
@@ -159,7 +159,7 @@ RESOURCE_INTERVALS_MODELS_RELATION_FIELDS = {
     },
 }
 
-ResourceIntervalsView = CustomTableView(
+RESOURCE_INTERVAL_TABLE_VIEW = CustomTableView(
     model=ResourceIntervals,
     model_name="resource_intervals",
     fields=RESOURCE_INTERVALS_MODEL_FIELDS,
@@ -169,11 +169,11 @@ ResourceIntervalsView = CustomTableView(
 )
 
 
-ResourceIntervals_VIEWS = CRUDView(
+RESOURCE_INTERVAL_VIEW = CRUDView(
     model=ResourceIntervals,
     model_name="resource_intervals",
     model_form=ResourceIntervalsForm,
     model_service=ResourceIntervalsService,
-    model_table_view=ResourceIntervalsView,
+    model_table_view=RESOURCE_INTERVAL_TABLE_VIEW,
     user_rule_permission=False,
 )
