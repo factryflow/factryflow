@@ -33,7 +33,7 @@ MICROBATCH_FLOW_MODEL_FIELDS = [
     "description",
 ]
 
-MICROBATCH_FLOW_SEARCH_FIELDS = ["name"]
+MICROBATCH_FLOW_SEARCH_FIELDS = ["id", "name", "description", "notes"]
 
 MICROBATCH_FLOW_MODEL_RELATION_HEADERS = ["TASK_FLOWS", "HISTORY"]
 
@@ -109,7 +109,6 @@ def match_flows_with_tasks(request):
             "error",
         )
         return response
-
 
 
 def change_microbatch_flow_priority(request, id: int, direction: str):

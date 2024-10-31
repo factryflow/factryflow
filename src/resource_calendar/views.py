@@ -17,7 +17,7 @@ from .services import *
 # ------------------------------------------------------------------------------
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS = ["id", "name", "notes"]
-WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id"]
+WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id", "notes"]
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS = [
     "TEMPLATE DETAILS",
@@ -56,7 +56,7 @@ SHIFT_TEMPLATE_DETAILS_FORMSET_OPTIONS = [
 ]
 
 
-WeeklyShiftTemplateTableView = CustomTableView(
+WEEKLY_SHIFT_TEMPLATE_TABLE_VIEWS = CustomTableView(
     model=WeeklyShiftTemplate,
     model_name="weekly_shift_template",
     fields=WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS,
@@ -70,7 +70,7 @@ WEEKLY_SHIFT_TEMPLATE_VIEWS = CRUDView(
     model_name="weekly_shift_templates",
     model_service=WeeklyShiftTemplateService,
     model_form=WeeklyShiftTemplateForm,
-    model_table_view=WeeklyShiftTemplateTableView,
+    model_table_view=WEEKLY_SHIFT_TEMPLATE_TABLE_VIEWS,
     formset_options=SHIFT_TEMPLATE_DETAILS_FORMSET_OPTIONS,
 )
 
@@ -85,7 +85,12 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_FIELDS = [
     "start_time",
     "end_time",
 ]
-WEEKLY_SHIFT_TEMPLATE_DETAIL_SEARCH_FIELDS = ["day_of_week", "id"]
+WEEKLY_SHIFT_TEMPLATE_DETAIL_SEARCH_FIELDS = [
+    "day_of_week",
+    "id",
+    "notes",
+    "weekly_shift_template",
+]
 
 WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_HEADERS = ["HISTORY"]
 WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_FIELDS = {
@@ -97,7 +102,7 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_FIELDS = {
     },
 }
 
-WeeklyShiftTemplateDetailTableView = CustomTableView(
+WEEKLY_SHIFT_TEMPLATE_DETAIL_TABLE_VIEWS = CustomTableView(
     model=WeeklyShiftTemplateDetail,
     model_name="weekly_shift_template_detail",
     fields=WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_FIELDS,
@@ -111,7 +116,7 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS = CRUDView(
     model_name="weekly_shift_template_details",
     model_service=WeeklyShiftTemplateDetailService,
     model_form=WeeklyShiftTemplateDetailForm,
-    model_table_view=WeeklyShiftTemplateDetailTableView,
+    model_table_view=WEEKLY_SHIFT_TEMPLATE_DETAIL_TABLE_VIEWS,
     sub_model_relation=True,
 )
 
@@ -134,7 +139,7 @@ OPERATIONAL_EXCEPTION_TYPE_MODEL_RELATION_FIELDS = {
     },
 }
 
-OperationalExceptionTypeTableView = CustomTableView(
+OPERATIONAL_EXCEPTION_TYPE_TABLE_VIEWS = CustomTableView(
     model=OperationalExceptionType,
     model_name="operational_exception_type",
     fields=OPERATIONAL_EXCEPTION_TYPE_MODEL_FIELDS,
@@ -148,7 +153,7 @@ OPERATIONAL_EXCEPTION_TYPE_VIEWS = CRUDView(
     model_name="operational_exception_types",
     model_service=OperationalExceptionTypeService,
     model_form=OperationalExceptionTypeForm,
-    model_table_view=OperationalExceptionTypeTableView,
+    model_table_view=OPERATIONAL_EXCEPTION_TYPE_TABLE_VIEWS,
 )
 
 
@@ -168,8 +173,6 @@ OPERATIONAL_EXCEPTION_MODEL_FIELDS = [
 
 OPERATIONAL_EXCEPTION_SEARCH_FIELDS = [
     "id",
-    "start_datetime",
-    "end_datetime",
     "operational_exception_type",
     "weekly_shift_template",
     "resource",
@@ -186,7 +189,7 @@ OPERATIONAL_EXCEPTION_MODEL_RELATION_FIELDS = {
     },
 }
 
-OperationalExceptionTableView = CustomTableView(
+OPERATIONAL_EXCEPTION_TABLE_VIEWS = CustomTableView(
     model=OperationalException,
     model_name="operational_exception",
     fields=OPERATIONAL_EXCEPTION_MODEL_FIELDS,
@@ -200,5 +203,5 @@ OPERATIONAL_EXCEPTION_VIEWS = CRUDView(
     model_name="operational_exceptions",
     model_service=OperationalExceptionService,
     model_form=OperationalExceptionForm,
-    model_table_view=OperationalExceptionTableView,
+    model_table_view=OPERATIONAL_EXCEPTION_TABLE_VIEWS,
 )

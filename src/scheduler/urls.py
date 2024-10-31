@@ -2,32 +2,32 @@ from django.urls import path
 
 from .api.scheduler_logs import SchedulerLogsAPIView
 from .api.scheduler_run import start_scheduler_run
-from .views import ResourceIntervals_VIEWS, SchedulerRuns_VIEWS
+from .views import RESOURCE_INTERVAL_VIEW, SCHEDULER_RUNS_VIEW
 
 urlpatterns = [
     # scheduler runs urls
     path(
-        "scheduler-runs/", SchedulerRuns_VIEWS.get_all_instances, name="scheduler_runs"
+        "scheduler-runs/", SCHEDULER_RUNS_VIEW.get_all_instances, name="scheduler_runs"
     ),
     path(
         "scheduler-runs/view/<int:id>/",
-        SchedulerRuns_VIEWS.show_model_form,
+        SCHEDULER_RUNS_VIEW.show_model_form,
         name="view_scheduler_runs",
     ),
     path(
         "scheduler-runs/view/<int:id>/field=<str:field>",
-        SchedulerRuns_VIEWS.show_model_form,
+        SCHEDULER_RUNS_VIEW.show_model_form,
         name="scheduler_runs_relationships",
     ),
     # resource intervals urls
     path(
         "resource-intervals/",
-        ResourceIntervals_VIEWS.get_all_instances,
+        RESOURCE_INTERVAL_VIEW.get_all_instances,
         name="resource_intervals",
     ),
     path(
         "resource-intervals/view/<int:id>/",
-        ResourceIntervals_VIEWS.show_model_form,
+        RESOURCE_INTERVAL_VIEW.show_model_form,
         name="view_resource_intervals",
     ),
     # Scheduler Run route

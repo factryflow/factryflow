@@ -1,5 +1,6 @@
 """Utility functions for OrderedModel objects."""
 
+
 def change_obj_priority(model_class, id: int, direction: str):
     try:
         max_order_count = model_class.objects.count() - 1
