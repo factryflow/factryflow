@@ -111,7 +111,6 @@ def match_flows_with_tasks(request):
         return response
 
 
-
 def change_microbatch_flow_priority(request, id: int, direction: str):
     """
     Move the rule up or down in the order.

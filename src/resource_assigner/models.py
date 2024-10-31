@@ -104,6 +104,16 @@ class AssignmentConstraint(BaseModel):
     class Meta:
         db_table = "assignment_constraint"
 
+    def __str__(self):
+        if self.task:
+            return f"AssignmentConstraint for Task: {self.task.name}"
+        elif self.assignment_rule:
+            return (
+                f"AssignmentConstraint for Assignment Rule: {self.assignment_rule.name}"
+            )
+        else:
+            return "AssignmentConstraint with no associated Task or Assignment Rule"
+
     @property
     def is_template(self):
         return self.task is None

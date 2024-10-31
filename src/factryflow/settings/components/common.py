@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "storages",
     "ordered_model",
     "taggit",
+    "widget_tweaks",
     # apps
     "users",
     "common",
