@@ -35,7 +35,7 @@ RESOURCE_MODEL_RELATION_FIELDS = {
     }
 }
 
-ResourceTableView = CustomTableView(
+RESOURCE_TABLE_VIEWS = CustomTableView(
     model=Resource,
     model_name="resource",
     fields=RESOURCE_MODEL_FIELDS,
@@ -52,7 +52,7 @@ RESOURCE_VIEWS = CRUDView(
     model_name="resources",
     model_service=ResourceService,
     model_form=ResourceForm,
-    model_table_view=ResourceTableView,
+    model_table_view=RESOURCE_TABLE_VIEWS,
 )
 
 
@@ -81,7 +81,7 @@ RESOURCE_Group_MODEL_RELATION_FIELDS = {
     },
 }
 
-ResourceGroupTableView = CustomTableView(
+RESOURCE_GROUP_TABLE_VIEWS = CustomTableView(
     model=ResourceGroup,
     model_name="resource_group",
     fields=RESOURCE_Group_MODEL_FIELDS,
@@ -95,5 +95,5 @@ RESOURCE_GROUP_VIEWS = CRUDView(
     model_name="resource_groups",
     model_service=ResourceGroupService,
     model_form=ResourceGroupForm,
-    model_table_view=ResourceGroupTableView,
+    model_table_view=RESOURCE_GROUP_TABLE_VIEWS,
 )

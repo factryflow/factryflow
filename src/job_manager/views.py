@@ -60,7 +60,7 @@ WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
     },
 }
 
-WorkCenterTableView = CustomTableView(
+WORK_CENTER_TABLE_VIEW = CustomTableView(
     model=WorkCenter,
     model_name="work_center",
     fields=WORK_CENTER_MODEL_FIELDS,
@@ -74,7 +74,7 @@ WORK_CENTER_VIEWS = CRUDView(
     model_name="work_centers",
     model_service=WorkCenterService,
     model_form=WorkCenterForm,
-    model_table_view=WorkCenterTableView,
+    model_table_view=WORK_CENTER_TABLE_VIEW,
 )
 
 
@@ -222,7 +222,7 @@ JOB_MODEL_RELATION_FIELDS = {
 }
 
 
-JobTableView = CustomTableView(
+JOB_TABLE_VIEW = CustomTableView(
     model=Job,
     model_name="job",
     fields=JOB_MODEL_FIELDS,
@@ -241,7 +241,7 @@ JOB_VIEWS = CRUDView(
     model_name="jobs",
     model_service=JobService,
     model_form=JobForm,
-    model_table_view=JobTableView,
+    model_table_view=JOB_TABLE_VIEW,
 )
 
 
@@ -447,7 +447,7 @@ ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
     "assignment_constraint",
 ]
 
-TaskTableView = CustomTableView(
+TASK_TABLE_VIEW = CustomTableView(
     model=Task,
     model_name="task",
     fields=TASK_MODEL_FIELDS,
@@ -466,7 +466,7 @@ TASK_VIEWS = CRUDView(
     model_service=TaskService,
     model_form=TaskForm,
     inline_formset=ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS,
-    model_table_view=TaskTableView,
+    model_table_view=TASK_TABLE_VIEW,
 )
 
 
@@ -618,7 +618,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
     },
 }
 
-DependencyTableView = CustomTableView(
+DEPENDENCY_TABLE_VIEW = CustomTableView(
     model=Dependency,
     model_name="dependencies",
     fields=DEPENDENCY_MODEL_FIELDS,
@@ -636,7 +636,7 @@ DEPENDENCY_VIEWS = CRUDView(
     model_name="dependencies",
     model_service=DependencyService,
     model_form=DependencyForm,
-    model_table_view=DependencyTableView,
+    model_table_view=DEPENDENCY_TABLE_VIEW,
 )
 
 # ------------------------------------------------------------------------------
