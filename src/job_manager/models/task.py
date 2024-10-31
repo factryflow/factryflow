@@ -82,6 +82,13 @@ class Task(BaseModelWithExtras):
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sub_tasks",
+    )
     dependencies = models.ManyToManyField(
         "Dependency", blank=True, related_name="tasks"
     )

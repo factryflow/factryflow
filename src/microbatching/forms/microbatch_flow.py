@@ -15,6 +15,7 @@ class MicrobatchFlowForm(forms.ModelForm):
             "end_rule",
             "min_flow_length",
             "max_flow_length",
+            "batch_size",
         ]
         exclude = [
             "created_by",
@@ -30,6 +31,7 @@ class MicrobatchFlowForm(forms.ModelForm):
             "end_rule": "End Rule",
             "min_flow_length": "Min Flow Length",
             "max_flow_length": "Max Flow Length",
+            "batch_size": "Batch Size",
         }
         widgets = {
             "name": forms.TextInput(
@@ -58,6 +60,11 @@ class MicrobatchFlowForm(forms.ModelForm):
                 }
             ),
             "max_flow_length": forms.NumberInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "batch_size": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }

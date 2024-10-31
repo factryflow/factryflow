@@ -30,14 +30,11 @@ from microbatching.utils.microbatch_rule import create_microbatch_rule_matches
 MICROBATCH_RULE_MODEL_FIELDS = [
     "id",
     "name",
-    "batch_size",
 ]
 
 MICROBATCH_RULE_SEARCH_FIELDS = [
     "id",
     "name",
-    "notes",
-    "batch_size",
 ]
 
 MICROBATCH_RULE_MODEL_RELATION_HEADERS = [

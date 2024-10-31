@@ -1,8 +1,7 @@
-from common.utils.views import add_notification_headers
 from common.utils.ordered_models import change_obj_priority
+from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
-
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -20,6 +19,7 @@ from microbatching.models.microbatch_flow import (
 from microbatching.services.microbatch_flow import (
     MicrobatchFlowService,
 )
+from microbatching.services.microbatch_scheduler import MicrobatchSchedulerService
 from microbatching.utils.microbatch_flow import create_task_flows
 
 # ------------------------------------------------------------------------------
@@ -42,8 +42,8 @@ MICROBATCH_FLOW_MODEL_RELATION_FIELDS = {
         "model": MicrobatchTaskFlow,
         "model_name": "microbatch_task_flow_set",
         "related_name": "microbatch_flow",
-        "headers": ["ID", "TASK_FLOWS"],
-        "fields": ["id", "task_flows"],
+        "headers": ["ID", "Flow Tasks"],
+        "fields": ["id", "name"],
         "show_edit_actions": False,
     },
     "history": {
@@ -156,4 +156,30 @@ def change_microbatch_flow_priority(request, id: int, direction: str):
     except Exception as e:
         message = f"An error occurred: {str(e)}"
         add_notification_headers(response, message, "error")
+        return response
+
+
+def run_microbatch_scheduling(request):
+    """
+    Run the microbatch scheduling.
+    """
+    try:
+        service = MicrobatchSchedulerService(user=request.user)
+        result = service.run()
+
+        response = HttpResponse(status=204)
+        add_notification_headers(
+            response,
+            result["message"],
+            result["status"],
+        )
+
+        return response
+    except Exception as e:
+        response = HttpResponse(status=500)
+        add_notification_headers(
+            response,
+            str(e),
+            "error",
+        )
         return response

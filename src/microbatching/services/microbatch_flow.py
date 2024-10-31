@@ -23,6 +23,7 @@ class MicrobatchFlowService:
         end_rule: MicrobatchRule,
         min_flow_length: int,
         max_flow_length: int,
+        batch_size: int,
         custom_fields: dict = None,
     ) -> MicrobatchFlow:
         # check permissions for create microbatch flow
@@ -36,6 +37,7 @@ class MicrobatchFlowService:
             end_rule=end_rule,
             min_flow_length=min_flow_length,
             max_flow_length=max_flow_length,
+            batch_size=batch_size,
             custom_fields=custom_fields,
         )
 
@@ -57,6 +59,7 @@ class MicrobatchFlowService:
             "end_rule",
             "min_flow_length",
             "max_flow_length",
+            "batch_size",
             "custom_fields",
         ]
         instance, _ = model_update(
