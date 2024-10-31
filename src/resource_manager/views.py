@@ -60,11 +60,11 @@ RESOURCE_VIEWS = CRUDView(
 # ResourcePool VIEWS
 # ------------------------------------------------------------------------------
 
-RESOURCE_Group_MODEL_FIELDS = ["id", "name", "parent", "notes"]
-RESOURCE_Group_SEARCH_FIELDS = ["name", "id", "notes"]
+RESOURCE_GROUP_MODEL_FIELDS = ["id", "name", "parent", "notes"]
+RESOURCE_GROUP_SEARCH_FIELDS = ["name", "id", "notes"]
 
-RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "History"]
-RESOURCE_Group_MODEL_RELATION_FIELDS = {
+RESOURCE_GROUP_MODEL_RELATION_HEADERS = ["Resources", "History"]
+RESOURCE_GROUP_MODEL_RELATION_FIELDS = {
     "resources": {
         "model_name": "resources",
         "related_name": "resources",
@@ -84,10 +84,10 @@ RESOURCE_Group_MODEL_RELATION_FIELDS = {
 RESOURCE_GROUP_TABLE_VIEWS = CustomTableView(
     model=ResourceGroup,
     model_name="resource_group",
-    fields=RESOURCE_Group_MODEL_FIELDS,
-    model_relation_headers=RESOURCE_Group_MODEL_RELATION_HEADERS,
-    model_relation_fields=RESOURCE_Group_MODEL_RELATION_FIELDS,
-    search_fields_list=RESOURCE_Group_SEARCH_FIELDS,
+    fields=RESOURCE_GROUP_MODEL_FIELDS,
+    model_relation_headers=RESOURCE_GROUP_MODEL_RELATION_HEADERS,
+    model_relation_fields=RESOURCE_GROUP_MODEL_RELATION_FIELDS,
+    search_fields_list=RESOURCE_GROUP_SEARCH_FIELDS,
 )
 
 RESOURCE_GROUP_VIEWS = CRUDView(
