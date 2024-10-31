@@ -47,7 +47,7 @@ from resource_assigner.models import AssignmentConstraint
 # ------------------------------------------------------------------------------
 
 WORK_CENTER_MODEL_FIELDS = ["id", "name", "notes"]
-WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
+WORK_CENTER_SEARCH_FIELDS = ["name", "id", "notes"]
 
 WORK_CENTER_MODEL_RELATION_HEADERS = ["HISTORY"]
 WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
@@ -84,7 +84,7 @@ WORK_CENTER_VIEWS = CRUDView(
 
 JOB_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 JOB_TYPE_MODEL_RELATION_FIELDS = {
@@ -252,7 +252,7 @@ JOB_VIEWS = CRUDView(
 
 TASK_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 TASK_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 TASK_TYPE_MODEL_RELATION_FIELDS = {
@@ -299,7 +299,6 @@ TASK_MODEL_FIELDS = [
     "planned_start_datetime",
     "planned_end_datetime",
     "task_type",
-    # TODO: Add assigned resources
     "task_status",
 ]
 
@@ -310,7 +309,7 @@ TASK_TAILWIND_CLASSES = {
 }
 
 TASK_STATUS_FILTER_FIELD = "task_status"
-TASK_SEARCH_FIELDS = ["name", "item", "id"]
+TASK_SEARCH_FIELDS = ["id", "name", "item", "job", "task_type", "work_center", "notes"]
 
 TASK_MODEL_RELATION_HEADERS = [
     "DEPENDENCIES",
@@ -477,7 +476,7 @@ TASK_VIEWS = CRUDView(
 
 DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 DEPENDENCY_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
@@ -529,7 +528,7 @@ DEPENDENCY_TAILWIND_CLASSES = {
 }
 
 DEPENDENCY_STATUS_FILTER_FIELD = "dependency_status"
-DEPENDENCY_SEARCH_FIELDS = ["name", "id"]
+DEPENDENCY_SEARCH_FIELDS = ["name", "id", "dependency_type", "notes"]
 
 DEPENDENCY_MODEL_RELATION_HEADERS = ["TASKS", "JOBS", "HISTORY"]
 
@@ -646,7 +645,7 @@ DEPENDENCY_VIEWS = CRUDView(
 
 ITEM_MODEL_FIELDS = ["id", "name", "description", "notes"]
 
-ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
+ITEM_SEARCH_FIELDS = ["name", "description", "notes", "id"]
 
 ITEM_MODEL_RELATION_HEADERS = ["HISTORY"]
 ITEM_MODEL_RELATION_FIELDS = {

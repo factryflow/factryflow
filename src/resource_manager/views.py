@@ -22,7 +22,7 @@ RESOURCE_MODEL_FIELDS = [
 ]
 
 RESOURCE_STATUS_FILTER_FIELD = "resource_type"
-RESOURCE_SEARCH_FIELDS = ["name", "id"]
+RESOURCE_SEARCH_FIELDS = ["name", "id", "notes", "weekly_shift_template"]
 
 RESOURCE_MODEL_RELATION_HEADERS = ["HISTORY"]
 RESOURCE_MODEL_RELATION_FIELDS = {
@@ -61,7 +61,7 @@ RESOURCE_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 
 RESOURCE_Group_MODEL_FIELDS = ["id", "name", "parent", "notes"]
-RESOURCE_Group_SEARCH_FIELDS = ["name", "id"]
+RESOURCE_Group_SEARCH_FIELDS = ["name", "id", "notes"]
 
 RESOURCE_Group_MODEL_RELATION_HEADERS = ["Resources", "History"]
 RESOURCE_Group_MODEL_RELATION_FIELDS = {

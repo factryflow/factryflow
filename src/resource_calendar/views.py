@@ -17,7 +17,7 @@ from .services import *
 # ------------------------------------------------------------------------------
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_FIELDS = ["id", "name", "notes"]
-WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id"]
+WEEKLY_SHIFT_TEMPLATE_SEARCH_FIELDS = ["name", "id", "notes"]
 
 WEEKLY_SHIFT_TEMPLATE_MODEL_RELATION_HEADERS = [
     "TEMPLATE DETAILS",
@@ -85,7 +85,12 @@ WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_FIELDS = [
     "start_time",
     "end_time",
 ]
-WEEKLY_SHIFT_TEMPLATE_DETAIL_SEARCH_FIELDS = ["day_of_week", "id"]
+WEEKLY_SHIFT_TEMPLATE_DETAIL_SEARCH_FIELDS = [
+    "day_of_week",
+    "id",
+    "notes",
+    "weekly_shift_template",
+]
 
 WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_HEADERS = ["HISTORY"]
 WEEKLY_SHIFT_TEMPLATE_DETAIL_MODEL_RELATION_FIELDS = {
@@ -168,8 +173,6 @@ OPERATIONAL_EXCEPTION_MODEL_FIELDS = [
 
 OPERATIONAL_EXCEPTION_SEARCH_FIELDS = [
     "id",
-    "start_datetime",
-    "end_datetime",
     "operational_exception_type",
     "weekly_shift_template",
     "resource",
