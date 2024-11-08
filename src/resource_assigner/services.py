@@ -346,6 +346,7 @@ class AssigmentRuleService:
             # delete assignment rule object as it already been created
             assignment_constraint_dict.pop("assignment_rule", instance)
             assignment_constraint_dict.pop("id", None)
+            assignment_constraint_dict.pop("DELETE", None)
 
             self.assignment_constraint_service.create(
                 assignment_rule=instance,

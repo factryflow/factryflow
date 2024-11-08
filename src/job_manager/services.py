@@ -210,6 +210,7 @@ class TaskService:
             # delete assignment rule object as it already been created
             assignment_constraint_dict.pop("task", task)
             assignment_constraint_dict.pop("id", None)
+            assignment_constraint_dict.pop("DELETE", None)
 
             self.assignment_constraint_service.create(
                 task=task,
