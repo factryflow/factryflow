@@ -4,6 +4,7 @@
 {% block title %} {{ model_title }} {% endblock title %}
 {% load static %}
 {% load partials %}
+{% load widget_tweaks %}
 
 {% partialdef inline-model-form %}
     <div id="model_inline_formset" class="flex flex-wrap overflow-x-auto h-auto max-h-80 mt-5">
@@ -103,26 +104,42 @@
     {% comment %} Inline Formset Form {% endcomment %}
     {% if inline_formset_form %}
         <hr>
-        <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">{{ inline_formset_title }}</h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">{{ inline_formset_title }}</h2>
+            {% if button_text != "Create" and button_text != "Edit"%}
+                <button id="delete-assignment-constriants" type="button"
+                        x-data="{ clicked: false }"
+                        :class="clicked ? 'bg-red-500 text-white' : 'bg-white text-red-500 border border-red-500'"
+                        @click="clicked = true; deleteAssignmentConstriants(`{{inline_formset_form.0.DELETE.id_for_label}}`)"
+                        class="font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center transition-colors duration-300 ease-in-out hover:bg-red-500 hover:text-white focus:ring-4">
+                    Delete {{ inline_formset_title.split|last }}
+                </button>
+            {% endif %}
+        </div>
+        
         {{ inline_formset_form.management_form }}
         {% for form in inline_formset_form %}
             <div class="md:flex md:flex-wrap -mx-3 gap-3">
                 {% for field in form %}
-                    {% if field.field.widget.input_type == 'checkbox' %}
-                        <div class="md:w-1/2 px-3 mb-6 mt-6">
-                            <div class="flex items-center">
-                                <div class="w-1/8">{{ field }}</div>
-                                <div class="w-1/2 p-3 pt-5">
-                                    <label for="{{ field.id_for_label }}"
-                                        class="block uppercase text-gray-700 text-xs font-bold mb-2">
-                                        {{ field.label }}
-                                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                    </label>
+                    {% if field.field.widget.input_type == 'checkbox' %} 
+                        {% if "DELETE" in field.id_for_label %}
+                            {{ field|add_class:"hidden" }}
+                        {% else %}
+                            <div class="md:w-1/2 px-3 mb-6 mt-6">
+                                <div class="flex items-center">
+                                    <div class="w-1/8">{{ field|add_class:"border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3 bg-inherit" }}</div>
+                                    <div class="w-1/2 p-3 pt-5">
+                                        <label for="{{ field.id_for_label }}"
+                                            class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                            {{ field.label }}
+                                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                        </label>
+                                    </div>
                                 </div>
+                                {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                                {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
                             </div>
-                            {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-                            {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-                        </div>
+                        {% endif %}
                     {% else %}
                         <div class="md:w-1/2 px-3 mb-6">
                             {% if not field.is_hidden %}
@@ -347,7 +364,7 @@
                                     <div class="flex items-center justify-center gap-3">
                                         {% if user|can:relation_model_crud_action_rules.2 %}
                                         <button @click="editRow(index)" type="button"
-                                            class="font-medium text-blue-600 text-blue-500 hover:underline">
+                                            class="font-medium text-blue-600 hover:underline">
                                             <img src="{% static 'images/edit.svg' %}" alt="Edit" />
                                         </button>
                                         {% endif %}
@@ -356,7 +373,7 @@
                                             @click="deleteRow(rowID)"
                                             :hx-delete="`{% url 'delete_'|add:model_name_for_crud 0 %}`.replace('/0/', '/' + rowID + '/')"
                                             hx-target="#model-relation-editable-table" hx-swap="outerHTML"
-                                            class="font-medium text-blue-600 text-blue-500 hover:underline">
+                                            class="font-medium text-blue-600 hover:underline">
                                             <img src="{% static 'images/delete.svg' %}" alt="Delete" />
                                         </button>
                                         {% endif %}
@@ -366,7 +383,7 @@
                                     <div class="flex items-center justify-center gap-3">
                                         {% if user|can:relation_model_crud_action_rules.2 %}
                                         <button type="submit"
-                                            class="font-medium text-green-600 text-green-500 hover:underline">
+                                            class="font-medium text-green-600 hover:underline">
                                             <img 
                                                 @click="saveRow(index)"
                                                 src="{% static 'images/checkmark.svg' %}" 
@@ -374,7 +391,7 @@
                                             />
                                         </button>
                                         <button type="button" @click="cancelEdit(index)"
-                                            class="font-medium text-red-600 text-red-500 hover:underline">
+                                            class="font-medium text-red-600 hover:underline">
                                             <img src="{% static 'images/cancel.svg' %}" alt="Cancel" />
                                         </button>
                                         {% endif %}
@@ -513,6 +530,14 @@
     <script>
         function removeField(button) {
             button.parentNode.parentNode.remove();
+        };
+
+        function deleteAssignmentConstriants(constraintsCheckboxId) {
+            // to delete the assignment constraint
+            const constraintsCheckbox = document.getElementById(constraintsCheckboxId);
+            if (!constraintsCheckbox.checked) {
+                constraintsCheckbox.checked = true;
+            }
         };
 
         function subModelRelationData(initialRows = [], initialHeaders = []) {

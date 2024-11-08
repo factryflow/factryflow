@@ -291,7 +291,7 @@ class CRUDView:
                 self.inline_formset[0],
                 form=self.inline_formset[1],
                 extra=1,
-                can_delete=False,
+                can_delete=True,
             )
 
             inline_formset_model_name = self.inline_formset[-1]
@@ -508,7 +508,7 @@ class CRUDView:
         # Get the instance object if updating, otherwise None
         instance_obj = get_object_or_404(self.model, id=id) if id else None
 
-        # Instantiate the form with POST data and optionally the instance object
+        # Initiate the form with POST data and optionally the instance object
         form = self.model_form(
             request.POST, instance=instance_obj if instance_obj else None
         )
@@ -523,7 +523,7 @@ class CRUDView:
 
         # form validation
         model_inline_form_errors_len = (
-            len(model_inline_form.errors[0]) if model_inline_form else 0
+            len(model_inline_form.errors) if model_inline_form else 0
         )
 
         if len(form.errors) > 0 or model_inline_form_errors_len > 0:
@@ -539,7 +539,7 @@ class CRUDView:
                 message = f"{field}: {error[0]['message']}"
                 add_notification_headers(response, message, "error")
 
-            return response
+                return response
 
         # inline formset validation and data fetching
         formset_data = []
@@ -581,7 +581,11 @@ class CRUDView:
             obj_data = form.cleaned_data
 
             # add data from model_inline_formset data
-            if model_inline_form and model_inline_form.is_valid():
+            if (
+                model_inline_form
+                and model_inline_form.is_valid()
+                and model_inline_form.cleaned_data != [{}]
+            ):
                 obj_data[self.inline_formset[2]] = model_inline_form.cleaned_data
 
             # if custom_fields_data != {}:
@@ -663,6 +667,11 @@ class CRUDView:
         search_query = request.GET.get("query", "")
         page_number = request.GET.get("page", 1)
         self.sort_by = request.GET.get("sort_by", self.sort_by)
+        self.num_of_rows_per_page = request.GET.get(
+            "num_of_rows_per_page", self.num_of_rows_per_page
+        )
+        self.sort_direction = request.GET.get("sort_direction", self.sort_direction)
+        self.sort_by = request.GET.get("sort_by", self.sort_by)
 
         # Generate table view based on filter and search parameters
         table_rows, paginator, num_pages, total_instances_count = (
@@ -671,6 +680,9 @@ class CRUDView:
                 search_query=search_query,
                 page_number=page_number,
                 sort_by=self.sort_by,
+                sort_direction=self.sort_direction,
+                sort_field=self.sort_by,
+                num_of_rows_per_page=self.num_of_rows_per_page,
             )
         )
 

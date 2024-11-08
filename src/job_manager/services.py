@@ -210,6 +210,7 @@ class TaskService:
             # delete assignment rule object as it already been created
             assignment_constraint_dict.pop("task", task)
             assignment_constraint_dict.pop("id", None)
+            assignment_constraint_dict.pop("DELETE", None)
 
             self.assignment_constraint_service.create(
                 task=task,
@@ -260,7 +261,24 @@ class TaskService:
         # update assignment constraints
         assignment_constraints = data.get("constraints", [])
 
-        if assignment_constraints:
+        # delete the assignment constraints if Delete is True
+        constraints_to_delete = (
+            assignment_constraints[0].pop("DELETE", False)
+            if assignment_constraints
+            else False
+        )
+
+        if constraints_to_delete:
+            # delete the assignment constraint
+            constraints_instance = AssignmentConstraint.objects.filter(
+                task=assignment_constraints[0]["task"]
+            )
+            if constraints_instance.exists():
+                self.assignment_constraint_service.delete(
+                    instance=constraints_instance.first()
+                )
+
+        if assignment_constraints and not constraints_to_delete:
             # create or update assignment constraints
             self._create_or_update_constraints(
                 assignment_constraints=assignment_constraints, instance=instance
