@@ -170,8 +170,8 @@ def run_microbatch_scheduling(request):
         response = HttpResponse(status=204)
         add_notification_headers(
             response,
-            result["message"],
-            result["status"],
+            f"Sub-tasks created for ({len(result)}) microbatch tasks.",
+            "success",
         )
 
         return response

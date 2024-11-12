@@ -155,6 +155,7 @@ def match_rules_with_tasks(request):
                 JobStatusChoices.IN_PROGRESS,
                 JobStatusChoices.NOT_PLANNED,
             ],
+            parent=None,
         )
 
         if tasks.count() == 0:
