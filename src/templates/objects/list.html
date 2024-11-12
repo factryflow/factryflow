@@ -388,6 +388,12 @@
                 :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
                 class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
             {% endfor %}
+            {% if model_name == "tasks" %}  <!-- Update on frontend refactor -->
+                <button hx-get="{% url model_name %}?parents=true" hx-target="#all-{{ model_name }}s-table"
+                hx-trigger="click" x-on:click="activeTab = 'parents'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'parents','text-[#7E8299]':activeTab != 'parents'}"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Parent Tasks</button>
+            {% endif %}
         </div>
     </div>
 
