@@ -365,13 +365,9 @@ class SchedulingService:
 
             if not task.get("error_message") == "No solution found.":
                 # Update task planned start and end datetime
-                try:
-                    task_obj.planned_start_datetime = self._int_to_datetime(
-                        int(task["task_start"])
-                    )
-                except Exception as e:
-                    # breakpoint()
-                    print(e)
+                task_obj.planned_start_datetime = self._int_to_datetime(
+                    int(task["task_start"])
+                )
                 task_obj.planned_end_datetime = self._int_to_datetime(
                     int(task["task_end"])
                 )
