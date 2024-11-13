@@ -34,7 +34,9 @@ class MicrobatchFlow(BaseModelWithExtras, OrderedModel):
 class MicrobatchTaskFlow(BaseModel):
     """Stores a set of MicrobatchTasks that are derived from a MicrobatchFlow."""
 
-    microbatch_flow = models.ForeignKey(MicrobatchFlow, on_delete=models.CASCADE, related_name="task_flows")
+    microbatch_flow = models.ForeignKey(
+        MicrobatchFlow, on_delete=models.CASCADE, related_name="task_flows"
+    )
 
     class Meta:
         db_table = "microbatch_task_flow"

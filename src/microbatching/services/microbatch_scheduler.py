@@ -1,4 +1,3 @@
-
 from api.permission_checker import AbstractPermissionService
 from django.db import transaction
 from job_manager.models.task import Task
@@ -51,27 +50,38 @@ class MicrobatchSchedulerService:
                     duration=task.run_time_per_unit * batch_size,
                 )
 
-                if task.taskruleassignment_set.exists():  # Create AssignmentRule for subtasks
+                if (
+                    task.taskruleassignment_set.exists()
+                ):  # Create AssignmentRule for subtasks
                     if task.taskruleassignment_set.filter(is_applied=True).exists():
-                        assignment_rule = task.taskruleassignment_set.filter(is_applied=True).first().assigment_rule
+                        assignment_rule = (
+                            task.taskruleassignment_set.filter(is_applied=True)
+                            .first()
+                            .assigment_rule
+                        )
                     else:
-                        assignment_rule = task.taskruleassignment_set.first().assigment_rule
+                        assignment_rule = (
+                            task.taskruleassignment_set.first().assigment_rule
+                        )
 
                     TaskRuleAssignment.objects.create(
-                        task=subtask,
-                        assigment_rule=assignment_rule
+                        task=subtask, assigment_rule=assignment_rule
                     )
 
-                if hasattr(task, "assignmentconstraint"):  # Create AssignmentConstraint for subtasks
+                if hasattr(
+                    task, "assignmentconstraint"
+                ):  # Create AssignmentConstraint for subtasks
                     parent_constraint = task.assignmentconstraint
                     assignment_constraint = AssignmentConstraint.objects.create(
                         task=subtask,
                         assignment_rule=parent_constraint.assignment_rule,
                         resource_group=parent_constraint.resource_group,
                         resource_count=parent_constraint.resource_count,
-                        use_all_resources=parent_constraint.use_all_resources
+                        use_all_resources=parent_constraint.use_all_resources,
                     )
-                    assignment_constraint.resources.set(parent_constraint.resources.all())
+                    assignment_constraint.resources.set(
+                        parent_constraint.resources.all()
+                    )
 
                 if predecessor_group:
                     try:  # Set subtask predecessors to their equivalent subtasks in the parent task's predecessor
@@ -98,10 +108,12 @@ class MicrobatchSchedulerService:
                 task_group[task.id].append(remainder_subtask)
                 if predecessor_group:
                     try:  # Set subtask predecessors for remainder subtasks
-                        remainder_subtask.predecessors.set([predecessor_group[batch_count]])
+                        remainder_subtask.predecessors.set(
+                            [predecessor_group[batch_count]]
+                        )
                     except IndexError:
                         remainder_subtask.predecessors.clear()
-            
+
             microbatched_tasks.append(task_group)
             predecessor_group = [task for task in task_group[task.id]]
 
@@ -113,13 +125,19 @@ class MicrobatchSchedulerService:
         try:
             microbatched_tasks = []
 
-            for flow in MicrobatchFlow.objects.order_by("order"):  # Run microbatching for every MicrobatchFlow based on order.
+            for flow in MicrobatchFlow.objects.order_by(
+                "order"
+            ):  # Run microbatching for every MicrobatchFlow based on order.
                 flow = MicrobatchFlow.objects.order_by("order").first()
                 for task_flow in flow.task_flows.all():
                     if task_flow.flow_tasks.count() > 0:
-                        microbatched_tasks = self.create_microbatch_subtasks(task_flow.flow_tasks.all())
+                        microbatched_tasks = self.create_microbatch_subtasks(
+                            task_flow.flow_tasks.all()
+                        )
 
-            SchedulingService(horizon_weeks=5).run(selected_tasks=Task.objects.filter(parent__isnull=False))  # Run the scheduler for the microbatched subtasks
+            SchedulingService(horizon_weeks=5).run(
+                selected_tasks=Task.objects.filter(parent__isnull=False)
+            )  # Run the scheduler for the microbatched subtasks
 
             consolidate_parent_task_datetimes()  # Updates the parent Task datetimes based on the Subtask start/end datetimes
             consolidate_job_datetimes()  # Updates the Job datetimes based on the new parent Task datetimes
@@ -127,6 +145,3 @@ class MicrobatchSchedulerService:
             return microbatched_tasks
         except Exception as e:
             raise e
-
-
-

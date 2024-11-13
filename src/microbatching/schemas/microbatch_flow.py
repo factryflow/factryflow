@@ -14,8 +14,11 @@ class MicrobatchFlowIn(ModelSchema):
         model = MicrobatchFlow
         fields = [
             "name",
+            "external_id",
+            "notes",
             "description",
             "start_rule",
+            "batch_size",
             "end_rule",
             "min_flow_length",
             "max_flow_length",

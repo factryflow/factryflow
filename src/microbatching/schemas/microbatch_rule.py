@@ -42,7 +42,9 @@ class MicrobatchRuleIn(ModelSchema):
         model = MicrobatchRule
         fields = [
             "name",
-            "batch_size",
+            "external_id",
+            "notes",
+            "is_active",
             "custom_fields",
         ]
 

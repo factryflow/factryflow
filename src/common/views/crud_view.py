@@ -205,7 +205,7 @@ class CRUDView:
                 sort_direction=self.sort_direction,
                 sort_field=self.sort_by,
                 num_of_rows_per_page=self.num_of_rows_per_page,
-                parent_filter=parent_filter
+                parent_filter=parent_filter,
             )
         )
 

@@ -20,7 +20,7 @@ if not (DEBUG and DISABLE_AUTH):
     MIDDLEWARE += AUTH_MIDDEWARE
 
 
-# # Settings for Debug Toolbar
+# Settings for Debug Toolbar
 if DEBUG:
     INSTALLED_APPS += [
         "debug_toolbar",

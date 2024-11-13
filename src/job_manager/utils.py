@@ -12,7 +12,7 @@ def consolidate_parent_task_datetimes():
     for task in tasks:
         task.consolidate_start_end_dates()
         consolidated_tasks.append(task)
-    
+
     return consolidated_tasks
 
 
@@ -24,5 +24,5 @@ def consolidate_job_datetimes():
     for job in tasks:
         job.consolidate_start_end_dates()
         consolidated_jobs.append(job)
-    
+
     return consolidated_jobs
