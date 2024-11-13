@@ -39,11 +39,11 @@ resource_manager_router.add_router("", resource_router)
 
 resource_group_viewset = CRUDModelViewSet(
     model=ResourceGroup,
-    path="/resource-pools",
+    path="/resource-groups",
     service=ResourceGroupService,
     input_schema=ResourceGroupIn,
     output_schema=ResourceGroupOut,
-    tags=["Resource Pools"],
+    tags=["Resource Groups"],
 )
 
 resource_group_router = resource_group_viewset.router

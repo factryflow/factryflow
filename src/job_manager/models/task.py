@@ -116,7 +116,7 @@ class Task(BaseModelWithExtras):
             return self.taskresourceassigment.count()
         else:
             return 0
-        
+
     def consolidate_start_end_dates(self):
         """Sets the planned start and end dates for the task based on the earliest
         start date and latest end date from the child tasks (if any).

@@ -4,10 +4,14 @@ from ninja import Router
 from resource_assigner.models import (
     AssigmentRule,
     AssignmentConstraint,
+    TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 from resource_assigner.services import (
     AssigmentRuleService,
     AssignmentConstraintService,
+    TaskResourceAssigmentService,
+    TaskRuleAssignmentService,
 )
 
 from .schemas import (
@@ -15,6 +19,10 @@ from .schemas import (
     AssigmentRuleOut,
     AssignmentConstraintIn,
     AssignmentConstraintOut,
+    TaskResourceAssigmentIn,
+    TaskResourceAssigmentOut,
+    TaskRuleAssignmentIn,
+    TaskRuleAssignmentOut,
 )
 
 # ------------------------------------------------------------------------------
@@ -50,3 +58,36 @@ assigment_rule_viewset = CRUDModelViewSet(
 
 assigment_rule_router = assigment_rule_viewset.router
 resource_assigner_router.add_router("", assigment_rule_router)
+
+# ------------------------------------------------------------------------------
+# Task Rule Assignment API
+# ------------------------------------------------------------------------------
+
+task_rule_assignment_viewset = CRUDModelViewSet(
+    model=TaskRuleAssignment,
+    path="/task-rule-assignments",
+    service=TaskRuleAssignmentService,
+    input_schema=TaskRuleAssignmentIn,
+    output_schema=TaskRuleAssignmentOut,
+    tags=["Task Rule Assignments"],
+)
+
+
+task_rule_assignment_router = task_rule_assignment_viewset.router
+resource_assigner_router.add_router("", task_rule_assignment_router)
+
+# ------------------------------------------------------------------------------
+# Task Resource Assignment API
+# ----------------------------------------------------------------------------
+
+task_resource_assigment_viewset = CRUDModelViewSet(
+    model=TaskResourceAssigment,
+    path="/task-resource-assignments",
+    service=TaskResourceAssigmentService,
+    input_schema=TaskResourceAssigmentIn,
+    output_schema=TaskResourceAssigmentOut,
+    tags=["Task Resource Assignments"],
+)
+
+task_resource_assigment_router = task_resource_assigment_viewset.router
+resource_assigner_router.add_router("", task_resource_assigment_router)

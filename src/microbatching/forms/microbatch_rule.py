@@ -10,9 +10,7 @@ from microbatching.models.microbatch_rule import (
 class MicrobatchRuleForm(forms.ModelForm):
     class Meta:
         model = MicrobatchRule
-        fields = [
-            "name"
-        ]
+        fields = ["name"]
         exclude = [
             "created_by",
             "updated_by",
@@ -20,9 +18,7 @@ class MicrobatchRuleForm(forms.ModelForm):
             "updated_at",
             "custom_fields",
         ]
-        labels = {
-            "name": "Name"
-        }
+        labels = {"name": "Name"}
         widgets = {
             "name": forms.TextInput(
                 attrs={

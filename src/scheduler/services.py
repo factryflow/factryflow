@@ -316,7 +316,9 @@ class SchedulingService:
     @transaction.atomic
     def run(self, selected_tasks=None):
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
-        scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict, selected_tasks)
+        scheduler_tasks = self._create_scheduler_task_objects(
+            scheduler_resources_dict, selected_tasks
+        )
         scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
         log_messages = []
 
@@ -327,7 +329,7 @@ class SchedulingService:
             tasks=scheduler_tasks, resources=scheduler_resources_dict.values()
         )
         result = scheduler.schedule()
-        
+
         scheduler_summary = result.summary().split("\n")
         log_messages.extend(scheduler_summary)
 
@@ -409,17 +411,25 @@ class SchedulingService:
                     if task_obj == Task.objects.filter(job=task_obj.job).latest(
                         "planned_end_datetime"
                     ):
-                        task_obj.job.planned_end_datetime = task_obj.planned_end_datetime
+                        task_obj.job.planned_end_datetime = (
+                            task_obj.planned_end_datetime
+                        )
                         task_obj.job.save()
                         log_messages.append(
                             f"Job with ID {task_obj.job.id} planned_end_datetime updated."
                         )
                 except Exception as e:
-                    log_messages.append(f"Task with ID: {task_obj.id} could not be scheduled due to: {str(e)}")
-                    log_messages.append(f"Task with ID: {task_obj.id} scheduler error message: {task.get('error_message')}")
+                    log_messages.append(
+                        f"Task with ID: {task_obj.id} could not be scheduled due to: {str(e)}"
+                    )
+                    log_messages.append(
+                        f"Task with ID: {task_obj.id} scheduler error message: {task.get('error_message')}"
+                    )
                     continue
             else:
-                log_messages.append(f"Task with ID: {task_obj.id} could not be scheduled due to: {task.get('error_message')}")
+                log_messages.append(
+                    f"Task with ID: {task_obj.id} could not be scheduled due to: {task.get('error_message')}"
+                )
                 continue
         scheduler_logs["log_messages"] = log_messages
         return {"data": res_df.to_dict("records"), "logs": scheduler_logs}

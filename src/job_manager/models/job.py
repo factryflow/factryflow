@@ -74,7 +74,7 @@ class Job(BaseModelWithExtras, OrderedModelBase):
 
     def __str__(self):
         return self.name
-    
+
     def consolidate_start_end_dates(self):
         """Sets the planned start and end dates for the Job based on the earliest
         start date and latest end date from the child tasks (if any).
