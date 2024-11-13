@@ -13,6 +13,7 @@ from resource_assigner.models import (
     AssigmentRuleCriteria,
     AssignmentConstraint,
     TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 
 # ------------------------------------------------------------------------------
@@ -29,8 +30,7 @@ class TaskResourceAssigmentService:
     def create(
         self,
         task: Task,
-        assigment_rule: AssigmentRule,
-        resource: Resource = None,
+        resources: list[Resource] = [],
         custom_fields: dict = None,
     ) -> TaskResourceAssigment:
         # check permissions for create task resource assignment
@@ -41,13 +41,13 @@ class TaskResourceAssigmentService:
 
         instance = TaskResourceAssigment.objects.create(
             task=task,
-            assigment_rule=assigment_rule,
-            resource=resource,
             custom_fields=custom_fields,
         )
 
         instance.full_clean()
         instance.save(user=self.user)
+
+        instance.resources.set(resources)
 
         return instance
 
@@ -63,7 +63,6 @@ class TaskResourceAssigmentService:
 
         fields = [
             "task",
-            "assigment_rule",
             "resource",
             "custom_fields",
         ]
@@ -288,7 +287,11 @@ class AssigmentRuleService:
     ):
         # Create or update assignment constraints
         for assignment_constraint_dict in assignment_constraints:
-            assignment_constraint_id = assignment_constraint_dict.get("id")
+            assignment_constraint_id = (
+                assignment_constraint_dict.get("id").id
+                if assignment_constraint_dict.get("id")
+                else None
+            )
             assignment_constraint_instance = get_object(
                 model_or_queryset=AssignmentConstraint, id=assignment_constraint_id
             )
@@ -298,6 +301,9 @@ class AssigmentRuleService:
                     data=assignment_constraint_dict,
                 )
             else:
+                assignment_constraint_dict.pop("assignment_rule", instance)
+                assignment_constraint_dict.pop("id", None)
+
                 self.assignment_constraint_service.create(
                     assignment_rule=instance,
                     **assignment_constraint_dict,
@@ -306,12 +312,12 @@ class AssigmentRuleService:
     @transaction.atomic
     def create(
         self,
-        external_id: str,
         notes: str,
         name: str,
         description: str,
         is_active: bool,
         work_center: WorkCenter,
+        external_id: str = "",
         assignment_constraints: list[dict] = [],
         criteria: list[dict] = [],
         custom_fields: dict = None,
@@ -337,6 +343,11 @@ class AssigmentRuleService:
 
         # Create assignment constraints
         for assignment_constraint_dict in assignment_constraints:
+            # delete assignment rule object as it already been created
+            assignment_constraint_dict.pop("assignment_rule", instance)
+            assignment_constraint_dict.pop("id", None)
+            assignment_constraint_dict.pop("DELETE", None)
+
             self.assignment_constraint_service.create(
                 assignment_rule=instance,
                 **assignment_constraint_dict,
@@ -380,7 +391,25 @@ class AssigmentRuleService:
 
         assignment_constraints = data.get("assignment_constraints", [])
 
-        if assignment_constraints:
+        # delete the assignment constraints if Delete is True
+        constraints_to_delete = (
+            assignment_constraints[0].pop("DELETE", False)
+            if assignment_constraints
+            else False
+        )
+
+        if constraints_to_delete:
+            # delete the assignment constraint
+            constraints_instance = AssignmentConstraint.objects.filter(
+                assignment_rule=assignment_constraints[0]["assignment_rule"]
+            )
+            if constraints_instance.exists():
+                self.assignment_constraint_service.delete(
+                    instance=constraints_instance.first()
+                )
+
+        if assignment_constraints and not constraints_to_delete:
+            # create or update assignment constraints
             self._create_or_update_constraints(
                 assignment_constraints=assignment_constraints, instance=instance
             )
@@ -391,6 +420,71 @@ class AssigmentRuleService:
     def delete(self, instance: AssigmentRule) -> None:
         # check permissions for delete assigment rule
         if not self.permission_service.check_for_permission("delete_assigmentrule"):
+            raise PermissionDenied()
+
+        instance.delete()
+        return True
+
+
+# ------------------------------------------------------------------------------
+# Task Rule Assignment Services
+# ------------------------------------------------------------------------------
+
+
+class TaskRuleAssignmentService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    @transaction.atomic
+    def create(
+        self,
+        task: Task,
+        assigment_rule: AssigmentRule,
+        is_applied: bool = False,
+        custom_fields: dict = None,
+    ) -> TaskRuleAssignment:
+        # check permissions for create task rule assignment
+        if not self.permission_service.check_for_permission("add_taskruleassignment"):
+            raise PermissionDenied()
+
+        instance = TaskRuleAssignment.objects.create(
+            task=task,
+            assigment_rule=assigment_rule,
+            is_applied=is_applied,
+            custom_fields=custom_fields,
+        )
+
+        instance.full_clean()
+        instance.save(user=self.user)
+
+        return instance
+
+    @transaction.atomic
+    def update(self, instance: TaskRuleAssignment, data: dict) -> TaskRuleAssignment:
+        # check permissions for update task rule assignment
+        if not self.permission_service.check_for_permission(
+            "change_taskruleassignment"
+        ):
+            raise PermissionDenied()
+
+        fields = [
+            "task",
+            "assigment_rule",
+            "is_applied",
+            "custom_fields",
+        ]
+        instance, _ = model_update(
+            instance=instance, fields=fields, data=data, user=self.user
+        )
+        return instance
+
+    @transaction.atomic
+    def delete(self, instance: TaskRuleAssignment) -> None:
+        # check permissions for delete task rule assignment
+        if not self.permission_service.check_for_permission(
+            "delete_taskruleassignment"
+        ):
             raise PermissionDenied()
 
         instance.delete()

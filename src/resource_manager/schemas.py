@@ -8,30 +8,30 @@ class ResourceGroupIn(ModelSchema):
 
     class Meta:
         model = ResourceGroup
-        fields = ["name", "external_id", "notes"]
+        fields = ["name", "external_id", "notes", "parent", "custom_fields"]
 
 
 class ResourceGroupOut(ModelSchema):
-    resource_ids: list[int] = Field([], alias="resource_id_list")
-
     class Meta:
         model = ResourceGroup
-        fields = ["name", "external_id", "notes"]
+        fields = "__all__"
 
 
 class ResourceIn(ModelSchema):
-    # resource_pools: list[int] = Field(None, alias="resource_pool_ids")
-    users: list[int] = Field(None, alias="user_ids")
-
     class Meta:
         model = Resource
-        fields = ["name", "external_id", "notes"]
+        fields = [
+            "name",
+            "users",
+            "external_id",
+            "notes",
+            "resource_type",
+            "weekly_shift_template",
+            "custom_fields",
+        ]
 
 
 class ResourceOut(ModelSchema):
-    # resource_pool_ids: list[int] = Field([], alias="resource_pool_id_list")
-    user_ids: list[int] = Field([], alias="user_id_list")
-
     class Meta:
         model = Resource
-        exclude = ["users"]
+        fields = "__all__"

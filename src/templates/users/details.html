@@ -6,16 +6,16 @@
 {% load partials %}
 {% partialdef partial-form %}
 <form method="post"
-      hx-post="{{ form_action_url }}"
-      hx-redirect="true"
-      x-cloak>
+    hx-post="{{ form_action_url }}"
+    hx-redirect="true"
+    x-cloak>
     {% csrf_token %}
     {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
     <div class="md:flex md:flex-wrap -mx-3">
         {% for field in form %}
             <div class="md:w-1/2 px-3 mb-6">
                 <label for="{{ field.id_for_label }}"
-                       class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                     {{ field.label }}
                     {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
                 </label>
@@ -32,13 +32,13 @@
     {% if not view_only %}
         <div class="flex justify-left mt-6 space-x-4">
             <a href="{% url 'users:list' %}"
-               class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                 Cancel
             </a>
             {% if view_mode %}
-                {% if user|can:'actions_rule[0]' %}
+                {% if user|can:actions_rule.0 %}
                     <a href="{{ edit_url }}"
-                       class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                         {{ button_text }}
                     </a>
                 {% endif %}
@@ -46,10 +46,10 @@
                 {% if id %}
                     <div class="flex">
                         <a href="{% url 'users:admin_change_password' id=id %}"
-                           class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Change Password</a>
+                            class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Change Password</a>
                     </div>
                 {% endif %}
-                {% if user|can:'actions_rule[1]' %}
+                {% if user|can:actions_rule.1 %}
                     <button type="submit"
                             class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
                         {{ button_text }}
@@ -66,8 +66,8 @@
         <nav class="flex pb-4" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                 <li class="inline-flex items-center">
-                    <a href="/"
-                       class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                    <a href="/dashboard/gantt-type=job/home=true"
+                        class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
                         <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
                     </a>
                 </li>
@@ -75,7 +75,7 @@
                     <div class="flex items-center">
                         <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
                         <a href="{% url 'users:list' %}"
-                           class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
+                            class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
                     </div>
                 </li>
                 <li aria-current="page">

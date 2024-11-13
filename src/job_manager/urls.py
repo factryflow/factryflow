@@ -1,14 +1,17 @@
 from django.urls import path
 
+from job_manager.api.chart_data import JobGanttAPIView, ResourceGanttAPIView
+
 from .views import (
-    JOB_VIEWS,
-    TASK_VIEWS,
-    DEPENDENCY_VIEWS,
-    JOB_TYPE_VIEWS,
-    TASK_TYPE_VIEWS,
     DEPENDENCY_TYPE_VIEWS,
-    WORK_CENTER_VIEWS,
+    DEPENDENCY_VIEWS,
     ITEM_VIEWS,
+    JOB_TYPE_VIEWS,
+    JOB_VIEWS,
+    TASK_TYPE_VIEWS,
+    TASK_VIEWS,
+    WORK_CENTER_VIEWS,
+    dashboard_gantt_chart_view,
 )
 
 urlpatterns = [
@@ -215,5 +218,20 @@ urlpatterns = [
         "items/view/<int:id>/field=<str:field>",
         ITEM_VIEWS.show_model_form,
         name="items_relationships",
+    ),
+    path(
+        "api/job/gantt",
+        JobGanttAPIView.as_view(),
+        name="job_gantt_api",
+    ),
+    path(
+        "api/resource/gantt",
+        ResourceGanttAPIView.as_view(),
+        name="resource_gantt_api",
+    ),
+    path(
+        "dashboard/gantt-type=<str:gantt_type>/home=<str:home>/",
+        dashboard_gantt_chart_view,
+        name="dashboard",
     ),
 ]

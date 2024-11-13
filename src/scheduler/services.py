@@ -13,6 +13,7 @@ from job_manager.models import Task
 from resource_assigner.models import (
     AssignmentConstraint,
     TaskResourceAssigment,
+    TaskRuleAssignment,
 )
 from resource_calendar.models import OperationalException, WeeklyShiftTemplate
 from resource_manager.models import Resource
@@ -302,9 +303,9 @@ class SchedulingService:
             plan_start_date.weekday() if self.plan_start_date else None
         )
         self.plan_start_minutes = (
-            self.plan_start_weekday * DAY_IN_MINUTES
-            if self.plan_start_weekday
-            else None
+            None
+            if self.plan_start_weekday is None
+            else self.plan_start_weekday * DAY_IN_MINUTES
         )
         self.horizon_weeks = horizon_weeks if horizon_weeks else 20
         self.horizon_minutes = horizon_weeks * WEEK_IN_MINUTES
@@ -312,10 +313,14 @@ class SchedulingService:
             self._get_weekly_shift_template_windows_dict()
         )
 
-    def run(self):
+    @transaction.atomic
+    def run(self, selected_tasks=None):
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
-
-        scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict)
+        scheduler_tasks = self._create_scheduler_task_objects(
+            scheduler_resources_dict, selected_tasks
+        )
+        scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
+        log_messages = []
 
         if "error" in scheduler_tasks:
             return {"error": scheduler_tasks["error"]}
@@ -325,22 +330,117 @@ class SchedulingService:
         )
         result = scheduler.schedule()
 
+        scheduler_summary = result.summary().split("\n")
+        log_messages.extend(scheduler_summary)
+
+        # convert result to dataframe
+        res_df = result.to_dataframe()
+
         # convert 'task_start' and task_end and 'resource_intervals': dict_values to time
-        for task in result.to_dict():
-            task["task_start"] = self._int_to_datetime(task["task_start"])
-            task["task_end"] = self._int_to_datetime(task["task_end"])
-            # task["resource_intervals"] = list(task["resource_intervals"])
+        res_df["planned_task_start"] = res_df.apply(
+            lambda scheduled_task: str(
+                self._int_to_datetime(scheduled_task["task_start"])
+            ),
+            axis=1,
+        )
 
-            # task["resource_intervals"] = (self._int_to_datetime(list(task["resource_intervals"])[0][0]), self._int_to_datetime((task["resource_intervals"])[0][1]))
+        res_df["planned_task_end"] = res_df.apply(
+            lambda scheduled_task: str(
+                self._int_to_datetime(scheduled_task["task_end"])
+            ),
+            axis=1,
+        )
 
-        return result.to_dict()
+        # Clear TaskResourceAssigment model before creating new ones
+        TaskResourceAssigment.objects.all().delete()
+        log_messages.append("TaskResourceAssigment model cleared.")
 
-    def _create_scheduler_task_objects(self, resources_dict: dict):
-        tasks = Task.objects.filter(job__isnull=False)
+        # save to TaskResourceAssigment model
+        task_resource_assignments = []
+
+        scheduler_results = result.to_dict()
+        scheduler_logs["tasks_found"] = len(scheduler_results)
+
+        for task in scheduler_results:
+            task_id = task["task_id"]
+            task_obj = Task.objects.get(id=task_id)
+
+            if not task.get("error_message"):
+                # Update task planned start and end datetime
+                try:
+                    task_obj.planned_start_datetime = self._int_to_datetime(
+                        int(task["task_start"])
+                    )
+
+                    task_obj.planned_end_datetime = self._int_to_datetime(
+                        int(task["task_end"])
+                    )
+                    task_obj.save()
+                    scheduler_logs["tasks_assigned"] += 1
+                    log_messages.append(f"Task with ID: {task_id} schedule updated.")
+
+                    # Create TaskResourceAssigment object
+                    task_resource_assignment = TaskResourceAssigment(task_id=task_id)
+                    task_resource_assignment.save()
+                    log_messages.append(
+                        f"TaskResourceAssigment {task_resource_assignment.id} created for Task with ID: {task_id}."
+                    )
+
+                    if task.get("assigned_resource_ids"):
+                        resource_ids = task["assigned_resource_ids"]
+                        resources = Resource.objects.filter(id__in=resource_ids)
+                        task_resource_assignment.resources.set(resources)
+                        log_messages.append(
+                            f"TaskResourceAssigment {task_resource_assignment.id} assigned to resources: {resource_ids}."
+                        )
+
+                    task_resource_assignments.append(task_resource_assignment)
+
+                    # Set Task Job planned start and end datetime
+                    if task_obj == Task.objects.filter(job=task_obj.job).earliest(
+                        "planned_start_datetime"
+                    ):
+                        task_obj.job.planned_start_datetime = (
+                            task_obj.planned_start_datetime
+                        )
+                        task_obj.job.save()
+                        log_messages.append(
+                            f"Job with ID {task_obj.job.id} planned_start_datetime updated."
+                        )
+
+                    if task_obj == Task.objects.filter(job=task_obj.job).latest(
+                        "planned_end_datetime"
+                    ):
+                        task_obj.job.planned_end_datetime = (
+                            task_obj.planned_end_datetime
+                        )
+                        task_obj.job.save()
+                        log_messages.append(
+                            f"Job with ID {task_obj.job.id} planned_end_datetime updated."
+                        )
+                except Exception as e:
+                    log_messages.append(
+                        f"Task with ID: {task_obj.id} could not be scheduled due to: {str(e)}"
+                    )
+                    log_messages.append(
+                        f"Task with ID: {task_obj.id} scheduler error message: {task.get('error_message')}"
+                    )
+                    continue
+            else:
+                log_messages.append(
+                    f"Task with ID: {task_obj.id} could not be scheduled due to: {task.get('error_message')}"
+                )
+                continue
+        scheduler_logs["log_messages"] = log_messages
+        return {"data": res_df.to_dict("records"), "logs": scheduler_logs}
+
+    def _create_scheduler_task_objects(self, resources_dict: dict, selected_tasks=None):
+        if not selected_tasks:
+            selected_tasks = Task.objects.filter(job__isnull=False)
 
         scheduler_tasks = []
         scheduler_assignments = []
-        for task in tasks:
+        for task in selected_tasks:
             scheduler_task_dict = {}
 
             # task details
@@ -349,12 +449,16 @@ class SchedulingService:
             scheduler_task_dict["priority"] = task.job.priority
             scheduler_task_dict["quantity"] = task.quantity
 
-            predecessor_ids = [
-                predecessor.id for predecessor in task.predecessors.all()
-            ]
+            predecessor_ids = (
+                [predecessor.id for predecessor in task.predecessors.all()]
+                if task.predecessors
+                else []
+            )
 
             if len(predecessor_ids) > 0:
-                scheduler_task_dict["predecessor_ids"] = predecessor_ids
+                scheduler_task_dict["predecessor_ids"] = (
+                    predecessor_ids if len(predecessor_ids) > 0 else []
+                )
 
             # get constraints related to task if there are any
             constraints = self._get_task_constraints(task)
@@ -363,16 +467,27 @@ class SchedulingService:
                 # add constraints to dictionary
                 scheduler_task_dict["constraints"] = constraints
 
-            resource_assigment = TaskResourceAssigment.objects.filter(task=task).first()
+            rule_assignment = TaskRuleAssignment.objects.filter(task=task).first()
 
-            if resource_assigment and len(constraints) == 0:
+            if rule_assignment and len(constraints) == 0:
                 # check for assignments
-                resource_count = resource_assigment.resource_count
                 scheduler_group_list = []
 
-                for resource_group in resource_assigment.resource_group.all():
+                if hasattr(rule_assignment.assigment_rule, "assignmentconstraint"):
+                    assignment_constraint = (
+                        rule_assignment.assigment_rule.assignmentconstraint
+                    )
+                    resource_count = assignment_constraint.resource_count
+                    scheduler_assignment = None
+
+                    assigned_resources = (
+                        assignment_constraint.resource_group.resources.all()
+                        if assignment_constraint.resource_group
+                        else assignment_constraint.resources.all()
+                    )
+
                     group_resources = []
-                    for resource in resource_group.resources.all():
+                    for resource in assigned_resources:
                         available_windows = (
                             self.weekly_shift_templates_windows_dict.get(
                                 resource.weekly_shift_template.id, []
@@ -387,20 +502,24 @@ class SchedulingService:
                     scheduler_resource_group = ResourceGroup(resources=group_resources)
                     scheduler_group_list.append(scheduler_resource_group)
 
-                if resource_count > 0 and not resource_assigment.use_all_resources:
-                    scheduler_assignment = Assignment(
-                        resource_groups=[scheduler_resource_group],
-                        resource_count=resource_count,
-                    )
+                    if (
+                        resource_count > 0
+                        and not assignment_constraint.use_all_resources
+                    ):
+                        scheduler_assignment = Assignment(
+                            resource_groups=[scheduler_resource_group],
+                            resource_count=resource_count,
+                        )
 
-                if resource_assigment.use_all_resources:
-                    scheduler_assignment = Assignment(
-                        resource_groups=[scheduler_resource_group],
-                        use_all_resources=resource_assigment.use_all_resources,
-                    )
+                    if assignment_constraint.use_all_resources:
+                        scheduler_assignment = Assignment(
+                            resource_groups=[scheduler_resource_group],
+                            use_all_resources=assignment_constraint.use_all_resources,
+                        )
 
-                # append all the scheduler assignment to the scheduler_assignments list
-                scheduler_assignments.append(scheduler_assignment)
+                    # append all the scheduler assignment to the scheduler_assignments list
+                    if scheduler_assignment:
+                        scheduler_assignments.append(scheduler_assignment)
 
             # add assignments to scheduler task dictionary
             scheduler_task_dict["assignments"] = scheduler_assignments
@@ -419,8 +538,16 @@ class SchedulingService:
         constraint_resource_tasks = AssignmentConstraint.objects.filter(
             task=task
         ).first()
+
         if constraint_resource_tasks:
-            for resource in constraint_resource_tasks.resources.all():
+            # if resources is not empty, get all resources from the resources field else get all resources from the resource_group field
+            assigned_resources = (
+                constraint_resource_tasks.resource_group.resources.all()
+                if constraint_resource_tasks.resource_group
+                else constraint_resource_tasks.resources.all()
+            )
+
+            for resource in assigned_resources:
                 available_windows = self.weekly_shift_templates_windows_dict.get(
                     resource.weekly_shift_template.id, []
                 )

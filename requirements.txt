@@ -12,6 +12,7 @@ django-filter==23.5
 django-extensions==3.1.3
 django-invitations
 django-split-settings==1.2.0
+django-widget-tweaks==1.5.0
 factryengine
 gunicorn==22.0.0
 numpy==1.26.4

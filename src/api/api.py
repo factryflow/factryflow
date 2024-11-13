@@ -18,8 +18,9 @@ from resource_calendar.api import resource_calendar_router
 from resource_manager.api import resource_manager_router
 from users.api import router as user_router
 from common.api import common_router
-from job_manager.api import job_manager_router
+from job_manager.api.viewsets import job_manager_router
 from resource_assigner.api import resource_assigner_router
+from microbatching.api import microbatch_router
 
 
 class ApiKey(APIKeyHeader):
@@ -32,7 +33,22 @@ class ApiKey(APIKeyHeader):
 
 header_key = ApiKey()
 
-api = NinjaAPI(auth=header_key)
+
+api = NinjaAPI(
+    title="Factryflow APIs",
+    version="1.0.0",
+    description=(
+        """Factryflow API for managing resources, jobs, tasks, and more.
+        This API provides endpoints to handle resource allocation, job scheduling, 
+        user management, and various other functionalities essential for efficient 
+        workflow management in a factoryflow.
+        
+        """
+    ),
+    docs_url="/docs",
+    openapi_url="/openapi.json",
+    auth=header_key,
+)
 
 api.add_router("", resource_manager_router)
 
@@ -42,6 +58,7 @@ api.add_router("", resource_calendar_router)
 api.add_router("", resource_assigner_router)
 api.add_router("", user_router)
 api.add_router("", common_router)
+api.add_router("", microbatch_router)
 
 
 @api.exception_handler(ObjectDoesNotExist)

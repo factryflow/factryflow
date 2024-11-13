@@ -2,7 +2,6 @@ from ninja import Field, ModelSchema
 
 from job_manager.models import (
     Dependency,
-    DependencyStatusChoices,
     DependencyType,
 )
 
@@ -14,7 +13,7 @@ from job_manager.models import (
 class DependencyTypeIn(ModelSchema):
     class Meta:
         model = DependencyType
-        fields = ["name", "external_id", "notes"]
+        fields = ["name", "external_id", "notes", "custom_fields"]
 
 
 class DependencyTypeOut(ModelSchema):
@@ -23,18 +22,22 @@ class DependencyTypeOut(ModelSchema):
         fields = "__all__"
 
 
-class DependencyIn(ModelSchema):
-    dependency_status: DependencyStatusChoices = Field(None, alias="dependencyStatus")
+# ------------------------------------------------------------------------------
+# Dependency Schemas
+# ------------------------------------------------------------------------------
 
+
+class DependencyIn(ModelSchema):
     class Meta:
         model = Dependency
         fields = [
             "name",
             "external_id",
             "dependency_type",
+            "dependency_status",
             "expected_close_datetime",
             "notes",
-            "actual_close_datetime",
+            "custom_fields",
         ]
 
 

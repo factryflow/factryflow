@@ -1,18 +1,18 @@
 {% load static %}
 {% load partials %}
+{% load permission_tags %}
 {% load user_role %}
 {% partialdef _menu_item %}
 <li>
   <a href="{{ menu_item_url }}"
-     hx-get="{{ menu_item_url }}"
-     hx-target="body"
+     hx-target="#main-content"
      hx-push-url="true"
      class="w-full flex py-2.5 pl-3 text-sm leading-5 rounded-lg items-center"
      x-data="{isHovered:false}"
      x-on:mouseover="isHovered = true"
      x-on:mouseleave="isHovered = false"
-     @click="$store.sidebar.active = '{{ menu_item_id }}'"
-     :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter':$store.sidebar.active == '{{ menu_item_id }}' || isHovered }">
+     @click="$store.sidebar.active = '{{ menu_item_id }}'; $dispatch('close-all-dropdowns');"
+     :class="{ 'border-l-[3px] bg-[#023e8a0d] text-[#023E8A] custom-filter': $store.sidebar.active == '{{ menu_item_id }}' || isHovered }">
     <img class="h-6 w-6" src="{% static menu_item_icon %}" />
     <span class="ml-4" :class="$store.sidebar.full ? 'block' : 'hidden'">{{ menu_item_name }}</span>
   </a>
@@ -23,7 +23,7 @@
   <a href="{{ menu_item_url }}"
      class="flex py-2 text-sm leading-5 font-semibold rounded-lg items-center transition duration-75"
      x-data="{isHovered:false}"
-     @click="active='{{ menu_item_id }}'"
+     @click="active='{{ menu_item_id }}'; $dispatch('close-all-dropdowns')"
      x-on:mouseover="isHovered = true"
      x-on:mouseleave="isHovered = false"
      :class="{'text-[#023E8A]  custom-filter': active == '{{ menu_item_id }}' || isHovered}">
@@ -36,7 +36,7 @@
 {% endpartialdef %}
 {% partialdef _dropdown_menu %}
 <button type="button"
-        @click="toggle('{{ menu_item_id }}')"
+        @click="toggle('{{ menu_item_id }}'); $dispatch('close-all-dropdowns', '{{ menu_item_id }}')"
         x-data="{ isHovered: false }"
         x-cloak
         x-on:mouseover="isHovered = true"
@@ -48,7 +48,6 @@
     <span class="ml-4">{{ menu_item_name }}</span>
   </div>
   <img class="h-6 w-6 ml-auto"
-       class="pt-2.5"
        :src="!open ? '{% static 'images/RightArrow.svg' %}' : '{% static 'images/down-arrow.svg' %}'" />
 </button>
 {% endpartialdef %}
@@ -81,17 +80,18 @@
   <nav class="text-[#5E6278] ml-2.5">
     <ul class="space-y-5 font-semibold">
       {% comment %} dashboard menu {% endcomment %}
-      {% with menu_item_id='dashboard' menu_item_icon='images/Dashboard.svg' menu_item_name='Dashboard' %}
+      {% with menu_item_id='dashboard' menu_item_icon='images/dashboard.svg' menu_item_name='Dashboard' menu_item_url="/dashboard/gantt-type=job/home=true" %}
         {% partial _menu_item %}
       {% endwith %}
       {% comment %} Production Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='Production' menu_item_icon='images/Rm.svg' menu_item_name='Production' %}
+        {% with menu_item_id='Production' menu_item_icon='images/production.svg' menu_item_name='Production' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
           {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -107,19 +107,17 @@
           {% with menu_item_id='item' menu_item_name='Item' menu_item_url="/items" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='chart' menu_item_name='Chart' menu_item_url="/chart" %}
-            {% partial _dropdown_menu_item %}
-          {% endwith %}
         </ul>
       </div>
       {% comment %} Resource Management Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RM' menu_item_icon='images/Rm.svg' menu_item_name='Resource Management' %}
+        {% with menu_item_id='RM' menu_item_icon='images/resource-management.svg' menu_item_name='Resource Management' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
           {% with menu_item_id='resources' menu_item_name='Resources' menu_item_url="/resources" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -128,14 +126,32 @@
           {% endwith %}
         </ul>
       </div>
-      {% comment %} Resource Calender Menu {% endcomment %}
+      {% comment %} Microbatching Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RC' menu_item_icon='images/Rm.svg' menu_item_name='Resource Calender' %}
+        {% with menu_item_id='MB' menu_item_icon='images/microbatching.svg' menu_item_name='Microbatching' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
+          {% with menu_item_id='MF' menu_item_name='Microbatch Flows' menu_item_url="/microbatch-flows" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% with menu_item_id='MR' menu_item_name='Microbatch Rules' menu_item_url="/microbatch-rules" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+        </ul>
+      </div>
+      {% comment %} Resource Calender Menu {% endcomment %}
+      <div x-data="dropdown">
+        {% with menu_item_id='RC' menu_item_icon='images/resource-calender.svg' menu_item_name='Resource Calender' %}
+          {% partial _dropdown_menu %}
+        {% endwith %}
+        <ul x-show="open"
+            @click.outside="open=false"
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
           {% with menu_item_id='WST' menu_item_name='Weekly Shift Template' menu_item_url="/weekly-shift-templates" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -149,12 +165,13 @@
       </div>
       {% comment %} Resource Assigner Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='RA' menu_item_icon='images/Rm.svg' menu_item_name='Resource Assigner' %}
+        {% with menu_item_id='RA' menu_item_icon='images/resource-assigner.svg' menu_item_name='Resource Assigner' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
           {% with menu_item_id='resources-assignment' menu_item_name='Resources Assignment' menu_item_url="/task-resource-assigments" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -171,12 +188,13 @@
       </div>
       <!-- Scheduler View Menu -->
       <div x-data="dropdown">
-        {% with menu_item_id='SS' menu_item_icon='images/Rm.svg' menu_item_name='Scheduler' %}
+        {% with menu_item_id='SS' menu_item_icon='images/scheduler.svg' menu_item_name='Scheduler' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
           {% with menu_item_id='scheduler_runs' menu_item_name='Scheduler History' menu_item_url="/scheduler-runs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -184,12 +202,13 @@
       </div>
       {% comment %} Types Menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='datatype' menu_item_icon='images/Rm.svg' menu_item_name='Data Type & Custom fields' %}
+        {% with menu_item_id='datatype' menu_item_icon='images/data-types.svg' menu_item_name='Data Type & Custom fields' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
           {% with menu_item_id='job-type' menu_item_name='Job Type' menu_item_url="/job-types" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -207,34 +226,40 @@
           {% endwith %}
         </ul>
       </div>
-      {% comment %} User Management Menu {% endcomment %}
+      <!-- Settings menu -->
+      {% comment %} setting menu {% endcomment %}
       <div x-data="dropdown">
-        {% with menu_item_id='datatype' menu_item_icon='images/Rm.svg' menu_item_name='User Management' %}
+        {% with menu_item_id='settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' %}
           {% partial _dropdown_menu %}
         {% endwith %}
         <ul x-show="open"
             @click.outside="open=false"
-            class="w-full space-y-2.5 ml-5 mt-4">
-          {% with menu_item_id='job-type' menu_item_name='Users' menu_item_url="/users" %}
+            class="w-full space-y-2.5 ml-5 mt-4"
+            style="display: none">
+          {% with menu_item_id='scheduler_settings' menu_item_name='Scheduler' menu_item_url="/settings" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          {% with menu_item_id='account_settings' menu_item_name='My Account' menu_item_url="/users/change-password" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
+          {% if user|can:'view_user' %}
+            {% with menu_item_id='user_management' menu_item_name='User Management' menu_item_url="/users" %}
+              {% partial _dropdown_menu_item %}
+            {% endwith %}
+          {% endif %}
         </ul>
       </div>
-      <!-- Operator View menu -->
-      {% comment %} setting menu {% endcomment %}
-      {% with menu_item_id='Settings' menu_item_icon='images/Setting.svg' menu_item_name='Settings' menu_item_url='/settings' %}
-        {% partial _menu_item %}
-      {% endwith %}
-      {% comment %} Help and Support manu {% endcomment %}
-      {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
-        {% partial _menu_item %}
-      {% endwith %}
-      {% comment %} operator menu {% endcomment %}
-      {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
-        {% partial _menu_item %}
-      {% endwith %}
+      <!-- TODO -->
+      <!-- {% comment %} Help and Support manu {% endcomment %}
+                                                                                    {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
+                                                                                      {% partial _menu_item %}
+                                                                                    {% endwith %} -->
+      <!-- {% comment %} operator menu {% endcomment %}
+                                                                                    {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
+                                                                                      {% partial _menu_item %}
+                                                                                    {% endwith %} -->
       {% comment %} Logout {% endcomment %}
-      {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='accounts/logout/' %}
+      {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='/accounts/logout/' %}
         {% partial _menu_item %}
       {% endwith %}
     </ul>

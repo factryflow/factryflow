@@ -3,6 +3,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta name="description" content="Your meta description goes here" />
     <meta name="keywords" content="your, meta, keywords, go, here" />
@@ -11,6 +14,12 @@
         factryflow
       {% endblock title %}
     </title>
+    <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js">
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
             integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
             crossorigin="anonymous"
@@ -18,6 +27,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer
             src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <!-- Example using CDN for Tailwind Typography -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <!-- Include DOMPurify -->
@@ -25,46 +35,85 @@
     {% comment %} add alpine trix editor in css and javascript library {% endcomment %}
     <link rel="stylesheet"
           href="https://unpkg.com/trix@2.0.0-alpha.1/dist/trix.css"></link>
-  <script src="https://unpkg.com/trix@2.0.0-alpha.1/dist/trix.umd.js"></script>
-  {% include "base/theme.html" %}
-  {% include "base/styles.html" %}
-  <style>[x-cloak] { display: none !important; }</style>
-</head>
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data>
+    <script src="https://unpkg.com/trix@2.0.0-alpha.1/dist/trix.umd.js"></script>
+    <script src=" https://alpinejs.dev/plugins/focus"></script>
+    <!-- Tippy.js -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    {% include "base/theme.html" %}
+    {% include "base/styles.html" %}
+    
+    <!-- Custom CSS -->
+    <style>
+      [x-cloak] { display: none !important; }
+      /* Custom styles for tooltip */
+      .tippy-box[data-theme~='custom'] {
+            background-color: #1a202c;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        /* Tooltip arrow customization */
+        .tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow {
+            border-top-color: #1a202c;
+        }
+        .tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow {
+            border-bottom-color: #1a202c;
+        }
+    </style>
+  </head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data hx-debug="true">
   {% include "base/header.html" %}
   <div class="flex">
     {% include "base/sidebar.html" %}
     <!-- Main Content -->
-    <div class="flex h-screen flex-col flex-1 overflow-y-auto w-full bg-[#FAFAFB] border border-[#F1F1F2] rounded-t-xl ml-0 lg:ml-80 py-5 px-5 md:px-10 mt-20">
+    <div id="main-content" class="flex h-screen flex-col flex-1 overflow-y-auto w-full bg-[#FAFAFB] border border-[#F1F1F2] rounded-t-xl ml-0 lg:ml-80 py-5 px-5 md:px-10 mt-20">
       {% block content %}
       {% endblock content %}
     </div>
   </div>
   {% include "base/notifications.html" %}
-</body>
-<script>
   {% block scripts %}
   
   {% endblock scripts %}
+  <script>
     function Openbar() {
       document.querySelector('.sidebar').classList.toggle('left-[-300px]')
     }
-  document.addEventListener("alpine:init", () => {
-    // Stores variable globally
-    Alpine.store("sidebar", {
-      full: true,
-      active: "",
-      navOpen: false,
-    });
-    // Creating component Dropdown
-    Alpine.data("dropdown", () => ({
-      open: false,
-      active:'',
-      toggle(tab) {
-        this.open = !this.open;
-        Alpine.store("sidebar").active = tab;
-      },
-    }));
-  });  
-</script>
+    document.addEventListener("alpine:init", () => {
+      // Stores variable globally
+      Alpine.store("sidebar", {
+        full: true,
+        active: "",
+        navOpen: false,
+      });
+      // Creating component Dropdown
+      Alpine.data("dropdown", () => ({
+        open: false,
+        active:'',
+        toggle(tab) {
+          this.open = !this.open;
+          Alpine.store("sidebar").active = tab;
+        },
+      }));
+    });  
+
+    // Tippy.js integration with Alpine.js
+    document.addEventListener('alpine:init', () => {
+            // Directive: x-tooltip with custom theme
+            Alpine.directive('tooltip', (el, { expression }) => {
+                console.log(expression);
+                tippy(el, { 
+                    content: expression,
+                    theme: 'custom',
+                    placement: 'top',
+                    arrow: true,
+                    animation: 'fade',
+                    duration: [200, 200],
+                });
+            });
+        });
+  </script>
+</body>
 </html>

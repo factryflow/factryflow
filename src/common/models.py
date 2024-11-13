@@ -53,7 +53,7 @@ class FieldType(models.TextChoices):
     NUMBER = "number", "number"
     DATE = "date", "Date"
     TIME = "time", "Time"
-    DATETIME = "datetime", "Datetime"
+    DATETIME = "datetime-local", "Datetime-local"
     # Add more field types here if required
 
     @classmethod
@@ -67,6 +67,15 @@ class FieldType(models.TextChoices):
         return {choice[0]: choice[1] for choice in cls.choices}
 
 
+class Operator(models.TextChoices):
+    EQUALS = "equals", "Equals"
+    CONTAINS = "contains", "Contains"
+    STARTS_WITH = "starts_with", "Starts With"
+    ENDS_WITH = "ends_with", "Ends With"
+    GREATER_THAN = "gt", "Greater Than"
+    LESS_THAN = "lt", "Less Than"
+
+
 class CustomField(BaseModel):
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, related_name="custom_fields"
@@ -74,7 +83,7 @@ class CustomField(BaseModel):
     name = models.CharField(max_length=150)
     label = models.CharField(max_length=150)
     description = models.TextField(blank=True)
-    field_type = models.CharField(max_length=10, choices=FieldType.choices)
+    field_type = models.CharField(max_length=20, choices=FieldType.choices)
     is_required = models.BooleanField(default=False)
 
     history = HistoricalRecords(table_name="custom_field_history")

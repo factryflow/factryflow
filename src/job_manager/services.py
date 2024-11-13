@@ -2,20 +2,26 @@ from datetime import datetime
 
 from api.permission_checker import AbstractPermissionService
 from common.services import model_update
+from common.utils import get_object
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from resource_assigner.models import TaskResourceAssigment
+from resource_manager.models import Resource
 
 from job_manager.models import (
     Dependency,
     DependencyType,
+    Item,
     Job,
     JobStatusChoices,
     JobType,
     Task,
     TaskType,
     WorkCenter,
-    Item,
 )
+
+from resource_assigner.models import AssignmentConstraint
+from resource_assigner.services import AssignmentConstraintService
 
 # ------------------------------------------------------------------------------
 # WorkCenter Services
@@ -124,6 +130,35 @@ class TaskService:
         self.user = user
         self.permission_service = AbstractPermissionService(user=user)
 
+        self.assignment_constraint_service = AssignmentConstraintService(user=user)
+
+    def _create_or_update_constraints(
+        self, assignment_constraints: list[dict], instance: Task
+    ):
+        # Create or update assignment constraints
+        for assignment_constraint_dict in assignment_constraints:
+            assignment_constraint_id = (
+                assignment_constraint_dict.get("id").id
+                if assignment_constraint_dict.get("id")
+                else None
+            )
+            assignment_constraint_instance = get_object(
+                model_or_queryset=AssignmentConstraint, id=assignment_constraint_id
+            )
+            if assignment_constraint_instance:
+                self.assignment_constraint_service.update(
+                    instance=assignment_constraint_instance,
+                    data=assignment_constraint_dict,
+                )
+            else:
+                assignment_constraint_dict.pop("task", instance)
+                assignment_constraint_dict.pop("id", None)
+
+                self.assignment_constraint_service.create(
+                    task=instance,
+                    **assignment_constraint_dict,
+                )
+
     @transaction.atomic
     def create(
         self,
@@ -142,8 +177,8 @@ class TaskService:
         job: Job = None,
         dependencies: list[Dependency] = None,
         predecessors: list[Task] = None,
-        successors: list[Task] = None,
         custom_fields: dict = None,
+        constraints: list[dict] = [],
     ) -> Task:
         # check for permission to create task
         if not self.permission_service.check_for_permission("add_task"):
@@ -169,14 +204,29 @@ class TaskService:
         task.full_clean()
         task.save(user=self.user)
 
+        # Create assignment constraints
+        for assignment_constraint_dict in constraints:
+            # delete assignment rule object as it already been created
+            assignment_constraint_dict.pop("task", None)
+            assignment_constraint_dict.pop("id", None)
+            assignment_constraint_dict.pop("DELETE", None)
+
+            # get custom fields from assignment constraint
+            constraint_custom_fields = assignment_constraint_dict.pop(
+                "custom_fields", {}
+            )
+
+            self.assignment_constraint_service.create(
+                task=task,
+                **assignment_constraint_dict,
+                custom_fields=constraint_custom_fields,
+            )
+
         if dependencies:
             task.dependencies.set(dependencies)
 
         if predecessors:
             task.predecessors.set(predecessors)
-
-        if successors:
-            task.successors.set(successors)
 
         return task
 
@@ -208,6 +258,32 @@ class TaskService:
         task, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
+
+        # update assignment constraints
+        assignment_constraints = data.get("constraints", [])
+
+        # delete the assignment constraints if Delete is True
+        constraints_to_delete = (
+            assignment_constraints[0].pop("DELETE", False)
+            if assignment_constraints
+            else False
+        )
+
+        if constraints_to_delete:
+            # delete the assignment constraint
+            constraints_instance = AssignmentConstraint.objects.filter(
+                task=assignment_constraints[0]["task"]
+            )
+            if constraints_instance.exists():
+                self.assignment_constraint_service.delete(
+                    instance=constraints_instance.first()
+                )
+
+        if assignment_constraints and not constraints_to_delete:
+            # create or update assignment constraints
+            self._create_or_update_constraints(
+                assignment_constraints=assignment_constraints, instance=instance
+            )
 
         return task
 
@@ -558,3 +634,211 @@ class ItemService:
 
         instance.delete()
         return True
+
+
+class JobGanttChartService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    def map_jobs_to_gantt(self) -> list:
+        # check for permission to view job gantt chart
+        if not self.user.is_authenticated:
+            raise PermissionDenied()
+
+        job_data = []
+        jobs = Job.objects.prefetch_related("tasks").order_by("priority")
+
+        gantt_pid = 1
+
+        for job in jobs:
+            if job.tasks.count() > 0:
+                job_pid = gantt_pid
+                job_data.append(
+                    {
+                        "pID": job_pid,
+                        "pName": job.name,
+                        "pStart": "",
+                        "pEnd": "",
+                        "pClass": "gtaskblue",
+                        "pLink": "",
+                        "pMile": 0,
+                        "pRes": "",
+                        "pComp": 0,
+                        "pGroup": 1,
+                        "pParent": 0,
+                        "pOpen": 1,
+                        "pDepend": "",
+                        "pCaption": "",
+                        "pNotes": "",
+                        "pPlanStart": job.planned_start_datetime,
+                        "pPlanEnd": job.planned_end_datetime,
+                    }
+                )
+
+                gantt_pid += 1
+
+                for task in job.tasks.all():
+                    if hasattr(task, "taskresourceassigment"):
+                        assignment = task.taskresourceassigment
+                        if assignment.resources:
+                            resource_name = ", ".join(
+                                [
+                                    resource.name
+                                    for resource in assignment.resources.all()
+                                ]
+                            )
+                    else:
+                        resource_name = ""
+
+                    job_data.append(
+                        {
+                            "pID": gantt_pid,
+                            "pName": task.name,
+                            "pStart": "",
+                            "pEnd": "",
+                            "pClass": "gtaskblue",
+                            "pLink": "",
+                            "pMile": 0,
+                            "pRes": resource_name,
+                            "pComp": 0,
+                            "pGroup": 0,
+                            "pParent": job_pid,
+                            "pOpen": 1,
+                            "pDepend": list(
+                                task.predecessors.values_list("id", flat=True)
+                            ),
+                            "pNotes": task.notes,
+                            "priority": job.priority,
+                            "pCaption": "",
+                            "pPlanStart": task.planned_start_datetime,
+                            "pPlanEnd": task.planned_end_datetime,
+                        }
+                    )
+
+                    gantt_pid += 1
+
+        return job_data
+
+
+class ResourceGanttChartService:
+    def __init__(self, user) -> None:
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
+
+    def map_resources_to_gantt(self) -> list:
+        # check for permission to view job gantt chart
+        if not self.user.is_authenticated:
+            raise PermissionDenied()
+
+        chart_data = []
+        gantt_pid = 1  # Counter for object ID in Gantt chart
+
+        resources = Resource.objects.all()
+
+        # Get all TaskResourceAssigment and group by resources
+        for resource in resources:
+            # Get all TaskResourceAssigment for each resource
+            task_ids = TaskResourceAssigment.objects.filter(
+                resources__id__contains=resource.id
+            ).values_list("task_id", flat=True)
+
+            resource_pid = gantt_pid
+
+            chart_data.append(
+                {
+                    "pID": resource_pid,
+                    "pName": resource.name,
+                    "pStart": "",
+                    "pEnd": "",
+                    "pClass": "gtaskblue",
+                    "pLink": "",
+                    "pMile": 0,
+                    "pRes": "",
+                    "pComp": 0,
+                    "pGroup": 1,
+                    "pParent": 0,
+                    "pOpen": 1,
+                    "pDepend": "",
+                    "pCaption": "",
+                    "pNotes": "",
+                }
+            )
+
+            gantt_pid += 1
+            resource_jobs = Job.objects.none()
+
+            if task_ids:
+                for task_id in (
+                    task_ids
+                ):  # Get all jobs for each resource based on the assigned tasks
+                    resource_jobs = resource_jobs | Job.objects.filter(
+                        tasks__id__contains=task_id
+                    )
+
+            for job in resource_jobs.distinct():
+                job_pid = gantt_pid
+                chart_data.append(
+                    {
+                        "pID": job_pid,
+                        "pName": job.name,
+                        "pStart": "",
+                        "pEnd": "",
+                        "pClass": "gtaskblue",
+                        "pLink": "",
+                        "pMile": 0,
+                        "pRes": "",
+                        "pComp": 0,
+                        "pGroup": 1,
+                        "pOpen": 1,
+                        "pParent": resource_pid,
+                        "pDepend": "",
+                        "pCaption": "",
+                        "pNotes": "",
+                        "pPlanStart": job.planned_start_datetime,
+                        "pPlanEnd": job.planned_end_datetime,
+                    }
+                )
+
+                gantt_pid += 1
+
+                for task in job.tasks.filter(id__in=task_ids):
+                    if hasattr(task, "taskresourceassigment"):
+                        assignment = task.taskresourceassigment
+                        if assignment.resources:
+                            resource_name = ", ".join(
+                                [
+                                    resource.name
+                                    for resource in assignment.resources.all()
+                                ]
+                            )
+                    else:
+                        resource_name = ""
+
+                    chart_data.append(
+                        {
+                            "pID": gantt_pid,
+                            "pName": task.name,
+                            "pStart": "",
+                            "pEnd": "",
+                            "pClass": "gtaskblue",
+                            "pLink": "",
+                            "pMile": 0,
+                            "pRes": resource_name,
+                            "pComp": 0,
+                            "pGroup": 0,
+                            "pParent": job_pid,
+                            "pOpen": 1,
+                            "pDepend": list(
+                                task.predecessors.values_list("id", flat=True)
+                            ),
+                            "pCaption": "",
+                            "pNotes": "",
+                            "pPlanStart": task.planned_start_datetime,
+                            "pPlanEnd": task.planned_end_datetime,
+                        }
+                    )
+
+                    gantt_pid += 1
+
+        return chart_data

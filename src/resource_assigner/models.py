@@ -1,10 +1,10 @@
+from common.models import BaseModel, BaseModelWithExtras, Operator
 from django.core.exceptions import ValidationError
-from common.models import BaseModel, BaseModelWithExtras
 from django.db import models
-from ordered_model.models import OrderedModel
-
 from job_manager.models import Task, WorkCenter
+from ordered_model.models import OrderedModel
 from resource_manager.models import Resource, ResourceGroup
+from simple_history.models import HistoricalRecords
 
 
 class TaskResourceAssigment(BaseModel):
@@ -13,18 +13,17 @@ class TaskResourceAssigment(BaseModel):
     """
 
     task = models.OneToOneField(Task, on_delete=models.DO_NOTHING)
-    assigment_rule = models.ForeignKey(
-        "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
+    resources = models.ManyToManyField(
+        Resource, blank=True, related_name="task_resource_assignments"
     )
-    resource = models.ForeignKey(
-        Resource, on_delete=models.DO_NOTHING, blank=True, null=True
-    )
+
+    history = HistoricalRecords(table_name="task_resource_assigment_history")
 
     class Meta:
         db_table = "task_resource_assigment"
 
     def __str__(self):
-        return f"{self.task} - {self.resource}"
+        return f"{self.task.name}"
 
 
 class AssigmentRule(BaseModelWithExtras, OrderedModel):
@@ -37,6 +36,8 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=True)
 
+    history = HistoricalRecords(table_name="assigment_rule_history")
+
     order_with_respect_to = "work_center"
 
     class Meta(OrderedModel.Meta):
@@ -44,15 +45,6 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
 
     def __str__(self):
         return self.name
-
-
-class Operator(models.TextChoices):
-    EQUALS = "equals", "Equals"
-    CONTAINS = "contains", "Contains"
-    STARTS_WITH = "starts_with", "Starts With"
-    ENDS_WITH = "ends_with", "Ends With"
-    GREATER_THAN = "gt", "Greater Than"
-    LESS_THAN = "lt", "Less Than"
 
 
 class AssigmentRuleCriteria(BaseModel):
@@ -70,6 +62,8 @@ class AssigmentRuleCriteria(BaseModel):
         max_length=20, choices=Operator.choices, default=Operator.EQUALS
     )
     value = models.CharField(max_length=254, blank=True, null=True)
+
+    history = HistoricalRecords(table_name="assigment_rule_criteria_history")
 
     class Meta:
         db_table = "assigment_rule_criteria"
@@ -105,8 +99,20 @@ class AssignmentConstraint(BaseModel):
     resource_count = models.PositiveIntegerField(default=1)
     use_all_resources = models.BooleanField(default=False)
 
+    history = HistoricalRecords(table_name="assignment_constraint_history")
+
     class Meta:
         db_table = "assignment_constraint"
+
+    def __str__(self):
+        if self.task:
+            return f"AssignmentConstraint for Task: {self.task.name}"
+        elif self.assignment_rule:
+            return (
+                f"AssignmentConstraint for Assignment Rule: {self.assignment_rule.name}"
+            )
+        else:
+            return "AssignmentConstraint with no associated Task or Assignment Rule"
 
     @property
     def is_template(self):
@@ -131,6 +137,8 @@ class TaskRuleAssignment(BaseModel):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.CASCADE)
     is_applied = models.BooleanField(default=False)
+
+    history = HistoricalRecords(table_name="task_rule_assignment_history")
 
     class Meta:
         db_table = "task_rule_assignment"

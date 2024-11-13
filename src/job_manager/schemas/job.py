@@ -2,7 +2,6 @@ from ninja import Field, ModelSchema
 
 from job_manager.models import (
     Job,
-    JobStatusChoices,
     JobType,
 )
 
@@ -14,7 +13,7 @@ from job_manager.models import (
 class JobTypeIn(ModelSchema):
     class Meta:
         model = JobType
-        fields = ["name", "external_id", "notes"]
+        fields = ["name", "external_id", "notes", "custom_fields"]
 
 
 class JobTypeOut(ModelSchema):
@@ -23,23 +22,26 @@ class JobTypeOut(ModelSchema):
         fields = "__all__"
 
 
-class JobIn(ModelSchema):
-    dependencies: list[int] = Field(None, alias="dependency_ids")
-    job_status: JobStatusChoices = Field(None, alias="jobStatus")
+# ------------------------------------------------------------------------------
+# Job Schemas
+# ------------------------------------------------------------------------------
 
+
+class JobIn(ModelSchema):
     class Meta:
         model = Job
         fields = [
             "name",
             "external_id",
             "job_type",
+            "job_status",
+            "dependencies",
             "notes",
             "description",
             "due_date",
             "customer",
             "priority",
-            "planned_start_datetime",
-            "planned_end_datetime",
+            "custom_fields",
         ]
 
 

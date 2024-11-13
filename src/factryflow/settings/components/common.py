@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "storages",
     "ordered_model",
     "taggit",
+    "widget_tweaks",
     # apps
     "users",
     "common",
@@ -72,6 +73,7 @@ INSTALLED_APPS = [
     "api",
     "rolepermissions",
     "scheduler",
+    "microbatching",
 ]
 
 MIDDLEWARE = [
@@ -177,7 +179,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/dashboard/gantt-chart=job/home=true/"
 
 
 # SUPERUSER CREDENTIALS
@@ -202,6 +204,9 @@ EMAIL_USE_SSL = False
 
 # API KEY
 API_KEY = os.getenv("API_KEY")
+
+# BASE URL for APIs
+API_BASE_URL = os.getenv("API_BASE_URL")
 
 # TAGGIT SETTINGS
 TAGGIT_CASE_INSENSITIVE = True

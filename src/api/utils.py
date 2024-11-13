@@ -1,11 +1,14 @@
 from http import HTTPStatus
+from django.core.exceptions import FieldDoesNotExist
 from typing import List
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import Http404
+
+from api.schemas import DeleteResponseSchema
 
 
 class CRUDModelViewSet:
@@ -67,22 +70,29 @@ class CRUDModelViewSet:
         def update(request: HttpRequest, id: int, payload: self.input_schema):
             instance = self._get_instance(id=id)
             data = self._process_foreign_keys(payload_data=payload.model_dump())
-            instance = self.service(user=request.user).update(
-                instance=instance, data=data
-            )
+            instance = self.service(user=request.user).update(instance, data)
             return instance
 
         # DELETE
         @self.router.delete(
             self.path + "/{id}",
-            response={HTTPStatus.NO_CONTENT: None},
+            response=DeleteResponseSchema,
             summary=f"Delete {self.name}",
             operation_id=f"{self.name}_delete",
         )
         def delete(request: HttpRequest, id: int):
             instance = self._get_instance(id=id)
-            self.service().delete(instance=instance)
-            return None
+            try:
+                self.service(user=request.user).delete(instance)
+                return {
+                    "status": HTTPStatus.OK,
+                    "message": f"{self.model.__name__} with id {id} deleted successfully",
+                }
+            except IntegrityError:
+                return {
+                    "status": HTTPStatus.BAD_REQUEST,
+                    "message": f"Cannot delete {self.model.__name__} with id {id} due to foreign key constraint",
+                }
 
     def _get_instance(self, id: int):
         try:
@@ -92,7 +102,10 @@ class CRUDModelViewSet:
 
     def _process_foreign_keys(self, payload_data):
         for field_name, field_value in payload_data.items():
-            field = self.model._meta.get_field(field_name)
+            try:
+                field = self.model._meta.get_field(field_name)
+            except FieldDoesNotExist:
+                continue
 
             if isinstance(field, models.ForeignKey):
                 related_model = field.remote_field.model
