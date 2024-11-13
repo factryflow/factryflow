@@ -12,7 +12,6 @@ class MicrobatchRule(BaseModelWithExtras):
     """
 
     name = models.CharField(max_length=150)
-    batch_size = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
     history = HistoricalRecords(table_name="microbatch_rule_history")

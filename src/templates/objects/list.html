@@ -362,6 +362,10 @@
         <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
             hx-post="{% url 'generate_task_flows' %}" type="button">Generate Task Flows</button>
         {% endif %}
+        {% if model_name == 'microbatch_flows' %}
+        <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
+            hx-post="{% url 'run_microbatch_scheduling' %}" type="button">Run Microbatch Scheduling</button>
+        {% endif %}
 
         <a href="{% url model_name|add:'_form' %}"
             class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New {{ model_title | title }}</a>
@@ -384,6 +388,12 @@
                 :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
                 class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
             {% endfor %}
+            {% if model_name == "tasks" %}  <!-- Update on frontend refactor -->
+                <button hx-get="{% url model_name %}?parents=true" hx-target="#all-{{ model_name }}s-table"
+                hx-trigger="click" x-on:click="activeTab = 'parents'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'parents','text-[#7E8299]':activeTab != 'parents'}"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Parent Tasks</button>
+            {% endif %}
         </div>
     </div>
 

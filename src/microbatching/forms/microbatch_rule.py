@@ -11,8 +11,7 @@ class MicrobatchRuleForm(forms.ModelForm):
     class Meta:
         model = MicrobatchRule
         fields = [
-            "name",
-            "batch_size",
+            "name"
         ]
         exclude = [
             "created_by",
@@ -22,16 +21,10 @@ class MicrobatchRuleForm(forms.ModelForm):
             "custom_fields",
         ]
         labels = {
-            "name": "Name",
-            "batch_size": "Batch Size",
+            "name": "Name"
         }
         widgets = {
             "name": forms.TextInput(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "batch_size": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }

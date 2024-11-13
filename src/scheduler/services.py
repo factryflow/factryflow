@@ -314,9 +314,9 @@ class SchedulingService:
         )
 
     @transaction.atomic
-    def run(self):
+    def run(self, selected_tasks=None):
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
-        scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict)
+        scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict, selected_tasks)
         scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
         log_messages = []
 
@@ -327,6 +327,7 @@ class SchedulingService:
             tasks=scheduler_tasks, resources=scheduler_resources_dict.values()
         )
         result = scheduler.schedule()
+        
         scheduler_summary = result.summary().split("\n")
         log_messages.extend(scheduler_summary)
 
@@ -415,12 +416,13 @@ class SchedulingService:
         scheduler_logs["log_messages"] = log_messages
         return {"data": res_df.to_dict("records"), "logs": scheduler_logs}
 
-    def _create_scheduler_task_objects(self, resources_dict: dict):
-        tasks = Task.objects.filter(job__isnull=False)
+    def _create_scheduler_task_objects(self, resources_dict: dict, selected_tasks=None):
+        if not selected_tasks:
+            selected_tasks = Task.objects.filter(job__isnull=False)
 
         scheduler_tasks = []
         scheduler_assignments = []
-        for task in tasks:
+        for task in selected_tasks:
             scheduler_task_dict = {}
 
             # task details

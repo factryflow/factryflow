@@ -258,6 +258,7 @@ class CustomTableView:
         status_filter=None,
         search_query=None,
         sort_by="desc",
+        parent_filter=None,
     ):
         """
         Get filtered instances based on status and search query.
@@ -269,7 +270,10 @@ class CustomTableView:
         Returns:
             list: A list of filtered instances based on the provided status and search query.
         """
-        all_instances = self.all_instances
+        if parent_filter:
+            all_instances = self.model.objects.filter(parent__isnull=True)
+        else:
+            all_instances = self.all_instances
 
         if status_filter and status_filter != "all":
             all_instances = all_instances.filter(
@@ -305,6 +309,7 @@ class CustomTableView:
         search_query=None,
         num_of_rows_per_page=25,
         sort_by="desc",
+        parent_filter=None,
     ):
         """
         Get paginated instances based on the page number and filtering.
@@ -322,7 +327,7 @@ class CustomTableView:
                 - total_instances_count (int): The total number of instances.
         """
         instances = self.filtered_instances(
-            sort_direction, sort_field, status_filter, search_query
+            sort_direction, sort_field, status_filter, search_query, parent_filter=parent_filter
         )
         paginator = Paginator(instances, num_of_rows_per_page)
         num_pages = paginator.num_pages
@@ -345,6 +350,7 @@ class CustomTableView:
         sort_by="desc",
         status_filter=None,
         search_query=None,
+        parent_filter=None,
     ):
         """
         Get the rows of data for the table based on the model and fields.
@@ -369,6 +375,7 @@ class CustomTableView:
             status_filter,
             search_query,
             num_of_rows_per_page,
+            parent_filter=parent_filter,
         )
 
         rows = []

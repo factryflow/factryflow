@@ -38,6 +38,7 @@ class CRUDView:
         button_text="Add",
         ordered_model=False,
         user_rule_permission=True,
+        parents="false",
     ):
         """
         Attributes:
@@ -184,6 +185,11 @@ class CRUDView:
         status_filter = request.GET.get("status", "all")
         search_query = request.GET.get("query", "")
         page_number = request.GET.get("page", 1)
+        parent_filter_param = request.GET.get("parents", "false")
+        if parent_filter_param == "true":
+            parent_filter = True
+        else:
+            parent_filter = False
         self.num_of_rows_per_page = request.GET.get(
             "num_of_rows_per_page", self.num_of_rows_per_page
         )
@@ -199,6 +205,7 @@ class CRUDView:
                 sort_direction=self.sort_direction,
                 sort_field=self.sort_by,
                 num_of_rows_per_page=self.num_of_rows_per_page,
+                parent_filter=parent_filter
             )
         )
 
