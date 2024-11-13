@@ -23,7 +23,6 @@ def task_data():
         "job": JobFactory(),
         "item": ItemFactory(),
         "predecessors": [TaskFactory()],
-        "successors": [TaskFactory()],
         "dependencies": [DependencyFactory()],
     }
     return data
@@ -88,7 +87,6 @@ def test_can_create_task(task_data):
     assert task.task_type == task_data["task_type"]
     assert task.work_center == task_data["work_center"]
     assert task.predecessors.count() == len(task_data["predecessors"])
-    assert task.successors.count() == len(task_data["successors"])
     assert task.dependencies.count() == len(task_data["dependencies"])
     assert task.job == task_data["job"]
 
@@ -115,13 +113,11 @@ def test_can_update_m2m_fields(task_data):
 
     updated_data = task_data.copy()
     updated_data["predecessors"] = []
-    updated_data["successors"] = []
     updated_data["dependencies"] = []
 
     updated_task = TaskService(user=user).update(instance=task, data=updated_data)
 
     assert updated_task.predecessors.count() == 0
-    assert updated_task.successors.count() == 0
     assert updated_task.dependencies.count() == 0
 
 

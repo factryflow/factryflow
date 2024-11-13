@@ -9,6 +9,7 @@ from job_manager.models import (
     JobType,
     Task,
     TaskType,
+    Item,
 )
 from job_manager.services import (
     DependencyService,
@@ -18,6 +19,7 @@ from job_manager.services import (
     TaskService,
     TaskTypeService,
     WorkCenterService,
+    ItemService,
 )
 
 from job_manager.schemas import (
@@ -35,6 +37,8 @@ from job_manager.schemas import (
     TaskTypeOut,
     WorkCenterIn,
     WorkCenterOut,
+    ItemIn,
+    ItemOut,
 )
 
 # job manager router
@@ -151,3 +155,20 @@ task_viewset = CRUDModelViewSet(
 
 task_router = task_viewset.router
 job_manager_router.add_router("", task_router)
+
+
+# ------------------------------------------------------------------------------
+# Item APIs
+# ------------------------------------------------------------------------------
+
+item_viewset = CRUDModelViewSet(
+    model=Item,
+    path="/items",
+    service=ItemService,
+    input_schema=ItemIn,
+    output_schema=ItemOut,
+    tags=["Items"],
+)
+
+item_router = item_viewset.router
+job_manager_router.add_router("", item_router)

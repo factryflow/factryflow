@@ -5,11 +5,13 @@ from resource_calendar.models import (
     OperationalException,
     OperationalExceptionType,
     WeeklyShiftTemplate,
+    WeeklyShiftTemplateDetail,
 )
 from resource_calendar.services import (
     OperationalExceptionService,
     OperationalExceptionTypeService,
     WeeklyShiftTemplateService,
+    WeeklyShiftTemplateDetailService,
 )
 
 from .schemas import (
@@ -19,9 +21,18 @@ from .schemas import (
     OperationalExceptionTypeOut,
     WeeklyShiftTemplateIn,
     WeeklyShiftTemplateOut,
+    WeeklyShiftTemplateDetailIn,
+    WeeklyShiftTemplateDetailOut,
 )
 
+# resource_calendar_router for all resource calendar related endpoints
 resource_calendar_router = Router()
+
+
+# ------------------------------------------------------------------------------
+# WeeklyShiftTemplate Routes
+# ------------------------------------------------------------------------------
+
 
 weekly_shift_template_viewset = CRUDModelViewSet(
     model=WeeklyShiftTemplate,
@@ -36,6 +47,28 @@ weekly_shift_template_router = weekly_shift_template_viewset.router
 resource_calendar_router.add_router("", weekly_shift_template_router)
 
 
+# ------------------------------------------------------------------------------
+# WeeklyShiftTemplateDetail Routes
+# ------------------------------------------------------------------------------
+
+weekly_shift_template_detail_viewset = CRUDModelViewSet(
+    model=WeeklyShiftTemplateDetail,
+    path="/weekly-shift-template-details",
+    service=WeeklyShiftTemplateDetailService,
+    input_schema=WeeklyShiftTemplateDetailIn,
+    output_schema=WeeklyShiftTemplateDetailOut,
+    tags=["Weekly Shift Template Details"],
+)
+
+weekly_shift_template_detail_router = weekly_shift_template_detail_viewset.router
+resource_calendar_router.add_router("", weekly_shift_template_detail_router)
+
+
+# ------------------------------------------------------------------------------
+# OperationalExceptionType Routes
+# ------------------------------------------------------------------------------
+
+
 operational_exception_type_viewset = CRUDModelViewSet(
     model=OperationalExceptionType,
     path="/operational-exception-types",
@@ -48,6 +81,10 @@ operational_exception_type_viewset = CRUDModelViewSet(
 operational_exception_type_router = operational_exception_type_viewset.router
 resource_calendar_router.add_router("", operational_exception_type_router)
 
+
+# ------------------------------------------------------------------------------
+# OperationalException Routes
+# ------------------------------------------------------------------------------
 
 operational_exception_viewset = CRUDModelViewSet(
     model=OperationalException,
