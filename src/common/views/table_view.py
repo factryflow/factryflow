@@ -309,7 +309,7 @@ class CustomTableView:
         search_query=None,
         num_of_rows_per_page=25,
         sort_by="desc",
-        parent_filter=False,
+        parent_filter=None,
     ):
         """
         Get paginated instances based on the page number and filtering.
