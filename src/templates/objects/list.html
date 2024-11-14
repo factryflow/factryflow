@@ -378,18 +378,18 @@
     <!-- Tabs -->
     <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
         <div class="md:flex flex-wrap text-sm md:text-base">
-            <button x-on:click="activeTab = 'tab1'" hx-get="{% url model_name %}"
+            <button x-on:click="activeTab = 'tab1'" hx-get="{% url model_name %}?status=all&parents=false"
                 hx-target="#all-{{ model_name }}s-table" hx-trigger="click"
                 :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
                 class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
             {% for status_code, status_label in status_filter_dict.items %}
-            <button hx-get="{% url model_name %}?status={{ status_code }}" hx-target="#all-{{ model_name }}s-table"
+            <button hx-get="{% url model_name %}?status={{ status_code }}&parents=false" hx-target="#all-{{ model_name }}s-table"
                 hx-trigger="click" x-on:click="activeTab = '{{ status_code|lower }}'"
                 :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
                 class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
             {% endfor %}
             {% if model_name == "tasks" %}  <!-- Update on frontend refactor -->
-                <button hx-get="{% url model_name %}?parents=true" hx-target="#all-{{ model_name }}s-table"
+                <button hx-get="{% url model_name %}?status=all&parents=true" hx-target="#all-{{ model_name }}s-table"
                 hx-trigger="click" x-on:click="activeTab = 'parents'"
                 :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'parents','text-[#7E8299]':activeTab != 'parents'}"
                 class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">Parent Tasks</button>
