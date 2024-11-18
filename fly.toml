@@ -1,0 +1,32 @@
+app = "factryflow"
+console_command = "/code/manage.py shell"
+primary_region = "sin"
+
+[build]
+dockerfile = "Dockerfile.prod"
+
+[env]
+PORT = "80"
+DATABASE = "sqlite3"
+DEBUG = "TRUE"
+DISABLE_AUTH = "FALSE"
+DJANGO_ENV = "development"
+
+[http_service]
+auto_start_machines = true
+auto_stop_machines = true
+force_https = true
+internal_port = 8_000
+min_machines_running = 0
+processes = [ "app" ]
+
+[[statics]]
+guest_path = "/code/static"
+tigris_bucket = ""
+url_prefix = "/static/"
+
+[[vm]]
+cpu_kind = "shared"
+cpus = 1
+memory = "1gb"
+memory_mb = 1_024
