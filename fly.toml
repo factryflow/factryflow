@@ -10,7 +10,7 @@ PORT = "80"
 DATABASE = "sqlite3"
 DEBUG = "TRUE"
 DISABLE_AUTH = "FALSE"
-DJANGO_ENV = "development"
+DJANGO_ENV = "production"
 
 [http_service]
 auto_start_machines = true
