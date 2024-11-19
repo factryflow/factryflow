@@ -6,7 +6,7 @@ primary_region = "sin"
 dockerfile = "Dockerfile.prod"
 
 [env]
-PORT = "80"
+PORT = "8000"
 DATABASE = "sqlite3"
 DEBUG = "TRUE"
 DISABLE_AUTH = "FALSE"
