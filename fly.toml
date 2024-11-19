@@ -6,7 +6,7 @@ primary_region = "sin"
 dockerfile = "Dockerfile.prod"
 
 [env]
-PORT = "8000"
+PORT = "80"
 DATABASE = "sqlite3"
 DEBUG = "TRUE"
 DISABLE_AUTH = "FALSE"
@@ -16,7 +16,7 @@ DJANGO_ENV = "production"
 auto_start_machines = true
 auto_stop_machines = true
 force_https = true
-internal_port = 8_000
+internal_port = 80
 min_machines_running = 0
 processes = [ "app" ]
 
