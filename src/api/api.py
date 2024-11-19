@@ -1,26 +1,28 @@
 from http import HTTPStatus
 
+from common.api import common_router
 from django.conf import settings
+from django.contrib.auth import authenticate, login
 from django.core.exceptions import (
     FieldError,
     ObjectDoesNotExist,
     PermissionDenied,
     ValidationError,
 )
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from job_manager.api.viewsets import job_manager_router
+from microbatching.api import microbatch_router
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from ninja.security import APIKeyHeader
-
+from resource_assigner.api import resource_assigner_router
 
 # import and register routers
 from resource_calendar.api import resource_calendar_router
 from resource_manager.api import resource_manager_router
 from users.api import router as user_router
-from common.api import common_router
-from job_manager.api.viewsets import job_manager_router
-from resource_assigner.api import resource_assigner_router
-from microbatching.api import microbatch_router
+
+from api.schemas import LoginSchema
 
 
 class ApiKey(APIKeyHeader):
@@ -42,7 +44,6 @@ api = NinjaAPI(
         This API provides endpoints to handle resource allocation, job scheduling, 
         user management, and various other functionalities essential for efficient 
         workflow management in a factoryflow.
-        
         """
     ),
     docs_url="/docs",
@@ -122,3 +123,34 @@ def handle_field_error(request, exc: FieldError):
         data={"message": "FieldError", "detail": str(exc)},
         status=HTTPStatus.BAD_REQUEST,
     )
+
+
+@api.post("/authenticate", auth=header_key, tags=["Authentication"])
+def api_login(request, payload: LoginSchema):
+    """
+    Authenticate the current user using the provided credentials.
+    Args:
+        request (HttpRequest): The HTTP request object containing user information.
+        payload (LoginSchema): The input schema for logging in.
+    Returns:
+        JsonResponse: The JSON response message to indicate the login status.
+    Raises:
+        ValidationError: If the payload data is invalid.
+        PermissionDenied: If the user does not have permission to initial a log in.
+    """
+    if request.method == "POST":
+        username = payload.username
+        password = payload.password
+
+        # Authenticate the user
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            if user.is_active:
+                # Log the user in if the authentication was successful
+                login(request, user)
+                return JsonResponse({'message': 'Login successful!'})
+            else:
+                return JsonResponse({'error': 'Your account is inactive.'}, status=400)
+        else:
+            return JsonResponse({'error': 'Invalid credentials'}, status=400)

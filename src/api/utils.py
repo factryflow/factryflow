@@ -1,8 +1,8 @@
 from http import HTTPStatus
-from django.core.exceptions import FieldDoesNotExist
 from typing import List
 
-from django.db import models, IntegrityError
+from django.core.exceptions import FieldDoesNotExist
+from django.db import IntegrityError, models
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from ninja import Router
