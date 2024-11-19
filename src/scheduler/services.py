@@ -10,6 +10,8 @@ from factryengine import Assignment, ResourceGroup, Scheduler
 from factryengine import Resource as SchedulerResource
 from factryengine import Task as SchedulerTask
 from job_manager.models import Task
+from microbatching.models.microbatch_flow import MicrobatchFlow
+from microbatching.services.microbatch_flow import MicrobatchFlowService
 from resource_assigner.models import (
     AssignmentConstraint,
     TaskResourceAssigment,
@@ -293,11 +295,14 @@ class SchedulerRunsService(AbstractPermissionService):
 class SchedulingService:
     def __init__(
         self,
+        user,
         horizon_weeks: int = 1,
         plan_start_date: datetime = datetime.now(timezone.utc).replace(
             hour=0, minute=0, second=0, microsecond=0
         ),
     ):
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
         self.plan_start_date = plan_start_date
         self.plan_start_weekday = (
             plan_start_date.weekday() if self.plan_start_date else None
@@ -315,9 +320,20 @@ class SchedulingService:
 
     @transaction.atomic
     def run(self, selected_tasks=None):
+
+        # Create microbatched subtasks here
+        microbatch_service = MicrobatchFlowService(user=self.user)
+        for flow in MicrobatchFlow.objects.order_by(
+                "order"
+            ):  # Run microbatching for every MicrobatchFlow based on order.
+                flow = MicrobatchFlow.objects.order_by("order").first()
+                for task_flow in flow.task_flows.all():
+                    if task_flow.flow_tasks.count() > 0:
+                        microbatch_service.create_microbatch_subtasks(task_flow.flow_tasks.all())
+
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
         scheduler_tasks = self._create_scheduler_task_objects(
-            scheduler_resources_dict, selected_tasks
+            scheduler_resources_dict, Task.objects.filter(sub_tasks__isnull=True)
         )
         scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
         log_messages = []
@@ -648,9 +664,15 @@ class SchedulingService:
 
         # subtract plan start
         windows = windows - self.plan_start_minutes
-
-        # filter
         windows = windows[(windows >= 0) & (windows <= self.horizon_minutes)]
+
+        try:
+            windows.reshape(-1, 2)
+        except ValueError:
+            # If windows size is an odd number, exclude the last entry
+            # as its end-date is expected to be beyond the horizon time.
+            windows = windows[:-1]
+            windows.reshape(-1, 2)
 
         return windows.reshape(-1, 2)
 
