@@ -28,5 +28,5 @@ url_prefix = "/static/"
 [[vm]]
 cpu_kind = "shared"
 cpus = 1
-memory = "4gb"
-memory_mb = 4096
+memory = "2gb"
+memory_mb = 2048
