@@ -1,5 +1,11 @@
 from http import HTTPStatus
+
 from ninja import Schema
+
+
+class LoginSchema(Schema):
+    username: str
+    password: str
 
 
 class DeleteResponseSchema(Schema):
