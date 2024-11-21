@@ -4,7 +4,6 @@ from microbatching.views.microbatch_flow import (
     MICROBATCH_FLOW_VIEWS,
     change_microbatch_flow_priority,
     match_flows_with_tasks,
-    run_microbatch_scheduling,
 )
 from microbatching.views.microbatch_rule import (
     MICROBATCH_RULE_CRITERIA_VIEWS,
@@ -142,11 +141,5 @@ urlpatterns = [
         "change-microbatch-flow-priority/<int:id>/direction=<str:direction>",
         change_microbatch_flow_priority,
         name="change_microbatch_flow_priority",
-    ),
-    # run microbatch flow scheduler
-    path(
-        "run-microbatch-scheduler",
-        run_microbatch_scheduling,
-        name="run_microbatch_scheduling",
     ),
 ]

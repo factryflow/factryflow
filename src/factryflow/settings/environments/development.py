@@ -15,6 +15,7 @@ AUTH_MIDDEWARE = [
 
 DEBUG = os.getenv("DEBUG") == "TRUE"
 DISABLE_AUTH = os.getenv("DISABLE_AUTH") == "TRUE"
+SECRET_KEY = "django-secret-key"  # Remove when the SECRET_KEY is set in the environment
 
 if not (DEBUG and DISABLE_AUTH):
     MIDDLEWARE += AUTH_MIDDEWARE
