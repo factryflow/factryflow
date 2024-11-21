@@ -19,7 +19,6 @@ from microbatching.models.microbatch_flow import (
 from microbatching.services.microbatch_flow import (
     MicrobatchFlowService,
 )
-from microbatching.services.microbatch_scheduler import MicrobatchSchedulerService
 from microbatching.utils.microbatch_flow import create_task_flows
 
 # ------------------------------------------------------------------------------
@@ -156,30 +155,4 @@ def change_microbatch_flow_priority(request, id: int, direction: str):
     except Exception as e:
         message = f"An error occurred: {str(e)}"
         add_notification_headers(response, message, "error")
-        return response
-
-
-def run_microbatch_scheduling(request):
-    """
-    Run the microbatch scheduling.
-    """
-    try:
-        service = MicrobatchSchedulerService(user=request.user)
-        result = service.run()
-
-        response = HttpResponse(status=204)
-        add_notification_headers(
-            response,
-            f"Sub-tasks created for ({len(result)}) microbatch tasks.",
-            "success",
-        )
-
-        return response
-    except Exception as e:
-        response = HttpResponse(status=500)
-        add_notification_headers(
-            response,
-            str(e),
-            "error",
-        )
         return response
