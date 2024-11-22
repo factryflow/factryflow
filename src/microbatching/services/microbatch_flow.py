@@ -78,7 +78,7 @@ class MicrobatchFlowService:
 
         instance.delete()
         return True
-    
+
     @staticmethod
     def create_microbatch_subtasks(flow_tasks):
         """Create microbatch subtasks."""

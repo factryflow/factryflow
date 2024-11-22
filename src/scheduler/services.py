@@ -320,16 +320,17 @@ class SchedulingService:
 
     @transaction.atomic
     def run(self, selected_tasks=None):
-
         # Create microbatched subtasks here
         microbatch_service = MicrobatchFlowService(user=self.user)
         for flow in MicrobatchFlow.objects.order_by(
-                "order"
-            ):  # Run microbatching for every MicrobatchFlow based on order.
-                flow = MicrobatchFlow.objects.order_by("order").first()
-                for task_flow in flow.task_flows.all():
-                    if task_flow.flow_tasks.count() > 0:
-                        microbatch_service.create_microbatch_subtasks(task_flow.flow_tasks.all())
+            "order"
+        ):  # Run microbatching for every MicrobatchFlow based on order.
+            flow = MicrobatchFlow.objects.order_by("order").first()
+            for task_flow in flow.task_flows.all():
+                if task_flow.flow_tasks.count() > 0:
+                    microbatch_service.create_microbatch_subtasks(
+                        task_flow.flow_tasks.all()
+                    )
 
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
         scheduler_tasks = self._create_scheduler_task_objects(

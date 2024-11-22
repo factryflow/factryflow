@@ -16,7 +16,7 @@ def test_job_create():
         "job_status": JobStatusChoices.NOT_PLANNED.value,
         "job_type": job_type,
     }
-    print(Job.objects.all().count())
+
     job = JobService(user=user).create(**job_data)
 
     assert job.name == "test"
