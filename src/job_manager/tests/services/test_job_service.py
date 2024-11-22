@@ -13,11 +13,10 @@ def test_job_create():
     job_data = {
         "name": "test",
         "due_date": "2021-01-01",
-        "priority": 1,
         "job_status": JobStatusChoices.NOT_PLANNED.value,
         "job_type": job_type,
     }
-
+    print(Job.objects.all().count())
     job = JobService(user=user).create(**job_data)
 
     assert job.name == "test"
@@ -53,16 +52,30 @@ def test_job_delete():
 
 @pytest.mark.django_db
 def test_job_update_priority():
+    user = UserFactory()
+
     job_1 = JobFactory(name="test")
     job_2 = JobFactory(name="test")
+    job_3 = JobFactory(name="test")
 
-    assert job_1.priority == 0
-    assert job_2.priority == 1
+    assert job_2.priority == 2
+    assert job_3.priority == 3
 
-    job_2.update_priority(0)
+    data = {
+        "manual_priority": 3,
+    }
+
+    # to check if the priority is updated based on due dates and manual priority
+    JobService(user=user).update(job=job_1, data=data)
 
     job_2.refresh_from_db()
+    job_3.refresh_from_db()
     job_1.refresh_from_db()
 
-    assert job_1.priority == 1
-    assert job_2.priority == 0
+    assert job_2.priority == 2
+    assert job_3.priority == 1
+    assert job_1.priority == 3
+
+    assert job_1.manual_priority == 3
+    assert job_2.manual_priority is None
+    assert job_3.manual_priority is None
