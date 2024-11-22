@@ -1,0 +1,232 @@
+{% extends "base/main.html" %}
+{% load permission_tags %}
+{% load common_filters %}
+{% block title %}
+Jobs Priority Manager
+{% endblock title %}
+{% load partials %}
+{% load static %}
+
+{% partialdef partial-search-filter %}
+<div @htmx:afterSwap="if (!event.detail.successful) { editable = false }" class="flex flex-col md:flex-row md:justify-between md:items-center px-7" x-cloak>
+    <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
+        <div class="relative w-full md:w-[600px]">
+            <!-- Inline SVG Icon -->
+            <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+                src="{% static 'images/search.svg' %}" alt="image_search" />
+            <!-- Search Input -->
+            <input type="text" id="all_search_bar" placeholder="Search Jobs"
+                hx-get="{% url 'job_prioritization' %}" hx-target="#all-{{ model_name }}s-table" hx-trigger="keyup delayed:500ms"
+                name="query"
+                class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
+        </div>
+    </div>
+    <div class="flex items-center">
+        <button @click="editable = !editable" class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">
+            Edit Priority
+        </button>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% partialdef partial-table-template %}
+<div class="flex flex-col" id="all-jobs-table">
+    <form hx-post="{% url 'job_prioritization' %}" hx-redirect="false" method="post" hx-target="#all-jobs-table" hx-trigger="submit">
+        {% csrf_token %}
+        <input type="hidden" name="job_data" x-model="jobData" />
+        <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center" x-cloak>
+            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+                <tr>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        ID
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Priority
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Manual Priority
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Due Date
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Name
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Customer
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Description
+                    </th>
+                    <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                        Status
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+                <!-- Dynamically render rows from the server -->
+                {% for job in jobs %}
+                <tr>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {{ job.id }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {{ job.priority }}
+                    </td>
+                    <td class="px-6 py-4 text-center text-sm font-medium text-[#7E8299]">
+                        <template x-if="editable">
+                            <input type="number"
+                                min="1"
+                                class="border align-middle border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none mx-auto w-1/6"
+                                x-model="{{ job.manual_priority }}"
+                                @change="updateJobData({ id: {{ job.id }}, manual_priority: $event.target.value })">
+                        </template>
+                        <template x-if="!editable">
+                            <span>
+                                {% if job.manual_priority and job.manual_priority >= 0 %}
+                                    {{ job.manual_priority }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </template>
+                    </td>
+                    
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        <template x-if="editable">
+                            <input type="date" class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
+                                x-model="new Date('{{ job.due_date|date:'Y-m-d' }}').toISOString().split('T')[0]"
+                                @change="updateJobData({ id: {{ job.id }}, due_date: $event.target.value })">
+                        </template>
+                        <template x-if="!editable">
+                            <span>{{ job.due_date|date:"d-m-Y" }}</span>
+                        </template>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {{ job.name }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {{ job.customer }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        {{ job.description }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                        <span class="bg-haxred text-[#FF4D4F] text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">
+                            {{ job.get_job_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div>
+            <div class="flex flex-nowrap gap-x-5 justify-end mt-5">
+                <template x-if="editable">
+                    <button id="submit-form-button" type="submit" class="text-base font-semibold text-[#023E8A] px-6 border border-[#023E8A] rounded-md ml-4 hover:bg-[#023E8A] hover:text-white">
+                        Save
+                    </button>
+                </template>
+                <template x-if="editable">
+                    <button @click="editable = !editable" class="text-base font-semibold text-[#023E8A] px-6 py-3 border border-[#023E8A] rounded-md ml-4 hover:bg-[#023E8A] hover:text-white">
+                        Cancel
+                    </button>
+                </template>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        function updateJobData(updatedJob) {
+            let jobData = JSON.parse(document.querySelector('input[name="job_data"]').value || '[]');
+            let jobIndex = jobData.findIndex(job => job.id === updatedJob.id);
+            if (jobIndex > -1) {
+            jobData[jobIndex] = { ...jobData[jobIndex], ...updatedJob };
+            } else {
+            jobData.push(updatedJob);
+            }
+            document.querySelector('input[name="job_data"]').value = JSON.stringify(jobData);
+            console.log(document.querySelector('input[name="job_data"]').value);
+        }
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            formData.set('job_data', JSON.stringify(JSON.parse(document.querySelector('input[name="job_data"]').value || '[]')));
+            fetch(this.action, {
+            method: this.method,
+            body: formData,
+            }).then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            }).catch(error => {
+            console.error('Error:', error);
+            });
+        });
+    </script>
+</div>
+{% endpartialdef %}
+
+{% block content %}
+<div x-data="{ editable: false }" class="px-4 py-5 sm:p-6">
+    <div class="flex justify-between items-center" x-cloak>
+        <div class="flex-wrap">
+            <nav class="flex pb-4" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                    <li class="inline-flex items-center">
+                        <a href="/dashboard/gantt-type=job/home=true" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                            <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                            <a href="{% url 'job_prioritization' %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Jobs</a>
+                        </div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                            <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Priority Manager</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <div>
+                <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Priority Management</h1>
+            </div>
+        </div>
+    </div>
+    <!-- Tabs -->
+    <div x-data="{ activeTab: 'tab1' }" class="border-x border-y border-[#e1e3ea80] rounded-xl" x-cloak>
+        <!-- Tabs -->
+        <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
+            <div class="md:flex flex-wrap text-sm md:text-base">
+                <button x-on:click="activeTab = 'tab1'" hx-get="{% url 'job_prioritization' %}"
+                    hx-target="#all-jobs-table" hx-trigger="click"
+                    :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
+                    class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
+                {% for status_code, status_label in status_filter_dict.items %}
+                <button hx-get="{% url 'job_prioritization' %}?status={{ status_code }}" hx-target="#all-jobs-table"
+                    hx-trigger="click" x-on:click="activeTab = '{{ status_code|lower }}'"
+                    :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
+                    class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Tab Content -->
+        <div class="bg-white pt-6 rounded-b-xl flex h-screen">
+            <div class="w-full"> <!-- x-show="activeTab === 'tab1'" -->
+                {% partial partial-search-filter %}
+                <div class="pt-6">
+                    <div class="relative overflow-x-auto table-container">
+                        {% partial partial-table-template %}              
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

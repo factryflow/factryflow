@@ -95,6 +95,9 @@
           {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          {% with menu_item_id='jobs-priority' menu_item_name='Priority Manager' menu_item_url="/job-prioritization" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
           {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="/tasks" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}

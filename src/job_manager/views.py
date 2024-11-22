@@ -4,6 +4,11 @@ from common.views import CRUDView, CustomTableView
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from resource_assigner.models import AssignmentConstraint, TaskRuleAssignment
+from django.db.models import Case, When, Value, IntegerField
+import json
+from django.db import transaction
+from django.http import HttpResponse
+from common.utils.views import add_notification_headers
 
 from .forms import (
     DependencyForm,
@@ -128,13 +133,14 @@ JOB_TAILWIND_CLASSES = {
 
 JOB_MODEL_FIELDS = [
     "id",
+    "priority",
+    "manual_priority",
+    "due_date",
+    "customer",
     "name",
     "description",
-    "customer",
-    "due_date",
     "planned_start_datetime",
     "planned_end_datetime",
-    "priority",
     "job_status",
 ]
 
@@ -243,6 +249,67 @@ JOB_VIEWS = CRUDView(
     model_form=JobForm,
     model_table_view=JOB_TABLE_VIEW,
 )
+
+
+# priority manager view
+def job_prioritization_view(request):
+    """
+    Job Prioritization View
+    """
+    if request.user.require_password_change:
+        return redirect(reverse("users:change_password"))
+
+    if request.htmx:
+        try:
+            job_data = json.loads(request.POST.get("job_data"))
+
+            with transaction.atomic():
+                for job in job_data:
+                    job_obj = Job.objects.get(id=job["id"])
+                    if "due_date" in job:
+                        job_obj.due_date = job["due_date"]
+                    if "manual_priority" in job:
+                        job_obj.manual_priority = job["manual_priority"]
+                    job_obj.save()
+        except Exception as e:
+            response = HttpResponse(status=400)
+            add_notification_headers(
+                response,
+                str(e),
+                "success",
+            )
+
+    jobs = (
+        Job.objects.exclude(job_status__in=["CM", "CN"])
+        .annotate(
+            sort_priority=Case(
+                When(priority__isnull=True, then=Value(999999)),
+                default="priority",
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("sort_priority")
+    )
+
+    context = {
+        "jobs": jobs,
+        "view_mode": False,
+        "status_filter_dict": {
+            "NP": "Not Planned",
+            "IP": "In Progress",
+        },
+    }
+
+    if request.htmx:
+        return render(
+            request, "job/prioritization.html#partial-table-template", context
+        )
+
+    return render(
+        request,
+        "job/prioritization.html",
+        context,
+    )
 
 
 # ------------------------------------------------------------------------------
