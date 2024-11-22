@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:14.2-alpine
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6-alpine
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - redis-data:/var/lib/redis
+
+  web:
+    build:
+        context: .
+        dockerfile: Dockerfile.prod
+    command: gunicorn factryflow.wsgi:application --bind 0.0.0.0:8000 --log-file -
+    volumes:
+      - .:/app
+      - static-volume:/app/src/staticfiles
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+    volumes:
+      - static-volume:/app/src/staticfiles
+
+volumes:
+  postgresql-data:
+    driver: local
+  static-volume:
+    driver: local
+  redis-data:
+    driver: local
+  

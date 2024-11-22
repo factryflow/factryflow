@@ -1,8 +1,7 @@
-from django.db import models
 from common.models import BaseModel
-
-from resource_manager.models import Resource
+from django.db import models
 from job_manager.models import Task
+from resource_manager.models import Resource
 from simple_history.models import HistoricalRecords
 
 
@@ -42,11 +41,25 @@ class SchedulerRuns(BaseModel):
         db_table = "scheduler_runs"
 
     def __str__(self):
-        return "Scheduler Run"
+        return f"Scheduler Run {self.id}"
 
     def store_run_duration(self):
         self.run_duration = self.end_time - self.start_time
         self.save()
+
+
+class SchedulerLog(BaseModel):
+    id = models.AutoField(primary_key=True)
+    scheduler_run = models.OneToOneField(SchedulerRuns, on_delete=models.CASCADE)
+    logs = models.JSONField(default=dict, null=True, blank=True)
+
+    history = HistoricalRecords(table_name="scheduler_logs_history")
+
+    class Meta:
+        db_table = "scheduler_logs"
+
+    def __str__(self):
+        return f"Scheduler Log for run: {self.scheduler_run.id}"
 
 
 class ResourceIntervals(BaseModel):

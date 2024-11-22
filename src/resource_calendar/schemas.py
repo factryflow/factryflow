@@ -10,10 +10,13 @@ from resource_calendar.models import (
 from .utils import TIME_24HR_PATTERN
 
 
-class WeeklyShiftTemplateDetailIn(Schema):
-    day_of_week: int = Field(
-        ..., ge=0, le=6, example=0, help_text="0 is Monday, 6 is Sunday"
-    )
+# ------------------------------------------------------------------------------
+# WeeklyShiftTemplate Schemas
+# ------------------------------------------------------------------------------
+
+
+class WeeklyShiftTemplateDetailBase(Schema):
+    day_of_week: str = Field(..., example="Monday", help_text="Day of the week")
     start_time: str = Field(
         ..., pattern=TIME_24HR_PATTERN, example="08:00", help_text="24 hour format"
     )
@@ -22,39 +25,57 @@ class WeeklyShiftTemplateDetailIn(Schema):
     )
 
 
+class WeeklyShiftTemplateDetailIn(ModelSchema):
+    class Meta:
+        model = WeeklyShiftTemplateDetail
+        fields = ["day_of_week", "start_time", "end_time", "weekly_shift_template"]
+
+
 class WeeklyShiftTemplateDetailOut(ModelSchema):
     class Meta:
         model = WeeklyShiftTemplateDetail
         fields = "__all__"
 
 
-class WeeklyShiftTemplateIn(Schema):
-    name: str = Field(..., example="Day Shift")
-    details: list[WeeklyShiftTemplateDetailIn] = None
+# ------------------------------------------------------------------------------
+# WeeklyShiftTemplate Schemas
+# ------------------------------------------------------------------------------
+
+
+class WeeklyShiftTemplateIn(ModelSchema):
+    weekly_shift_template_details: list[WeeklyShiftTemplateDetailBase] = None
 
     class Meta:
         model = WeeklyShiftTemplate
-        fields = ["name", "external_id", "notes"]
+        fields = ["name", "description", "external_id", "notes", "custom_fields"]
 
 
 class WeeklyShiftTemplateOut(ModelSchema):
-    details: list[WeeklyShiftTemplateDetailOut] = []
-
     class Meta:
         model = WeeklyShiftTemplate
         fields = "__all__"
 
 
+# ------------------------------------------------------------------------------
+# OperationalExceptionType Schemas
+# ------------------------------------------------------------------------------
+
+
 class OperationalExceptionTypeIn(ModelSchema):
     class Meta:
         model = OperationalExceptionType
-        fields = ["name", "external_id", "notes"]
+        fields = ["name", "external_id", "notes", "custom_fields"]
 
 
 class OperationalExceptionTypeOut(ModelSchema):
     class Meta:
         model = OperationalExceptionType
         fields = "__all__"
+
+
+# ------------------------------------------------------------------------------
+# OperationalException Schemas
+# ------------------------------------------------------------------------------
 
 
 class OperationalExceptionIn(ModelSchema):
@@ -65,7 +86,10 @@ class OperationalExceptionIn(ModelSchema):
             "start_datetime",
             "end_datetime",
             "operational_exception_type",
+            "weekly_shift_template",
+            "resource",
             "notes",
+            "custom_fields",
         ]
 
 

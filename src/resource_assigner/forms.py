@@ -1,5 +1,12 @@
+from common.utils.services import get_model_fields
 from django import forms
-from .models import *
+
+from resource_assigner.models import (
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    AssignmentConstraint,
+    TaskResourceAssigment,
+)
 
 # ------------------------------------------------------------------------------
 # TaskResource Assignment Forms
@@ -10,27 +17,28 @@ class TaskResourceAssigmentForm(forms.ModelForm):
     class Meta:
         model = TaskResourceAssigment
         fields = "__all__"
-        exclude = ["created_by", "updated_by", "created_at", "updated_at"]
+        exclude = [
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "custom_fields",
+        ]
         labels = {
             "task": "Task",
-            "assigment_rule": "Assigment Rule",
-            "resource_group": "Resource Group",
-            "resource_count": "Resource Count",
-            "use_all_resources": "Use All Resources",
+            "resources": "Resources",
         }
         widgets = {
-            "task": forms.Select(attrs={"class": "form-control"}),
-            "assigment_rule": forms.Select(attrs={"class": "form-control"}),
-            "resource_group": forms.SelectMultiple(attrs={"class": "form-control"}),
-            "resource_count": forms.NumberInput(attrs={"class": "form-control"}),
-            "use_all_resources": forms.CheckboxInput(attrs={"class": "form-control"}),
-        }
-        help_texts = {
-            "task": "Select the task to assign resources to.",
-            "assigment_rule": "Select the assigment rule to apply to the task.",
-            "resource_group": "Select the resource group to assign to the task.",
-            "resource_count": "Enter the number of resources to assign to the task.",
-            "use_all_resources": "Check this box to assign all resources in the group to the task.",
+            "task": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "resources": forms.SelectMultiple(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
         }
 
 
@@ -43,16 +51,20 @@ class AssigmentRuleForm(forms.ModelForm):
     class Meta:
         model = AssigmentRule
         fields = [
-            "external_id",
             "name",
             "work_center",
-            "is_active",
             "notes",
             "description",
+            "is_active",
         ]
-        exclude = ["created_by", "updated_by", "created_at", "updated_at"]
+        exclude = [
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "custom_fields",
+        ]
         labels = {
-            "external_id": "External ID",
             "name": "Name",
             "work_center": "Work Center",
             "is_active": "Is Active",
@@ -60,12 +72,31 @@ class AssigmentRuleForm(forms.ModelForm):
             "description": "Description",
         }
         widgets = {
-            "external_id": forms.TextInput(attrs={"class": "form-control"}),
-            "name": forms.TextInput(attrs={"class": "form-control"}),
-            "work_center": forms.Select(attrs={"class": "form-control"}),
-            "is_active": forms.CheckboxInput(attrs={"class": "form-control"}),
-            "notes": forms.Textarea(attrs={"class": "form-control"}),
-            "description": forms.Textarea(attrs={"class": "form-control"}),
+            "name": forms.TextInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
+            "work_center": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3",
+                }
+            ),
+            "notes": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                }
+            ),
         }
 
 
@@ -78,7 +109,13 @@ class AssigmentRuleCriteriaForm(forms.ModelForm):
     class Meta:
         model = AssigmentRuleCriteria
         fields = "__all__"
-        exclude = ["created_by", "updated_by", "created_at", "updated_at"]
+        exclude = [
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "custom_fields",
+        ]
         labels = {
             "assigment_rule": "Assigment Rule",
             "field": "Field",
@@ -86,11 +123,43 @@ class AssigmentRuleCriteriaForm(forms.ModelForm):
             "value": "Value",
         }
         widgets = {
-            "assigment_rule": forms.Select(attrs={"class": "form-control"}),
-            "field": forms.TextInput(attrs={"class": "form-control"}),
-            "operator": forms.Select(attrs={"class": "form-control"}),
-            "value": forms.TextInput(attrs={"class": "form-control"}),
+            "assigment_rule": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "field": forms.Select(
+                choices=get_model_fields(
+                    "Task", "job_manager", ["item", "task_type", "job", "work_center"]
+                ),
+                attrs={
+                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                },
+            ),
+            "operator": forms.Select(
+                attrs={
+                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "value": forms.TextInput(
+                attrs={
+                    "class": "mb-5 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
         }
+
+
+# ------------------------------------------------------------------------------
+# AssigmentRuleCriteria, AssigmentRule model formset
+# ------------------------------------------------------------------------------
+
+AssigmentRuleCriteriaFormSet = forms.inlineformset_factory(
+    AssigmentRule,
+    AssigmentRuleCriteria,
+    form=AssigmentRuleCriteriaForm,
+    extra=2,
+    can_delete=False,
+)
 
 
 # ------------------------------------------------------------------------------
@@ -102,20 +171,58 @@ class AssignmentConstraintForm(forms.ModelForm):
     class Meta:
         model = AssignmentConstraint
         fields = "__all__"
-        exclude = ["created_by", "updated_by", "created_at", "updated_at"]
+        exclude = [
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "custom_fields",
+            "task",
+        ]
         labels = {
-            "task": "Task",
             "assignment_rule": "Assignment Rule",
             "resource_group": "Resource Group",
             "resources": "Resources",
-            "is_active": "Is Active",
-            "is_direct": "Is Direct",
+            "resource_count": "Resource Count",
+            "use_all_resources": "Use All Resources",
         }
         widgets = {
-            "task": forms.Select(attrs={"class": "form-control"}),
-            "assignment_rule": forms.Select(attrs={"class": "form-control"}),
-            "resource_group": forms.Select(attrs={"class": "form-control"}),
-            "resources": forms.SelectMultiple(attrs={"class": "form-control"}),
-            "is_active": forms.CheckboxInput(attrs={"class": "form-control"}),
-            "is_direct": forms.CheckboxInput(attrs={"class": "form-control"}),
+            "assignment_rule": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "resource_group": forms.Select(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "resources": forms.SelectMultiple(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "resource_count": forms.NumberInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "use_all_resources": forms.CheckboxInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3 bg-inherit"
+                }
+            ),
         }
+
+    def clean(self, *args, **kwargs):
+        resource_group_set = self.cleaned_data.get("resource_group") is not None
+        resources_set = self.cleaned_data.get("resources").count() > 0
+
+        if resource_group_set and resources_set:
+            raise forms.ValidationError(
+                "You cannot set both resource_group and resources. Choose one."
+            )
+        elif not resource_group_set and not resources_set:
+            raise forms.ValidationError(
+                "You must set either resource_group or resources."
+            )

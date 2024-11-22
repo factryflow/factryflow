@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from django.conf import settings
+from common.api import common_router
 from django.core.exceptions import (
     FieldError,
     ObjectDoesNotExist,
@@ -8,32 +8,53 @@ from django.core.exceptions import (
     ValidationError,
 )
 from django.http import Http404
+from job_manager.api.viewsets import job_manager_router
+from microbatching.api import microbatch_router
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from ninja.security import APIKeyHeader
-
+from ninja_jwt.authentication import JWTBaseAuthentication
+from ninja_jwt.routers.obtain import obtain_pair_router
+from resource_assigner.api import resource_assigner_router
 
 # import and register routers
 from resource_calendar.api import resource_calendar_router
 from resource_manager.api import resource_manager_router
 from users.api import router as user_router
-from common.api import common_router
-from job_manager.api import job_manager_router
-from resource_assigner.api import resource_assigner_router
+from users.models import User
 
 
-class ApiKey(APIKeyHeader):
+class ApiKey(APIKeyHeader, JWTBaseAuthentication):
+    def __init__(self, user_model):
+        self.user_model = user_model
+        super().__init__()
+
     param_name = "X-API-Key"
 
     def authenticate(self, request, key):
-        if key == settings.API_KEY:
-            return key
+        return self.jwt_authenticate(request, token=key)
 
 
-header_key = ApiKey()
+header_key = ApiKey(user_model=User)
 
-api = NinjaAPI(auth=header_key)
 
+api = NinjaAPI(
+    title="Factryflow APIs",
+    version="1.0.0",
+    description=(
+        """Factryflow API for managing resources, jobs, tasks, and more.
+        This API provides endpoints to handle resource allocation, job scheduling, 
+        user management, and various other functionalities essential for efficient 
+        workflow management in a factoryflow.
+        """
+    ),
+    docs_url="/docs",
+    openapi_url="/openapi.json",
+    auth=header_key,
+)
+
+
+api.add_router("/token", tags=["Auth"], router=obtain_pair_router)
 api.add_router("", resource_manager_router)
 
 
@@ -42,6 +63,7 @@ api.add_router("", resource_calendar_router)
 api.add_router("", resource_assigner_router)
 api.add_router("", user_router)
 api.add_router("", common_router)
+api.add_router("", microbatch_router)
 
 
 @api.exception_handler(ObjectDoesNotExist)

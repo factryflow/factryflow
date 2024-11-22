@@ -1,38 +1,32 @@
 FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye
 
-# Set the working directory in the container
+# set work directory
 WORKDIR /app
 
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV PYTHONPATH .
 
-# Update package lists and install make
+# install system dependencies
 RUN apt-get update && \
-    apt-get install -y make
+apt-get install -y netcat && \
+apt-get install -y make
 
-# RUN curl -sSL https://install.python-poetry.org | python3 -
-
-# Copy the current directory contents into the container at /app
-COPY . .
-
-
-# System deps:
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+COPY ./requirements-dev.txt .
 RUN pip install -r requirements-dev.txt
 
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g' /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Expose port 8000 to the outside world
-EXPOSE 8000
+# copy project
+COPY src/ .
+WORKDIR /app/src
 
-# Run makemigrations and migrate when the container launches
-RUN make migrations
-RUN make migrate
+RUN mkdir staticfiles
+COPY ./Makefile .
 
-# to sync all user roles
-RUN make sync_roles
-
-# to create superuser
-RUN make superuser
-
-# Command to start the Django development server
-CMD ["make", "dev"]
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -44,7 +44,8 @@ class AssigmentConstraintFactory(factory.django.DjangoModelFactory):
     task = None
     assignment_rule = None
     resource_group = None
-    is_direct = True
+    use_all_resources = False
+    resource_count = 1
 
     class Params:
         with_task = factory.Trait(
@@ -66,13 +67,8 @@ class TaskResourceAssigmentFactory(factory.django.DjangoModelFactory):
         model = TaskResourceAssigment
 
     task = factory.SubFactory(TaskFactory)
-    assigment_rule = factory.SubFactory(AssigmentRuleFactory)
-    resource_count = 1
-    use_all_resources = False
 
     class Params:
-        with_resource_group = factory.Trait(
-            resource_group=factory.lazy_attribute(
-                lambda _: ResourceGroupFactory.create_batch(2)
-            )
+        with_resources = factory.Trait(
+            resources=factory.lazy_attribute(lambda _: ResourceFactory.create_batch(2))
         )

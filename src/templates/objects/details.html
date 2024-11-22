@@ -1,234 +1,687 @@
 {% extends 'base/main.html' %}
 {% load permission_tags %}
-{% block title %}
-    {{ model_title }}
-{% endblock title %}
+{% load common_filters %}
+{% block title %} {{ model_title }} {% endblock title %}
+{% load static %}
 {% load partials %}
+{% load widget_tweaks %}
+
+{% partialdef inline-model-form %}
+    <div id="model_inline_formset" class="flex flex-wrap overflow-x-auto h-auto max-h-80 mt-5">
+        {{ formset_form.management_form }}
+
+        <table class="w-full text-sm text-center">
+            <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+                <tr class="text-[#181C32]">
+                    {% for formset in formset_form %}
+                    {% if forloop.first %}
+                    {% for field in formset %}
+                    {% if not field.is_hidden %}
+                    <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">{{ field.label }}</th>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                    <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for formset in formset_form %}
+                <tr class="bg-white border-b">
+                    {% for field in formset %}
+                    {% if not field.is_hidden %}
+                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299] text-center">{{ field }}</td>
+                    {% endif %}
+                    {% endfor %}
+                    <td class="px-6 py-4 text-sm font-medium text-center text-[#7E8299]">
+                        <button 
+                            type="button" 
+                            class="removeButton {% if forloop.first %} text-grey-500 {% else %} text-red-500 {% endif %} bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1" 
+                            onclick="removeField(this)"
+                            {% if forloop.first %} disabled {% endif %}
+                            >
+                            <a
+                                href="{{ remove_formset_url }}" hx-get="{{ remove_formset_url }}" hx-swap="outerHTML" hx-target="#model_inline_formset" {% if forloop.first %} style="pointer-events: none;" {% endif %}>
+                                Remove
+                            </a>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="flex-auto flex items-center">
+            <a class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1"
+                href="{{ add_formset_url }}" hx-get="{{ add_formset_url }}" hx-swap="outerHTML" hx-target="#model_inline_formset">
+                Add
+            </a>
+        </div>
+    </div>
+{% endpartialdef %}
+
 {% partialdef partial-form %}
-<form method="post"
-      hx-post="{{ form_action_url }}"
-      hx-redirect="true"
-      x-cloak>
+<form method="post" hx-post="{{ form_action_url }}" hx-redirect="true" hx-trigger="submit once" x-cloak>
     {% csrf_token %}
     {% comment %} Hidden ID {% endcomment %}
     {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
     <div class="md:flex md:flex-wrap -mx-3">
         {% for field in form %}
-            <div class="md:w-1/2 px-3 mb-6">
-                <label for="{{ field.id_for_label }}"
-                       class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                    {{ field.label }}
-                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                </label>
-                {{ field }}
-                {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
-                {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
-            </div>
+            {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <div class="flex items-center">
+                        <div class="w-1/8">{{ field }}</div>
+                        <div class="w-1/2 p-3 pt-5">
+                            <label for="{{ field.id_for_label }}"
+                                class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                    </div>
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% else %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <label for="{{ field.id_for_label }}"
+                        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
             {% if forloop.counter|divisibleby:2 and not forloop.last %}
-            </div>
-            <div class="md:flex md:flex-wrap -mx-3">
+                <div class="md:flex md:flex-wrap -mx-3"></div>
             {% endif %}
         {% endfor %}
-        {% if button_text == "Create" %}
-            <div class="md:w-1/2 px-3 mb-6">
-                <label for="custom-field"
-                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Custom Field</label>
-                    <div id="field-input" class="overflow-y-auto" style="height: 200px;">
-                        <div id="custom-field-input" class="flex-row items-center">
-                            <div class="flex items-center custom-field">
-                                <select class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                                    name="key[]"
-                                    onchange="changeFieldType(this)">
-                                    {% for field_data in custom_field_data %}
-                                        <option value="{{ field_data.1 }}">{{ field_data.2 }}</option>
-                                    {% endfor %}
-                                </select>
-                                <input id="field-input-1" class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                                    type="{{ custom_field_data.0.3 }}"
-                                    name="value[]"
-                                    value=""
-                                    >
-                                <button type="button"
-                                        class="removeButton text-red-500 bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1"
-                                        onclick="removeField(this)">Delete</button>
-                            </div>
-                        </div>
-                        <div id="new-row"></div>
-                    </div>
-                    
-                <div class="flex-auto flex items-center">
-                    <button id="addButton"
-                            class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1">
-                        Add Custom field
-                    </button>
-                </div>
-            </div>
-
-        {% endif %}
-        
-
     </div>
-    {% if not view_only %}
-        <div class="flex justify-left mt-6 space-x-4">
-            <button class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                Cancel
-            </button>
-            {% if view_mode %}
-                {% if user|can:'actions_rule[0]' %}
-                    <a href="{{ edit_url }}"
-                       class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                        {{ button_text }}
-                    </a>
-                {% endif %}
-            {% else %}
-                {% if user|can:'actions_rule[1]' %}
-                    <button type="submit"
-                            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                        {{ button_text }}
-                    </button>
-                {% endif %}
+
+    <!-- Inline Formset Fields -->
+    {% comment %} Inline Formset Form {% endcomment %}
+    {% if inline_formset_form %}
+        <hr>
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">{{ inline_formset_title }}</h2>
+            {% if button_text != "Create" and button_text != "Edit"%}
+                <button id="delete-assignment-constriants" type="button"
+                        x-data="{ clicked: false }"
+                        :class="clicked ? 'bg-red-500 text-white' : 'bg-white text-red-500 border border-red-500'"
+                        @click="clicked = true; deleteAssignmentConstriants(`{{inline_formset_form.0.DELETE.id_for_label}}`)"
+                        class="font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center transition-colors duration-300 ease-in-out hover:bg-red-500 hover:text-white focus:ring-4">
+                    Delete {{ inline_formset_title.split|last }}
+                </button>
             {% endif %}
         </div>
-    {% endif %}
-</form>
-{% endpartialdef %}
-{% block content %}
-    {% load static %}
-    <div class="flex-wrap" x-cloak>
-        <nav class="flex pb-4" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                <li class="inline-flex items-center">
-                    <a href="/"
-                       class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
-                        <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <a href="{% url model_name %}"
-                           class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
-                    </div>
-                </li>
-                <li>
-                    {% if not view_only %}
-                        <div class="flex items-center">
-                            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                            <a href="{% url model_name|add:'_form' %}"
-                               class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
+        
+        {{ inline_formset_form.management_form }}
+        {% for form in inline_formset_form %}
+            <div class="md:flex md:flex-wrap -mx-3 gap-3">
+                {% for field in form %}
+                    {% if field.field.widget.input_type == 'checkbox' %} 
+                        {% if "DELETE" in field.id_for_label %}
+                            {{ field|add_class:"hidden" }}
+                        {% else %}
+                            <div class="md:w-1/2 px-3 mb-6 mt-6">
+                                <div class="flex items-center">
+                                    <div class="w-1/8">{{ field|add_class:"border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3 bg-inherit" }}</div>
+                                    <div class="w-1/2 p-3 pt-5">
+                                        <label for="{{ field.id_for_label }}"
+                                            class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                            {{ field.label }}
+                                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                                {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="md:w-1/2 px-3 mb-6">
+                            {% if not field.is_hidden %}
+                                <label for="{{ field.id_for_label }}"
+                                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                </label>
+                            {% endif %}
+                            {{ field }}
+                            {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                            {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
                         </div>
                     {% endif %}
-                </li>
-                <li aria-current="page">
-                    <div class="flex items-center">
-                        <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">{{ model_title }} Details</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
-        <div>
-            <h1 class="text-2xl font-semibold text-[#181C32] pb-5">{{ page_label }}</h1>
-        </div>
-    </div>
-    <div class="rounded-xl bg-white px-8 py-8 w-full" x-cloak>
-        <div>
-            <h1 class="text-xl font-semibold text-[#5E6278] pb-8">{{ form_label }}</h1>
-        </div>
-        {% block form %}
-            {% partial partial-form %}
-        {% endblock form %}
-    </div>
-    {% if button_text != "Create" %}
-        <div class="mt-6" x-data="{ activeTab: 'tab1' }" x-cloak>
-            <!-- Tabs -->
-            <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
-                <div class="md:flex flex-wrap text-sm md:text-base">
-                    {% for i in relations_headers %}
-                        <button hx-get="/{{ field_url }}s/view/{{ id }}/field={{ i|lower }}"
-                                hx-target="#{{ i }}"
-                                hx-trigger="click"
-                                x-on:click="activeTab = 'tab{{ forloop.counter }}'"
-                                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab{{ forloop.counter }}' }"
-                                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ i }}</button>
-                    {% endfor %}
-                </div>
-                <!-- Tab Content -->
-                <div class="bg-white pt-6 rounded-b-xl flex h-screen">
-                    {% for i in relations_headers %}
-                        <div id={{ i }} x-show="activeTab === 'tab{{ forloop.counter }}'" class="w-full">
-                            <div class="pt-6">
-                                <div class="relative overflow-x-auto table-container">{% include "objects/list.html#partial-table-template" %}</div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                    {% if forloop.counter|divisibleby:2 and not forloop.last %}
+                        <div class="md:flex md:flex-wrap -mx-3"></div>
+                    {% endif %}
+                {% endfor %}
             </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Custom Field Form -->
+    {% if custom_field_data %}
+        <hr>
+        <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">Custom Fields</h2>
+        <div class="md:flex md:flex-wrap -mx-3 ">
+            {% for field_info in custom_field_data %}
+                <div class="md:w-1/2 w-full px-3 mb-6">
+                    <label for="{{ field_info.name }}"
+                        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        {{ field_info.label }}
+                        {% if field_info.is_required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    <input id="{{ field_info.name }}"
+                        class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
+                        type="{{ field_info.type }}" name="{{ field_info.name }}" value="{{ field_info.value }}" 
+                        {% if field_info.is_required %} required="required" {% endif %} {% if view_only %} disabled {% endif %}>
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Formset Form Table - multiple objects -->
+    {% if button_text == "Create" %}
+        {% if formset_form %}
+        <hr>
+        <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">Add {{ formset_title|title }}</h2>
+        <div id="model-inline-formset" class="flex flex-wrap overflow-x-auto h-auto max-h-80">
+            {{ formset_form.management_form }}
+
+            <table class="w-full text-sm text-center">
+                <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+                    <tr class="text-[#181C32]">
+                        {% for formset in formset_form %}
+                            {% if forloop.first %}
+                                {% for field in formset %}
+                                    {% if not field.is_hidden %}
+                                        <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">{{ field.label }}</th>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for formset in formset_form %}
+                        <tr class="bg-white border-b">
+                            {% for field in formset %}
+                                {% if not field.is_hidden %}
+                                    <td class="px-6 py-4 text-sm font-medium text-[#7E8299] text-center">{{ field }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            <td class="px-6 py-4 text-sm font-medium text-center text-[#7E8299]">
+                                <button 
+                                    type="button" 
+                                    class="removeButton {% if forloop.first %} text-grey-500 {% else %} text-red-500 {% endif %} bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1" 
+                                    onclick="removeField(this)"
+                                    {% if forloop.first %} disabled {% endif %}
+                                    >
+                                    <a
+                                        href="{{ remove_formset_url }}" hx-get="{{ remove_formset_url }}" hx-swap="outerHTML" hx-target="#model-inline-formset" {% if forloop.first %} style="pointer-events: none;" {% endif %}>
+                                        Remove
+                                    </a>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="flex-auto flex items-center mt-3">
+                <a class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1"
+                    href="{{ add_formset_url }}" hx-get="{{ add_formset_url }}" hx-swap="outerHTML" hx-target="#model-inline-formset">
+                    Add
+                </a>
+            </div>
+        </div>
         {% endif %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const addButton = document.getElementById('addButton');
-                addButton.addEventListener('click', function(event) {
-                    event.preventDefault(); 
-                    const customFields = document.querySelectorAll('.custom-field');
-                    const customFieldDataLength = {{ custom_field_data|length }};
-                    
-                    if (customFields.length >= customFieldDataLength) {
+    {% endif %}
+
+    <hr class="pb-4 mt-8">
+    <!-- Submit buttons -->
+    {% if not view_only %}
+    <div class="flex justify-left mt-6 space-x-4">
+        <button
+            class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+            <a href="{% url model_name %}" class="text-[#181C32]">Cancel</a>
+        </button>
+        {% if view_mode %}
+        {% if user|can:crud_action_rules.2 %}
+        <button>
+            <a href="{{ edit_url }}"
+                class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                {{ button_text }}
+            </a>
+        </button>
+        {% endif %}
+        {% else %}
+        {% if user|can:crud_action_rules.2 %}
+        <button type="submit"
+            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+            {{ button_text }}
+        </button>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+</form>
+{% endpartialdef %}
+
+{% partialdef model-relation-editable-table %}
+<div id="model-relation-editable-table" class="relative overflow-x-auto shadow-md sm:rounded-lg"
+    x-data="subModelRelationData({{rows|safe}}, {{headers|safe}})" x-cloak>
+    {% if show_edit_actions and not view_mode  %}
+    <div class="flex justify-end items-center p-4" x-cloak>
+        <button type="button" @click="addNewRow"
+            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">Add {{ relation_model_name }}</button>
+    </div>
+    {% endif %}
+    <form method="post" hx-post="{{ formset_action_url }}" hx-redirect="false" x-cloak>
+        {% csrf_token %}
+        <div id="table-container">
+            {% if rows %}
+            <table class="w-full text-sm text-center" x-cloak>
+                <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+                    <tr class="text-[#181C32]">
+                        <!-- <th scope="col" class="p-4">
+                            <div class="flex items-center">
+                                <input id="checkbox-all-search" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
+                                    @change="toggleSelectAll">
+                            </div>
+                        </th> -->
+                        <template x-for="header in headers" :key="header">
+                            <th scope="col" class="px-6 py-4 font-sans font-semibold text-sm leading-3">
+                                <span x-text="header.replace('_', ' ')"></span>
+                            </th>
+                        </template>
+                        {% if show_edit_actions and not view_mode %}
+                        <th scope="col" class="px-6 py-4 font-sans font-semibold text-sm leading-3">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="(row, index) in paginatedRows" :key="index">
+                        <tr class="bg-white border-b">
+                            <!-- <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]"
+                                        x-model="row.selected">
+                                </div>
+                            </td> -->
+                            <template x-if="row.isEditing && row.id.value != ''">
+                                <input type="hidden" name="id" :value="row.id.value" x-model="row.id.value">
+                            </template>
+                            <template x-data="{'field_name': '{{ model_relation_field_name }}'}" x-if="row.isEditing">
+                                {% if id %} <input type="hidden" :name="field_name" :value="{{ id }}"> {% endif %}
+                            </template>
+                            <template x-for="(field, key) in row" :key="key">
+                                <td x-show="key !== 'isEditing' && key !== 'selected'">
+                                    <template x-if="!row.isEditing">
+                                        <div x-text="field.value" class="px-6 py-4 text-sm font-medium text-[#7E8299]"
+                                            x-show="field.type !== 'boolean'"></div>
+                                    </template>
+                                    <template x-if="!row.isEditing">
+                                        <div class="px-6 py-4 text-sm font-medium text-[#7E8299]"
+                                            x-show="field.type === 'boolean'">
+                                            <input type="checkbox" disabled x-model="field.value">
+                                        </div>
+                                    </template>
+                                    <template x-if="row.isEditing">
+                                        <div class="px-6 py-4">
+                                            <template
+                                                x-if="field.type === 'text' || field.type === 'number' || field.type === 'datetime-local' || field.type === 'time'">
+                                                <template x-if="key !== 'id'">
+                                                    <input :type="field.type" :name="key" x-model="field.value"
+                                                        class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3">
+                                                </template>
+                                            </template>
+                                            <template x-if="field.type === 'select'">
+                                                <select x-model="row[key].value" :name="key"
+                                                    class="border border-gray-300 rounded-md p-2">
+                                                    <template x-for="(optionText, optionValue) in field.options" :key="optionValue">
+                                                        <option :value="optionValue" x-text="optionText"></option>
+                                                    </template>
+                                                </select>
+                                            </template>
+                                            <template x-if="field.type === 'boolean'">
+                                                <input type="checkbox" :name="key" x-model="field.value">
+                                            </template>
+                                        </div>
+                                    </template>
+                                </td>
+                            </template>
+                            {% if show_edit_actions and not view_mode %}
+                            <td class="flex items-center justify-center px-6 py-4">
+                                <template x-data="{'rowID': row.id.value}" x-if="!row.isEditing">
+                                    <div class="flex items-center justify-center gap-3">
+                                        {% if user|can:relation_model_crud_action_rules.2 %}
+                                        <button @click="editRow(index)" type="button"
+                                            class="font-medium text-blue-600 hover:underline">
+                                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                        </button>
+                                        {% endif %}
+                                        {% if user|can:relation_model_crud_action_rules.3 %}
+                                        <button type="button"
+                                            @click="deleteRow(rowID)"
+                                            :hx-delete="`{% url 'delete_'|add:model_name_for_crud 0 %}`.replace('/0/', '/' + rowID + '/')"
+                                            hx-target="#model-relation-editable-table" hx-swap="outerHTML"
+                                            class="font-medium text-blue-600 hover:underline">
+                                            <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </template>
+                                <template x-if="row.isEditing">
+                                    <div class="flex items-center justify-center gap-3">
+                                        {% if user|can:relation_model_crud_action_rules.2 %}
+                                        <button type="submit"
+                                            class="font-medium text-green-600 hover:underline">
+                                            <img 
+                                                @click="saveRow(index)"
+                                                src="{% static 'images/checkmark.svg' %}" 
+                                                alt="Save" 
+                                            />
+                                        </button>
+                                        <button type="button" @click="cancelEdit(index)"
+                                            class="font-medium text-red-600 hover:underline">
+                                            <img src="{% static 'images/cancel.svg' %}" alt="Cancel" />
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </template>
+                            </td>
+                            {% endif %}
+                        </tr>
+                    </template>
+                <tbody>
+            </table>
+            {% else %}
+            <div class="flex justify-center items-center h-[300px]">
+                <p class="text-[#7E8299] font-normal text-lg">{{ relation_model_name }} not found for {{ model_title }}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+    {% if rows %}
+    <div class="flex items-center justify-between pt-7 mx-3 my-3">
+        <div class="flex flex-1 justify-between sm:hidden">
+            <button @click="prevPage" :disabled="currentPage === 1"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</button>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</button>
+        </div>
+        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+                <p class="text-base text-[#181C32] font-normal">
+                    Showing
+                    <span class="font-medium" x-text="startIndex"></span>
+                    to
+                    <span class="font-medium" x-text="endIndex"></span>
+                    of
+                    <span class="font-medium" x-text="rows.length"></span>
+                    entries
+                </p>
+            </div>
+            <div class="flex">
+                <button @click="prevPage" :disabled="currentPage === 1"
+                    class="relative inline-flex items-center rounded-full px-5 py-3 mr-3.5 border border-[#E1E3EA80] bg-white">
+                    <span class="sr-only">Previous</span>
+                    <img class="h-5 w-1.5" src="{% static 'images/left-arrow.svg' %}" alt="Previous" />
+                </button>
+                <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">Page</span>
+                <a href="#" aria-current="page"
+                    class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg">
+                    <span x-text="currentPage"></span>
+                </a>
+                <span class="relative inline-flex items-center text-base font-semibold text-[#181C32]">of <span class="relative z-10 inline-flex items-center bg-white px-7 py-3 mx-2.5 text-sm font-semibold text-[#2884EF] border border-[#E1E3EA80] rounded-lg"
+                        x-text="totalPages"></span></span>
+                <button @click="nextPage" :disabled="currentPage === totalPages"
+                    class="relative inline-flex items-center rounded-full px-5 py-3 ml-3.5 border border-[#E1E3EA80] bg-white">
+                    <span class="sr-only">Next</span>
+                    <img class="h-5 w-1.5" src="{% static 'images/right-arrow.svg' %}" alt="Next" />
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endpartialdef %}
+
+{% block content %}
+<div class="flex-wrap" x-cloak>
+    <nav class="flex pb-4" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <li class="inline-flex items-center">
+                <a href="/dashboard/gantt-type=job/home=true" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                    <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <a href="{% url model_name %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
+                </div>
+            </li>
+            <li>
+                {% if not view_only %}
+                {% if button_text == "Create" %}
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <a href="{% url model_name|add:'_form' %}"
+                        class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">New</a>
+                </div>
+                {% endif %}
+                {% endif %}
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">{{ model_title }} Details</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+    <div>
+        <h1 class="text-2xl font-semibold text-[#181C32] pb-5">{{ page_label }}</h1>
+    </div>
+</div>
+<div class="rounded-xl bg-white px-8 py-8 w-full" x-cloak>
+    <div>
+        <h1 class="text-xl font-semibold text-[#5E6278] pb-8">{{ form_label }}</h1>
+    </div>
+    {% block form %}
+    {% partial partial-form %}
+    {% endblock form %}
+</div>
+{% if button_text != "Create" %}
+<div class="mt-6" x-data="{ activeTab: 'tab1' }" x-cloak>
+    <!-- Tabs -->
+    <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
+        <div class="md:flex flex-wrap text-sm md:text-base">
+            {% for header in relations_headers %}
+            <button hx-get="/{{ field_url }}/view/{{ id }}/field={{ header|lower }}" hx-target="#{{ header }}" hx-trigger="click"
+                x-on:click="activeTab = 'tab{{ forloop.counter }}'"
+                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab{{ forloop.counter }}' }"
+                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">
+                {{ header|table_header }}
+            </button>
+            {% endfor %}
+        </div>
+        <!-- Tab Content -->
+        <div class="bg-white pt-6 rounded-b-xl flex h-screen">
+            {% for header in relations_headers %}
+            <div id={{ header }} x-show="activeTab === 'tab{{ forloop.counter }}'" class="w-full">
+                {% partial model-relation-editable-table %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+    {% endif %}
+    <script>
+        function removeField(button) {
+            button.parentNode.parentNode.remove();
+        };
+
+        function deleteAssignmentConstriants(constraintsCheckboxId) {
+            // to delete the assignment constraint
+            const constraintsCheckbox = document.getElementById(constraintsCheckboxId);
+            if (!constraintsCheckbox.checked) {
+                constraintsCheckbox.checked = true;
+            }
+        };
+
+        function subModelRelationData(initialRows = [], initialHeaders = []) {
+            // to be used in x-data for tableData
+            return {
+                rows: initialRows.map(row => ({ ...row, isEditing: false, selected: false })),
+
+                headers: initialHeaders,
+
+                currentPage: 1,
+                rowsPerPage: 5,
+
+                get totalPages() {
+                    // Calculate total pages
+                    return Math.ceil(this.rows.length / this.rowsPerPage);
+                },
+                get paginatedRows() {
+                    // Calculate start and end index of rows
+                    const start = (this.currentPage - 1) * this.rowsPerPage;
+                    const end = start + this.rowsPerPage;
+                    return this.rows.slice(start, end);
+                },
+                get startIndex() {
+                    // Calculate start index of rows
+                    return (this.currentPage - 1) * this.rowsPerPage + 1;
+                },
+                get endIndex() {
+                    // Calculate end index of rows
+                    return Math.min(this.currentPage * this.rowsPerPage, this.rows.length);
+                },
+
+                selectAll: false,
+
+                // Select all rows
+                toggleSelectAll() {
+                    this.selectAll = !this.selectAll;
+                    this.paginatedRows.forEach(row => row.selected = this.selectAll);
+                },
+
+                // Edit row data
+                editRow(index) {
+                    this.paginatedRows.forEach((row, i) => {
+                        if (i !== index) {
+                            row.isEditing = false;
+                        }
+                    });
+                    this.paginatedRows[index].isEditing = true;
+                },
+
+                // Cancel editing row
+                cancelEdit(index) {
+                    if (this.paginatedRows[index].id.value === '') {
+                        this.rows.splice((this.currentPage - 1) * this.rowsPerPage + index, 1);
+                    } else {
+                        this.paginatedRows[index].isEditing = false;
+                    }
+                },
+
+                // Update row data after saving or deleting
+                updateRowData(responseData) {
+                    this.rows = this.rows.map(row => {
+                        if (row.id.value === responseData.id) {
+                            return { ...responseData, isEditing: false, selected: false };
+                        }
+                        return row;
+                    });
+                },
+
+                // Save row data
+                async saveRow(index, saveUrl) {
+                    const rowData = this.paginatedRows[index];
+                    const formData = new FormData();
+                    for (const key in rowData) {
+                        if (key !== 'isEditing' && key !== 'selected') {
+                            formData.append(key, rowData[key].value);
+                        }
+                    }
+
+                    const response = await fetch(saveUrl, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        this.updateRowData(responseData);
+                    };
+
+                    this.paginatedRows[index].isEditing = false;
+                },
+
+                // Add new row to the table
+                addNewRow() {
+                    // Check if there is already a row in editing mode
+                    const editingRow = this.paginatedRows.find(row => row.isEditing);
+                    if (editingRow) {
+                        alert("Please save or cancel the current editing row before adding a new one.");
                         return;
                     }
 
-                    const newRow = document.createElement('div');
-                    newRow.id = 'custom-field-input';
-                    newRow.className = 'flex-row items-center';
-                    newRow.innerHTML = `
-                        <div id="custom-field-input" class="flex-row items-center">
-                            <div class="flex items-center custom-field">
-                                <select class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                                    name="key[]"
-                                    onchange="changeFieldType(this)">
-                                    {% for field_data in custom_field_data %}
-                                        <option value="{{ field_data.1 }}">{{ field_data.2 }}</option>
-                                    {% endfor %}
-                                </select>
-                                <input id="field-input-1" class="border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-8/12 p-3 m-1"
-                                    type="{{ custom_field_data.1.3 }}"
-                                    name="value[]"
-                                    value=""
-                                    >
-                                <button type="button"
-                                        class="removeButton text-red-500 bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1"
-                                        onclick="removeField(this)">Delete</button>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('new-row').appendChild(newRow);
-                });
-            });
+                    this.paginatedRows.forEach(row => row.isEditing = false);
 
-        function removeField(button) {
-            button.parentNode.parentNode.remove();
-        }
+                    const newRow = {};
+                    for (const key in this.rows[0]) {
+                        if (this.rows[0].hasOwnProperty(key)) {
+                            const value = this.rows[0][key];
+                            newRow[key] = { ...value, value: (value.type === 'boolean') ? false : '' };
+                        }
+                    }
 
-        function changeFieldType(select) {
-            
-            const input = select.nextElementSibling;
-            const optionValue = select.value;
-            const fieldType = getFieldDataType(optionValue);
-            input.type = fieldType;
-        }
+                    newRow.isEditing = true;
+                    newRow.selected = false;
 
-        function getFieldDataType(optionValue) {
-            console.log(optionValue);
-            const customFieldData = {{ custom_field_data|safe }};
-            for (let i = 0; i < customFieldData.length; i++) {
-                if (customFieldData[i][1] === optionValue) {
-                    console.log(customFieldData[i][3]);
-                    return customFieldData[i][3];
+                    this.rows.push(newRow);
+                    this.currentPage = this.totalPages;
+                },
+
+                // Go to the previous page
+                prevPage() {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                    }
+                },
+
+                // Go to the next page
+                nextPage() {
+                    if (this.currentPage < this.totalPages) {
+                        this.currentPage++;
+                    }
+                },
+
+                // Delete row from the table
+                async deleteRow(rowID, deleteUrl) {
+                    const response = await fetch(deleteUrl.replace('/0/', `/${rowID}/`), {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        this.rows = this.rows.filter(row => row.id.value !== rowID);
+                        this.currentPage = Math.min(this.currentPage, this.totalPages);
+                    }
                 }
             }
-            return "text";
         }
 
-
-        </script>
-    {% endblock content %}
+    </script>
+{% endblock content %}

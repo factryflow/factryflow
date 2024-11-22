@@ -1,10 +1,11 @@
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from rolepermissions.roles import assign_role, remove_role
 
 from users.schemas import RoleIn
 from users.utils import get_all_permissions, is_superuser
+
+from .models import User
 
 router = Router(tags=["users_roles"])
 

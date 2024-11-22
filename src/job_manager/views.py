@@ -1,34 +1,70 @@
 # views.py
-
+import datetime
+from common.utils.views import convert_timestamp
 from common.views import CRUDView, CustomTableView
+from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from resource_assigner.models import AssignmentConstraint, TaskRuleAssignment
 
-from .forms import *
-from .models import *
-from .services import *
-
+from .forms import (
+    AssignmentConstraintForm,
+    DependencyForm,
+    DependencyTypeForm,
+    ItemForm,
+    JobForm,
+    JobTypeForm,
+    TaskForm,
+    TaskTypeForm,
+    WorkCenterForm,
+)
+from .models import (
+    Dependency,
+    DependencyStatusChoices,
+    DependencyType,
+    Item,
+    Job,
+    JobStatusChoices,
+    JobType,
+    Task,
+    TaskStatusChoices,
+    TaskType,
+    WorkCenter,
+)
+from .services import (
+    DependencyService,
+    DependencyTypeService,
+    ItemService,
+    JobService,
+    JobTypeService,
+    TaskService,
+    TaskTypeService,
+    WorkCenterService,
+)
 
 # ------------------------------------------------------------------------------
 # WorkCenter Views
 # ------------------------------------------------------------------------------
 
-WORK_CENTER_MODEL_FIELDS = ["id", "name", "external_id", "notes"]
-WORK_CENTER_SEARCH_FIELDS = ["name", "id"]
-WORK_CENTER_TABLE_HEADERS = ["ID", "Work Center Name", "External ID", "Notes"]
+WORK_CENTER_MODEL_FIELDS = ["id", "name", "notes"]
+WORK_CENTER_SEARCH_FIELDS = ["name", "id", "notes"]
 
 WORK_CENTER_MODEL_RELATION_HEADERS = ["HISTORY"]
 WORK_CENTER_FIELD_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
-WorkCenterTableView = CustomTableView(
+WORK_CENTER_TABLE_VIEW = CustomTableView(
     model=WorkCenter,
     model_name="work_center",
     fields=WORK_CENTER_MODEL_FIELDS,
-    headers=WORK_CENTER_TABLE_HEADERS,
     model_relation_headers=WORK_CENTER_MODEL_RELATION_HEADERS,
     model_relation_fields=WORK_CENTER_FIELD_MODEL_RELATION_FIELDS,
     search_fields_list=WORK_CENTER_SEARCH_FIELDS,
@@ -36,10 +72,10 @@ WorkCenterTableView = CustomTableView(
 
 WORK_CENTER_VIEWS = CRUDView(
     model=WorkCenter,
-    model_name="work_center",
+    model_name="work_centers",
     model_service=WorkCenterService,
     model_form=WorkCenterForm,
-    model_table_view=WorkCenterTableView,
+    model_table_view=WORK_CENTER_TABLE_VIEW,
 )
 
 
@@ -47,25 +83,25 @@ WORK_CENTER_VIEWS = CRUDView(
 # Job Type Views
 # ------------------------------------------------------------------------------
 
-JOB_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
+JOB_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-JOB_TYPE_TABLE_HEADERS = ["ID", "External ID", "Job Type Name", "Notes"]
-JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+JOB_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 JOB_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 JOB_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 JOB_TYPE_TABLE_VIEW = CustomTableView(
     model=JobType,
     model_name="job_type",
     fields=JOB_TYPE_MODEL_FIELDS,
-    headers=JOB_TYPE_TABLE_HEADERS,
     model_relation_headers=JOB_TYPE_MODEL_RELATION_HEADERS,
     model_relation_fields=JOB_TYPE_MODEL_RELATION_FIELDS,
     search_fields_list=JOB_TYPE_SEARCH_FIELDS,
@@ -73,7 +109,7 @@ JOB_TYPE_TABLE_VIEW = CustomTableView(
 
 JOB_TYPE_VIEWS = CRUDView(
     model=JobType,
-    model_name="job_type",
+    model_name="job_types",
     model_service=JobTypeService,
     model_form=JobTypeForm,
     model_table_view=JOB_TYPE_TABLE_VIEW,
@@ -105,26 +141,16 @@ JOB_MODEL_FIELDS = [
 
 JOB_STATUS_FILTER_FIELD = "job_status"
 JOB_SEARCH_FIELDS = ["name", "description", "customer", "id"]
-JOB_TABLE_HEADERS = [
-    "Job ID",
-    "Job Name",
-    "Description",
-    "Customer",
-    "Due Date",
-    "Planned Start",
-    "Planned End",
-    "Priority",
-    "Status",
-]
 
 JOB_MODEL_RELATION_HEADERS = ["TASKS", "DEPENDENCIES", "HISTORY"]
 
 JOB_MODEL_RELATION_FIELDS = {
     # model_name: [model, related_name, [headers], [fields]]
-    "tasks": [
-        Task,
-        "job",
-        [
+    "tasks": {
+        "model": Task,
+        "model_name": "task",
+        "related_name": "job",
+        "headers": [
             "ID",
             "Task Name",
             "Item",
@@ -135,7 +161,7 @@ JOB_MODEL_RELATION_FIELDS = {
             "Task Type",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "item",
@@ -146,11 +172,20 @@ JOB_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
-    ],
-    "dependencies": [
-        "dependencies",
-        ["ID", "Dependency Name", "Expected Close", "Actual Close", "Type", "Status"],
-        [
+        "show_edit_actions": False,
+    },
+    "dependencies": {
+        "model_name": "dependency",
+        "related_name": "dependencies",
+        "headers": [
+            "ID",
+            "Dependency Name",
+            "Expected Close",
+            "Actual Close",
+            "Type",
+            "Status",
+        ],
+        "fields": [
             "id",
             "name",
             "expected_close_datetime",
@@ -158,10 +193,12 @@ JOB_MODEL_RELATION_FIELDS = {
             "dependency_type",
             "dependency_status",
         ],
-    ],
-    "history": [
-        "history",
-        [
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Name",
             "User",
@@ -171,8 +208,8 @@ JOB_MODEL_RELATION_FIELDS = {
             "Notes",
             "History Date",
         ],
-        [
-            "id",
+        "fields": [
+            "history_id",
             "name",
             "history_user",
             "customer",
@@ -181,16 +218,16 @@ JOB_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
-    ],
+        "show_edit_actions": False,
+    },
 }
 
 
-JobTableView = CustomTableView(
+JOB_TABLE_VIEW = CustomTableView(
     model=Job,
     model_name="job",
     fields=JOB_MODEL_FIELDS,
     status_choices_class=JobStatusChoices,
-    headers=JOB_TABLE_HEADERS,
     model_relation_headers=JOB_MODEL_RELATION_HEADERS,
     model_relation_fields=JOB_MODEL_RELATION_FIELDS,
     status_filter_field=JOB_STATUS_FILTER_FIELD,
@@ -202,10 +239,10 @@ JobTableView = CustomTableView(
 JOB_VIEWS = CRUDView(
     model=Job,
     model_type=JobType,
-    model_name="job",
+    model_name="jobs",
     model_service=JobService,
     model_form=JobForm,
-    model_table_view=JobTableView,
+    model_table_view=JOB_TABLE_VIEW,
 )
 
 
@@ -214,18 +251,19 @@ JOB_VIEWS = CRUDView(
 # ------------------------------------------------------------------------------
 
 
-TASK_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
-TASK_TYPE_TABLE_HEADERS = ["ID", "External ID", "Task Type Name", "Notes"]
+TASK_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+TASK_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 TASK_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 TASK_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 
@@ -233,7 +271,6 @@ TASK_TYPE_TABLE_VIEW = CustomTableView(
     model=TaskType,
     model_name="task_type",
     fields=TASK_TYPE_MODEL_FIELDS,
-    headers=TASK_TYPE_TABLE_HEADERS,
     model_relation_fields=TASK_TYPE_MODEL_RELATION_FIELDS,
     model_relation_headers=TASK_TYPE_MODEL_RELATION_HEADERS,
     search_fields_list=TASK_TYPE_SEARCH_FIELDS,
@@ -241,7 +278,7 @@ TASK_TYPE_TABLE_VIEW = CustomTableView(
 
 TASK_TYPE_VIEWS = CRUDView(
     model=TaskType,
-    model_name="task_type",
+    model_name="task_types",
     model_service=TaskTypeService,
     model_form=TaskTypeForm,
     model_table_view=TASK_TYPE_TABLE_VIEW,
@@ -263,7 +300,6 @@ TASK_MODEL_FIELDS = [
     "planned_start_datetime",
     "planned_end_datetime",
     "task_type",
-    # TODO: Add assigned resources
     "task_status",
 ]
 
@@ -274,28 +310,28 @@ TASK_TAILWIND_CLASSES = {
 }
 
 TASK_STATUS_FILTER_FIELD = "task_status"
-TASK_SEARCH_FIELDS = ["name", "item", "id"]
-TASK_TABLE_HEADERS = [
-    "Task ID",
-    "Name",
-    "Job Name",
-    "Item",
-    "Quantity",
-    "Run Time",
-    "Setup Time",
-    "Planned Start",
-    "Planned End",
-    "Task Type",
-    # TODO: Add assigned resources
-    "Status",
-]
+TASK_SEARCH_FIELDS = ["id", "name", "item", "job", "task_type", "work_center", "notes"]
 
-TASK_MODEL_RELATION_HEADERS = ["DEPENDENCIES", "predecessors", "HISTORY"]
+TASK_MODEL_RELATION_HEADERS = [
+    "DEPENDENCIES",
+    "PREDECESSORS",
+    "HISTORY",
+    "CONSTRAINTS",
+    "RULES",
+]
 TASK_MODEL_RELATION_FIELDS = {
-    "dependencies": [
-        "dependencies",
-        ["ID", "Dependency Name", "Expected Close", "Actual Close", "Type", "Status"],
-        [
+    "dependencies": {
+        "model_name": "tasks",
+        "related_name": "dependencies",
+        "headers": [
+            "ID",
+            "Dependency Name",
+            "Expected Close",
+            "Actual Close",
+            "Type",
+            "Status",
+        ],
+        "fields": [
             "id",
             "name",
             "expected_close_datetime",
@@ -303,10 +339,12 @@ TASK_MODEL_RELATION_FIELDS = {
             "dependency_type",
             "dependency_status",
         ],
-    ],
-    "predecessors": [
-        "predecessors",
-        [
+        "show_edit_actions": False,
+    },
+    "predecessors": {
+        "model_name": "tasks",
+        "related_name": "predecessors",
+        "headers": [
             "ID",
             "Predecessor Name",
             "Item",
@@ -317,7 +355,7 @@ TASK_MODEL_RELATION_FIELDS = {
             "Task Type",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "item",
@@ -328,10 +366,12 @@ TASK_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
-    ],
-    "history": [
-        "history",
-        [
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Name",
             "User",
@@ -345,8 +385,8 @@ TASK_MODEL_RELATION_FIELDS = {
             "Notes",
             "History Date",
         ],
-        [
-            "id",
+        "fields": [
+            "history_id",
             "name",
             "history_user",
             "item",
@@ -359,18 +399,62 @@ TASK_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
-    ],
+        "show_edit_actions": False,
+    },
+    "rules": {
+        "model": TaskRuleAssignment,
+        "model_name": "task_rule_assignments",
+        "related_name": "task",
+        "model_name": "task_rule_assignment",
+        "headers": ["ID", "Assignment Rule", "Is Applied"],
+        "fields": ["id", "assigment_rule", "is_applied"],
+        "show_edit_actions": False,
+    },
+    "constraints": {
+        "model": AssignmentConstraint,
+        "model_name": "constraint",
+        "related_name": "task",
+        "headers": [
+            "ID",
+            "Assignment Rule",
+            "Resource Group",
+            "Resource Count",
+            "Use All Resources",
+        ],
+        "fields": [
+            "id",
+            "assignment_rule",
+            "resource_group",
+            "resource_count",
+            "use_all_resources",
+        ],
+        "show_edit_actions": False,
+    },
 }
 
+# AssigmentConstraint Formset Options
+ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS = [
+    "resource_group",
+    "resources",
+    "resource_count",
+    "use_all_resources",
+]
 
-TaskTableView = CustomTableView(
+ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS = [
+    AssignmentConstraint,
+    AssignmentConstraintForm,
+    "constraints",
+    ASSIGMENT_CONSTRAINT_FORMSET_FORM_FIELDS,
+    "assignment_constraint",
+]
+
+TASK_TABLE_VIEW = CustomTableView(
     model=Task,
     model_name="task",
     fields=TASK_MODEL_FIELDS,
     status_choices_class=TaskStatusChoices,
     model_relation_headers=TASK_MODEL_RELATION_HEADERS,
     model_relation_fields=TASK_MODEL_RELATION_FIELDS,
-    headers=TASK_TABLE_HEADERS,
     status_filter_field=TASK_STATUS_FILTER_FIELD,
     search_fields_list=TASK_SEARCH_FIELDS,
     tailwind_classes=TASK_TAILWIND_CLASSES,
@@ -379,10 +463,11 @@ TaskTableView = CustomTableView(
 TASK_VIEWS = CRUDView(
     model=Task,
     model_type=TaskType,
-    model_name="task",
+    model_name="tasks",
     model_service=TaskService,
     model_form=TaskForm,
-    model_table_view=TaskTableView,
+    inline_formset=ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS,
+    model_table_view=TASK_TABLE_VIEW,
 )
 
 
@@ -390,25 +475,25 @@ TASK_VIEWS = CRUDView(
 # Dependecy Type Views
 # ------------------------------------------------------------------------------
 
-DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "external_id", "name", "notes"]
-DEPENDENCY_TYPE_TABLE_HEADERS = ["ID", "External ID", "Dependency Type Name", "notes"]
+DEPENDENCY_TYPE_MODEL_FIELDS = ["id", "name", "notes"]
 
-DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "external_id"]
+DEPENDENCY_TYPE_SEARCH_FIELDS = ["name", "notes", "id"]
 
 DEPENDENCY_TYPE_MODEL_RELATION_HEADERS = ["HISTORY"]
 DEPENDENCY_TYPE_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 DEPENDENCY_TYPE_TABLE_VIEW = CustomTableView(
     model=DependencyType,
     model_name="dependency_type",
     fields=DEPENDENCY_TYPE_MODEL_FIELDS,
-    headers=DEPENDENCY_TYPE_TABLE_HEADERS,
     model_relation_headers=DEPENDENCY_TYPE_MODEL_RELATION_HEADERS,
     model_relation_fields=DEPENDENCY_TYPE_MODEL_RELATION_FIELDS,
     search_fields_list=DEPENDENCY_TYPE_SEARCH_FIELDS,
@@ -416,7 +501,7 @@ DEPENDENCY_TYPE_TABLE_VIEW = CustomTableView(
 
 DEPENDENCY_TYPE_VIEWS = CRUDView(
     model=DependencyType,
-    model_name="dependency_type",
+    model_name="dependency_types",
     model_service=DependencyTypeService,
     model_form=DependencyTypeForm,
     model_table_view=DEPENDENCY_TYPE_TABLE_VIEW,
@@ -444,23 +529,16 @@ DEPENDENCY_TAILWIND_CLASSES = {
 }
 
 DEPENDENCY_STATUS_FILTER_FIELD = "dependency_status"
-DEPENDENCY_SEARCH_FIELDS = ["name", "id"]
-DEPENDENCY_TABLE_HEADERS = [
-    "Dependency ID",
-    "Dependency Name",
-    "Expected Close",
-    "Actual Close",
-    "Type",
-    "Status",
-]
+DEPENDENCY_SEARCH_FIELDS = ["name", "id", "dependency_type", "notes"]
 
 DEPENDENCY_MODEL_RELATION_HEADERS = ["TASKS", "JOBS", "HISTORY"]
 
 DEPENDENCY_MODEL_RELATION_FIELDS = {
-    "tasks": [
-        Task,
-        "dependencies",
-        [
+    "tasks": {
+        "model": Task,
+        "model_name": "task",
+        "related_name": "dependencies",
+        "headers": [
             "ID",
             "Task Name",
             "Item",
@@ -471,7 +549,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "Task Type",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "item",
@@ -482,11 +560,13 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "task_type",
             "task_status",
         ],
-    ],
-    "jobs": [
-        Job,
-        "dependencies",
-        [
+        "show_edit_actions": False,
+    },
+    "jobs": {
+        "model": Job,
+        "model_name": "job",
+        "related_name": "dependencies",
+        "headers": [
             "ID",
             "Job Name",
             "Description",
@@ -497,7 +577,7 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "Priority",
             "Status",
         ],
-        [
+        "fields": [
             "id",
             "name",
             "description",
@@ -508,10 +588,12 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "priority",
             "job_status",
         ],
-    ],
-    "history": [
-        "history",
-        [
+        "show_edit_actions": False,
+    },
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": [
             "ID",
             "Name",
             "User",
@@ -522,8 +604,8 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "Notes",
             "History Date",
         ],
-        [
-            "id",
+        "fields": [
+            "history_id",
             "name",
             "history_user",
             "expected_close_datetime",
@@ -533,17 +615,17 @@ DEPENDENCY_MODEL_RELATION_FIELDS = {
             "notes",
             "history_date",
         ],
-    ],
+        "show_edit_actions": False,
+    },
 }
 
-DependencyTableView = CustomTableView(
+DEPENDENCY_TABLE_VIEW = CustomTableView(
     model=Dependency,
-    model_name="dependency",
+    model_name="dependencies",
     fields=DEPENDENCY_MODEL_FIELDS,
     status_choices_class=DependencyStatusChoices,
     model_relation_fields=DEPENDENCY_MODEL_RELATION_FIELDS,
     model_relation_headers=DEPENDENCY_MODEL_RELATION_HEADERS,
-    headers=DEPENDENCY_TABLE_HEADERS,
     status_filter_field=DEPENDENCY_STATUS_FILTER_FIELD,
     search_fields_list=DEPENDENCY_SEARCH_FIELDS,
     tailwind_classes=DEPENDENCY_TAILWIND_CLASSES,
@@ -552,35 +634,35 @@ DependencyTableView = CustomTableView(
 DEPENDENCY_VIEWS = CRUDView(
     model=Dependency,
     model_type=DependencyType,
-    model_name="dependency",
+    model_name="dependencies",
     model_service=DependencyService,
     model_form=DependencyForm,
-    model_table_view=DependencyTableView,
+    model_table_view=DEPENDENCY_TABLE_VIEW,
 )
 
 # ------------------------------------------------------------------------------
 # Item Views
 # ------------------------------------------------------------------------------
 
-ITEM_MODEL_FIELDS = ["id", "external_id", "name", "description", "notes"]
-ITEM_TABLE_HEADERS = ["ID", "External ID", "Item Name", "Description", "Notes"]
+ITEM_MODEL_FIELDS = ["id", "name", "description", "notes"]
 
-ITEM_SEARCH_FIELDS = ["name", "description", "notes", "external_id"]
+ITEM_SEARCH_FIELDS = ["name", "description", "notes", "id"]
 
 ITEM_MODEL_RELATION_HEADERS = ["HISTORY"]
 ITEM_MODEL_RELATION_FIELDS = {
-    "history": [
-        "history",
-        ["ID", "External ID", "Name", "User", "Notes", "History Date"],
-        ["id", "external_id", "name", "history_user", "notes", "history_date"],
-    ],
+    "history": {
+        "model_name": "history",
+        "related_name": "history",
+        "headers": ["ID", "Name", "User", "Notes", "History Date"],
+        "fields": ["history_id", "name", "history_user", "notes", "history_date"],
+        "show_edit_actions": False,
+    },
 }
 
 ITEM_TABLE_VIEW = CustomTableView(
     model=Item,
     model_name="item",
     fields=ITEM_MODEL_FIELDS,
-    headers=ITEM_TABLE_HEADERS,
     model_relation_headers=ITEM_MODEL_RELATION_HEADERS,
     model_relation_fields=ITEM_MODEL_RELATION_FIELDS,
     search_fields_list=ITEM_SEARCH_FIELDS,
@@ -588,8 +670,58 @@ ITEM_TABLE_VIEW = CustomTableView(
 
 ITEM_VIEWS = CRUDView(
     model=Item,
-    model_name="item",
+    model_name="items",
     model_service=ItemService,
     model_form=ItemForm,
     model_table_view=ITEM_TABLE_VIEW,
 )
+
+# ------------------------------------------------------------------------------
+# JOB-TASK gantt-chart View
+# ------------------------------------------------------------------------------
+
+
+def dashboard_gantt_chart_view(request, gantt_type: str = "job", home: str = "true"):
+    """
+    Dashboard
+        Job Task gantt chart data view
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        gantt_type (str): The type of Gantt chart to display. Defaults to "job".
+
+    Returns:
+        HttpResponse: The HTTP response with the rendered Gantt chart view.
+    """
+    if request.user.require_password_change:
+        return redirect(reverse("users:change_password"))
+
+    if "HX-Request" in request.headers and home == "false":
+        if gantt_type == "job":
+            return render(
+                request,
+                "dashboard/job_task_gantt.html",
+                {
+                    "gantt_chart_title": "Job Task",
+                    "API_BASE_URL": settings.API_BASE_URL,
+                },
+            )
+        else:
+            return render(
+                request,
+                "dashboard/resource_gantt.html",
+                {
+                    "gantt_chart_title": "Resource",
+                    "API_BASE_URL": settings.API_BASE_URL,
+                },
+            )
+
+    return render(
+        request,
+        "dashboard/base.html",
+        {
+            "gantt_chart_title": "Job Task",
+            "gantt_chart": "dashboard/job_task_gantt.html",
+            "API_BASE_URL": settings.API_BASE_URL,
+        },
+    )

@@ -14,7 +14,6 @@ from .models import (
     WeeklyShiftTemplateDetail,
 )
 
-
 # -----------------------------------------------------------------------------
 # WeeklyShiftTemplateDetailService
 # -----------------------------------------------------------------------------
@@ -41,9 +40,11 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create(
         self,
+        weekly_shift_template: WeeklyShiftTemplate,
         day_of_week: int,
         start_time: str | time,
         end_time: str | time,
+        custom_fields: dict = None,
     ) -> WeeklyShiftTemplateDetail:
         """
         Create a WeeklyShiftTemplateDetail.
@@ -55,9 +56,11 @@ class WeeklyShiftTemplateDetailService:
             raise PermissionDenied()
 
         weekly_shift_template_detail = WeeklyShiftTemplateDetail.objects.create(
+            weekly_shift_template=weekly_shift_template,
             day_of_week=day_of_week,
             start_time=self._parse_time(start_time),
             end_time=self._parse_time(end_time),
+            custom_fields=custom_fields,
         )
 
         weekly_shift_template_detail.full_clean()
@@ -68,6 +71,7 @@ class WeeklyShiftTemplateDetailService:
     @transaction.atomic
     def create_bulk(
         self,
+        template: WeeklyShiftTemplate,
         details: list[dict],
     ) -> None:
         """
@@ -83,6 +87,7 @@ class WeeklyShiftTemplateDetailService:
 
         for detail_data in details:
             detail = self.create(
+                weekly_shift_template=template,
                 day_of_week=detail_data["day_of_week"],
                 start_time=detail_data["start_time"],
                 end_time=detail_data["end_time"],
@@ -107,9 +112,11 @@ class WeeklyShiftTemplateDetailService:
             raise PermissionDenied()
 
         fields = [
+            "weekly_shift_template",
             "day_of_week",
             "start_time",
             "end_time",
+            "custom_fields",
         ]
 
         weekly_shift_template_detail, _ = model_update(
@@ -156,7 +163,9 @@ class WeeklyShiftTemplateService:
         """
         Process a list of WeeklyShiftTemplateDetails for a given WeeklyShiftTemplate.
         """
-        existing_details = template.weekly_shift_template_details.all()
+        existing_details = WeeklyShiftTemplateDetail.objects.filter(
+            weekly_shift_template=template
+        ).all()
 
         # Convert existing details to a dictionary
         existing_detail_dict = {
@@ -186,15 +195,22 @@ class WeeklyShiftTemplateService:
             self.weeklyshifttemplatedetailservice.delete(detail)
 
         # Create new details
-        list_of_details = self.weeklyshifttemplatedetailservice.create_bulk(details=details_to_create)
+        list_of_details = self.weeklyshifttemplatedetailservice.create_bulk(
+            template=template, details=details_to_create
+        )
 
         return list_of_details
 
     def _check_no_overlapping_details(self, template: WeeklyShiftTemplate) -> None:
         details_by_day = defaultdict(list)
 
+        # get details
+        details = WeeklyShiftTemplateDetail.objects.filter(
+            weekly_shift_template=template
+        ).all()
+
         # Group details by day of the week
-        for detail in template.weekly_shift_template_details.all():
+        for detail in details:
             details_by_day[detail.day_of_week].append(detail)
 
         # Check for overlaps within each day, but only if there's more than one detail for that day
@@ -227,8 +243,8 @@ class WeeklyShiftTemplateService:
         external_id: str = "",
         notes: str = "",
         description: str = "",
-        details: list[dict] = None,
-        # weekly_shift_template_details: list[WeeklyShiftTemplateDetail] = None,
+        weekly_shift_template_details: list[dict] = None,
+        custom_fields: dict = None,
     ) -> WeeklyShiftTemplate:
         """
         Create a WeeklyShiftTemplate and its related WeeklyShiftTemplateDetails.
@@ -237,9 +253,9 @@ class WeeklyShiftTemplateService:
         if not self.permission_service.check_for_permission("add_weeklyshifttemplate"):
             raise PermissionDenied()
 
-        if details:
+        if weekly_shift_template_details:
             # Validate details
-            self._validate_details_fields(details)
+            self._validate_details_fields(weekly_shift_template_details)
 
         # Create WeeklyShiftTemplate
         template = WeeklyShiftTemplate.objects.create(
@@ -247,17 +263,16 @@ class WeeklyShiftTemplateService:
             external_id=external_id,
             notes=notes,
             description=description,
+            custom_fields=custom_fields,
         )
 
         # Create WeeklyShiftTemplateDetails
-        weekly_shift_details = None
-        if details:
-            weekly_shift_details = self.weeklyshifttemplatedetailservice.create_bulk(details=details)
+        if weekly_shift_template_details:
+            self.weeklyshifttemplatedetailservice.create_bulk(
+                template=template, details=weekly_shift_template_details
+            )
             # Check for overlapping details
             self._check_no_overlapping_details(template)
-
-        if weekly_shift_details:
-            template.weekly_shift_template_details.set(weekly_shift_details)
 
         template.full_clean()
         template.save(user=self.user)
@@ -284,28 +299,12 @@ class WeeklyShiftTemplateService:
             "external_id",
             "notes",
             "description",
-            "weekly_shift_template_details",
+            "custom_fields",
         ]
-
-        # details = data.pop("weekly_shift_template_details", [])
 
         template, _ = model_update(
             instance=instance, fields=fields, data=data, user=self.user
         )
-
-        details = data.get("weekly_shift_template_details")
-
-        
-
-        if details:
-            # Validate details
-            self._validate_details_fields(details)
-
-            # Process details
-            self._process_details(template, details)
-
-            # Check for overlapping details
-            self._check_no_overlapping_details(template)
 
         template.full_clean()
         template.save(user=self.user)
@@ -339,7 +338,11 @@ class OperationalExceptionTypeService:
 
     @transaction.atomic
     def create(
-        self, name: str, external_id: str = "", notes: str = ""
+        self,
+        name: str,
+        external_id: str = "",
+        notes: str = "",
+        custom_fields: dict = None,
     ) -> OperationalExceptionType:
         # check for permissions for add operational exception type
         if not self.permission_service.check_for_permission(
@@ -348,7 +351,7 @@ class OperationalExceptionTypeService:
             raise PermissionDenied()
 
         exception_type = OperationalExceptionType.objects.create(
-            name=name, external_id=external_id, notes=notes
+            name=name, external_id=external_id, notes=notes, custom_fields=custom_fields
         )
         exception_type.full_clean()
         exception_type.save(user=self.user)
@@ -369,6 +372,7 @@ class OperationalExceptionTypeService:
             "name",
             "external_id",
             "notes",
+            "custom_fields",
         ]
 
         exception_type, _ = model_update(
@@ -407,6 +411,7 @@ class OperationalExceptionService:
         weekly_shift_template: WeeklyShiftTemplate = None,
         external_id: str = "",
         notes="",
+        custom_fields: dict = None,
     ) -> OperationalException:
         # check for permissions for add operational exception
         if not self.permission_service.check_for_permission("add_operationalexception"):
@@ -420,6 +425,7 @@ class OperationalExceptionService:
             weekly_shift_template=weekly_shift_template,
             external_id=external_id,
             notes=notes,
+            custom_fields=custom_fields,
         )
 
         exception.full_clean()
@@ -445,6 +451,7 @@ class OperationalExceptionService:
             "weekly_shift_template",
             "external_id",
             "notes",
+            "custom_fields",
         ]
 
         exception, _ = model_update(

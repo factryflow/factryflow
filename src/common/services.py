@@ -122,6 +122,7 @@ class CustomFieldService:
         field_type: str,
         is_required: bool,
         content_type: ContentType,
+        custom_fields: dict = None,
         description: str = "",
     ):
         # check permissions for add custom field
@@ -137,6 +138,7 @@ class CustomFieldService:
             label=label,
             description=description,
             field_type=field_type,
+            custom_fields=custom_fields,
             is_required=is_required,
         )
         custom_field.full_clean()
@@ -158,6 +160,7 @@ class CustomFieldService:
             "label",
             "description",
             "is_required",
+            "custom_fields",
             "field_type",
             "content_type",
         ]

@@ -1,9 +1,10 @@
-from common.models import BaseModel, BaseModelWithExtras
+from common.models import BaseModel, BaseModelWithExtras, Operator
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task, WorkCenter
+from ordered_model.models import OrderedModel
 from resource_manager.models import Resource, ResourceGroup
-# Create your models here.
+from simple_history.models import HistoricalRecords
 
 
 class TaskResourceAssigment(BaseModel):
@@ -11,43 +12,39 @@ class TaskResourceAssigment(BaseModel):
     Represents the assignment of resources to tasks.
     """
 
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    # resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
-    assigment_rule = models.ForeignKey(
-        "AssigmentRule", on_delete=models.DO_NOTHING, blank=True, null=True
+    task = models.OneToOneField(Task, on_delete=models.DO_NOTHING)
+    resources = models.ManyToManyField(
+        Resource, blank=True, related_name="task_resource_assignments"
     )
-    resource_group = models.ManyToManyField(ResourceGroup, blank=True)
-    resource_count = models.PositiveIntegerField(default=1)
-    use_all_resources = models.BooleanField(default=False)
+
+    history = HistoricalRecords(table_name="task_resource_assigment_history")
 
     class Meta:
         db_table = "task_resource_assigment"
 
+    def __str__(self):
+        return f"{self.task.name}"
 
-class AssigmentRule(BaseModelWithExtras):
+
+class AssigmentRule(BaseModelWithExtras, OrderedModel):
     """
     Represents a rule for assigning assignment constraints to tasks.
     """
 
     name = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
     work_center = models.ForeignKey(WorkCenter, on_delete=models.DO_NOTHING)
     is_active = models.BooleanField(default=True)
+    description = models.TextField(blank=True)
 
-    class Meta:
+    history = HistoricalRecords(table_name="assigment_rule_history")
+
+    order_with_respect_to = "work_center"
+
+    class Meta(OrderedModel.Meta):
         db_table = "assigment_rule"
 
     def __str__(self):
         return self.name
-
-
-class Operator(models.TextChoices):
-    EQUALS = "equals", "Equals"
-    CONTAINS = "contains", "Contains"
-    STARTS_WITH = "starts_with", "Starts With"
-    ENDS_WITH = "ends_with", "Ends With"
-    GREATER_THAN = "gt", "Greater Than"
-    LESS_THAN = "lt", "Less Than"
 
 
 class AssigmentRuleCriteria(BaseModel):
@@ -66,6 +63,8 @@ class AssigmentRuleCriteria(BaseModel):
     )
     value = models.CharField(max_length=254, blank=True, null=True)
 
+    history = HistoricalRecords(table_name="assigment_rule_criteria_history")
+
     class Meta:
         db_table = "assigment_rule_criteria"
 
@@ -77,19 +76,17 @@ class AssignmentConstraint(BaseModel):
     """
 
     id = models.AutoField(primary_key=True)
-    task = models.ForeignKey(
+    task = models.OneToOneField(
         Task,
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
-        related_name="constraints",
     )
-    assignment_rule = models.ForeignKey(
+    assignment_rule = models.OneToOneField(
         AssigmentRule,
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
-        related_name="constraints",
     )
     resource_group = models.ForeignKey(
         ResourceGroup,
@@ -99,11 +96,23 @@ class AssignmentConstraint(BaseModel):
         related_name="constraints",
     )
     resources = models.ManyToManyField(Resource, blank=True, related_name="constraints")
-    is_active = models.BooleanField(default=True)
-    is_direct = models.BooleanField(default=True)
+    resource_count = models.PositiveIntegerField(default=1)
+    use_all_resources = models.BooleanField(default=False)
+
+    history = HistoricalRecords(table_name="assignment_constraint_history")
 
     class Meta:
         db_table = "assignment_constraint"
+
+    def __str__(self):
+        if self.task:
+            return f"AssignmentConstraint for Task: {self.task.name}"
+        elif self.assignment_rule:
+            return (
+                f"AssignmentConstraint for Assignment Rule: {self.assignment_rule.name}"
+            )
+        else:
+            return "AssignmentConstraint with no associated Task or Assignment Rule"
 
     @property
     def is_template(self):
@@ -114,23 +123,35 @@ class AssignmentConstraint(BaseModel):
         return list(self.resources.values_list("id", flat=True))
 
     def clean(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        resource_group_set = self.resource_group is not None
-        resources_set = self.resources.count() > 0
-
-        if resource_group_set and resources_set:
-            raise ValidationError(
-                "You cannot set both resource_pool and resources. Choose one."
-            )
-        elif not resource_group_set and not resources_set:
-            raise ValidationError("You must set either resource_pool or resources.")
-
         # ensure that either task or assignment_rule is set
         if not (self.task) and not (self.assignment_rule):
             raise ValidationError("task or assignment_rule must be set.")
 
-        if self.is_direct and self.assignment_rule:
-            raise ValidationError(
-                "Direct assignment constraints cannot have assignment rules."
+
+class TaskRuleAssignment(BaseModel):
+    """
+    Represents the assignment rules to tasks.
+    one task can have multiple rules.
+    """
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    assigment_rule = models.ForeignKey(AssigmentRule, on_delete=models.CASCADE)
+    is_applied = models.BooleanField(default=False)
+
+    history = HistoricalRecords(table_name="task_rule_assignment_history")
+
+    class Meta:
+        db_table = "task_rule_assignment"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["task", "assigment_rule"], name="unique_task_assigment_rule"
             )
+        ]
+
+    def __str__(self):
+        return f"{self.task} - {self.assigment_rule}"
+
+    def clean(self, *args, **kwargs):
+        # ensure that either task or assignment_rule is set
+        if not (self.task) and not (self.assignment_rule):
+            raise ValidationError("task or assignment_rule must be set.")

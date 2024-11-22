@@ -1,6 +1,6 @@
 import pytest
 from factories import (
-    AssigmentRuleFactory,
+    ResourceFactory,
     TaskFactory,
     TaskResourceAssigmentFactory,
     UserFactory,
@@ -11,11 +11,7 @@ from resource_assigner.services import TaskResourceAssigmentService
 
 @pytest.fixture
 def data():
-    return {
-        "task": TaskFactory(),
-        "assigment_rule": AssigmentRuleFactory(),
-        "resource_count": 1,
-    }
+    return {"task": TaskFactory(), "resources": [ResourceFactory(), ResourceFactory()]}
 
 
 @pytest.mark.django_db
@@ -26,8 +22,7 @@ def test_can_create_task_resource_assignment(data):
 
     assert TaskResourceAssigment.objects.count() == 1
     assert assignment.task == data["task"]
-    assert assignment.assigment_rule == data["assigment_rule"]
-    assert assignment.resource_count == data["resource_count"]
+    assert list(assignment.resources.all()) == data["resources"]
 
 
 @pytest.mark.django_db

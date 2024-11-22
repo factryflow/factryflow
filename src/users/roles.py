@@ -14,6 +14,7 @@ class Admin(AbstractUserRole):
     to users with the 'Admin' role.
     """
 
+    name = "Admin"
     available_permissions = get_all_avilable_permissions()
 
 
@@ -25,6 +26,7 @@ class Operator(AbstractUserRole):
     for resources associated with the operator (customize as needed).
     """
 
+    name = "Operator"
     available_permissions = get_view_only_permissions()
 
 
@@ -36,11 +38,13 @@ class Planner(AbstractUserRole):
     except those related to user management.
     """
 
+    name = "Planner"
     available_permissions = {}
     permissions = get_all_permissions()
 
     for permission in permissions:
-        if not permission.startswith("user"):
+        # exclude user-related permissions
+        if "user" not in permission:
             available_permissions[permission] = True
 
 
@@ -52,4 +56,5 @@ class ReadOnly(AbstractUserRole):
     permissions (excluding those related to 'user').
     """
 
+    name = "ReadOnly"
     available_permissions = get_view_only_permissions()

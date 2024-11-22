@@ -27,11 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+
 LOGIN_URL = "/accounts/login/"
+
+AUTH_USER_MODEL = "users.User"
 
 
 # Application definition
@@ -51,11 +55,13 @@ INSTALLED_APPS = [
     "django_htmx",
     "django_extensions",
     "django_filters",
+    "invitations",
     "template_partials",
     "simple_history",
     "storages",
     "ordered_model",
     "taggit",
+    "widget_tweaks",
     # apps
     "users",
     "common",
@@ -67,6 +73,7 @@ INSTALLED_APPS = [
     "api",
     "rolepermissions",
     "scheduler",
+    "microbatching",
 ]
 
 MIDDLEWARE = [
@@ -88,7 +95,7 @@ ROOT_URLCONF = "factryflow.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, "src/templates"],
+        "DIRS": [BASE_DIR, "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -172,7 +179,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/dashboard/gantt-chart=job/home=true/"
 
 
 # SUPERUSER CREDENTIALS
@@ -197,6 +204,9 @@ EMAIL_USE_SSL = False
 
 # API KEY
 API_KEY = os.getenv("API_KEY")
+
+# BASE URL for APIs
+API_BASE_URL = os.getenv("API_BASE_URL")
 
 # TAGGIT SETTINGS
 TAGGIT_CASE_INSENSITIVE = True

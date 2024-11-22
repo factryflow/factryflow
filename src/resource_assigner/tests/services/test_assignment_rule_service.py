@@ -1,6 +1,6 @@
 import pytest
 from factories import AssigmentRuleFactory, UserFactory, WorkCenterFactory
-from resource_assigner.models import AssigmentRule
+from resource_assigner.models import AssigmentRule, AssigmentRuleCriteria
 from resource_assigner.services import AssigmentRuleService
 
 
@@ -62,11 +62,14 @@ def test_can_update_criteria(assignment_rule_data):
     user = UserFactory()
 
     assignment_rule = AssigmentRuleService(user=user).create(**assignment_rule_data)
+    assignment_rule_criteria = AssigmentRuleCriteria.objects.filter(
+        assigment_rule=assignment_rule
+    ).first()
 
     updated_criteria_data = {
         "criteria": [
             {
-                "id": 1,
+                "id": assignment_rule_criteria.id,
                 "field": "test3",
             },
             {
