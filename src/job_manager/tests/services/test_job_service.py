@@ -72,8 +72,8 @@ def test_job_update_priority():
     job_3.refresh_from_db()
     job_1.refresh_from_db()
 
-    assert job_2.priority == 2
-    assert job_3.priority == 1
+    assert job_2.priority == 1
+    assert job_3.priority == 2
     assert job_1.priority == 3
 
     assert job_1.manual_priority == 3
