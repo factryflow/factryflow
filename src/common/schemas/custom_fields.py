@@ -9,6 +9,7 @@ from common.models import CustomField
 
 
 class CustomFieldIn(ModelSchema):
+    # Schema for CustomField input
     class Meta:
         model = CustomField
         fields = [
@@ -22,6 +23,7 @@ class CustomFieldIn(ModelSchema):
 
 
 class CustomFieldOut(ModelSchema):
+    # Schema for CustomField output
     class Meta:
         model = CustomField
         fields = "__all__"

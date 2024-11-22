@@ -126,7 +126,6 @@ class MicrobatchRuleService:
     def create(
         self,
         name: str,
-        batch_size: int,
         criteria: list[dict] = [],
         custom_fields: dict = None,
     ) -> MicrobatchRule:
@@ -140,7 +139,6 @@ class MicrobatchRuleService:
 
         instance = MicrobatchRule.objects.create(
             name=name,
-            batch_size=batch_size,
             custom_fields=custom_fields,
         )
 
@@ -165,7 +163,6 @@ class MicrobatchRuleService:
 
         fields = [
             "name",
-            "batch_size",
             "custom_fields",
         ]
         instance, _ = model_update(

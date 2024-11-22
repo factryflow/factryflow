@@ -2,8 +2,8 @@ from django.urls import path
 
 from microbatching.views.microbatch_flow import (
     MICROBATCH_FLOW_VIEWS,
-    match_flows_with_tasks,
     change_microbatch_flow_priority,
+    match_flows_with_tasks,
 )
 from microbatching.views.microbatch_rule import (
     MICROBATCH_RULE_CRITERIA_VIEWS,

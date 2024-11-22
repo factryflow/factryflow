@@ -1,8 +1,7 @@
-from common.utils.views import add_notification_headers
 from common.utils.ordered_models import change_obj_priority
+from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
-
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -42,8 +41,8 @@ MICROBATCH_FLOW_MODEL_RELATION_FIELDS = {
         "model": MicrobatchTaskFlow,
         "model_name": "microbatch_task_flow_set",
         "related_name": "microbatch_flow",
-        "headers": ["ID", "TASK_FLOWS"],
-        "fields": ["id", "task_flows"],
+        "headers": ["ID", "Flow Tasks"],
+        "fields": ["id", "name"],
         "show_edit_actions": False,
     },
     "history": {

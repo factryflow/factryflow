@@ -82,6 +82,13 @@ class Task(BaseModelWithExtras):
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sub_tasks",
+    )
     dependencies = models.ManyToManyField(
         "Dependency", blank=True, related_name="tasks"
     )
@@ -109,3 +116,16 @@ class Task(BaseModelWithExtras):
             return self.taskresourceassigment.count()
         else:
             return 0
+
+    def consolidate_start_end_dates(self):
+        """Sets the planned start and end dates for the task based on the earliest
+        start date and latest end date from the child tasks (if any).
+        """
+        if self.sub_tasks.exists():
+            start_dates = [task.planned_start_datetime for task in self.sub_tasks.all() if task.planned_start_datetime]
+            end_dates = [task.planned_end_datetime for task in self.sub_tasks.all() if task.planned_start_datetime]
+
+            if start_dates and end_dates:
+                self.planned_start_datetime = min(start_dates)
+                self.planned_end_datetime = max(end_dates)
+                self.save()

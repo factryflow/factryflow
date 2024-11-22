@@ -12,6 +12,7 @@ class MicrobatchFlow(BaseModelWithExtras, OrderedModel):
 
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
+    batch_size = models.IntegerField()
     start_rule = models.ForeignKey(
         MicrobatchRule, on_delete=models.CASCADE, related_name="flow_start_rule"
     )
@@ -33,26 +34,28 @@ class MicrobatchFlow(BaseModelWithExtras, OrderedModel):
 class MicrobatchTaskFlow(BaseModel):
     """Stores a set of MicrobatchTasks that are derived from a MicrobatchFlow."""
 
-    microbatch_flow = models.ForeignKey(MicrobatchFlow, on_delete=models.CASCADE)
+    microbatch_flow = models.ForeignKey(
+        MicrobatchFlow, on_delete=models.CASCADE, related_name="task_flows"
+    )
 
     class Meta:
         db_table = "microbatch_task_flow"
 
     def __str__(self):
-        task_flow_str = " -> ".join([n.task.name for n in self.task_flows.all()])
+        task_flow_str = " -> ".join([n.task.name for n in self.flow_tasks.all()])
         return f"{self.id} - {self.microbatch_flow.name} - {task_flow_str}"
 
     @property
     def name(self):
-        return " -> ".join([n.task.name for n in self.task_flows.all()])
+        return " -> ".join([n.task.name for n in self.flow_tasks.all()])
 
 
 class MicrobatchTask(BaseModel, OrderedModel):
     """Stores data on flows derived from Tasks and their matching MicrobatchRules."""
 
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
     microbatch_task_flow = models.ForeignKey(
-        MicrobatchTaskFlow, on_delete=models.CASCADE, related_name="task_flows"
+        MicrobatchTaskFlow, on_delete=models.DO_NOTHING, related_name="flow_tasks"
     )
 
     history = HistoricalRecords(table_name="microbatch_task_flow_history")

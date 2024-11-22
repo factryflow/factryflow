@@ -38,6 +38,7 @@ class CRUDView:
         button_text="Add",
         ordered_model=False,
         user_rule_permission=True,
+        parents="false",
     ):
         """
         Attributes:
@@ -82,6 +83,11 @@ class CRUDView:
         self.num_of_rows_per_page = 25
         self.sort_direction = "asc"
         self.sort_by = "id"
+        self.status_filter = "all"
+        self.search_query = None
+        self.page_number = 1
+        self.parent_filter_param = "false"
+        self.parent_filter = False
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -181,9 +187,12 @@ class CRUDView:
             return redirect(reverse("users:change_password"))
 
         # Retrieve filtering and search parameters from the request
-        status_filter = request.GET.get("status", "all")
-        search_query = request.GET.get("query", "")
-        page_number = request.GET.get("page", 1)
+        self.status_filter = request.GET.get("status", self.status_filter)
+        self.search_query = request.GET.get("query", self.search_query)
+        self.page_number = request.GET.get("page", self.page_number)
+        self.parent_filter_param = request.GET.get("parents", self.parent_filter_param)
+        self.parent_filter = True if self.parent_filter_param == "true" else False
+
         self.num_of_rows_per_page = request.GET.get(
             "num_of_rows_per_page", self.num_of_rows_per_page
         )
@@ -193,12 +202,13 @@ class CRUDView:
         # Generate table view based on filter and search parameters
         table_rows, paginator, num_pages, total_instances_count = (
             self.table_view.table_rows(
-                status_filter=status_filter,
-                search_query=search_query,
-                page_number=page_number,
+                status_filter=self.status_filter,
+                search_query=self.search_query,
+                page_number=self.page_number,
                 sort_direction=self.sort_direction,
                 sort_field=self.sort_by,
                 num_of_rows_per_page=self.num_of_rows_per_page,
+                parent_filter=self.parent_filter,
             )
         )
 

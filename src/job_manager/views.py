@@ -1,6 +1,9 @@
 # views.py
-from django.conf import settings
+import datetime
+from common.utils.views import convert_timestamp
 from common.views import CRUDView, CustomTableView
+from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from resource_assigner.models import AssignmentConstraint, TaskRuleAssignment
@@ -11,6 +14,7 @@ from django.http import HttpResponse
 from common.utils.views import add_notification_headers
 
 from .forms import (
+    AssignmentConstraintForm,
     DependencyForm,
     DependencyTypeForm,
     ItemForm,
@@ -19,7 +23,6 @@ from .forms import (
     TaskForm,
     TaskTypeForm,
     WorkCenterForm,
-    AssignmentConstraintForm,
 )
 from .models import (
     Dependency,
@@ -44,8 +47,6 @@ from .services import (
     TaskTypeService,
     WorkCenterService,
 )
-
-from resource_assigner.models import AssignmentConstraint
 
 # ------------------------------------------------------------------------------
 # WorkCenter Views

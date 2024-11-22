@@ -177,7 +177,6 @@ class TaskService:
         job: Job = None,
         dependencies: list[Dependency] = None,
         predecessors: list[Task] = None,
-        successors: list[Task] = None,
         custom_fields: dict = None,
         constraints: list[dict] = [],
     ) -> Task:
@@ -208,14 +207,19 @@ class TaskService:
         # Create assignment constraints
         for assignment_constraint_dict in constraints:
             # delete assignment rule object as it already been created
-            assignment_constraint_dict.pop("task", task)
+            assignment_constraint_dict.pop("task", None)
             assignment_constraint_dict.pop("id", None)
             assignment_constraint_dict.pop("DELETE", None)
+
+            # get custom fields from assignment constraint
+            constraint_custom_fields = assignment_constraint_dict.pop(
+                "custom_fields", {}
+            )
 
             self.assignment_constraint_service.create(
                 task=task,
                 **assignment_constraint_dict,
-                custom_fields=custom_fields,
+                custom_fields=constraint_custom_fields,
             )
 
         if dependencies:
@@ -223,9 +227,6 @@ class TaskService:
 
         if predecessors:
             task.predecessors.set(predecessors)
-
-        if successors:
-            task.successors.set(successors)
 
         return task
 

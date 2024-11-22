@@ -10,6 +10,8 @@ from factryengine import Assignment, ResourceGroup, Scheduler
 from factryengine import Resource as SchedulerResource
 from factryengine import Task as SchedulerTask
 from job_manager.models import Task
+from microbatching.models.microbatch_flow import MicrobatchFlow
+from microbatching.services.microbatch_flow import MicrobatchFlowService
 from resource_assigner.models import (
     AssignmentConstraint,
     TaskResourceAssigment,
@@ -293,11 +295,14 @@ class SchedulerRunsService(AbstractPermissionService):
 class SchedulingService:
     def __init__(
         self,
+        user,
         horizon_weeks: int = 1,
         plan_start_date: datetime = datetime.now(timezone.utc).replace(
             hour=0, minute=0, second=0, microsecond=0
         ),
     ):
+        self.user = user
+        self.permission_service = AbstractPermissionService(user=user)
         self.plan_start_date = plan_start_date
         self.plan_start_weekday = (
             plan_start_date.weekday() if self.plan_start_date else None
@@ -314,9 +319,22 @@ class SchedulingService:
         )
 
     @transaction.atomic
-    def run(self):
+    def run(self, selected_tasks=None):
+
+        # Create microbatched subtasks here
+        microbatch_service = MicrobatchFlowService(user=self.user)
+        for flow in MicrobatchFlow.objects.order_by(
+                "order"
+            ):  # Run microbatching for every MicrobatchFlow based on order.
+                flow = MicrobatchFlow.objects.order_by("order").first()
+                for task_flow in flow.task_flows.all():
+                    if task_flow.flow_tasks.count() > 0:
+                        microbatch_service.create_microbatch_subtasks(task_flow.flow_tasks.all())
+
         scheduler_resources_dict = self._create_scheduler_resource_objects_dict()
-        scheduler_tasks = self._create_scheduler_task_objects(scheduler_resources_dict)
+        scheduler_tasks = self._create_scheduler_task_objects(
+            scheduler_resources_dict, Task.objects.filter(sub_tasks__isnull=True)
+        )
         scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
         log_messages = []
 
@@ -327,6 +345,7 @@ class SchedulingService:
             tasks=scheduler_tasks, resources=scheduler_resources_dict.values()
         )
         result = scheduler.schedule()
+
         scheduler_summary = result.summary().split("\n")
         log_messages.extend(scheduler_summary)
 
@@ -362,65 +381,82 @@ class SchedulingService:
             task_id = task["task_id"]
             task_obj = Task.objects.get(id=task_id)
 
-            if not task.get("error_message") == "No solution found.":
+            if not task.get("error_message"):
                 # Update task planned start and end datetime
-                task_obj.planned_start_datetime = self._int_to_datetime(
-                    int(task["task_start"])
-                )
-                task_obj.planned_end_datetime = self._int_to_datetime(
-                    int(task["task_end"])
-                )
-                task_obj.save()
-                scheduler_logs["tasks_assigned"] += 1
-                log_messages.append(f"Task with ID: {task_id} schedule updated.")
+                try:
+                    task_obj.planned_start_datetime = self._int_to_datetime(
+                        int(task["task_start"])
+                    )
 
-                # Create TaskResourceAssigment object
-                task_resource_assignment = TaskResourceAssigment(task_id=task_id)
-                task_resource_assignment.save()
+                    task_obj.planned_end_datetime = self._int_to_datetime(
+                        int(task["task_end"])
+                    )
+                    task_obj.save()
+                    scheduler_logs["tasks_assigned"] += 1
+                    log_messages.append(f"Task with ID: {task_id} schedule updated.")
+
+                    # Create TaskResourceAssigment object
+                    task_resource_assignment = TaskResourceAssigment(task_id=task_id)
+                    task_resource_assignment.save()
+                    log_messages.append(
+                        f"TaskResourceAssigment {task_resource_assignment.id} created for Task with ID: {task_id}."
+                    )
+
+                    if task.get("assigned_resource_ids"):
+                        resource_ids = task["assigned_resource_ids"]
+                        resources = Resource.objects.filter(id__in=resource_ids)
+                        task_resource_assignment.resources.set(resources)
+                        log_messages.append(
+                            f"TaskResourceAssigment {task_resource_assignment.id} assigned to resources: {resource_ids}."
+                        )
+
+                    task_resource_assignments.append(task_resource_assignment)
+
+                    # Set Task Job planned start and end datetime
+                    if task_obj == Task.objects.filter(job=task_obj.job).earliest(
+                        "planned_start_datetime"
+                    ):
+                        task_obj.job.planned_start_datetime = (
+                            task_obj.planned_start_datetime
+                        )
+                        task_obj.job.save()
+                        log_messages.append(
+                            f"Job with ID {task_obj.job.id} planned_start_datetime updated."
+                        )
+
+                    if task_obj == Task.objects.filter(job=task_obj.job).latest(
+                        "planned_end_datetime"
+                    ):
+                        task_obj.job.planned_end_datetime = (
+                            task_obj.planned_end_datetime
+                        )
+                        task_obj.job.save()
+                        log_messages.append(
+                            f"Job with ID {task_obj.job.id} planned_end_datetime updated."
+                        )
+                except Exception as e:
+                    log_messages.append(
+                        f"Task with ID: {task_obj.id} could not be scheduled due to: {str(e)}"
+                    )
+                    log_messages.append(
+                        f"Task with ID: {task_obj.id} scheduler error message: {task.get('error_message')}"
+                    )
+                    continue
+            else:
                 log_messages.append(
-                    f"TaskResourceAssigment {task_resource_assignment.id} created for Task with ID: {task_id}."
+                    f"Task with ID: {task_obj.id} could not be scheduled due to: {task.get('error_message')}"
                 )
-
-                if task.get("assigned_resource_ids"):
-                    resource_ids = task["assigned_resource_ids"]
-                    resources = Resource.objects.filter(id__in=resource_ids)
-                    task_resource_assignment.resources.set(resources)
-                    log_messages.append(
-                        f"TaskResourceAssigment {task_resource_assignment.id} assigned to resources: {resource_ids}."
-                    )
-
-                task_resource_assignments.append(task_resource_assignment)
-
-                # Set Task Job planned start and end datetime
-                if task_obj == Task.objects.filter(job=task_obj.job).earliest(
-                    "planned_start_datetime"
-                ):
-                    task_obj.job.planned_start_datetime = (
-                        task_obj.planned_start_datetime
-                    )
-                    task_obj.job.save()
-                    log_messages.append(
-                        f"Job with ID {task_obj.job.id} planned_start_datetime updated."
-                    )
-
-                if task_obj == Task.objects.filter(job=task_obj.job).latest(
-                    "planned_end_datetime"
-                ):
-                    task_obj.job.planned_end_datetime = task_obj.planned_end_datetime
-                    task_obj.job.save()
-                    log_messages.append(
-                        f"Job with ID {task_obj.job.id} planned_end_datetime updated."
-                    )
-
+                continue
         scheduler_logs["log_messages"] = log_messages
         return {"data": res_df.to_dict("records"), "logs": scheduler_logs}
 
-    def _create_scheduler_task_objects(self, resources_dict: dict):
-        tasks = Task.objects.filter(job__isnull=False)
+    def _create_scheduler_task_objects(self, resources_dict: dict, selected_tasks=None):
+        if not selected_tasks:
+            selected_tasks = Task.objects.filter(job__isnull=False)
 
         scheduler_tasks = []
         scheduler_assignments = []
-        for task in tasks:
+        for task in selected_tasks:
             scheduler_task_dict = {}
 
             # task details
@@ -628,9 +664,15 @@ class SchedulingService:
 
         # subtract plan start
         windows = windows - self.plan_start_minutes
-
-        # filter
         windows = windows[(windows >= 0) & (windows <= self.horizon_minutes)]
+
+        try:
+            windows.reshape(-1, 2)
+        except ValueError:
+            # If windows size is an odd number, exclude the last entry
+            # as its end-date is expected to be beyond the horizon time.
+            windows = windows[:-1]
+            windows.reshape(-1, 2)
 
         return windows.reshape(-1, 2)
 
