@@ -1,4 +1,10 @@
 from common.views import CRUDView, CustomTableView
+from django.http import HttpResponse
+from django.urls import reverse
+
+from scheduler.utils import start_scheduler_run
+
+from .forms import ResourceIntervalsForm, SchedulerRunsForm
 
 # Create your views here.
 from .models import (
@@ -7,9 +13,7 @@ from .models import (
     SchedulerRuns,
     SchedulerStatusChoices,
 )
-from .forms import ResourceIntervalsForm, SchedulerRunsForm
 from .services import ResourceIntervalsService, SchedulerRunsService
-
 
 # ------------------------------------------------------------------------------
 # Scheduler Runs VIEWS
@@ -177,3 +181,21 @@ RESOURCE_INTERVAL_VIEW = CRUDView(
     model_table_view=RESOURCE_INTERVAL_TABLE_VIEW,
     user_rule_permission=False,
 )
+
+
+def start_scheduler_run_view(request):
+    """
+    Start a new scheduler run in background.
+    """
+    try:
+        start_scheduler_run(request)
+        if request.htmx:
+            headers = {"HX-Redirect": reverse("scheduler_runs")}
+            response = HttpResponse(status=204, headers=headers)
+            return response
+    except Exception as e:
+        raise e
+    
+    return HttpResponse(
+        {"status": "success", "message": "Scheduler run started successfully."}
+    )
