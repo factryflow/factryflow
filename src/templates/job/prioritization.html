@@ -141,27 +141,29 @@ Jobs Priority Manager
         function updateJobData(updatedJob) {
             let jobData = JSON.parse(document.querySelector('input[name="job_data"]').value || '[]');
             let jobIndex = jobData.findIndex(job => job.id === updatedJob.id);
+            
             if (jobIndex > -1) {
-            jobData[jobIndex] = { ...jobData[jobIndex], ...updatedJob };
+                jobData[jobIndex] = { ...jobData[jobIndex], ...updatedJob };
             } else {
-            jobData.push(updatedJob);
+                jobData.push(updatedJob);
             }
             document.querySelector('input[name="job_data"]').value = JSON.stringify(jobData);
-            console.log(document.querySelector('input[name="job_data"]').value);
         }
 
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault();
+            
             let formData = new FormData(this);
             formData.set('job_data', JSON.stringify(JSON.parse(document.querySelector('input[name="job_data"]').value || '[]')));
+            
             fetch(this.action, {
-            method: this.method,
-            body: formData,
+                method: this.method,
+                body: formData,
             }).then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
             }).catch(error => {
-            console.error('Error:', error);
+                console.error('Error:', error);
             });
         });
     </script>
