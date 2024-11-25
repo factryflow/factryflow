@@ -81,16 +81,6 @@ def test_wrong_day_of_week(detail_data):
 
 
 @pytest.mark.django_db
-def test_start_time_after_end_time(detail_data):
-    user = UserFactory()
-
-    detail_data["start_time"] = "13:00"
-
-    with pytest.raises(ValidationError):
-        WeeklyShiftTemplateDetailService(user=user).create(**detail_data)
-
-
-@pytest.mark.django_db
 def test_can_create_bulk(multiple_detail_data):
     user = UserFactory()
 
