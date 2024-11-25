@@ -20,7 +20,7 @@ def task_data():
         "quantity": 1,
         "task_type": TaskTypeFactory(),
         "work_center": WorkCenterFactory(),
-        "job": JobFactory(),
+        "job": JobFactory(name="test", due_date="2021-01-01"),
         "item": ItemFactory(),
         "predecessors": [TaskFactory()],
         "dependencies": [DependencyFactory()],

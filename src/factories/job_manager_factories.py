@@ -32,7 +32,7 @@ class JobFactory(factory.django.DjangoModelFactory):
     customer = ""
     external_id = ""
     notes = ""
-    due_date = factory.lazy_attribute(lambda _: faker.date_this_year())
+    due_date = ""
     priority = None
     planned_start_datetime = None
     planned_end_datetime = None
@@ -45,6 +45,9 @@ class JobFactory(factory.django.DjangoModelFactory):
         )
         with_description = factory.Trait(
             description=factory.lazy_attribute(lambda x: faker.text())
+        )
+        with_due_date = factory.Trait(
+            due_date=factory.lazy_attribute(lambda x: faker.future_datetime())
         )
         with_priority = factory.Trait(priority=factory.lazy_attribute(lambda _: 1))
         planned = factory.Trait(
