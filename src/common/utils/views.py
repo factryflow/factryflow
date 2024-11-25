@@ -46,6 +46,13 @@ def convert_date_to_readable_string(date: str) -> str:
 
 def convert_timestamp(datetime: str) -> str:
     """
-    Converts a datetime object to "YYYY-MM-DD HH:MM"
+    Converts a datetime object to "DD-MM-YYYY HH:MM"
     """
-    return datetime.strftime("%Y-%m-%d %H:%M")
+    return datetime.strftime("%d-%m-%Y %H:%M")
+
+
+def convert_date(datetime: str) -> str:
+    """
+    Converts a datetime object to "DD-MM-YYYY"
+    """
+    return datetime.strftime("%d-%m-%Y")

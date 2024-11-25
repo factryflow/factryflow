@@ -53,6 +53,7 @@ class JobForm(forms.ModelForm):
             "dependencies",
             "notes",
             "due_date",
+            "manual_priority",
         ]
         labels = {
             "name": "Job Name",
@@ -63,6 +64,7 @@ class JobForm(forms.ModelForm):
             "job_type": "Job Type",
             "due_date": "Due Date",
             "job_status": "Job Status",
+            "manual_priority": "Manual Priority",
         }
         widgets = {
             "name": forms.TextInput(
@@ -104,6 +106,12 @@ class JobForm(forms.ModelForm):
             "job_status": forms.Select(
                 attrs={
                     "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                }
+            ),
+            "manual_priority": forms.NumberInput(
+                attrs={
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
+                    "type": "number",
                 }
             ),
         }

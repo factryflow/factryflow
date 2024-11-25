@@ -4,9 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from common.models import CustomField
-from common.utils.views import (
-    convert_timestamp,
-)
+from common.utils.views import convert_timestamp, convert_date
 
 # ------------------------------------------------------------------------------
 # CustomTableView:
@@ -400,7 +398,7 @@ class CustomTableView:
                     value = convert_timestamp(getattr(instance, field))
                     row_data.append(value)
                 elif isinstance(getattr(instance, field), date):
-                    value = str(getattr(instance, field))
+                    value = convert_date(getattr(instance, field))
                     row_data.append(value)
                 else:
                     value = getattr(instance, field)
