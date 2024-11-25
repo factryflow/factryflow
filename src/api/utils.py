@@ -190,9 +190,13 @@ class CRUDModelViewSet:
                 continue
 
             if isinstance(field, models.ForeignKey):
-                payload_data[field_name] = self._process_foreign_key_field(field, field_value)
+                payload_data[field_name] = self._process_foreign_key_field(
+                    field, field_value
+                )
             elif isinstance(field, models.ManyToManyField):
-                payload_data[field_name] = self._process_many_to_many_field(field, field_value)
+                payload_data[field_name] = self._process_many_to_many_field(
+                    field, field_value
+                )
 
         return payload_data
 
@@ -237,5 +241,7 @@ class CRUDModelViewSet:
                     related_instance = get_object_or_404(related_model, id=related_id)
                     related_instances.append(related_instance)
                 except Http404:
-                    raise Http404(f"{related_model.__name__} with id {related_id} not found")
+                    raise Http404(
+                        f"{related_model.__name__} with id {related_id} not found"
+                    )
         return related_instances

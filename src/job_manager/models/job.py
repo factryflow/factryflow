@@ -80,8 +80,16 @@ class Job(BaseModelWithExtras, OrderedModelBase):
         start date and latest end date from the child tasks (if any).
         """
         if self.tasks.exists():
-            start_dates = [task.planned_start_datetime for task in self.tasks.all() if task.planned_start_datetime]
-            end_dates = [task.planned_end_datetime for task in self.tasks.all() if task.planned_end_datetime]
+            start_dates = [
+                task.planned_start_datetime
+                for task in self.tasks.all()
+                if task.planned_start_datetime
+            ]
+            end_dates = [
+                task.planned_end_datetime
+                for task in self.tasks.all()
+                if task.planned_end_datetime
+            ]
 
             if start_dates and end_dates:
                 self.planned_start_datetime = min(start_dates)
