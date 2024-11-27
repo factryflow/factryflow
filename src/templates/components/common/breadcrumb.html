@@ -1,0 +1,29 @@
+<!-- This is a reusable component for the breadcrumb. It is used to display the path of the current page. -->
+
+{% load static %}
+<div class="flex-wrap">
+    <nav class="flex pb-4" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <li class="inline-flex items-center">
+                <a href="/dashboard/gantt-type=job/home=true" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                    <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <a href="{% url model_name %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">{{ model_title }}</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Overview</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+    <div>
+        <h1 class="text-2xl font-semibold text-[#181C32] pb-5">{{ model_title }} Management</h1>
+    </div>
+</div>

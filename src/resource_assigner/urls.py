@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (
+from resource_assigner.views import (
     TASK_RESOURCE_ASSIGNMENT_VIEWS,
     ASSIGMENT_RULE_VIEWS,
     ASSIGMENT_RULE_CRITERIA_VIEWS,

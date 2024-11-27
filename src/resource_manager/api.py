@@ -7,7 +7,7 @@ from resource_manager.services import (
     ResourceService,
 )
 
-from .schemas import (
+from resource_manager.schemas import (
     ResourceIn,
     ResourceOut,
     ResourceGroupIn,

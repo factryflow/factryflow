@@ -257,7 +257,6 @@ class CustomTableView:
         sort_field,
         status_filter=None,
         search_query=None,
-        sort_by="desc",
         parent_filter=None,
     ):
         """
@@ -308,7 +307,6 @@ class CustomTableView:
         status_filter=None,
         search_query=None,
         num_of_rows_per_page=25,
-        sort_by="desc",
         parent_filter=False,
     ):
         """
@@ -351,7 +349,6 @@ class CustomTableView:
         sort_direction,
         sort_field,
         num_of_rows_per_page=25,
-        sort_by="desc",
         status_filter=None,
         search_query=None,
         parent_filter=None,

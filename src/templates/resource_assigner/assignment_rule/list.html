@@ -1,0 +1,57 @@
+{% extends "base/main.html" %}
+{% load permission_tags %}
+
+{% block title %}
+{{ model_title }}
+{% endblock title %}
+{% load partials %}
+{% load static %}
+{% partialdef partial-table-template %}
+<div x-data="{ showModal: false, selectAll: false }" x-init="$watch('selectAll', value => {
+    document.querySelectorAll('#all-{{ model_name }}s-table tbody input[type=checkbox]').forEach(checkbox => checkbox.checked = value);
+})">
+    {% include 'components/common/table.html' with change_priority_url="change_assignment_rule_priority" %}
+</div>
+{% endpartialdef %}
+
+{% partialdef partial-search-filter %}
+    {% include 'components/common/search-filter.html' %}
+{% endpartialdef %}
+
+{% block content %}
+    <div class="flex justify-between items-center" x-cloak>
+        {% include 'components/common/breadcrumb.html' %}
+
+        {% if user|can:crud_action_rules.1 %}
+            <div class="flex gap-2">
+                <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
+                    hx-post="{% url 'match_rules_with_tasks' %}" type="button">
+                    Match Rules
+                </button>
+
+                <a href="{% url model_name|add:'_form' %}"
+                    class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md">Create New {{ model_title | title }}</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Tabs -->
+    <div x-data="{ activeTab: 'tab1' }" class="border-x border-y border-[#e1e3ea80] rounded-xl" x-cloak>
+        <!-- Tabs -->
+        {% include 'components/common/status_filter.html' %}
+
+        <!-- Tab Content -->
+        <div class="bg-white pt-6 rounded-b-xl flex">
+            <div class="w-full"> <!-- x-show="activeTab === 'tab1'" -->
+                {% partial partial-search-filter %}
+                <div class="pt-6">
+                    <div class="relative table-container">
+                        {% with table_id="all-{{ model_name }}s-table" %}
+                            {% partial partial-table-template %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

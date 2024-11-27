@@ -1,0 +1,31 @@
+<!-- Reusable template for Search and filter components -->
+
+{% load static %}
+{% if rows %}
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center px-7" x-cloak>
+        <div class="flex mb-2 md:mb-0 w-full md:w-1/2">
+            <div class="relative w-full md:w-[600px]">
+                <!-- Inline SVG Icon -->
+                <img class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2 z-10 text-gray-400"
+                    src="{% static 'images/search.svg' %}" alt="image_search" />
+                <!-- Search Input -->
+                <input type="text" id="all_search_bar" placeholder="Search {{ model_title }} ID / {{ model_title }} Name"
+                    hx-get="{% url model_name %}" hx-target="#all-{{ model_name }}s-table" hx-trigger="keyup delayed:500ms"
+                    name="query"
+                    class="w-full pl-12 p-3 text-base font-semibold text-gray-600 focus:outline-none border border-gray-300 rounded-md" />
+            </div>
+        </div>
+        <!-- TODO:
+            <div class="flex flex-nowrap gap-x-5">
+                <div class="flex bg-[#181c320d] py-3.5 px-4 md:px-6 rounded-md">
+                    <img class="h-6 w-6" src="{% static 'images/date-icon.svg' %}" />
+                    <span class="text-base font-semibold text-[#181C32] pl-1">8 Jan 2023 - 6 Feb 2023</span>
+                </div>
+                <div class="flex bg-[#00B4D8] py-3.5 px-4 md:px-6 rounded-md">
+                    <img class="h-6 w-6" src="{% static 'images/filter.svg' %}" />
+                    <span class="text-base font-semibold text-white">Filter</span>
+                </div>
+            </div>
+        -->
+    </div>
+{% endif %}

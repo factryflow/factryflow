@@ -102,19 +102,20 @@ class CRUDModelViewSet:
 
     def _process_foreign_keys(self, payload_data):
         for field_name, field_value in payload_data.items():
-            try:
-                field = self.model._meta.get_field(field_name)
-            except FieldDoesNotExist:
-                continue
-
-            if isinstance(field, models.ForeignKey):
-                related_model = field.remote_field.model
+            if field_value:
                 try:
-                    related_instance = get_object_or_404(related_model, id=field_value)
-                except Http404:
-                    raise Http404(
-                        f"{related_model.__name__} with id {field_value} not found"
-                    )
-                payload_data[field_name] = related_instance
+                    field = self.model._meta.get_field(field_name)
+                except FieldDoesNotExist:
+                    continue
+
+                if isinstance(field, models.ForeignKey):
+                    related_model = field.remote_field.model
+                    try:
+                        related_instance = get_object_or_404(related_model, id=field_value)
+                    except Http404:
+                        raise Http404(
+                            f"{related_model.__name__} with id {field_value} not found"
+                        )
+                    payload_data[field_name] = related_instance
 
         return payload_data
