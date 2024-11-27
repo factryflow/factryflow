@@ -2,7 +2,7 @@ from django.urls import path
 
 from job_manager.api.chart_data import JobGanttAPIView, ResourceGanttAPIView
 
-from .views import (
+from job_manager.views import (
     DEPENDENCY_TYPE_VIEWS,
     DEPENDENCY_VIEWS,
     ITEM_VIEWS,
@@ -12,6 +12,7 @@ from .views import (
     TASK_VIEWS,
     WORK_CENTER_VIEWS,
     dashboard_gantt_chart_view,
+    job_prioritization_view,
 )
 
 urlpatterns = [
@@ -60,6 +61,12 @@ urlpatterns = [
         "jobs/view/<int:id>/field=<str:field>",
         JOB_VIEWS.show_model_form,
         name="jobs_relationships",
+    ),
+    # job prioritization
+    path(
+        "job-prioritization/",
+        job_prioritization_view,
+        name="job_prioritization",
     ),
     # job_type urls
     path("job-types/new/", JOB_TYPE_VIEWS.show_model_form, name="job_types_form"),

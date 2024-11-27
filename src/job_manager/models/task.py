@@ -122,8 +122,16 @@ class Task(BaseModelWithExtras):
         start date and latest end date from the child tasks (if any).
         """
         if self.sub_tasks.exists():
-            start_dates = [task.planned_start_datetime for task in self.sub_tasks.all()]
-            end_dates = [task.planned_end_datetime for task in self.sub_tasks.all()]
+            start_dates = [
+                task.planned_start_datetime
+                for task in self.sub_tasks.all()
+                if task.planned_start_datetime
+            ]
+            end_dates = [
+                task.planned_end_datetime
+                for task in self.sub_tasks.all()
+                if task.planned_start_datetime
+            ]
 
             if start_dates and end_dates:
                 self.planned_start_datetime = min(start_dates)

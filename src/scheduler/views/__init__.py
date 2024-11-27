@@ -1,2 +1,2 @@
 from .resource_intervals import RESOURCE_INTERVAL_VIEW
-from .scheduler_run import SCHEDULER_RUNS_VIEW
+from .scheduler_run import SCHEDULER_RUNS_VIEW, start_scheduler_run_view

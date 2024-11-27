@@ -31,10 +31,6 @@ class WeeklyShiftTemplateDetail(BaseModelWithExtras):
     end_time = models.TimeField()
     history = HistoricalRecords(table_name="weekly_shift_template_detail_history")
 
-    # def clean(self):
-    #     if self.start_time >= self.end_time:
-    #         raise ValidationError("Start time must be before end time")
-
     class Meta:
         indexes = [
             models.Index(

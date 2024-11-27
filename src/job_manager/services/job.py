@@ -94,6 +94,7 @@ class JobService:
         external_id: str = "",
         notes: str = "",
         priority: int = None,
+        manual_priority: int = None,
         custom_fields: dict = None,
     ) -> Job:
         # check for permission to create job
@@ -112,6 +113,7 @@ class JobService:
             priority=priority,
             job_status=job_status,
             external_id=external_id,
+            manual_priority=manual_priority,
             notes=notes,
             description=description,
             custom_fields=custom_fields,
@@ -142,6 +144,7 @@ class JobService:
             "description",
             "external_id",
             "notes",
+            "manual_priority",
             "dependencies",
             "custom_fields",
         ]

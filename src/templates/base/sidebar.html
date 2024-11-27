@@ -95,6 +95,9 @@
           {% with menu_item_id='jobs' menu_item_name='Jobs' menu_item_url="/jobs" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
+          {% with menu_item_id='jobs-priority' menu_item_name='Priority Manager' menu_item_url="/job-prioritization" %}
+            {% partial _dropdown_menu_item %}
+          {% endwith %}
           {% with menu_item_id='tasks' menu_item_name='Tasks' menu_item_url="/tasks" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
@@ -251,13 +254,13 @@
       </div>
       <!-- TODO -->
       <!-- {% comment %} Help and Support manu {% endcomment %}
-                                                                                    {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
-                                                                                      {% partial _menu_item %}
-                                                                                    {% endwith %} -->
+            {% with menu_item_id='HS' menu_item_icon='images/h-s.svg' menu_item_name='Help & Support' menu_item_url='#' %}
+              {% partial _menu_item %}
+            {% endwith %} -->
       <!-- {% comment %} operator menu {% endcomment %}
-                                                                                    {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
-                                                                                      {% partial _menu_item %}
-                                                                                    {% endwith %} -->
+            {% with menu_item_id='OV' menu_item_icon='images/h-s.svg' menu_item_name='Operator View' menu_item_url='/operatorview' %}
+              {% partial _menu_item %}
+            {% endwith %} -->
       {% comment %} Logout {% endcomment %}
       {% with menu_item_id='logout' menu_item_icon='images/logout.svg' menu_item_name='Logout' menu_item_url='/accounts/logout/' %}
         {% partial _menu_item %}

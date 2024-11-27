@@ -1,4 +1,5 @@
 from http import HTTPStatus
+
 from ninja import Schema
 
 

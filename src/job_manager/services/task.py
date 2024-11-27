@@ -173,6 +173,7 @@ class TaskService:
         predecessors: list[Task] = None,
         custom_fields: dict = None,
         constraints: list[dict] = [],
+        parent: Task = None,
     ) -> Task:
         # check for permission to create task
         if not self.permission_service.check_for_permission("add_task"):
@@ -193,6 +194,7 @@ class TaskService:
             work_center=work_center,
             job=job,
             custom_fields=custom_fields,
+            parent=parent,
         )
 
         task.full_clean()
@@ -247,6 +249,7 @@ class TaskService:
             "predecessors",
             "successors",
             "custom_fields",
+            "parent",
         ]
 
         task, _ = model_update(

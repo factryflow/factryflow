@@ -1,3 +1,5 @@
+from django.urls import reverse
+from django.http import HttpResponse
 from common.views import CRUDView, CustomTableView
 
 # Create your views here.
@@ -9,6 +11,7 @@ from scheduler.models import (
 )
 from scheduler.forms import SchedulerRunsForm
 from scheduler.services import SchedulerRunsService
+from scheduler.utils import start_scheduler_run
 
 
 # ------------------------------------------------------------------------------
@@ -117,3 +120,26 @@ SCHEDULER_RUNS_VIEW = CRUDView(
     user_rule_permission=False,
     list_template_name="scheduler/list.html",
 )
+
+
+# ------------------------------------------------------------------------------
+# Start Scheduler Run View
+# ------------------------------------------------------------------------------
+
+
+def start_scheduler_run_view(request):
+    """
+    Start a new scheduler run in background.
+    """
+    try:
+        start_scheduler_run(request)
+        if request.htmx:
+            headers = {"HX-Redirect": reverse("scheduler_runs")}
+            response = HttpResponse(status=204, headers=headers)
+            return response
+    except Exception as e:
+        raise e
+    
+    return HttpResponse(
+        {"status": "success", "message": "Scheduler run started successfully."}
+    )
