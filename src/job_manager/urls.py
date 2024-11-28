@@ -2,7 +2,7 @@ from django.urls import path
 
 from job_manager.api.chart_data import JobGanttAPIView, ResourceGanttAPIView
 
-from .views import (
+from job_manager.views import (
     DEPENDENCY_TYPE_VIEWS,
     DEPENDENCY_VIEWS,
     ITEM_VIEWS,

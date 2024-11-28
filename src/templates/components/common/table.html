@@ -1,0 +1,160 @@
+{% load common_filters %}
+{% load static %}
+{% load permission_tags %}
+
+<div class="overflow-x-auto" id="all-{{ model_name }}s-table">
+    {% if rows %}
+        <div class="overflow-y-auto h-80 sm:h-80 md:h-96 lg:h-[500px]">
+            <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center" x-cloak>
+                <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80] sticky top-0">
+                    <tr class="text-[#181C32]">
+                        {% for header in headers %}
+                            <th scope="col" class="whitespace-nowrap py-3.5 px-2 text-sm font-semibold text-[#181C32]">
+                                <button 
+                                    hx-get="{% url model_name %}?sort_by={{ header|lower }}&sort_direction={% if sort_by == header and sort_direction == 'desc' %}asc{% else %}desc{% endif %}" 
+                                    hx-push-url="{% url model_name %}?{{ header|lower }}={% if sort_by == header and sort_direction == 'desc' %}asc{% else %}desc{% endif %}" 
+                                    hx-target="#all-{{ model_name }}s-table"
+                                    x-data="{ sort_by: '{{ sort_by }}', sort_direction: '{{ sort_direction }}' }"
+                                >
+                                    {{ header|table_header }}
+                                    <img 
+                                        :src="sort_by === '{{ header|lower }}' && sort_direction === 'desc' ? '{% static 'images/down-arrow.svg' %}' : '{% static 'images/up-arrow.svg' %}'" 
+                                        alt="Sort Icon" 
+                                        class="inline-block ml-1 h-4 w-4"
+                                    >
+                                </button>
+                            </th>
+                        {% endfor %}
+                        {% if show_actions %}
+                            <th scope="col" class="whitespace-nowrap py-3.5 px-2">Actions</th>
+                        {% if ordered_model %}
+                            <th scope="col" class="whitespace-nowrap py-3.5 px-2">Change Priority</th>
+                        {% endif %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for row in rows %}
+                        {% if not view_only %}
+                            <div x-show="showModal === {{ row.0 }}" x-on:keydown.escape.prevent.stop="showModal = false"
+                                role="dialog" aria-modal="true" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+                                <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-opacity ease-in duration-150"
+                                    x-transition:leave="transition-opacity ease-out duration-150"
+                                    class="fixed inset-0 bg-black bg-opacity-50" x-cloak>
+                                    <div x-show="showModal === {{ row.0 }}" x-transition:enter="transition-transform ease-out duration-150"
+                                        x-transition:leave="transition-transform ease-in duration-150" x-on:click="showModal = false"
+                                        class="relative flex min-h-screen items-center justify-center p-4" x-cloak>
+                                        <div x-on:click.stop
+                                            class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg"
+                                            x-cloak>
+                                            <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
+                                                <div class="bg-haxred h-[80px] w-[80px] flex items-center justify-center rounded-full">
+                                                    <img class="h-14 w-14" src="{% static 'images/delete.svg' %}" alt="Delete Icon">
+                                                </div>
+                                                <p class="text-[#5E6278] font-semibold text-xl">Are you sure you want to delete {{ model_title }} model instance with id {{ row.0 }}</p>
+                                            </div>
+                                            <div class="px-9 py-5 flex justify-center items-center gap-3">
+                                                {% if show_actions %}
+                                                    {% if user|can:crud_action_rules.3 %}
+                                                        <button type="button" hx-delete="{% url 'delete_'|add:model_name_for_crud id=row.0 %}"
+                                                            hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML"
+                                                            class="rounded-md bg-[#FF4D4F] py-2 px-4 text-white"
+                                                            x-on:click="showModal = false">
+                                                            Delete
+                                                        </button>
+                                                        <button type="button" x-on:click="showModal = false"
+                                                            class="rounded-md bg-[#F9F9F9] py-2 px-4 text-[#7E8299]">
+                                                            Cancel
+                                                        </button>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <tr class="bg-white border-b">
+                            <!-- <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-table-search-1" type="checkbox" class="w-7 h-7 rounded-md bg-[#F1F1F2]">
+                                </div>
+                            </td> -->
+                            {% for cell in row %}   
+                                <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
+                                    {% if not cell %}
+                                        <span class="text-[#7E8299]">-</span>
+                                    {% elif "span" in cell %}
+                                        {{ cell|safe }}
+                                    {% else %}
+                                        <span
+                                            x-tooltip="{{cell|safe}}"
+                                            class="cursor-pointer">
+                                            {{ cell|safe|truncatechars:10 }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            {% if show_actions %}
+                                <td class="flex justify-center items-center px-2 py-2">
+                                    {% if user|can:crud_action_rules.0 %}
+                                    <a href="{% url 'view_'|add:model_name_for_crud id=row.0 %}">
+                                        <button id="view-{{ row.0 }}" type="button"
+                                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                            <img src="{% static 'images/visibility.svg' %}" alt="View" />
+                                        </button>
+                                    </a>
+                                    {% endif %}
+                                    {% if not view_only %}
+                                    {% if user|can:crud_action_rules.2 %}
+                                    <a href="{% url 'edit_'|add:model_name_for_crud id=row.0 edit='true' %}">
+                                        <button id="edit-{{ row.0 }}" type="button"
+                                            class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                            <img src="{% static 'images/edit.svg' %}" alt="Edit" />
+                                        </button>
+                                    </a>
+                                    {% endif %}
+                                    {% if user|can:crud_action_rules.3 %}
+                                    <button id="delete-{{ row.0 }}" type="button"
+                                        class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5"
+                                        @click="showModal = {{ row.0 }}">
+                                        <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                    </button>
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% if ordered_model %}
+                                    {% if change_priority_url %}
+                                        <td class="whitespace-nowrap px-2 py-2">
+                                            {% if user|can:crud_action_rules.2 %}
+                                                <button id="move-up-{{ row.0 }}"
+                                                    hx-post="{% url change_priority_url id=row.0 direction='up' %}"
+                                                    hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
+                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                                    <img src="{% static 'images/up-arrow.svg' %}" alt="Move Up" />
+                                                </button>
+                                                <button id="move-down-{{ row.0 }}"
+                                                    hx-post="{% url change_priority_url id=row.0 direction='down' %}"
+                                                    hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
+                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                                    <img src="{% static 'images/down-arrow.svg' %}" alt="Move Down" />
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>    
+        </div>
+        <div class="sticky bottom-0">
+            {% include 'components/common/pagination.html' %}
+        </div>
+    {% else %}
+        <div class="flex justify-center items-center h-[650px]">
+            <p class="text-[#7E8299] font-normal text-lg">No {{ model_title }} Data found</p>
+        </div>
+    {% endif %}
+</div>

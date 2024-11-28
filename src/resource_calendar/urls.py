@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (
+from resource_calendar.views import (
     WEEKLY_SHIFT_TEMPLATE_VIEWS,
     WEEKLY_SHIFT_TEMPLATE_DETAIL_VIEWS,
     OPERATIONAL_EXCEPTION_TYPE_VIEWS,

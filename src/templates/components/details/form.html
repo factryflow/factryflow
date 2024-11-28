@@ -1,0 +1,151 @@
+<!-- This is a reusable form for model details: View and edit -->
+
+{% load static %}
+{% load common_filters %}
+{% load widget_tweaks %}
+{% load permission_tags %}
+
+<form method="post" hx-post="{{ form_action_url }}" hx-redirect="true" hx-trigger="submit once" x-cloak>
+    {% csrf_token %}
+    {% comment %} Hidden ID {% endcomment %}
+    {% if id %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
+    <div class="md:flex md:flex-wrap -mx-3">
+        {% for field in form %}
+            {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <div class="flex items-center">
+                        <div class="w-1/8">{{ field }}</div>
+                        <div class="w-1/2 p-3 pt-5">
+                            <label for="{{ field.id_for_label }}"
+                                class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                    </div>
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% else %}
+                <div class="md:w-1/2 px-3 mb-6">
+                    <label for="{{ field.id_for_label }}"
+                        class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+            {% if forloop.counter|divisibleby:2 and not forloop.last %}
+                <div class="md:flex md:flex-wrap -mx-3"></div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Inline Formset Fields -->
+    {% comment %} Inline Formset Form {% endcomment %}
+    {% if inline_formset_form %}
+        <hr>
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">{{ inline_formset_title }}</h2>
+            {% if button_text != "Create" and button_text != "Edit"%}
+                <button id="delete-assignment-constriants" type="button"
+                        x-data="{ clicked: false }"
+                        :class="clicked ? 'bg-red-500 text-white' : 'bg-white text-red-500 border border-red-500'"
+                        @click="clicked = true; deleteAssignmentConstriants(`{{inline_formset_form.0.DELETE.id_for_label}}`)"
+                        class="font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center transition-colors duration-300 ease-in-out hover:bg-red-500 hover:text-white focus:ring-4">
+                    Delete {{ inline_formset_title.split|last }}
+                </button>
+            {% endif %}
+        </div>
+        
+        {{ inline_formset_form.management_form }}
+        {% for form in inline_formset_form %}
+            <div class="md:flex md:flex-wrap -mx-3 gap-3">
+                {% for field in form %}
+                    {% if field.field.widget.input_type == 'checkbox' %} 
+                        {% if "DELETE" in field.id_for_label %}
+                            {{ field|add_class:"hidden" }}
+                        {% else %}
+                            <div class="md:w-1/2 px-3 mb-6 mt-6">
+                                <div class="flex items-center">
+                                    <div class="w-1/8">{{ field|add_class:"border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w/1-2 p-3 bg-inherit" }}</div>
+                                    <div class="w-1/2 p-3 pt-5">
+                                        <label for="{{ field.id_for_label }}"
+                                            class="block uppercase text-gray-700 text-xs font-bold mb-2">
+                                            {{ field.label }}
+                                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                                {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="md:w-1/2 px-3 mb-6">
+                            {% if not field.is_hidden %}
+                                <label for="{{ field.id_for_label }}"
+                                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                </label>
+                            {% endif %}
+                            {{ field }}
+                            {% if field.help_text %}<p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>{% endif %}
+                            {% for error in field.errors %}<p class="text-red-500 text-xs italic">{{ error }}</p>{% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if forloop.counter|divisibleby:2 and not forloop.last %}
+                        <div class="md:flex md:flex-wrap -mx-3"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Custom Field Form -->
+    {% if custom_field_data %}
+        <hr>
+        {% include 'components/details/custom-field-form.html' %}
+    {% endif %}
+
+    <!-- Formset Form Table - multiple objects -->
+    {% if button_text == "Create" %}
+        {% if formset_form %}
+            <hr>
+            <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">Add {{ formset_title|title }}</h2>
+            {% include 'components/details/inline-form.html' %}
+        {% endif %}
+    {% endif %}
+
+    <hr class="pb-4 mt-8">
+    <!-- Submit buttons -->
+    {% if not view_only %}
+        <div class="flex justify-left mt-6 space-x-4">
+            <button
+                class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                <a href="{% url model_name %}" class="text-[#181C32]">Cancel</a>
+            </button>
+            {% if view_mode %}
+                {% if user|can:crud_action_rules.2 %}
+                    <button>
+                        <a href="{{ edit_url }}"
+                            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                            {{ button_text }}
+                        </a>
+                    </button>
+                {% endif %}
+            {% else %}
+                {% if user|can:crud_action_rules.2 %}
+                    <button type="submit"
+                        class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        {{ button_text }}
+                    </button>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+</form>
