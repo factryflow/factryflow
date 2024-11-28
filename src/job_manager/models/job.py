@@ -112,6 +112,13 @@ class Job(BaseModelWithExtras, OrderedModelBase):
         priority_to_jobs = {}
         for job in active_jobs:
             if job.manual_priority is not None:
+                job_query = Job.objects.filter(manual_priority=job.manual_priority)
+                if job_query.exists():
+                    if job.due_date > job_query.first().due_date:
+                        job.manual_priority += 1
+                        job.save()
+                        priority_to_jobs.setdefault(job.manual_priority, []).append(job)
+
                 priority_to_jobs.setdefault(job.manual_priority, []).append(job)
 
         # Assign priorities: keep single instances with their manual_priority; resolve conflicts by due_date

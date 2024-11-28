@@ -238,7 +238,7 @@ def job_prioritization_view(request):
 
     context = {
         "jobs": jobs,
-        "view_mode": False,
+        "view_mode": "false",
         "status_filter_dict": {
             "NP": "Not Planned",
             "IP": "In Progress",

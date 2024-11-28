@@ -124,22 +124,24 @@
                                     {% endif %}
                                 </td>
                                 {% if ordered_model %}
-                                    <td class="whitespace-nowrap px-2 py-2">
-                                        {% if user|can:crud_action_rules.2 %}
-                                            <button id="move-up-{{ row.0 }}"
-                                                hx-post="{% url change_priority_url id=row.0 direction='up' %}"
-                                                hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
-                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                                <img src="{% static 'images/up-arrow.svg' %}" alt="Move Up" />
-                                            </button>
-                                            <button id="move-down-{{ row.0 }}"
-                                                hx-post="{% url change_priority_url id=row.0 direction='down' %}"
-                                                hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
-                                                class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                                <img src="{% static 'images/down-arrow.svg' %}" alt="Move Down" />
-                                            </button>
-                                        {% endif %}
-                                    </td>
+                                    {% if change_priority_url %}
+                                        <td class="whitespace-nowrap px-2 py-2">
+                                            {% if user|can:crud_action_rules.2 %}
+                                                <button id="move-up-{{ row.0 }}"
+                                                    hx-post="{% url change_priority_url id=row.0 direction='up' %}"
+                                                    hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
+                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                                    <img src="{% static 'images/up-arrow.svg' %}" alt="Move Up" />
+                                                </button>
+                                                <button id="move-down-{{ row.0 }}"
+                                                    hx-post="{% url change_priority_url id=row.0 direction='down' %}"
+                                                    hx-target="#all-{{ model_name }}s-table" hx-swap="outerHTML" type="button"
+                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                                    <img src="{% static 'images/down-arrow.svg' %}" alt="Move Down" />
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         </tr>
