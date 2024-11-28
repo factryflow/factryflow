@@ -6,7 +6,10 @@ from resource_calendar.models import (
     WeeklyShiftTemplateDetail,
     DaysOfWeek,
 )
-from resource_calendar.forms import WeeklyShiftTemplateDetailForm, WeeklyShiftTemplateForm
+from resource_calendar.forms import (
+    WeeklyShiftTemplateDetailForm,
+    WeeklyShiftTemplateForm,
+)
 from resource_calendar.services import WeeklyShiftTemplateService
 
 

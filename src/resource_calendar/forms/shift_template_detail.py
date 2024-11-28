@@ -6,6 +6,7 @@ from resource_calendar.models import WeeklyShiftTemplateDetail
 #  WeeklyShiftTemplateDetailForm
 # ------------------------------------------------------------
 
+
 class WeeklyShiftTemplateDetailForm(forms.ModelForm):
     class Meta:
         model = WeeklyShiftTemplateDetail

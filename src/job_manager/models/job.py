@@ -82,7 +82,9 @@ class Job(BaseModelWithExtras, OrderedModelBase):
             self.full_clean()
 
             # to update manual_priority if it's greater than the actual number of jobs
-            all_jobs_count = Job.objects.exclude(job_status__in=["CM", "CN"]).count()
+            all_jobs_count = Job.objects.exclude(
+                job_status__in=[JobStatusChoices.COMPLETED, JobStatusChoices.CANCELLED]
+            ).count()
             if self.manual_priority:
                 if self.pk is None:
                     if self.manual_priority > all_jobs_count:
@@ -101,18 +103,26 @@ class Job(BaseModelWithExtras, OrderedModelBase):
         If multiple jobs have the same manual_priority, reorder only those jobs based on due_date."""
 
         # Reset priorities for completed or cancelled jobs
-        Job.objects.filter(job_status__in=["CM", "CN"]).update(priority=None)
+        Job.objects.filter(
+            job_status__in=[JobStatusChoices.COMPLETED, JobStatusChoices.CANCELLED]
+        ).update(priority=None)
 
         # Fetch active jobs, excluding completed or cancelled ones
-        active_jobs = Job.objects.exclude(job_status__in=["CM", "CN"]).order_by(
-            "due_date"
-        )
+        active_jobs = Job.objects.exclude(
+            job_status__in=[JobStatusChoices.COMPLETED, JobStatusChoices.CANCELLED]
+        ).order_by("due_date")
 
         # Collect jobs by manual_priority to handle duplicates
         priority_to_jobs = {}
         for job in active_jobs:
             if job.manual_priority is not None:
-                job_query = Job.objects.filter(manual_priority=job.manual_priority)
+                job_query = Job.objects.filter(
+                    manual_priority=job.manual_priority,
+                    job_status__in=[
+                        JobStatusChoices.NOT_PLANNED,
+                        JobStatusChoices.IN_PROGRESS,
+                    ],
+                ).exclude(id=job.id)
                 if job_query.exists():
                     if job.due_date > job_query.first().due_date:
                         job.manual_priority += 1

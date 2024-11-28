@@ -139,7 +139,7 @@ def start_scheduler_run_view(request):
             return response
     except Exception as e:
         raise e
-    
+
     return HttpResponse(
         {"status": "success", "message": "Scheduler run started successfully."}
     )

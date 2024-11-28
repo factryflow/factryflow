@@ -1,4 +1,4 @@
-from common.models import BaseModel 
+from common.models import BaseModel
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models import Task

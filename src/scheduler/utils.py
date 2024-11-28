@@ -110,7 +110,7 @@ def start_scheduler_run(request):
             scheduler_end_time,
             scheduler_status,
         )
-        
+
         consolidate_parent_task_datetimes()  # Updates the parent Task datetimes based on the Subtask start/end datetimes
         consolidate_job_datetimes()  # Updates the Job datetimes based on the new parent Task datetimes
 

@@ -94,7 +94,7 @@ class JobGanttChartService:
                     gantt_pid += 1
 
         return job_data
-    
+
 
 # ------------------------------------------------------------------------------
 # Resource Gantt Chart Service

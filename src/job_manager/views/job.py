@@ -2,7 +2,7 @@
 import json
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Max
 from django.db import transaction
 from django.http import HttpResponse
 
@@ -215,6 +215,7 @@ def job_prioritization_view(request):
                         job_obj.due_date = job["due_date"]
                     if "manual_priority" in job:
                         job_obj.manual_priority = job["manual_priority"]
+
                     job_obj.save()
         except Exception as e:
             response = HttpResponse(status=400)
@@ -223,12 +224,16 @@ def job_prioritization_view(request):
                 str(e),
                 "success",
             )
+    # get max priority to set default priority for new jobs
+    max_priority = Job.objects.aggregate(Max("priority"))["priority__max"]
 
     jobs = (
-        Job.objects.exclude(job_status__in=["CM", "CN"])
+        Job.objects.exclude(
+            job_status__in=[JobStatusChoices.COMPLETED, JobStatusChoices.CANCELLED]
+        )
         .annotate(
             sort_priority=Case(
-                When(priority__isnull=True, then=Value(999999)),
+                When(priority__isnull=True, then=Value(max_priority + 1)),
                 default="priority",
                 output_field=IntegerField(),
             )

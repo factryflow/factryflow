@@ -1,4 +1,3 @@
-
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -75,7 +74,7 @@ def start_scheduler_run_api_view(request):
         start_scheduler_run(request)
     except Exception as e:
         raise e
-    
+
     return JsonResponse(
         {"status": "success", "message": "Scheduler run started successfully."}
     )

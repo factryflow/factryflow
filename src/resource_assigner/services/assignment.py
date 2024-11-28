@@ -7,7 +7,11 @@ from django.db import transaction
 from job_manager.models import Task
 from resource_manager.models import Resource
 
-from resource_assigner.models import TaskResourceAssigment, TaskRuleAssignment, AssigmentRule
+from resource_assigner.models import (
+    TaskResourceAssigment,
+    TaskRuleAssignment,
+    AssigmentRule,
+)
 
 
 # ------------------------------------------------------------------------------

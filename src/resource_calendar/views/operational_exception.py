@@ -5,8 +5,14 @@ from resource_calendar.models import (
     OperationalException,
     OperationalExceptionType,
 )
-from resource_calendar.forms import OperationalExceptionForm, OperationalExceptionTypeForm
-from resource_calendar.services import OperationalExceptionService, OperationalExceptionTypeService
+from resource_calendar.forms import (
+    OperationalExceptionForm,
+    OperationalExceptionTypeForm,
+)
+from resource_calendar.services import (
+    OperationalExceptionService,
+    OperationalExceptionTypeService,
+)
 
 
 # ------------------------------------------------------------------------------
