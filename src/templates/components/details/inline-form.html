@@ -1,0 +1,56 @@
+<!-- This is a reusable for inline model forms -->
+
+{% load static %}
+{% load permission_tags %}
+
+<div id="model_inline_formset" class="flex flex-wrap overflow-x-auto h-auto max-h-80 mt-5">
+    {{ formset_form.management_form }}
+
+    <table class="w-full text-sm text-center">
+        <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80]">
+            <tr class="text-[#181C32]">
+                {% for formset in formset_form %}
+                    {% if forloop.first %}
+                        {% for field in formset %}
+                            {% if not field.is_hidden %}
+                                <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">{{ field.label }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                <th class="px-6 py-4 font-sans font-semibold text-sm leading-3">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for formset in formset_form %}
+                <tr class="bg-white border-b">
+                    {% for field in formset %}
+                        {% if not field.is_hidden %}
+                            <td class="px-6 py-4 text-sm font-medium text-[#7E8299] text-center">{{ field }}</td>
+                        {% endif %}
+                    {% endfor %}
+                    <td class="px-6 py-4 text-sm font-medium text-center text-[#7E8299]">
+                        <button 
+                            type="button" 
+                            class="removeButton {% if forloop.first %} text-grey-500 {% else %} text-red-500 {% endif %} bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-6/12 p-3 text-center m-1" 
+                            onclick="removeField(this)"
+                            {% if forloop.first %} disabled {% endif %}
+                            >
+                            <a
+                                href="{{ remove_formset_url }}" hx-get="{{ remove_formset_url }}" hx-swap="outerHTML" hx-target="#model_inline_formset" {% if forloop.first %} style="pointer-events: none;" {% endif %}>
+                                Remove
+                            </a>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flex-auto flex items-center">
+        <a class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-12/12 px-6 py-3 text-center m-1"
+            href="{{ add_formset_url }}" hx-get="{{ add_formset_url }}" hx-swap="outerHTML" hx-target="#model_inline_formset">
+            Add
+        </a>
+    </div>
+</div>

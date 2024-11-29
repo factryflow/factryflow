@@ -4,9 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from common.models import CustomField
-from common.utils.views import (
-    convert_timestamp,
-)
+from common.utils.views import convert_timestamp, convert_date
 
 # ------------------------------------------------------------------------------
 # CustomTableView:
@@ -257,7 +255,6 @@ class CustomTableView:
         sort_field,
         status_filter=None,
         search_query=None,
-        sort_by="desc",
         parent_filter=None,
     ):
         """
@@ -308,7 +305,6 @@ class CustomTableView:
         status_filter=None,
         search_query=None,
         num_of_rows_per_page=25,
-        sort_by="desc",
         parent_filter=False,
     ):
         """
@@ -351,7 +347,6 @@ class CustomTableView:
         sort_direction,
         sort_field,
         num_of_rows_per_page=25,
-        sort_by="desc",
         status_filter=None,
         search_query=None,
         parent_filter=None,
@@ -400,7 +395,7 @@ class CustomTableView:
                     value = convert_timestamp(getattr(instance, field))
                     row_data.append(value)
                 elif isinstance(getattr(instance, field), date):
-                    value = str(getattr(instance, field))
+                    value = convert_date(getattr(instance, field))
                     row_data.append(value)
                 else:
                     value = getattr(instance, field)

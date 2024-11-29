@@ -71,6 +71,7 @@ MICROBATCH_FLOW_VIEWS = CRUDView(
     model_form=MicrobatchFlowForm,
     model_table_view=MICROBATCH_FLOW_TABLE_VIEW,
     ordered_model=True,
+    list_template_name="microbatching/microbatch_flow/list.html",
 )
 
 

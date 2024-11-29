@@ -14,7 +14,7 @@ from resource_assigner.services import (
     TaskRuleAssignmentService,
 )
 
-from .schemas import (
+from resource_assigner.schemas import (
     AssigmentRuleIn,
     AssigmentRuleOut,
     AssignmentConstraintIn,

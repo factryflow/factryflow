@@ -104,6 +104,7 @@ MICROBATCH_RULE_VIEWS = CRUDView(
     model_form=MicrobatchRuleForm,
     model_table_view=MICROBATCH_RULE_TABLE_VIEW,
     formset_options=MICROBATCH_RULE_CRITERIA_FORMSET_OPTIONS,
+    list_template_name="microbatching/microbatch_rule/list.html",
 )
 
 # ------------------------------------------------------------------------------

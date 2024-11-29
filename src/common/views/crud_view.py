@@ -39,6 +39,8 @@ class CRUDView:
         ordered_model=False,
         user_rule_permission=True,
         parents="false",
+        list_template_name="objects/list.html",
+        detail_template_name="objects/details.html",
     ):
         """
         Attributes:
@@ -67,8 +69,8 @@ class CRUDView:
         self.model_form = model_form
         self.table_view = model_table_view
         self.model_type = model_type
-        self.list_template_name = "objects/list.html"
-        self.detail_template_name = "objects/details.html"
+        self.list_template_name = list_template_name
+        self.detail_template_name = detail_template_name
         self.user_rule_permission = user_rule_permission
         self.crud_action_rules = self.get_models_crud_permissions(
             self.model._meta.model_name

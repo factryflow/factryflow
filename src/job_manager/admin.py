@@ -1,4 +1,5 @@
 from django.contrib import admin
+from ordered_model.admin import OrderedModelAdmin
 
 from .models.dependency import Dependency, DependencyType
 from .models.item import Item
@@ -35,7 +36,7 @@ class JobType(admin.ModelAdmin):
 
 
 @admin.register(Job)
-class Job(admin.ModelAdmin):
+class Job(OrderedModelAdmin):
     list_display = [
         "name",
         "job_type",
@@ -45,6 +46,7 @@ class Job(admin.ModelAdmin):
         "due_date",
         "created_at",
         "created_by",
+        "move_up_down_links",
     ]
     list_filter = ["job_type", "job_status", "created_at", "created_by"]
     search_fields = [
