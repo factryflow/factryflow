@@ -73,7 +73,7 @@ jobs:
   build-and-stage:
     runs-on: ubuntu-latest
     needs: run-test
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
       - name: Checkout code

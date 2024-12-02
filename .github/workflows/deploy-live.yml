@@ -1,0 +1,9 @@
+name: Deploy Live
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Image Version'
+        required: true
+        default: 'latest'
