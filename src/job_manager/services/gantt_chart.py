@@ -5,7 +5,6 @@ from resource_manager.models import Resource
 
 from job_manager.models import Job
 
-
 # ------------------------------------------------------------------------------
 # Job Gantt Chart Service
 # ------------------------------------------------------------------------------
@@ -120,7 +119,7 @@ class ResourceGanttChartService:
         for resource in resources:
             # Get all TaskResourceAssigment for each resource
             task_ids = TaskResourceAssigment.objects.filter(
-                resources__id__contains=resource.id
+                resources=resource
             ).values_list("task_id", flat=True)
 
             resource_pid = gantt_pid
