@@ -4,15 +4,11 @@ on:
   pull_request:
     branches:
       - main
-      - development
-      - staging
     paths:
       - "src/**"
-  
   push:
     branches:
-      - development
-      - staging
+      - main
 
   workflow_dispatch:
   
