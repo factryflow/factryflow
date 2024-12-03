@@ -54,6 +54,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "factryflow-stg.azurewebsites.net",
     "factryflow-comp-stg.azurewebsites.net",
+    "factryflow.azurewebsites.net",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -62,4 +63,5 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:1337",
     "https://factryflow-stg.azurewebsites.net",
     "https://factryflow-comp-stg.azurewebsites.net",
+    "https://factryflow.azurewebsites.net",
 ]
