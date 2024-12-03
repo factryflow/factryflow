@@ -12,16 +12,21 @@ class RedisStaticMiddleware(MiddlewareMixin):
     If it is, it serves the file directly from the cache. Otherwise, it allows the
     request to proceed and caches the response in Redis if the request is successful.
     """
+
     def __init__(self, get_response=None):
         self.get_response = get_response
-        self.redis_client = redis.StrictRedis.from_url(settings.CACHES['default']['LOCATION'])
+        self.redis_client = redis.StrictRedis.from_url(
+            settings.CACHES["default"]["LOCATION"]
+        )
 
     def process_request(self, request):
         if request.path.startswith(settings.STATIC_URL):
             # Check Redis for cached static file
             static_file = self.redis_client.get(request.path)
             if static_file:
-                return HttpResponse(static_file, content_type='application/octet-stream')
+                return HttpResponse(
+                    static_file, content_type="application/octet-stream"
+                )
 
         return None
 
