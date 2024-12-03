@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "ordered_model",
     "taggit",
     "widget_tweaks",
+    "waffle",
     # apps
     "users",
     "common",
@@ -87,6 +88,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "waffle.middleware.WaffleMiddleware",
 ]
 
 
