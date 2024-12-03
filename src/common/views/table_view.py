@@ -1,10 +1,9 @@
 from datetime import date, datetime, time
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from common.models import CustomField
-from common.utils.views import convert_timestamp, convert_date
+from common.utils.views import convert_timestamp, convert_date, paginate_data
 
 # ------------------------------------------------------------------------------
 # CustomTableView:
@@ -75,6 +74,9 @@ class CustomTableView:
         Returns:
             QuerySet: A Django QuerySet containing all instances of the model, ordered by the specified field.
         """
+        if hasattr(self.model, "parent"):
+            return self.model.objects.filter(parent__isnull=True)
+
         return self.model.objects.all()
 
     def get_custom_field_json_data(self, instance=None):
@@ -329,17 +331,7 @@ class CustomTableView:
             search_query,
             parent_filter=parent_filter,
         )
-        paginator = Paginator(instances, num_of_rows_per_page)
-        num_pages = paginator.num_pages
-        total_instances_count = paginator.count
-
-        try:
-            paginated_instances = paginator.page(page_number)
-        except PageNotAnInteger:
-            paginated_instances = paginator.page(1)
-        except EmptyPage:
-            paginated_instances = paginator.page(paginator.num_pages)
-        return paginated_instances, num_pages, total_instances_count
+        return paginate_data(instances, page_number, num_of_rows_per_page)
 
     def table_rows(
         self,
