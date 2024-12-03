@@ -6,7 +6,8 @@ from factryflow.settings.components.common import MIDDLEWARE
 # Login Middleware
 MIDDLEWARE += [
     "users.middleware.LoginRequiredMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
+    "common.middleware.redis_static_middleware.RedisStaticMiddleware",
 ]
 
 # postgres database
@@ -23,6 +24,21 @@ DATABASES = {
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+
+# Redis Cache Configuration
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "factryflow",
+        "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
+    }
+}
+
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "/app/src/staticfiles"
