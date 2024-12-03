@@ -1,10 +1,11 @@
 from django import forms
-
+from common.forms import get_select_widget
 from resource_calendar.models import (
     OperationalException,
     OperationalExceptionType,
 )
-
+from resource_manager.models import Resource
+from resource_calendar.models import WeeklyShiftTemplate
 
 # ------------------------------------------------------------
 #  OperationalExceptionTypeForm
@@ -81,19 +82,7 @@ class OperationalExceptionForm(forms.ModelForm):
                     "type": "datetime-local",
                 }
             ),
-            "operational_exception_type": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "weekly_shift_template": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
-            "resource": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
-                }
-            ),
+            "operational_exception_type": get_select_widget(OperationalExceptionType),
+            "weekly_shift_template": get_select_widget(WeeklyShiftTemplate),
+            "resource": get_select_widget(Resource),
         }

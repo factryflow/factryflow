@@ -1,6 +1,8 @@
 from django import forms
-
+from common.forms import get_select_widget, get_multi_select_widget
 from resource_manager.models import Resource
+from resource_calendar.models import WeeklyShiftTemplate
+from users.models import User
 
 # ------------------------------------------------------------------------------
 # Resource Forms
@@ -36,16 +38,8 @@ class ResourceForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "weekly_shift_template": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "users": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "weekly_shift_template": get_select_widget(WeeklyShiftTemplate),
+            "users": get_multi_select_widget(User),
             "notes": forms.Textarea(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"

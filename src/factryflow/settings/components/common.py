@@ -74,6 +74,8 @@ INSTALLED_APPS = [
     "rolepermissions",
     "scheduler",
     "microbatching",
+    "django_select2",
+    "waffle",
 ]
 
 MIDDLEWARE = [
@@ -87,6 +89,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "waffle.middleware.WaffleMiddleware",
 ]
 
 
@@ -121,6 +124,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# Waffle
+WAFFLE_CREATE_MISSING_SWITCHES = True
 
 
 # Password validation

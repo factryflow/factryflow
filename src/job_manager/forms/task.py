@@ -4,8 +4,13 @@ from job_manager.models import (
     Task,
     TaskType,
     WorkCenter,
+    Job,
+    Item,
+    Dependency,
 )
-
+from resource_manager.models import Resource, ResourceGroup
+from resource_assigner.models import AssigmentRule
+from common.forms import get_select_widget, get_multi_select_widget
 from resource_assigner.models import AssignmentConstraint
 
 
@@ -108,11 +113,7 @@ class TaskForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
-            "job": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "job": get_select_widget(Job),
             "notes": forms.Textarea(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
@@ -142,36 +143,16 @@ class TaskForm(forms.ModelForm):
                     "type": "number",
                 }
             ),
-            "item": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "task_type": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "item": get_select_widget(Item),
+            "task_type": get_select_widget(TaskType),
             "task_status": forms.Select(
                 attrs={
                     "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
                 }
             ),
-            "work_center": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "dependencies": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "predecessors": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "work_center": get_select_widget(WorkCenter),
+            "dependencies": get_multi_select_widget(Dependency),
+            "predecessors": get_multi_select_widget(Task),
         }
 
 
@@ -200,21 +181,9 @@ class AssignmentConstraintForm(forms.ModelForm):
             "use_all_resources": "Use All Resources",
         }
         widgets = {
-            "task": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resource_group": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resources": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "task": get_select_widget(Task),
+            "resource_group": get_select_widget(ResourceGroup),
+            "resources": get_multi_select_widget(Resource),
             "resource_count": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"

@@ -1,5 +1,8 @@
 from django import forms
 
+from common.forms import get_select_widget, get_multi_select_widget
+from job_manager.models import Task
+from resource_manager.models import Resource
 from resource_assigner.models import TaskResourceAssigment
 
 
@@ -24,14 +27,6 @@ class TaskResourceAssigmentForm(forms.ModelForm):
             "resources": "Resources",
         }
         widgets = {
-            "task": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resources": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "task": get_select_widget(Task),
+            "resources": get_multi_select_widget(Resource),
         }

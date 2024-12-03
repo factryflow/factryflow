@@ -1,6 +1,7 @@
 from common.utils.services import get_model_fields
 from django import forms
 
+from common.forms import get_select_widget
 from microbatching.models.microbatch_rule import (
     MicrobatchRule,
     MicrobatchRuleCriteria,
@@ -46,11 +47,7 @@ class MicrobatchRuleCriteriaForm(forms.ModelForm):
             "value": "Value",
         }
         widgets = {
-            "assigment_rule": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "microbatch_rule": get_select_widget(MicrobatchRule),
             "field": forms.Select(
                 choices=get_model_fields(
                     "Task", "job_manager", ["item", "task_type", "job", "work_center"]
