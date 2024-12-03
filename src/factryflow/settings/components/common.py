@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -217,6 +218,12 @@ TAGGIT_CASE_INSENSITIVE = True
 ROLEPERMISSIONS_MODULE = "users.roles"
 ROLEPERMISSIONS_REGISTER_ADMIN = True
 ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
+
+
+NINJA_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
 
 
 from factryflow.settings.files_and_storages import *

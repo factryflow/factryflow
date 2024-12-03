@@ -1,4 +1,5 @@
 from common.utils.services import check_criteria_match
+from django.db import transaction
 
 from resource_assigner.models import (
     AssigmentRule,
@@ -7,6 +8,7 @@ from resource_assigner.models import (
 )
 
 
+@transaction.atomic
 def get_matching_assignment_rules_with_tasks(tasks) -> list:
     result = {}
 
@@ -68,7 +70,6 @@ def get_matching_assignment_rules_with_tasks(tasks) -> list:
                                 assigment_rule=rule,
                                 is_applied=is_rule_applied,
                             )
-                            task_rule_instance.save()
 
                     else:
                         # if not criteria match, delete the TaskRuleAssignment model instance if exists

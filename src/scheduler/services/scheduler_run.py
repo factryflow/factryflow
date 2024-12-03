@@ -12,6 +12,7 @@ from factryengine import Task as SchedulerTask
 from job_manager.models import Task
 from microbatching.models.microbatch_flow import MicrobatchFlow
 from microbatching.services.microbatch_flow import MicrobatchFlowService
+from pydantic import ValidationError
 from resource_assigner.models import (
     AssignmentConstraint,
     TaskResourceAssigment,
@@ -156,13 +157,13 @@ class SchedulingService:
             scheduler_resources_dict, Task.objects.filter(sub_tasks__isnull=True)
         )
         scheduler_logs = {"tasks_found": 0, "tasks_assigned": 0}
-        log_messages = []
+        log_messages = scheduler_tasks["logs"]
 
         if "error" in scheduler_tasks:
             return {"error": scheduler_tasks["error"]}
 
         scheduler = Scheduler(
-            tasks=scheduler_tasks, resources=scheduler_resources_dict.values()
+            tasks=scheduler_tasks["tasks"], resources=scheduler_resources_dict.values()
         )
         result = scheduler.schedule()
 
@@ -173,6 +174,10 @@ class SchedulingService:
         res_df = result.to_dataframe()
 
         # convert 'task_start' and task_end and 'resource_intervals': dict_values to time
+        if res_df.empty:
+            log_messages.append("No tasks have been scheduled.")
+            return {"data": {}, "logs": scheduler_logs}
+
         res_df["planned_task_start"] = res_df.apply(
             lambda scheduled_task: str(
                 self._int_to_datetime(scheduled_task["task_start"])
@@ -274,6 +279,7 @@ class SchedulingService:
         if not selected_tasks:
             selected_tasks = Task.objects.filter(job__isnull=False)
 
+        log_messages = []
         scheduler_tasks = []
         scheduler_assignments = []
         for task in selected_tasks:
@@ -335,7 +341,11 @@ class SchedulingService:
                         )
                         group_resources.append(resource_data)
 
-                    scheduler_resource_group = ResourceGroup(resources=group_resources)
+                    try:
+                        scheduler_resource_group = ResourceGroup(resources=group_resources)
+                    except ValidationError:
+                        # If the ResourceGroup is invalid, do not add it to the list
+                        continue
                     scheduler_group_list.append(scheduler_resource_group)
 
                     if (
@@ -361,12 +371,21 @@ class SchedulingService:
             scheduler_task_dict["assignments"] = scheduler_assignments
 
             try:
-                scheduler_task = SchedulerTask(**scheduler_task_dict)
-                scheduler_tasks.append(scheduler_task)
+                if scheduler_task_dict.get("assignments") or scheduler_task_dict.get("constraints"):
+                    scheduler_task = SchedulerTask(**scheduler_task_dict)
+                    scheduler_tasks.append(scheduler_task)
+                else:
+                    log_messages.append(
+                        f"Task with ID: {task.id} could not be scheduled due to missing constraints or assignments."
+                    )
+                    
             except Exception as e:
                 return {"error": str(e)}
 
-        return scheduler_tasks
+        return {
+            "tasks": scheduler_tasks,
+            "logs": log_messages
+        }
 
     def _get_task_constraints(self, task):
         # get all resources from AssignmentConstraint model where task is equal to task
