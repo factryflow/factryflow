@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "ordered_model",
     "taggit",
     "widget_tweaks",
+    "waffle",
     # apps
     "users",
     "common",

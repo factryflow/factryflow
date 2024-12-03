@@ -1,21 +1,17 @@
-name: Models CI
+name: Deploy Live
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "src/**"
-  push:
-    branches:
-      - main
-
   workflow_dispatch:
-  
+    inputs:
+      version:
+        description: 'Enter the version (e.g., 1.0.0)'
+        required: true
+        default: 'latest'
+
 env:
   LOGIN_SERVER: acroeproduction.azurecr.io
   USERNAME: acroeproduction
-  IMAGE_NAME: factryflow-web
+  IMAGE_NAME: factryflow:${{ github.event.inputs.version }}
 
 jobs:
   run-test:
@@ -64,13 +60,10 @@ jobs:
           SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           API_KEY: ${{ secrets.API_KEY }}
 
-
-  # Additional steps for push to staging branch
-  build-and-stage:
+  build-and-deploy:
     runs-on: ubuntu-latest
     needs: run-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -88,7 +81,7 @@ jobs:
           file: Dockerfile.prod
           push: true
           context: .  
-          tags: ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }}
 
       - name: 'Install Azure CLI'
         run: |
@@ -100,7 +93,3 @@ jobs:
             -u ${{ secrets.SP_CLIENT_ID }} \
             -p ${{ secrets.SP_CLIENT_SECRET }} \
             --tenant ${{ secrets.SP_TENANT_ID }} --output none
-  
-      - name: 'Restart Azure Web App'
-        run: |
-          az webapp restart --name factryflow-comp-stg --resource-group rg-factryflow
