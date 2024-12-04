@@ -79,6 +79,22 @@ class CustomTableView:
 
         return self.model.objects.all()
 
+    def get_fields_with_input_type(self):
+        """
+        Retrieve all fields with type for Nested criteria management
+        """
+        input_fields_with_type = dict(
+            get_model_fields(
+                "Task", "job_manager", ["item", "task_type", "job", "work_center"], True
+            )
+        )
+
+        input_fields_with_type["item.name_first"] = "text"
+        input_fields_with_type["item.name_middle"] = "text"
+        input_fields_with_type["item.name_last"] = "text"
+
+        return input_fields_with_type
+
     def get_custom_field_json_data(self, instance=None):
         """
         Retrieve custom field JSON data for a given instance.

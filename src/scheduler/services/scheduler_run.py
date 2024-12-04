@@ -342,7 +342,9 @@ class SchedulingService:
                         group_resources.append(resource_data)
 
                     try:
-                        scheduler_resource_group = ResourceGroup(resources=group_resources)
+                        scheduler_resource_group = ResourceGroup(
+                            resources=group_resources
+                        )
                     except ValidationError:
                         # If the ResourceGroup is invalid, do not add it to the list
                         continue
@@ -371,21 +373,20 @@ class SchedulingService:
             scheduler_task_dict["assignments"] = scheduler_assignments
 
             try:
-                if scheduler_task_dict.get("assignments") or scheduler_task_dict.get("constraints"):
+                if scheduler_task_dict.get("assignments") or scheduler_task_dict.get(
+                    "constraints"
+                ):
                     scheduler_task = SchedulerTask(**scheduler_task_dict)
                     scheduler_tasks.append(scheduler_task)
                 else:
                     log_messages.append(
                         f"Task with ID: {task.id} could not be scheduled due to missing constraints or assignments."
                     )
-                    
+
             except Exception as e:
                 return {"error": str(e)}
 
-        return {
-            "tasks": scheduler_tasks,
-            "logs": log_messages
-        }
+        return {"tasks": scheduler_tasks, "logs": log_messages}
 
     def _get_task_constraints(self, task):
         # get all resources from AssignmentConstraint model where task is equal to task
