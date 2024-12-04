@@ -3,7 +3,12 @@ from datetime import date, datetime, time
 from django.contrib.contenttypes.models import ContentType
 
 from common.models import CustomField
-from common.utils.views import convert_timestamp, convert_date, paginate_data, get_model_fields
+from common.utils.views import (
+    convert_timestamp,
+    convert_date,
+    paginate_data,
+    get_model_fields,
+)
 
 # ------------------------------------------------------------------------------
 # CustomTableView:

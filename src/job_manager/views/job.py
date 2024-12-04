@@ -2,7 +2,7 @@
 import json
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.db.models import Case, When, Value, IntegerField, Max
+from django.db.models import Case, When, Value, IntegerField, Max, Q
 from django.db import transaction
 from django.http import HttpResponse
 
@@ -204,8 +204,28 @@ def job_prioritization_view(request):
     if request.user.require_password_change:
         return redirect(reverse("users:change_password"))
 
+    # retrieve filtering and search parameters from the request
     page_number = request.GET.get("page", 1)
     num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
+    status_filter = request.GET.get("status", "all")
+    search_query = request.GET.get("query", "")
+
+    # jobs query
+    job_query = Job.objects.exclude(
+        job_status__in=[JobStatusChoices.COMPLETED, JobStatusChoices.CANCELLED]
+    )
+
+    if status_filter != "all":
+        job_query.filter(job_status=status_filter)
+
+    if search_query:
+        job_query.filter(
+            Q(name__icontains=search_query)
+            | Q(description__icontains=search_query)
+            | Q(customer__icontains=search_query)
+        )
+
+    jobs = []
 
     if request.htmx:
         try:
@@ -230,19 +250,14 @@ def job_prioritization_view(request):
     # get max priority to set default priority for new jobs
     max_priority = Job.objects.aggregate(Max("priority"))["priority__max"]
 
-    jobs = (
-        Job.objects.exclude(
-            job_status__in=[JobStatusChoices.COMPLETED, JobStatusChoices.CANCELLED]
-        )
-        .annotate(
+    if job_query.exists():
+        jobs = job_query.annotate(
             sort_priority=Case(
                 When(priority__isnull=True, then=Value(max_priority + 1)),
                 default="priority",
                 output_field=IntegerField(),
             )
-        )
-        .order_by("sort_priority")
-    )
+        ).order_by("sort_priority")
 
     paginated_data, num_pages, total_instances_count = paginate_data(
         jobs, page_number, num_of_rows_per_page
@@ -263,15 +278,8 @@ def job_prioritization_view(request):
         },
     }
 
+    template_name = "job_manager/job/prioritization.html"
     if request.htmx:
-        return render(
-            request,
-            "job_manager/job/prioritization.html#partial-table-template",
-            context,
-        )
+        template_name += "#partial-table-template"
 
-    return render(
-        request,
-        "job_manager/job/prioritization.html",
-        context,
-    )
+    return render(request, template_name, context)
