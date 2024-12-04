@@ -1,4 +1,4 @@
-from common.utils.services import get_model_fields
+from common.utils.views import get_model_fields
 from django import forms
 
 from microbatching.models.microbatch_rule import (

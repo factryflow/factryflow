@@ -1,3 +1,4 @@
+import json
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.utils import IntegrityError
@@ -12,6 +13,7 @@ from common.models import CustomField
 from common.utils.views import (
     add_notification_headers,
 )
+from common.utils.criteria import get_nested_criteria
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -308,9 +310,13 @@ class CRUDView:
 
             inline_formset_model_name = self.inline_formset[-1]
 
+        # get custom fields data
         custom_field_form_data = self.get_custom_field_json_data(
             content_type=model_content_type
         )
+
+        # get form fields for criteria managements
+        form_input_fields_with_type = self.table_view.get_fields_with_input_type()
 
         # Process the form based on ID and edit mode
         rows = []
@@ -326,6 +332,10 @@ class CRUDView:
             custom_field_form_data = self.get_custom_field_json_data(
                 model_content_type, instance_obj
             )
+
+            # get nested criteria data if model_name contains rule
+            if "rule" in self.model_name:
+                nested_criteria_data = get_nested_criteria(self.model, id)
 
             # self.table_view.get_all_many_to_field_instances(instance_obj)
             if edit != "true":
@@ -471,6 +481,8 @@ class CRUDView:
             "relations_headers": self.table_view.model_relation_headers,
             "rows": rows if rows != [] else None,
             "relation_model_name": relation_model_name.replace("_", " ").title(),
+            "form_input_fields_with_type": form_input_fields_with_type,
+            "nested_criteria_data": nested_criteria_data if id else [],
         }
 
         if "HX-Request" in request.headers:
@@ -519,6 +531,11 @@ class CRUDView:
 
         # Get the instance object if updating, otherwise None
         instance_obj = get_object_or_404(self.model, id=id) if id else None
+
+        nested_criteria_data = []
+        # get nested criteria data
+        if request.POST.get("nestedCriteria"):
+            nested_criteria_data = json.loads(request.POST.get("nestedCriteria", []))
 
         # Initiate the form with POST data and optionally the instance object
         form = self.model_form(
@@ -591,6 +608,9 @@ class CRUDView:
         if form.is_valid():
             # Extract data from the form
             obj_data = form.cleaned_data
+
+            if len(nested_criteria_data) > 0:
+                obj_data["nested_criteria"] = nested_criteria_data
 
             # add data from model_inline_formset data
             if (
@@ -691,7 +711,6 @@ class CRUDView:
                 status_filter=status_filter,
                 search_query=search_query,
                 page_number=page_number,
-                sort_by=self.sort_by,
                 sort_direction=self.sort_direction,
                 sort_field=self.sort_by,
                 num_of_rows_per_page=self.num_of_rows_per_page,

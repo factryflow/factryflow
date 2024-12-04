@@ -1,6 +1,8 @@
 from api.permission_checker import AbstractPermissionService
+from django.contrib.contenttypes.models import ContentType
 from common.services import model_update
 from common.utils import get_object
+from common.models import NestedCriteria, NestedCriteriaGroup
 
 # validation error
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -122,12 +124,81 @@ class MicrobatchRuleService:
 
         self.microbatch_rule_criteria_service = MicrobatchRuleCriteriaService(user=user)
 
+    def _create_or_update_nested_criteria(
+        self, microbatch_rule, group_data, parent_group=None
+    ):
+        """
+        Creates a nested group criteria structure for a given microbatch rule.
+
+        This method creates a NestedCriteriaGroup instance and associates it with the provided
+        microbatch rule and group data. It also handles the creation of nested criteria and inner
+        groups recursively.
+
+        Args:
+            microbatch_rule: The microbatch rule to associate with the nested group criteria.
+            group_data (dict): A dictionary containing the group data, including operator, criteria,
+            and inner groups.
+            parent_group (NestedCriteriaGroup, optional): The parent group to nest the created group
+            under. Defaults to None.
+
+        Returns:
+            NestedCriteriaGroup: The created nested group criteria instance.
+        """
+
+        if group_data["id"]:
+            group_instance = get_object(
+                model_or_queryset=NestedCriteriaGroup, id=group_data["id"]
+            )
+            group_instance.operator = group_data["operator"]
+            group_instance.save()
+        else:
+            group_instance = NestedCriteriaGroup.objects.create(
+                content_type=ContentType.objects.get_for_model(MicrobatchRule),
+                object_id=microbatch_rule.id,
+                operator=group_data["operator"],
+                parent_group=parent_group,
+            )
+            group_instance.full_clean()
+            group_instance.save()
+
+        for criteria in group_data.get("criteria", []):
+            # remove unwanted fields
+            criteria.pop("type", None)
+            criteria_id = criteria.pop("id", None)
+
+            if criteria_id:
+                criteria_instance = self.microbatch_rule_criteria_service.update(
+                    instance=get_object(
+                        model_or_queryset=MicrobatchRuleCriteria, id=criteria_id
+                    ),
+                    data=criteria,
+                )
+            else:
+                criteria_instance = self.microbatch_rule_criteria_service.create(
+                    microbatch_rule=microbatch_rule,
+                    **criteria,
+                )
+
+            NestedCriteria.objects.update_or_create(
+                group=group_instance,
+                content_type=ContentType.objects.get_for_model(MicrobatchRuleCriteria),
+                object_id=criteria_instance.id,
+            )
+
+        for inner_group in group_data.get("innerGroups", []):
+            self._create_or_update_nested_criteria(
+                microbatch_rule, inner_group, parent_group=group_instance
+            )
+
+        return group_instance
+
     @transaction.atomic
     def create(
         self,
         name: str,
         criteria: list[dict] = [],
         custom_fields: dict = None,
+        nested_criteria: list[dict] = [],
     ) -> MicrobatchRule:
         # check permissions for create microbatch rule
         if not self.permission_service.check_for_permission("add_microbatchrule"):
@@ -153,6 +224,14 @@ class MicrobatchRuleService:
                 custom_fields=custom_fields,
             )
 
+        # create nested group criteria if any
+        if len(nested_criteria) > 0:
+            for group in nested_criteria:
+                self._create_or_update_nested_criteria(
+                    microbatch_rule=instance,
+                    group_data=group,
+                )
+
         return instance
 
     @transaction.atomic
@@ -169,12 +248,22 @@ class MicrobatchRuleService:
             instance=instance, fields=fields, data=data, user=self.user
         )
 
+        # Update criteria
         criteria = data.get("criteria", [])
 
         if criteria:
             self.microbatch_rule_criteria_service.create_or_update_criteria(
                 criteria=criteria, instance=instance
             )
+
+        # update nested group criteria if any
+        nested_criteria = data.get("nested_criteria", [])
+        if nested_criteria:
+            for group in nested_criteria:
+                self._create_or_update_nested_criteria(
+                    microbatch_rule=instance,
+                    group_data=group,
+                )
 
         return instance
 

@@ -112,8 +112,14 @@
         {% include 'components/details/custom-field-form.html' %}
     {% endif %}
 
+    <!-- Criteria Form -->
+    {% if formset_title == 'criteria' %}
+        {% include 'components/common/criteria.html' %}
+    {% endif %}
+
+
     <!-- Formset Form Table - multiple objects -->
-    {% if button_text == "Create" %}
+    {% if button_text == "Create" and formset_title != 'criteria' %}
         {% if formset_form %}
             <hr>
             <h2 class="text-xl font-semibold text-[#5E6278] pb-8 mt-8">Add {{ formset_title|title }}</h2>
