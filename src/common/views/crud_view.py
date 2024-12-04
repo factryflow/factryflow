@@ -319,6 +319,9 @@ class CRUDView:
         # get form fields for criteria managements
         form_input_fields_with_type = self.table_view.get_fields_with_input_type()
 
+        # nested criteria data
+        nested_criteria_data = []
+
         # Process the form based on ID and edit mode
         rows = []
         if id:
@@ -483,7 +486,7 @@ class CRUDView:
             "rows": rows if rows != [] else None,
             "relation_model_name": relation_model_name.replace("_", " ").title(),
             "form_input_fields_with_type": form_input_fields_with_type,
-            "nested_criteria_data": nested_criteria_data if id else [],
+            "nested_criteria_data": nested_criteria_data,
         }
 
         if "HX-Request" in request.headers:
