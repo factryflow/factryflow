@@ -1,6 +1,6 @@
 from django import forms
-
-from resource_calendar.models import WeeklyShiftTemplateDetail
+from common.forms import get_select_widget
+from resource_calendar.models import WeeklyShiftTemplateDetail, WeeklyShiftTemplate
 
 # ------------------------------------------------------------
 #  WeeklyShiftTemplateDetailForm
@@ -18,12 +18,7 @@ class WeeklyShiftTemplateDetailForm(forms.ModelForm):
             "end_time": "End Time",
         }
         widgets = {
-            "weekly_shift_template": forms.Select(
-                attrs={
-                    "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
-                    "required": "required",
-                }
-            ),
+            "weekly_shift_template": get_select_widget(WeeklyShiftTemplate),
             "day_of_week": forms.Select(
                 attrs={
                     "class": "mb-3 border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",

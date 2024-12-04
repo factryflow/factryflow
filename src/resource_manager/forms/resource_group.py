@@ -1,6 +1,6 @@
 from django import forms
-
-from resource_manager.models import ResourceGroup
+from common.forms import get_multi_select_widget, get_select_widget
+from resource_manager.models import ResourceGroup, Resource
 
 
 # ------------------------------------------------------------------------------
@@ -24,16 +24,8 @@ class ResourceGroupForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
-            "parent": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "resources": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "parent": get_select_widget(ResourceGroup),
+            "resources": get_multi_select_widget(Resource),
             "notes": forms.Textarea(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"

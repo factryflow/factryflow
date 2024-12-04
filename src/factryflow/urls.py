@@ -65,6 +65,7 @@ urlpatterns = [
     path("", include("microbatching.urls")),
     path("api/", api.urls),
     path("", TemplateView.as_view(template_name="index.html")),
+    path("select2/", include("django_select2.urls")),
 ]
 
 if settings.DEBUG == "TRUE":

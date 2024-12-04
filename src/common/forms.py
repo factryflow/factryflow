@@ -1,6 +1,8 @@
 from django import forms
+import waffle
 
 from .models import CustomField
+from django_select2 import forms as s2forms
 
 
 # ------------------------------------------------------------------------------
@@ -59,3 +61,50 @@ class CustomFieldForm(forms.ModelForm):
                 }
             ),
         }
+
+
+# ------------------------------------------------------------------------------
+# MultiSelectWidget and SelectWidget for Select Field
+# ------------------------------------------------------------------------------
+
+CSS_STYLE_FORM_FIELD = "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+
+
+def get_multi_select_widget(model):
+    if waffle.switch_is_active("multi_select_widget"):
+        return s2forms.ModelSelect2MultipleWidget(
+            model=model,
+            search_fields=["name__icontains"],
+            attrs={
+                "data-minimum-input-length": 0,
+                "data-placeholder": f"Select {model._meta.verbose_name_plural}",
+                "data-close-on-select": "false",
+                "class": CSS_STYLE_FORM_FIELD,
+            },
+        )
+
+    return forms.SelectMultiple(
+        attrs={
+            "class": CSS_STYLE_FORM_FIELD
+        }
+    )
+
+
+def get_select_widget(model):
+    if waffle.switch_is_active("multi_select_widget"):
+        return s2forms.ModelSelect2Widget(
+            model=model,
+            search_fields=["name__icontains"],
+            attrs={
+                "data-minimum-input-length": 0,
+                "data-placeholder": f"Select {model._meta.verbose_name_plural}",
+                "data-close-on-select": "true",
+                "class": CSS_STYLE_FORM_FIELD,
+            },
+        )
+
+    return forms.Select(
+        attrs={
+            "class": CSS_STYLE_FORM_FIELD
+        }
+    )

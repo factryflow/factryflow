@@ -1,8 +1,9 @@
 from django import forms
-
+from common.forms import get_multi_select_widget, get_select_widget
 from job_manager.models import (
     Job,
     JobType,
+    Dependency,
 )
 
 # ------------------------------------------------------------------------------
@@ -68,11 +69,7 @@ class JobForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
                 }
             ),
-            "dependencies": forms.SelectMultiple(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "dependencies": get_multi_select_widget(Dependency),
             "description": forms.TextInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
@@ -94,11 +91,7 @@ class JobForm(forms.ModelForm):
                     "type": "date",
                 }
             ),
-            "job_type": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "job_type": get_select_widget(JobType),
             "job_status": forms.Select(
                 attrs={
                     "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"

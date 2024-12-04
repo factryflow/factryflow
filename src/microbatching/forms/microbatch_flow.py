@@ -1,7 +1,8 @@
 from django import forms
-
+from common.forms import get_select_widget
 from microbatching.models.microbatch_flow import (
     MicrobatchFlow,
+    MicrobatchRule,
 )
 
 
@@ -44,16 +45,8 @@ class MicrobatchFlowForm(forms.ModelForm):
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3",
                 }
             ),
-            "start_rule": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
-            "end_rule": forms.Select(
-                attrs={
-                    "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
-                }
-            ),
+            "start_rule": get_select_widget(MicrobatchRule),
+            "end_rule": get_select_widget(MicrobatchRule),
             "min_flow_length": forms.NumberInput(
                 attrs={
                     "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
