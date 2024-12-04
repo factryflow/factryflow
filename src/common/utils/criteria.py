@@ -55,7 +55,7 @@ def get_nested_group_data(group_instance):
 
     nested_groups = NestedCriteriaGroup.objects.filter(parent_group=group_instance)
 
-    if nested_groups.count() != 0:
+    if nested_groups.count() > 0:
         for nested_group in nested_groups:
             nested_group_data = get_nested_group_data(nested_group)
             group_data["innerGroups"].append(nested_group_data)

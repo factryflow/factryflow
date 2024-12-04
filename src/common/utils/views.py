@@ -4,13 +4,24 @@ from django.http import HttpResponse
 from django.apps import apps
 from django.db.models.fields.reverse_related import ManyToOneRel
 
-from .constants import get_html_input_type, NOT_REQUIRED_FIELDS_IN_FORM
+from common.utils.constants import HTML_INPUT_TYPES, NOT_REQUIRED_FIELDS_IN_FORM
 
 
 def add_notification_headers(
     response: HttpResponse, notification_content: str, notification_type: str = "info"
 ) -> HttpResponse:
-    # Adds a custom 'hx-trigger' header to the HttpResponse for triggering a notification.
+    """
+    Adds notification headers to the given HttpResponse object.
+    Args:
+        response (HttpResponse): The HTTP response object to which the headers will be added.
+        notification_content (str): The content of the notification message.
+        notification_type (str, optional): The type of the notification. Defaults to "info".
+            Allowed types are "info", "success", and "error".
+    Returns:
+        HttpResponse: The modified HTTP response object with the notification headers added.
+    Raises:
+        ValueError: If the provided notification_type is not one of the allowed types.
+    """
     allowed_types = ["info", "success", "error"]
 
     # Validate notification type
@@ -33,22 +44,30 @@ def add_notification_headers(
 
 
 def convert_datetime_to_readable_string(datetime: str) -> str:
-    # Converts a datetime string to a human-readable string.
+    """
+    Converts a datetime string to a human-readable string.
+    """
     return datetime.strftime("%B %d, %Y %I:%M %p")
 
 
 def convert_date_to_readable_string(date: str) -> str:
-    # Converts a date string to a human-readable string.
+    """
+    Converts a date string to a human-readable string.
+    """
     return date.strftime("%B %d, %Y")
 
 
 def convert_timestamp(datetime: str) -> str:
-    # Converts a datetime object to "DD-MM-YYYY HH:MM"
+    """
+    Converts a datetime object to "DD-MM-YYYY HH:MM"
+    """
     return datetime.strftime("%d-%m-%Y %H:%M")
 
 
 def convert_date(datetime: str) -> str:
-    # Converts a datetime object to "DD-MM-YYYY"
+    """
+    Converts a datetime object to "DD-MM-YYYY"
+    """
     return datetime.strftime("%d-%m-%Y")
 
 
@@ -68,7 +87,7 @@ def get_related_fields(model, related_field_name, with_type=False):
 
     if with_type:
         fields = [
-            (field.name, get_html_input_type(field.get_internal_type()))
+            (field.name, HTML_INPUT_TYPES.get(field.get_internal_type(), "text"))
             for field in related_model._meta.get_fields()
             if not isinstance(field, ManyToOneRel)
             and field.name not in NOT_REQUIRED_FIELDS_IN_FORM
@@ -103,7 +122,7 @@ def get_model_fields(model_name, app_name, related_field_names, with_type=False)
     if with_type:
         # the fields of the model
         fields = [
-            (field.name, get_html_input_type(field.get_internal_type()))
+            (field.name, HTML_INPUT_TYPES.get(field.get_internal_type(), "text"))
             for field in model._meta.get_fields()
             if not isinstance(field, ManyToOneRel)
             and field.name not in NOT_REQUIRED_FIELDS_IN_FORM

@@ -8,43 +8,23 @@ NOT_REQUIRED_FIELDS_IN_FORM = [
 ]
 
 
-def get_html_input_type(field_type):
-    """
-    Convert Django model field types to HTML input types.
+HTML_INPUT_TYPES = {
+    "CharField": "text",
+    "TextField": "textarea",
+    "EmailField": "email",
+    "URLField": "url",
+    "IntegerField": "number",
+    "FloatField": "number",
+    "DecimalField": "number",
+    "BooleanField": "checkbox",
+    "DateField": "date",
+    "DateTimeField": "datetime-local",
+    "TimeField": "time",
+    "FileField": "file",
+    "ImageField": "file",
+    "ForeignKey": "number",
+}
 
-    Args:
-        field_type (str): The internal type of the Django model field.
 
-    Returns:
-        str: The corresponding HTML input type.
-    """
-    if field_type == "CharField":
-        return "text"
-    elif field_type == "TextField":
-        return "textarea"
-    elif field_type == "EmailField":
-        return "email"
-    elif field_type == "URLField":
-        return "url"
-    elif field_type == "IntegerField":
-        return "number"
-    elif field_type == "FloatField":
-        return "number"
-    elif field_type == "DecimalField":
-        return "number"
-    elif field_type == "BooleanField":
-        return "checkbox"
-    elif field_type == "DateField":
-        return "date"
-    elif field_type == "DateTimeField":
-        return "datetime-local"
-    elif field_type == "TimeField":
-        return "time"
-    elif field_type == "FileField":
-        return "file"
-    elif field_type == "ImageField":
-        return "file"
-    elif field_type == "ForeignKey":
-        return "number"
-    else:
-        return "text"
+# nested criteria management models list
+NESTED_CRITERIA_RELATED_MODELS = ["microbatch_rules", "assigment_rules"]

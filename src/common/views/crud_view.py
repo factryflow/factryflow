@@ -14,6 +14,7 @@ from common.utils.views import (
     add_notification_headers,
 )
 from common.utils.criteria import get_nested_criteria
+from common.utils.constants import NESTED_CRITERIA_RELATED_MODELS
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -334,7 +335,7 @@ class CRUDView:
             )
 
             # get nested criteria data if model_name contains rule
-            if "rule" in self.model_name:
+            if self.model_name in NESTED_CRITERIA_RELATED_MODELS:
                 nested_criteria_data = get_nested_criteria(self.model, id)
 
             # self.table_view.get_all_many_to_field_instances(instance_obj)
