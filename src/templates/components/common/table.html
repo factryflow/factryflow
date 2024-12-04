@@ -26,10 +26,10 @@
                             </th>
                         {% endfor %}
                         {% if show_actions %}
-                            <th scope="col" class="whitespace-nowrap py-3.5 px-2">Actions</th>
-                        {% if ordered_model %}
-                            <th scope="col" class="whitespace-nowrap py-3.5 px-2">Change Priority</th>
-                        {% endif %}
+                                <th scope="col" class="whitespace-nowrap py-3.5 px-2">Actions</th>
+                            {% if ordered_model %}
+                                <th scope="col" class="whitespace-nowrap py-3.5 px-2">Change Priority</th>
+                            {% endif %}
                         {% endif %}
                     </tr>
                 </thead>
@@ -82,17 +82,32 @@
                             </td> -->
                             {% for cell in row %}   
                                 <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
-                                    {% if not cell %}
-                                        <span class="text-[#7E8299]">-</span>
-                                    {% elif "span" in cell %}
-                                        {{ cell|safe }}
-                                    {% else %}
-                                        <span
-                                            x-tooltip="{{cell|safe}}"
-                                            class="cursor-pointer">
-                                            {{ cell|safe|truncatechars:10 }}
-                                        </span>
-                                    {% endif %}
+                                    <div class="flex justify-center">
+                                        <div>
+                                            {% if not cell %}
+                                                <span class="text-[#7E8299]">-</span>
+                                            {% elif "span" in cell %}
+                                                {{ cell|safe }}
+                                            {% else %}
+                                                <span
+                                                    x-tooltip="{{cell|safe}}"
+                                                    class="cursor-pointer">
+                                                    {{ cell|safe|truncatechars:10 }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if forloop.first %}
+                                            {% if child_task %}
+                                                <button id="child-task-{{ row.0 }}"
+                                                    hx-get="{% url 'get_parent_sub_tasks' id=row.0 %}"
+                                                    hx-target="#child-task-table-{{row.0}}" hx-swap="outerHTML" type="button"
+                                                    class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
+                                                    <img src="{% static 'images/down-arrow.svg' %}" alt="Move Down" />
+                                                </button>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </td>
                             {% endfor %}
                             {% if show_actions %}
@@ -145,6 +160,9 @@
                                 {% endif %}
                             {% endif %}
                         </tr>
+                        {% if child_task %}
+                            <tr class="bg-white border-b {% if current_id != row.0 %}hidden{% endif %}" id="child-task-table-{{row.0}}"></tr>
+                        {% endif %}
                     {% endfor %}
                 </tbody>
             </table>    

@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpResponse
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.apps import apps
 from django.db.models.fields.reverse_related import ManyToOneRel
 
@@ -69,6 +70,23 @@ def convert_date(datetime: str) -> str:
     Converts a datetime object to "DD-MM-YYYY"
     """
     return datetime.strftime("%d-%m-%Y")
+
+
+def paginate_data(all_instances, page_number, num_of_rows_per_page=25):
+    """
+    Paginates the data and returns the paginated data along with the number of pages and total instances count.
+    """
+    paginator = Paginator(all_instances, num_of_rows_per_page)
+    num_pages = paginator.num_pages
+    total_instances_count = paginator.count
+
+    try:
+        paginated_instances = paginator.page(page_number)
+    except PageNotAnInteger:
+        paginated_instances = paginator.page(1)
+    except EmptyPage:
+        paginated_instances = paginator.page(paginator.num_pages)
+    return paginated_instances, num_pages, total_instances_count
 
 
 def get_related_fields(model, related_field_name, with_type=False):

@@ -30,12 +30,12 @@ Jobs Priority Manager
 {% endpartialdef %}
 
 {% partialdef partial-table-template %}
-<div x-data="{ editable: {{ view_mode }} }" id="parent-div">
+<div x-data="{ editable: {{ view_mode }} }" id="all-job_prioritizations-table">
     {% partial partial-search-filter %}
     <div class="pt-6">
         <div class="relative overflow-x-auto table-container">
             <div class="overflow-x-auto" id="all-jobs-table">
-                <form hx-post="{% url 'job_prioritization' %}" hx-redirect="false" method="post" hx-target="#parent-div" hx-trigger="submit">
+                <form hx-post="{% url 'job_prioritization' %}" hx-redirect="false" method="post" hx-target="#all-job_prioritizations-table" hx-trigger="submit">
                     {% csrf_token %}
                     <input type="hidden" name="job_data" x-model="jobData" />
                         <div class="overflow-y-auto h-80 sm:h-80 md:h-96 lg:h-[500px]">
@@ -125,8 +125,7 @@ Jobs Priority Manager
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div> 
-                    
+                        </div>          
                     <div>
                         <div class="flex flex-nowrap gap-x-5 justify-end mt-5">
                             <template x-if="editable">
@@ -142,6 +141,10 @@ Jobs Priority Manager
                         </div>
                     </div>
                 </form>
+
+                <div class="sticky bottom-0">
+                    {% include 'components/common/pagination.html' %}
+                </div>    
             
                 <script>
                     function updateJobData(updatedJob) {
@@ -173,7 +176,7 @@ Jobs Priority Manager
                         });
                     });
                 </script>
-            </div>        
+            </div>    
         </div>
     </div>
 </div>

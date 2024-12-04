@@ -13,6 +13,7 @@ from job_manager.views import (
     WORK_CENTER_VIEWS,
     dashboard_gantt_chart_view,
     job_prioritization_view,
+    get_sub_tasks,
 )
 
 urlpatterns = [
@@ -141,6 +142,11 @@ urlpatterns = [
         "task-types/view/<int:id>/field=<str:field>",
         TASK_TYPE_VIEWS.show_model_form,
         name="task_types_relationships",
+    ),
+    path(
+        "task/child/<int:id>/",
+        get_sub_tasks,
+        name="get_parent_sub_tasks",
     ),
     # dependencies urls
     path(

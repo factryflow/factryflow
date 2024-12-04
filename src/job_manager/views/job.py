@@ -7,7 +7,7 @@ from django.db import transaction
 from django.http import HttpResponse
 
 from common.views import CRUDView, CustomTableView
-from common.utils.views import add_notification_headers
+from common.utils.views import add_notification_headers, paginate_data
 
 from job_manager.forms import (
     JobForm,
@@ -204,6 +204,9 @@ def job_prioritization_view(request):
     if request.user.require_password_change:
         return redirect(reverse("users:change_password"))
 
+    page_number = request.GET.get("page", 1)
+    num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
+
     if request.htmx:
         try:
             job_data = json.loads(request.POST.get("job_data"))
@@ -241,9 +244,19 @@ def job_prioritization_view(request):
         .order_by("sort_priority")
     )
 
+    paginated_data, num_pages, total_instances_count = paginate_data(
+        jobs, page_number, num_of_rows_per_page
+    )
+
     context = {
-        "jobs": jobs,
+        "model_name": "job_prioritization",
+        "jobs": paginated_data,
         "view_mode": "false",
+        "paginator": paginated_data,
+        "num_pages": num_pages,
+        "num_of_rows_per_page": num_of_rows_per_page,
+        "total_instances_count": total_instances_count,
+        "page_number": page_number,
         "status_filter_dict": {
             "NP": "Not Planned",
             "IP": "In Progress",
@@ -252,11 +265,13 @@ def job_prioritization_view(request):
 
     if request.htmx:
         return render(
-            request, "job/prioritization.html#partial-table-template", context
+            request,
+            "job_manager/job/prioritization.html#partial-table-template",
+            context,
         )
 
     return render(
         request,
-        "job/prioritization.html",
+        "job_manager/job/prioritization.html",
         context,
     )
