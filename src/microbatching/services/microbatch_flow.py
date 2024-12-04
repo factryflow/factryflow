@@ -180,4 +180,10 @@ class MicrobatchFlowService:
             microbatched_tasks.append(task_group)
             predecessor_group = [task for task in task_group[task.id]]
 
+            # Set predecessors for next tasks with no subtasks
+            successor_tasks = task.successors.filter(sub_tasks__isnull=True)
+            if successor_tasks.exists():
+                for successor_task in successor_tasks:
+                    successor_task.predecessors.set(predecessor_group)
+
         return microbatched_tasks
