@@ -5,6 +5,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from common.models import CustomField
 from common.utils.views import convert_timestamp, convert_date
+from common.utils.views import get_model_fields
 
 # ------------------------------------------------------------------------------
 # CustomTableView:
@@ -76,6 +77,22 @@ class CustomTableView:
             QuerySet: A Django QuerySet containing all instances of the model, ordered by the specified field.
         """
         return self.model.objects.all()
+
+    def get_fields_with_input_type(self):
+        """
+        Retrieve all fields with type for Nested criteria management
+        """
+        input_fields_with_type = dict(
+            get_model_fields(
+                "Task", "job_manager", ["item", "task_type", "job", "work_center"], True
+            )
+        )
+
+        input_fields_with_type["item.name_first"] = "text"
+        input_fields_with_type["item.name_middle"] = "text"
+        input_fields_with_type["item.name_last"] = "text"
+
+        return input_fields_with_type
 
     def get_custom_field_json_data(self, instance=None):
         """
