@@ -76,7 +76,6 @@ INSTALLED_APPS = [
     "scheduler",
     "microbatching",
     "django_select2",
-    "waffle",
 ]
 
 MIDDLEWARE = [
