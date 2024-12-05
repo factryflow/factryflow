@@ -2,6 +2,7 @@ from api.permission_checker import AbstractPermissionService
 from django.contrib.contenttypes.models import ContentType
 from common.services import model_update
 from common.utils import get_object
+from common.utils.criteria import get_all_nested_group_ids
 from common.models import NestedCriteria, NestedCriteriaGroup
 
 # validation error
@@ -192,6 +193,52 @@ class MicrobatchRuleService:
 
         return group_instance
 
+    def _delete_nested_criteria_group(self, data):
+        """
+        Deletes nested criteria groups and criteria based on the provided data.
+
+        Args:
+            data (dict): A dictionary containing the following keys:
+            - "groupIds" (list): A list of group IDs to be deleted.
+            - "criteriaIds" (list): A list of criteria IDs to be deleted.
+
+        Returns:
+            bool: True if the deletion process completes successfully.
+        """
+        group_ids = data.get("groupIds", [])
+        criteria_ids = data.get("criteriaIds", [])
+
+        group_ids_to_delete = []
+
+        if group_ids:
+            parent_groups = NestedCriteriaGroup.objects.filter(id__in=group_ids)
+            for group in parent_groups:
+                group_ids_to_delete.extend(get_all_nested_group_ids(group=group))
+
+            groups_to_delete = NestedCriteriaGroup.objects.filter(
+                id__in=group_ids_to_delete
+            )
+
+            nested_criteria_to_delete = NestedCriteria.objects.filter(
+                group__in=groups_to_delete
+            )
+            rule_criteria_ids = nested_criteria_to_delete.values_list(
+                "object_id", flat=True
+            )
+
+            MicrobatchRuleCriteria.objects.filter(id__in=rule_criteria_ids).delete()
+            nested_criteria_to_delete.delete()
+            groups_to_delete.delete()
+
+        if criteria_ids:
+            NestedCriteria.objects.filter(
+                content_type=ContentType.objects.get_for_model(MicrobatchRuleCriteria),
+                object_id__in=criteria_ids,
+            ).delete()
+            MicrobatchRuleCriteria.objects.filter(id__in=criteria_ids).delete()
+
+        return True
+
     @transaction.atomic
     def create(
         self,
@@ -264,6 +311,10 @@ class MicrobatchRuleService:
                     microbatch_rule=instance,
                     group_data=group,
                 )
+
+        # delete nested group criteria if any
+        delete_nested_criteria_group = data.get("delete_nested_criteria_group", {})
+        self._delete_nested_criteria_group(data=delete_nested_criteria_group)
 
         return instance
 

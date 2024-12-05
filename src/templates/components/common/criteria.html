@@ -2,6 +2,7 @@
 <div x-data="queryBuilder({{form_input_fields_with_type|safe}}, {{nested_criteria_data|safe}})" class="mt-4 bg-gray-50">
     <h2 class="ms-1 font-semibold text-[#5E6278] md:ms-2">Nested Criteria Management</h2>
     <input type="hidden" name="nestedCriteria" x-bind:value="JSON.stringify(queryGroups)">
+    <input type="hidden" name="deleteObjects" x-bind:value="JSON.stringify(deleteData)">
 
     <!-- <div class="mb-4">
         <label for="parentOperator" class="block text-gray-700">Select Operator for Parent Groups:</label>
@@ -63,10 +64,10 @@
                         </select>
 
                         <template x-if="condition.type === 'textarea'">
-                            <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value"></textarea>
+                            <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required></textarea>
                         </template>
                         <template x-if="condition.type !== 'textarea'">
-                            <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value"/>
+                            <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required/>
                         </template>
 
                         <button type="button" @click="removeItem('condition', index, null, null, condIndex)" class="ml-2 text-red-600 hover:text-red-800 transition">
@@ -130,10 +131,10 @@
                                 </select>
                                 
                                 <template x-if="condition.type === 'textarea'">
-                                    <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value"></textarea>
+                                    <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required></textarea>
                                 </template>
                                 <template x-if="condition.type !== 'textarea'">
-                                    <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value"/>
+                                    <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required/>
                                 </template>
 
                                 <button type="button" @click="removeItem('condition', index, subIndex, null, condIndex)" class="ml-2 text-red-600 hover:text-red-800 transition">
@@ -197,10 +198,10 @@
                                         </select>
                                         
                                         <template x-if="condition.type === 'textarea'">
-                                            <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value"></textarea>
+                                            <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required></textarea>
                                         </template>
                                         <template x-if="condition.type !== 'textarea'">
-                                            <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value"/>
+                                            <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required/>
                                         </template>
 
                                         <button type="button" @click="removeItem('condition', index, subIndex, innerIndex, condIndex)" class="ml-2 text-red-600 hover:text-red-800 transition">
@@ -233,13 +234,17 @@
                 operator: 'AND',
                 criteria: [{
                     id: null,
-                    field: '',
-                    operator: '',
+                    field: Object.keys(initialFields)[0] || '',
+                    operator: 'equals',
                     value: ''
                 }],
                 innerGroups: []
             }],
             fields: initialFields,
+            deleteData: {
+                groupIds: [],
+                criteriaIds: []
+            },
 
             addItem(type, groupIndex = null, subIndex = null, innerIndex = null) {
                 // Function to add a group or condition at any level
@@ -251,8 +256,8 @@
                             operator: 'AND',
                             criteria: [{
                                 id: null,
-                                field: '',
-                                operator: '',
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
                                 value: ''
                             }],
                             innerGroups: []
@@ -264,8 +269,8 @@
                             operator: 'AND',
                             criteria: [{
                                 id: null,
-                                field: '',
-                                operator: '',
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
                                 value: ''
                             }],
                             innerGroups: []
@@ -275,10 +280,10 @@
                         this.queryGroups[groupIndex].innerGroups.push({
                             id: null,
                             operator: 'AND',
-                                criteria: [{
+                            criteria: [{
                                 id: null,
-                                field: '',
-                                operator: '',
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
                                 value: ''
                             }],
                             innerGroups: []
@@ -290,8 +295,8 @@
                             operator: 'AND',
                             criteria: [{
                                 id: null,
-                                field: '',
-                                operator: '',
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
                                 value: ''
                             }],
                             innerGroups: []
@@ -302,24 +307,24 @@
                         // Adding a condition to a nested inner group
                         this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.push({
                             id: null,
-                            field: '',
-                            operator: '',
+                            field: Object.keys(this.fields)[0] || '',
+                            operator: 'equals',
                             value: ''
                         });
                     } else if (groupIndex !== null && subIndex !== null) {
                         // Adding a condition to a nested group
                         this.queryGroups[groupIndex].innerGroups[subIndex].criteria.push({
                             id: null,
-                            field: '',
-                            operator: '',
+                            field: Object.keys(this.fields)[0] || '',
+                            operator: 'equals',
                             value: ''
                         });
                     } else if (groupIndex !== null) {
                         // Adding a condition to a main group
                         this.queryGroups[groupIndex].criteria.push({
-                            
-                            field: '',
-                            operator: '',
+                            id: null,
+                            field: Object.keys(this.fields)[0] || '',
+                            operator: 'equals',
                             value: ''
                         });
                     }
@@ -328,28 +333,51 @@
 
             removeItem(type, groupIndex, subIndex = null, innerIndex = null, condIndex = null) {
                 // Function to remove a group or condition at any level
-                console.log(groupIndex !== null, subIndex !== null, innerIndex !== null, condIndex !== null)
                 if (type === 'group') {
                     if (groupIndex !== null && subIndex !== null && innerIndex !== null) {
                         // Remove a nested inner group
-                        this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups.splice(innerIndex, 1);
+                        const group = this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups.splice(innerIndex, 1)[0];
+                        if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        console.log(this.deleteData);
                     } else if (groupIndex !== null && subIndex !== null) {
                         // Remove a nested group
-                        this.queryGroups[groupIndex].innerGroups.splice(subIndex, 1);
+                        const group = this.queryGroups[groupIndex].innerGroups.splice(subIndex, 1)[0];
+                        if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        console.log(this.deleteData);
                     } else if (groupIndex !== null) {
                         // Remove a main group
-                        this.queryGroups.splice(groupIndex, 1);
+                        const group = this.queryGroups.splice(groupIndex, 1)[0];
+                        if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        console.log(this.deleteData);
                     }
                 } else if (type === 'condition') {
                     if (groupIndex !== null && subIndex !== null && innerIndex !== null && condIndex !== null) {
                         // Remove a condition from a nested inner group
-                        this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.splice(condIndex, 1);
+                        const condition = this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.splice(condIndex, 1)[0];
+                        if (condition && condition.id) this.deleteData.criteriaIds.push(condition.id);
+                        if (this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.length === 0) {
+                            const group = this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups.splice(innerIndex, 1)[0];
+                            if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        }
+                        console.log(this.deleteData);
                     } else if (groupIndex !== null && subIndex !== null && condIndex !== null) {
                         // Remove a condition from a nested group
-                        this.queryGroups[groupIndex].innerGroups[subIndex].criteria.splice(condIndex, 1);
+                        const condition = this.queryGroups[groupIndex].innerGroups[subIndex].criteria.splice(condIndex, 1)[0];
+                        if (condition && condition.id) this.deleteData.criteriaIds.push(condition.id);
+                        if (this.queryGroups[groupIndex].innerGroups[subIndex].criteria.length === 0) {
+                            const group = this.queryGroups[groupIndex].innerGroups.splice(subIndex, 1)[0];
+                            if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        }
+                        console.log(this.deleteData);
                     } else if (groupIndex !== null && condIndex !== null) {
                         // Remove a condition from the main group
-                        this.queryGroups[groupIndex].criteria.splice(condIndex, 1);
+                        const condition = this.queryGroups[groupIndex].criteria.splice(condIndex, 1)[0];
+                        if (condition && condition.id) this.deleteData.criteriaIds.push(condition.id);
+                        if (this.queryGroups[groupIndex].criteria.length === 0) {
+                            const group = this.queryGroups.splice(groupIndex, 1)[0];
+                            if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        }
+                        console.log(this.deleteData);
                     }
                 }
             },
@@ -360,8 +388,9 @@
             },
 
             updateHiddenInput() {
-                // Update the hidden input field with the serialized data
+                // Update the hidden input fields with the serialized data
                 document.querySelector('input[name="nestedCriteria"]').value = JSON.stringify(this.queryGroups);
+                document.querySelector('input[name="deleteObjects"]').value = JSON.stringify(this.deleteData);
             }
         }
     }

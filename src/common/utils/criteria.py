@@ -1,5 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
-from common.models import NestedCriteriaGroup, NestedCriteria
+from django.db.models import Q
+
+from common.models import NestedCriteriaGroup, NestedCriteria, Operator, LogicalOperator
+from common.utils.constants import OPERATOR_MAPPINGS
 
 
 def get_nested_criteria(model, id):
@@ -90,3 +93,78 @@ def get_nested_criteria_for_group(group_instance):
         group_criteria.append(criteria_data)
 
     return group_criteria
+
+
+def get_all_nested_group_ids(group):
+    """
+    Recursively retrieves all nested group IDs for a given group instance.
+
+    Args:
+        group (NestedCriteriaGroup): The group instance for which to retrieve nested group IDs.
+
+    Returns:
+        list: A list of nested group IDs.
+    """
+    group_ids = [group.id]
+    nested_groups = NestedCriteriaGroup.objects.filter(parent_group=group)
+
+    if nested_groups.count() > 0:
+        for nested_group in nested_groups:
+            group_ids.extend(get_all_nested_group_ids(nested_group))
+
+    return group_ids
+
+
+def build_nested_query(group):
+    """
+    Builds a fully nested Q object for a given NestedCriteriaGroup, including handling of related fields.
+    """
+    query = Q()
+
+    # iterate through all nested criteria in the group
+    for nested_criteria in group.nested_group.all():
+        if nested_criteria.related_criteria:
+            # handle individual criteria
+            related_criteria = nested_criteria.related_criteria
+            field = related_criteria.field
+            operator = related_criteria.operator
+            value = related_criteria.value
+
+            # construct the filter key
+            if "." in field:
+                # handle related fields with dot notation
+                related_field, subfield = field.split(".", 1)
+                filter_key = (
+                    f"{related_field}__{subfield}{OPERATOR_MAPPINGS.get(operator, '')}"
+                )
+            else:
+                filter_key = f"{field}{OPERATOR_MAPPINGS.get(operator, '')}"
+
+            if operator == Operator.IN_BETWEEN:
+                value_parts = value.split("-")  # split range into start and end
+                query_part = Q(**{filter_key: (value_parts[0], value_parts[1])})
+            else:
+                query_part = Q(**{filter_key: value})
+
+            # combine query parts based on the logical operator
+            if group.operator == LogicalOperator.AND:
+                query &= query_part
+            else:
+                query |= query_part
+        elif nested_criteria.group:
+            # recursively handle nested groups
+            nested_query = build_nested_query(nested_criteria.group)
+            if group.operator == LogicalOperator.AND:
+                query &= nested_query
+            else:
+                query |= nested_query
+
+    # nested groups directly related to this group
+    for child_group in group.nested_groups.all():
+        child_query = build_nested_query(child_group)
+        if group.operator == LogicalOperator.AND:
+            query &= child_query
+        else:
+            query |= child_query
+
+    return query

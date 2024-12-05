@@ -541,6 +541,13 @@ class CRUDView:
         if request.POST.get("nestedCriteria"):
             nested_criteria_data = json.loads(request.POST.get("nestedCriteria", []))
 
+        # get delete nested criteria data - ids of group and criterias
+        delete_nested_criteria_group = {}
+        if request.POST.get("deleteObjects"):
+            delete_nested_criteria_group = json.loads(
+                request.POST.get("deleteObjects", {})
+            )
+
         # Initiate the form with POST data and optionally the instance object
         form = self.model_form(
             request.POST, instance=instance_obj if instance_obj else None
@@ -613,6 +620,7 @@ class CRUDView:
             # Extract data from the form
             obj_data = form.cleaned_data
 
+            # add nested criteria data
             if len(nested_criteria_data) > 0:
                 obj_data["nested_criteria"] = nested_criteria_data
 
@@ -634,6 +642,13 @@ class CRUDView:
 
             try:
                 existing_instance = self.model.objects.get(id=obj_data["id"])
+
+                # delete nested groups criteria objects
+                if delete_nested_criteria_group:
+                    obj_data["delete_nested_criteria_group"] = (
+                        delete_nested_criteria_group
+                    )
+
                 self.model_service(user=request.user).update(
                     existing_instance, obj_data
                 )
