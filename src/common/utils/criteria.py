@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-from common.models import NestedCriteriaGroup, NestedCriteria
+from common.models import NestedCriteriaGroup, NestedCriteria, Operator, LogicalOperator
 from common.utils.constants import OPERATOR_MAPPINGS
 
 
@@ -140,21 +140,21 @@ def build_nested_query(group):
             else:
                 filter_key = f"{field}{OPERATOR_MAPPINGS.get(operator, '')}"
 
-            if operator == "ib":
+            if operator == Operator.IN_BETWEEN:
                 value_parts = value.split("-")  # split range into start and end
                 query_part = Q(**{filter_key: (value_parts[0], value_parts[1])})
             else:
                 query_part = Q(**{filter_key: value})
 
             # combine query parts based on the logical operator
-            if group.operator == "AND":
+            if group.operator == LogicalOperator.AND:
                 query &= query_part
             else:
                 query |= query_part
         elif nested_criteria.group:
             # recursively handle nested groups
             nested_query = build_nested_query(nested_criteria.group)
-            if group.operator == "AND":
+            if group.operator == LogicalOperator.AND:
                 query &= nested_query
             else:
                 query |= nested_query
@@ -162,7 +162,7 @@ def build_nested_query(group):
     # nested groups directly related to this group
     for child_group in group.nested_groups.all():
         child_query = build_nested_query(child_group)
-        if group.operator == "AND":
+        if group.operator == LogicalOperator.AND:
             query &= child_query
         else:
             query |= child_query

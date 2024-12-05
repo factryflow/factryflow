@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from microbatching.models.microbatch_rule import (
     MicrobatchRule,
@@ -34,8 +35,13 @@ def create_microbatch_rule_matches(tasks) -> list:
                     except NestedCriteriaGroup.DoesNotExist:
                         continue
 
-                    # # build a nested query for the root group
-                    query = build_nested_query(root_group)
+                    # build a nested query for the root group
+                    query = Q()
+                    for group in root_group:
+                        # multiple parent groups for a rule
+                        group_query = build_nested_query(group)
+                        if group_query:
+                            query &= group_query
 
                     # check if the task matches the query
                     if query and Task.objects.filter(query, id=task.id).exists():
