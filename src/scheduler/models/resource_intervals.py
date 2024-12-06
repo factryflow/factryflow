@@ -8,9 +8,9 @@ from .scheduler_run import SchedulerRuns
 
 
 class ResourceIntervals(BaseModel):
-    run_id = models.ForeignKey(SchedulerRuns, on_delete=models.DO_NOTHING)
-    resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
+    run_id = models.ForeignKey(SchedulerRuns, on_delete=models.CASCADE)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
     interval_start = models.DateTimeField()
     interval_end = models.DateTimeField()
 

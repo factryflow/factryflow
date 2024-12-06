@@ -19,19 +19,19 @@ class AssignmentConstraint(BaseModel):
         Task,
         blank=True,
         null=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     assignment_rule = models.OneToOneField(
         AssigmentRule,
         blank=True,
         null=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     resource_group = models.ForeignKey(
         ResourceGroup,
         blank=True,
         null=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="constraints",
     )
     resources = models.ManyToManyField(Resource, blank=True, related_name="constraints")

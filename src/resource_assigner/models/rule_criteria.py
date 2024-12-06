@@ -1,4 +1,4 @@
-from common.models import BaseModelWithExtras, BaseCriteria
+from common.models import BaseCriteria, BaseModelWithExtras
 from django.db import models
 from job_manager.models import WorkCenter
 from ordered_model.models import OrderedModel
@@ -11,7 +11,7 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
     """
 
     name = models.CharField(max_length=150)
-    work_center = models.ForeignKey(WorkCenter, on_delete=models.DO_NOTHING)
+    work_center = models.ForeignKey(WorkCenter, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=True)
 
