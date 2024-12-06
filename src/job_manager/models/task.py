@@ -58,7 +58,7 @@ class Task(BaseModelWithExtras):
     quantity = models.IntegerField()
     planned_start_datetime = models.DateTimeField(blank=True, null=True)
     planned_end_datetime = models.DateTimeField(blank=True, null=True)
-    item = models.ForeignKey(Item, on_delete=models.DO_NOTHING, related_name="tasks")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="tasks")
     task_status = models.CharField(
         max_length=2,
         choices=TaskStatusChoices.choices,
@@ -77,14 +77,14 @@ class Task(BaseModelWithExtras):
         Job, on_delete=models.CASCADE, related_name="tasks", blank=True, null=True
     )
     work_center = models.ForeignKey(
-        WorkCenter, on_delete=models.DO_NOTHING, related_name="tasks", default=1
+        WorkCenter, on_delete=models.CASCADE, related_name="tasks", default=1
     )
     predecessors = models.ManyToManyField(
         "self", symmetrical=False, related_name="successors", blank=True
     )
     parent = models.ForeignKey(
         "self",
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="sub_tasks",

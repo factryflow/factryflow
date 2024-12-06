@@ -53,9 +53,9 @@ class MicrobatchTaskFlow(BaseModel):
 class MicrobatchTask(BaseModel, OrderedModel):
     """Stores data on flows derived from Tasks and their matching MicrobatchRules."""
 
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
     microbatch_task_flow = models.ForeignKey(
-        MicrobatchTaskFlow, on_delete=models.DO_NOTHING, related_name="flow_tasks"
+        MicrobatchTaskFlow, on_delete=models.CASCADE, related_name="flow_tasks"
     )
 
     history = HistoricalRecords(table_name="microbatch_task_flow_history")

@@ -13,7 +13,7 @@ class TaskResourceAssigment(BaseModel):
     Represents the assignment of resources to tasks.
     """
 
-    task = models.OneToOneField(Task, on_delete=models.DO_NOTHING)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE)
     resources = models.ManyToManyField(
         Resource, blank=True, related_name="task_resource_assignments"
     )

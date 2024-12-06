@@ -8,9 +8,9 @@ from .scheduler_run import SchedulerRuns
 
 
 class ResourceAllocations(BaseModel):
-    run_id = models.ForeignKey(SchedulerRuns, on_delete=models.DO_NOTHING)
-    resource = models.ForeignKey(Resource, on_delete=models.DO_NOTHING)
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
+    run_id = models.ForeignKey(SchedulerRuns, on_delete=models.CASCADE)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     history = HistoricalRecords(table_name="resource_allocations_history")
 
