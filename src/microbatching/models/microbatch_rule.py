@@ -1,4 +1,4 @@
-from common.models import BaseModel, BaseModelWithExtras, BaseCriteria
+from common.models import BaseCriteria, BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models.task import Task
@@ -46,8 +46,8 @@ class MicrobatchRuleTaskMatch(BaseModel):
     one task can match with multiple rules.
     """
 
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    microbatch_rule = models.ForeignKey(MicrobatchRule, on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    microbatch_rule = models.ForeignKey(MicrobatchRule, on_delete=models.CASCADE)
     is_applied = models.BooleanField(default=False)
 
     history = HistoricalRecords(table_name="microbatch_rule_task_match_history")
