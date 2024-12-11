@@ -5,7 +5,6 @@ from job_manager.models import JobStatusChoices, Task, TaskStatusChoices
 # Create your views here.
 from resource_assigner.utils import get_matching_assignment_rules_with_tasks
 
-
 # ------------------------------------------------------------------------------
 # Matching Rule API
 # ------------------------------------------------------------------------------
@@ -27,7 +26,7 @@ def match_rules_with_tasks(request):
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
 
-        result = get_matching_assignment_rules_with_tasks(tasks)
+        result = get_matching_assignment_rules_with_tasks()
 
         response = HttpResponse(status=204)
         add_notification_headers(
