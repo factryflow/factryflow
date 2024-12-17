@@ -99,7 +99,11 @@ jobs:
           az webapp config container set \
             --name factryflow \
             --resource-group rg-factryflow \
-            --docker-custom-image-name ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
-            --docker-registry-server-url https://${{ env.LOGIN_SERVER }} \
-            --docker-registry-server-user ${{ env.USERNAME }} \
-            --docker-registry-server-password ${{ secrets.ACR_TOKEN_PASSWORD }}
+            --container-image-name ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
+            --container-registry-url https://${{ env.LOGIN_SERVER }} \
+            --container-registry-user ${{ env.USERNAME }} \
+            --container-registry-password ${{ secrets.ACR_TOKEN_PASSWORD }}
+
+      - name: 'Restart Azure Web App'
+        run: |
+          az webapp restart --name factryflow --resource-group rg-factryflow
