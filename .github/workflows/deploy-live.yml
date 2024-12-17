@@ -96,7 +96,7 @@ jobs:
 
       - name: 'Update Web App with New Image'
         run: |
-          az webapp config appsettings set \
+          az webapp config container set \
             --name factryflow \
             --resource-group rg-factryflow \
             --container-image-name ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
