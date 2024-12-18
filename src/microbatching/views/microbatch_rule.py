@@ -1,5 +1,3 @@
-from common.models import Operator
-from common.utils.views import get_model_fields
 from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
@@ -153,7 +151,7 @@ def match_rules_with_tasks(request):
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
 
-        result = create_microbatch_rule_matches(tasks)
+        result = create_microbatch_rule_matches()
 
         response = HttpResponse(status=204)
         add_notification_headers(

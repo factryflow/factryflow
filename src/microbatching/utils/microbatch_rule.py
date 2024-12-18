@@ -1,84 +1,84 @@
+from common.models import NestedCriteriaGroup
+from common.utils.criteria import build_nested_query
 from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
 from django.db.models import Q
+from job_manager.models import Task
 
 from microbatching.models.microbatch_rule import (
     MicrobatchRule,
     MicrobatchRuleTaskMatch,
 )
-from job_manager.models import Task
-from common.models import NestedCriteriaGroup
-from common.utils.criteria import build_nested_query
 
 
-def create_microbatch_rule_matches(tasks) -> list:
+@transaction.atomic
+def create_microbatch_rule_matches() -> list:
     result = {}
 
     try:
         matching_task_count = 0
 
-        for task in tasks:
-            # check if task is already matched with other rules
-            # get all microbatch rules
-            microbatch_rules = MicrobatchRule.objects.filter(is_active=True)
+        MicrobatchRuleTaskMatch.objects.all().delete()
 
-            if microbatch_rules:
-                for rule in microbatch_rules:
-                    # get the root NestedCriteriaGroup for the rule
-                    try:
-                        root_group = NestedCriteriaGroup.objects.get(
-                            content_type=ContentType.objects.get_for_model(
-                                MicrobatchRule
-                            ),
-                            object_id=rule.id,
-                            parent_group=None,
-                        )
-                    except NestedCriteriaGroup.DoesNotExist:
-                        continue
+        # Get all active assignment rules
+        assignment_rules = MicrobatchRule.objects.filter(is_active=True)
 
-                    # build a nested query for the root group
-                    query = Q()
-                    for group in root_group:
-                        # multiple parent groups for a rule
-                        group_query = build_nested_query(group)
-                        if group_query:
-                            query &= group_query
+        if assignment_rules:
+            applied_matches = []
+            applied_count = 0
+            for rule in assignment_rules:
+                # Get the root NestedCriteriaGroup for the rule
+                try:
+                    root_group = NestedCriteriaGroup.objects.filter(
+                        content_type=ContentType.objects.get_for_model(MicrobatchRule),
+                        object_id=rule.id,
+                        parent_group=None,
+                    )
+                except NestedCriteriaGroup.DoesNotExist:
+                    continue
 
-                    # check if the task matches the query
-                    if query and Task.objects.filter(query, id=task.id).exists():
-                        criteria_match = True
-                        matching_task_count += 1
+                # Build a nested query for the root group
+                query = Q()
+                for group in root_group:
+                    # Multiple parent groups for a rule
+                    group_query = build_nested_query(group)
+                    if group_query:
+                        query &= group_query
+
+                # Check if any task matches the query
+                matching_tasks = Task.objects.filter(query).iterator()
+                matching_task_count += Task.objects.filter(query).count()
+
+                task_rule_assignments = []
+                for task in matching_tasks:
+                    if task.id in applied_matches:
+                        applied_rule = False
                     else:
-                        criteria_match = False
+                        applied_matches.append(task.id)
+                        applied_rule = True
+                        applied_count += 1
 
-                    if criteria_match:
-                        is_rule_applied = True
+                    task_rule_assignment = MicrobatchRuleTaskMatch(
+                        task=task,
+                        microbatch_rule=rule,
+                        is_applied=applied_rule,
+                    )
+                    task_rule_assignments.append(task_rule_assignment)
 
-                        task_rule_instance = MicrobatchRuleTaskMatch.objects.filter(
-                            task=task, microbatch_rule=rule
+                    # Bulk create MicrobatchRuleTaskMatch instances in batches
+                    if len(task_rule_assignments) >= 1000:
+                        MicrobatchRuleTaskMatch.objects.bulk_create(
+                            task_rule_assignments
                         )
-                        if task_rule_instance.exists():
-                            instance = task_rule_instance.first()
-                            instance.is_applied = is_rule_applied
-                            instance.save()
+                        task_rule_assignments = []
 
-                        else:
-                            # if criteria match store it in the TaskRuleAssignment model
-                            task_rule_instance = MicrobatchRuleTaskMatch.objects.create(
-                                task=task,
-                                microbatch_rule=rule,
-                                is_applied=is_rule_applied,
-                            )
-                            task_rule_instance.save()
+                # Create any remaining MicrobatchRuleTaskMatch instances
+                if task_rule_assignments:
+                    MicrobatchRuleTaskMatch.objects.bulk_create(task_rule_assignments)
 
-                    else:
-                        # if not criteria match, delete the TaskRuleAssignment model instance if exists
-                        task_rule_microbatch = MicrobatchRuleTaskMatch.objects.filter(
-                            task=task, microbatch_rule=rule
-                        )
-                        if task_rule_microbatch.exists():
-                            task_rule_microbatch.delete()
-
-        result["message"] = f"Matched {matching_task_count} tasks with microbatch rules"
+        result["message"] = (
+            f"Created {matching_task_count} task matches with assignment rules"
+        )
         result["status"] = "success"
 
         return result
