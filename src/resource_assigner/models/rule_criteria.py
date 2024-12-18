@@ -1,4 +1,4 @@
-from common.models import BaseModel, BaseModelWithExtras, Operator
+from common.models import BaseCriteria, BaseModelWithExtras
 from django.db import models
 from job_manager.models import WorkCenter
 from ordered_model.models import OrderedModel
@@ -11,7 +11,7 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
     """
 
     name = models.CharField(max_length=150)
-    work_center = models.ForeignKey(WorkCenter, on_delete=models.DO_NOTHING)
+    work_center = models.ForeignKey(WorkCenter, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=True)
 
@@ -26,7 +26,7 @@ class AssigmentRule(BaseModelWithExtras, OrderedModel):
         return self.name
 
 
-class AssigmentRuleCriteria(BaseModel):
+class AssigmentRuleCriteria(BaseCriteria):
     """
     To assign constraints to tasks, we need to be able to filter tasks by their fields.
     This model represents the criteria for filtering tasks.
@@ -36,11 +36,6 @@ class AssigmentRuleCriteria(BaseModel):
     assigment_rule = models.ForeignKey(
         AssigmentRule, on_delete=models.CASCADE, related_name="criteria"
     )
-    field = models.CharField(max_length=100)
-    operator = models.CharField(
-        max_length=20, choices=Operator.choices, default=Operator.EQUALS
-    )
-    value = models.CharField(max_length=254, blank=True, null=True)
 
     history = HistoricalRecords(table_name="assigment_rule_criteria_history")
 

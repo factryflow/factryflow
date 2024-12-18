@@ -1,6 +1,10 @@
 # views.py
+from datetime import date, datetime
+from django.shortcuts import render
+
 from common.views import CRUDView, CustomTableView
 from resource_assigner.models import AssignmentConstraint, TaskRuleAssignment
+from common.utils.views import convert_timestamp, convert_date
 
 from job_manager.forms import (
     AssignmentConstraintForm,
@@ -279,4 +283,81 @@ TASK_VIEWS = CRUDView(
     model_form=TaskForm,
     inline_formset=ASSIGMENT_RULE_CONSTRAINT_FORMSET_OPTIONS,
     model_table_view=TASK_TABLE_VIEW,
+    list_template_name="job_manager/task/list.html",
 )
+
+
+# ------------------------------------------------------------------------------
+# Task Parent Child Views
+# ------------------------------------------------------------------------------
+
+
+def get_sub_tasks(request, id, number_of_rows=25):
+    """
+    Retrieve and process sub-tasks for a given task.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        id (int): The ID of the parent task.
+        number_of_rows (int, optional): The maximum number of sub-tasks to retrieve. Defaults to 25.
+
+    Returns:
+        HttpResponse: The rendered HTML response containing the sub-tasks data.
+
+    The function performs the following steps:
+    1. Retrieves the parent task instance using the provided ID.
+    2. Filters and retrieves sub-tasks associated with the parent task.
+    3. Processes each sub-task to extract and format relevant field data.
+    4. Constructs a context dictionary containing the processed sub-tasks and headers.
+    5. Renders and returns an HTML response if the request contains the "HX-Request" header.
+
+    Field processing includes:
+    - Incrementing the "order" field by 1.
+    - Formatting the "status" field with appropriate CSS classes and display values.
+    - Converting datetime and date fields to a specific format.
+    - Directly appending other field values.
+
+    The rendered HTML response is based on the "job_manager/task/child_task.html" template.
+    """
+    task_instance = Task.objects.get(id=id)
+
+    data = Task.objects.filter(parent=task_instance)
+
+    rows = []
+    for instance in data[:number_of_rows]:
+        row_data = []
+        for field in TASK_MODEL_FIELDS:
+            if field == "order":
+                # Get order field value and increment it by 1
+                value = getattr(instance, field) + 1
+                row_data.append(value)
+            elif "status" in field:
+                value = (
+                    f'<span class="{TASK_TAILWIND_CLASSES.get(getattr(instance, field))} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">'
+                    f'{getattr(instance, "get_task_status_display")() if hasattr(instance, "get_task_status_display") else TASK_TAILWIND_CLASSES.get(getattr(instance, field))}</span>',
+                )
+                row_data.append(value[0])
+            elif isinstance(getattr(instance, field), datetime):
+                value = convert_timestamp(getattr(instance, field))
+                row_data.append(value)
+            elif isinstance(getattr(instance, field), date):
+                value = convert_date(getattr(instance, field))
+                row_data.append(value)
+            else:
+                value = getattr(instance, field)
+                row_data.append(value)
+
+        rows.append(row_data)
+
+    context = {
+        "rows": rows,
+        "current_id": id,
+        "headers": TASK_MODEL_FIELDS,
+    }
+
+    if "HX-Request" in request.headers:
+        return render(
+            request,
+            "job_manager/task/child_task.html",
+            context,
+        )

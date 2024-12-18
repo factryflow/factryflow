@@ -30,12 +30,12 @@ Jobs Priority Manager
 {% endpartialdef %}
 
 {% partialdef partial-table-template %}
-<div x-data="{ editable: {{ view_mode }} }" id="parent-div">
+<div x-data="{ editable: {{ view_mode }} }" id="all-job_prioritizations-table">
     {% partial partial-search-filter %}
     <div class="pt-6">
         <div class="relative overflow-x-auto table-container">
             <div class="overflow-x-auto" id="all-jobs-table">
-                <form hx-post="{% url 'job_prioritization' %}" hx-redirect="false" method="post" hx-target="#parent-div" hx-trigger="submit">
+                <form hx-post="{% url 'job_prioritization' %}" hx-redirect="false" method="post" hx-target="#all-job_prioritizations-table" hx-trigger="submit">
                     {% csrf_token %}
                     <input type="hidden" name="job_data" x-model="jobData" />
                         <div class="overflow-y-auto h-80 sm:h-80 md:h-96 lg:h-[500px]">
@@ -88,11 +88,7 @@ Jobs Priority Manager
                                             </template>
                                             <template x-if="!editable">
                                                 <span>
-                                                    {% if job.manual_priority and job.manual_priority >= 0 %}
-                                                        {{ job.manual_priority }}
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
+                                                    {{ job.manual_priority|default:"-" }}
                                                 </span>
                                             </template>
                                         </td>
@@ -108,13 +104,13 @@ Jobs Priority Manager
                                             </template>
                                         </td>
                                         <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
-                                            {{ job.name }}
+                                            {{ job.name|default:"-" }}
                                         </td>
                                         <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
-                                            {{ job.customer }}
+                                            {{ job.customer|default:"-" }}
                                         </td>
                                         <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
-                                            {{ job.description }}
+                                            {{ job.description|default:"-" }}
                                         </td>
                                         <td class="px-6 py-4 text-sm font-medium text-[#7E8299]">
                                             <span class="{% if job.job_status == 'NP' %} bg-haxred text-[#FF4D4F] {% else %} bg-haxyellow text-[#F6C000] {% endif %} text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">
@@ -125,8 +121,7 @@ Jobs Priority Manager
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div> 
-                    
+                        </div>          
                     <div>
                         <div class="flex flex-nowrap gap-x-5 justify-end mt-5">
                             <template x-if="editable">
@@ -142,6 +137,10 @@ Jobs Priority Manager
                         </div>
                     </div>
                 </form>
+
+                <div class="sticky bottom-0">
+                    {% include 'components/common/pagination.html' %}
+                </div>    
             
                 <script>
                     function updateJobData(updatedJob) {
@@ -173,65 +172,73 @@ Jobs Priority Manager
                         });
                     });
                 </script>
-            </div>        
+            </div>    
         </div>
     </div>
 </div>
 {% endpartialdef %}
 
 {% block content %}
-<div class="flex justify-between items-center" x-cloak>
-    <div class="flex-wrap">
-        <nav class="flex pb-4" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                <li class="inline-flex items-center">
-                    <a href="/dashboard/gantt-type=job/home=true" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
-                        <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <a href="{% url 'job_prioritization' %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Jobs</a>
-                    </div>
-                </li>
-                <li aria-current="page">
-                    <div class="flex items-center">
-                        <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-                        <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Priority Manager</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
-        <div>
-            <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Priority Management</h1>
-        </div>
-    </div>
-</div>
-<!-- Tabs -->
-<div x-data="{ activeTab: 'tab1' }" class="border-x border-y border-[#e1e3ea80] rounded-xl" x-cloak>
-    <!-- Tabs -->
-    <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
-        <div class="md:flex flex-wrap text-sm md:text-base">
-            <button x-on:click="activeTab = 'tab1'" hx-get="{% url 'job_prioritization' %}"
-                hx-target="#all-jobs-table" hx-trigger="click"
-                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
-                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
-            {% for status_code, status_label in status_filter_dict.items %}
-            <button hx-get="{% url 'job_prioritization' %}?status={{ status_code }}" hx-target="#all-jobs-table"
-                hx-trigger="click" x-on:click="activeTab = '{{ status_code|lower }}'"
-                :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
-                class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
-            {% endfor %}
+    <div class="flex justify-between items-center" x-cloak>
+        <div class="flex-wrap">
+            <nav class="flex pb-4" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                    <li class="inline-flex items-center">
+                        <a href="/dashboard/gantt-type=job/home=true" class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                            <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                            <a href="{% url 'job_prioritization' %}" class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Jobs</a>
+                        </div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                            <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">Priority Manager</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <div>
+                <h1 class="text-2xl font-semibold text-[#181C32] pb-5">Priority Management</h1>
+            </div>
         </div>
     </div>
 
-    <!-- Tab Content -->
-    <div class="bg-white pt-6 rounded-b-xl flex h-screen">
-        <div class="w-full"> <!-- x-show="activeTab === 'tab1'" -->
-            {% partial partial-table-template %}
-        </div>
-    </div>
-</div>
+    {% if jobs %}
+        <!-- Tabs -->
+        <div x-data="{ activeTab: 'tab1' }" class="border-x border-y border-[#e1e3ea80] rounded-xl h-500" x-cloak>
+            <!-- Tabs -->
+            <div class="bg-white pt-7 px-7 border-b border-[#e1e3ea80] rounded-t-xl">
+                <div class="md:flex flex-wrap text-sm md:text-base">
+                    <button x-on:click="activeTab = 'tab1'" hx-get="{% url 'job_prioritization' %}"
+                        hx-target="all-job_prioritizations-table" hx-trigger="click"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === 'tab1','text-[#7E8299]':activeTab != 'tab1'}"
+                        class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">All</button>
+                    {% for status_code, status_label in status_filter_dict.items %}
+                    <button hx-get="{% url 'job_prioritization' %}?status={{ status_code }}" hx-target="all-job_prioritizations-table"
+                        hx-trigger="click" x-on:click="activeTab = '{{ status_code|lower }}'"
+                        :class="{ 'border-b-4 rounded border-[#00B4D8]': activeTab === '{{ status_code|lower }}','text-[#7E8299]':activeTab != '{{ status_code|lower }}'}"
+                        class="mr-2.5 md:mr-12 cursor-pointer focus:outline-none">{{ status_label }}</button>
+                    {% endfor %}
+                </div>
+            </div>
 
+            <!-- Tab Content -->
+            <div class="bg-white pt-6 rounded-b-xl flex">
+                <div class="w-full"> <!-- x-show="activeTab === 'tab1'" -->
+                    {% partial partial-table-template %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="border-x border-y border-[#e1e3ea80] rounded-xl" x-cloak>
+            <div class="flex justify-center items-center h-[650px]">
+                <p class="text-[#7E8299] font-normal text-lg">No Jobs Data found</p>
+            </div>
+        </div>
+    {% endif %}
 {% endblock content %}

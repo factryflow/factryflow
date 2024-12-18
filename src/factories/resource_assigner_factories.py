@@ -4,10 +4,9 @@ from resource_assigner.models import (
     AssigmentRule,
     AssigmentRuleCriteria,
     AssignmentConstraint,
-    Operator,
     TaskResourceAssigment,
 )
-
+from common.models import Operator
 from .job_manager_factories import TaskFactory, WorkCenterFactory
 from .resource_manager_factories import (
     ResourceFactory,

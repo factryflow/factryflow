@@ -1,0 +1,397 @@
+{% load static %}
+<div x-data="queryBuilder({{form_input_fields_with_type|safe}}, {{nested_criteria_data|safe}})" class="mt-4 bg-gray-50">
+    <h2 class="ms-1 font-semibold text-[#5E6278] md:ms-2">Nested Criteria Management</h2>
+    <input type="hidden" name="nestedCriteria" x-bind:value="JSON.stringify(queryGroups)">
+    <input type="hidden" name="deleteObjects" x-bind:value="JSON.stringify(deleteData)">
+
+    <!-- <div class="mb-4">
+        <label for="parentOperator" class="block text-gray-700">Select Operator for Parent Groups:</label>
+        <select x-model="parentOperator" id="parentOperator" class="border border-gray-300 rounded p-2 w-full bg-gray-50 focus:ring-2 focus:ring-blue-500">
+            <option value="AND">And</option>
+            <option value="OR">Or</option>
+        </select>
+    </div> -->
+
+    <div class="space-y-6">
+        <template x-for="(group, index) in queryGroups" :key="index">
+            <div class="border border-gray-300 p-4 rounded-lg bg-white shadow-sm">
+                <div class="flex items-center justify-between mb-6 px-4">
+                    <div class="flex items-center">
+                        <button
+                            type="button"
+                            @click="group.operator = 'AND'" 
+                            :class="{'bg-[#023E8A] text-white': group.operator === 'AND', 'bg-white text-gray-600': group.operator !== 'AND'}"
+                            class="border border-gray-300 rounded-l py-2 px-4 focus:outline-none transition-colors duration-200 ease-in-out"
+                        >
+                            AND
+                        </button>
+                        <button
+                            type="button"
+                            @click="group.operator = 'OR'" 
+                            :class="{'bg-[#023E8A] text-white': group.operator === 'OR', 'bg-white text-gray-600': group.operator !== 'OR'}"
+                            class="border border-gray-300 rounded-r py-2 px-4 focus:outline-none transition-colors duration-200 ease-in-out"
+                        >
+                            OR
+                        </button>
+                    </div>
+                    
+                    <button type="button" @click="removeItem('group', index)" class="ml-3 border border-gray-300 rounded py-1 px-2 flex items-center text-red-600 hover:text-red-800 transition">
+                        <img class="mr-1" src="{% static 'images/delete.svg' %}" alt="Delete" />
+                        <span class="text-md">Delete Group</span>
+                    </button>
+                </div>
+
+                <template x-for="(condition, condIndex) in group.criteria" :key="condIndex">
+                    <div class="flex items-center mb-4 px-4">
+                        <select 
+                            x-model="condition.field" 
+                            @change="updateInputType(condition, condition.field)" 
+                            class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2">
+                            <template x-for="(fieldType, fieldName) in fields" :key="fieldName">
+                                <option :value="fieldName" :selected="condition.field === fieldName" x-text="fieldName"></option>
+                            </template>
+                        </select>
+                        
+                        <select x-model="condition.operator" class="borde rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2">
+                            <option value="equals">Is equal to</option>
+                            <option value="not_equals">Does not equal</option>
+                            <option value="starts_with">Is Starts With</option>
+                            <option value="ends_with">Is Ends With</option>
+                            <option value="contains">Is Contains</option>
+                            <option value="gt">Is bigger than</option>
+                            <option value="lt">Is Less than</option>
+                            <option value="ib">In Between</option>
+                        </select>
+
+                        <template x-if="condition.type === 'textarea'">
+                            <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required></textarea>
+                        </template>
+                        <template x-if="condition.type !== 'textarea'">
+                            <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required/>
+                        </template>
+
+                        <button type="button" @click="removeItem('condition', index, null, null, condIndex)" class="ml-2 text-red-600 hover:text-red-800 transition">
+                            <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                        </button>
+                    </div>
+                </template>
+
+                <div class="flex items-center mb-4 px-4">
+                    <button type="button" @click="addItem('condition', index)" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Criteria</button>
+                    <button type="button" @click="addItem('group', index)" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Group</button>
+                </div>
+
+                <template x-for="(subGroup, subIndex) in group.innerGroups" :key="subIndex">
+                    <div class="border border-gray-200 p-4 rounded-lg ml-4 bg-gray-50 shadow-sm mt-2">
+                        <div class="flex items-center justify-between mb-4 px-4">
+                            <div class="flex items-center">
+                                <button 
+                                    type="button"
+                                    @click="subGroup.operator = 'AND'" 
+                                    :class="{'bg-[#023E8A] text-white': subGroup.operator === 'AND', 'bg-white text-gray-600': subGroup.operator !== 'AND'}"
+                                    class="border border-gray-300 rounded-l py-2 px-4 focus:outline-none transition-colors duration-200 ease-in-out"
+                                >
+                                    AND
+                                </button>
+                                <button 
+                                    type="button"
+                                    @click="subGroup.operator = 'OR'" 
+                                    :class="{'bg-[#023E8A] text-white': subGroup.operator === 'OR', 'bg-white text-gray-600': subGroup.operator !== 'OR'}"
+                                    class="border border-gray-300 rounded-r py-2 px-4 focus:outline-none transition-colors duration-200 ease-in-out"
+                                >
+                                    OR
+                                </button>
+                            </div>
+                            <button type="button" @click="removeItem('group', index, subIndex, null)" class="ml-3 border border-gray-300 rounded py-1 px-2 flex items-center text-red-600 hover:text-red-800 transition">
+                                <img class="mr-1" src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                <span class="text-md">Delete Group</span>
+                            </button>
+                        </div>
+
+                        <template x-for="(condition, condIndex) in subGroup.criteria" :key="condIndex">
+                            <div class="flex items-center mb-4 px-4">
+                                <select 
+                                    x-model="condition.field" 
+                                    @change="updateInputType(condition, condition.field)" 
+                                    class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2">
+                                    <template x-for="(fieldType, fieldName) in fields" :key="fieldName">
+                                        <option :value="fieldName" :selected="condition.field === fieldName" x-text="fieldName"></option>
+                                    </template>
+                                </select>
+                                
+                                <select x-model="condition.operator" class="borde rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2">
+                                    <option value="equals">Is equal to</option>
+                                    <option value="not_equals">Does not equal</option>
+                                    <option value="starts_with">Is Starts With</option>
+                                    <option value="ends_with">Is Ends With</option>
+                                    <option value="contains">Is Contains</option>
+                                    <option value="gt">Is bigger than</option>
+                                    <option value="lt">Is Less than</option>
+                                    <option value="ib">In Between</option>
+                                </select>
+                                
+                                <template x-if="condition.type === 'textarea'">
+                                    <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required></textarea>
+                                </template>
+                                <template x-if="condition.type !== 'textarea'">
+                                    <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required/>
+                                </template>
+
+                                <button type="button" @click="removeItem('condition', index, subIndex, null, condIndex)" class="ml-2 text-red-600 hover:text-red-800 transition">
+                                    <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                </button>
+                            </div>
+                        </template>
+
+                        <div class="flex items-center mb-4 px-4">
+                            <button type="button" @click="addItem('condition', index, subIndex)" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Criteria</button>
+                            <button type="button" @click="addItem('group', index, subIndex)" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Group</button>
+                        </div>
+
+                        <template x-for="(innerGroup, innerIndex) in subGroup.innerGroups" :key="innerIndex">
+                            <div class="border border-gray-200 p-4 rounded-lg ml-4 bg-gray-50 shadow-sm mt-4">
+                                <div class="flex items-center justify-between mb-4 px-4">
+                                    <div class="flex items-center">
+                                        <button 
+                                            type="button"
+                                            @click="innerGroup.operator = 'AND'" 
+                                            :class="{'bg-[#023E8A] text-white': innerGroup.operator === 'AND', 'bg-white text-gray-600': innerGroup.operator !== 'AND'}"
+                                            class="border border-gray-300 rounded-l py-2 px-4 focus:outline-none transition-colors duration-200 ease-in-out"
+                                        >
+                                            AND
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            @click="innerGroup.operator = 'OR'" 
+                                            :class="{'bg-[#023E8A] text-white': innerGroup.operator === 'OR', 'bg-white text-gray-600': innerGroup.operator !== 'OR'}"
+                                            class="border border-gray-300 rounded-r py-2 px-4 focus:outline-none transition-colors duration-200 ease-in-out"
+                                        >
+                                            OR
+                                        </button>
+                                    </div>
+                                    <button type="button" @click="removeItem('group', index, subIndex, innerIndex)" class="ml-3 border border-gray-300 rounded py-1 px-2 flex items-center text-red-600 hover:text-red-800 transition">
+                                        <img class="mr-1" src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                        <span class="text-md">Delete Group</span>
+                                    </button>
+                                </div>
+
+                                <template x-for="(condition, condIndex) in innerGroup.criteria" :key="condIndex">
+                                    <div class="flex items-center mb-4 px-4">
+                                        <select 
+                                            x-model="condition.field" 
+                                            @change="updateInputType(condition, condition.field)" 
+                                            class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2">
+                                            <template x-for="(fieldType, fieldName) in fields" :key="fieldName">
+                                                <option :value="fieldName" :selected="condition.field === fieldName" x-text="fieldName"></option>
+                                            </template>
+                                        </select>
+                                        
+                                        <select x-model="condition.operator" class="borde rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2">
+                                            <option value="equals">Is equal to</option>
+                                            <option value="not_equals">Does not equal</option>
+                                            <option value="starts_with">Is Starts With</option>
+                                            <option value="ends_with">Is Ends With</option>
+                                            <option value="contains">Is Contains</option>
+                                            <option value="gt">Is bigger than</option>
+                                            <option value="lt">Is Less than</option>
+                                            <option value="ib">In Between</option>
+                                        </select>
+                                        
+                                        <template x-if="condition.type === 'textarea'">
+                                            <textarea x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required></textarea>
+                                        </template>
+                                        <template x-if="condition.type !== 'textarea'">
+                                            <input :type="condition.type || 'text'" x-model="condition.value" class="border rounded p-2 w-1/3 bg-gray-50 focus:ring-2 border-[#E1E3EA] text-gray-900 text-sm focus:ring-blue-500 focus-visible:outline-none mr-2" placeholder="Value" required/>
+                                        </template>
+
+                                        <button type="button" @click="removeItem('condition', index, subIndex, innerIndex, condIndex)" class="ml-2 text-red-600 hover:text-red-800 transition">
+                                            <img src="{% static 'images/delete.svg' %}" alt="Delete" />
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <button type="button" @click="addItem('condition', index, subIndex, innerIndex)" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Criteria</button>
+                                <button type="button" @click="addItem('group', index, subIndex, innerIndex)" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Group</button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+
+    <div class="flex justify-end mt-6">
+        <button type="button" @click="addItem('group')" class="text-sm mr-4 font-semibold px-3 py-1 border border-[#5E6278] text-[#5E6278] bg-transparent hover:bg-[#023E8A] hover:text-white rounded-md transition-all duration-200">Add Group</button>
+    </div>
+</div>
+
+<script>
+    function queryBuilder(initialFields = {}, initialqueryGroups = []) {
+        return {
+            parentOperator: 'AND',
+            queryGroups: initialqueryGroups.length ? initialqueryGroups : [{
+                id: null,
+                operator: 'AND',
+                criteria: [{
+                    id: null,
+                    field: Object.keys(initialFields)[0] || '',
+                    operator: 'equals',
+                    value: ''
+                }],
+                innerGroups: []
+            }],
+            fields: initialFields,
+            deleteData: {
+                groupIds: [],
+                criteriaIds: []
+            },
+
+            addItem(type, groupIndex = null, subIndex = null, innerIndex = null) {
+                // Function to add a group or condition at any level
+                if (type === 'group') {
+                    if (groupIndex !== null && subIndex !== null && innerIndex !== null) {
+                        // Adding an inner group to a nested inner group
+                        this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].innerGroups.push({
+                            id: null,
+                            operator: 'AND',
+                            criteria: [{
+                                id: null,
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
+                                value: ''
+                            }],
+                            innerGroups: []
+                        });
+                    } else if (groupIndex !== null && subIndex !== null) {
+                        // Adding a group to a nested group
+                        this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups.push({
+                            id: null,
+                            operator: 'AND',
+                            criteria: [{
+                                id: null,
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
+                                value: ''
+                            }],
+                            innerGroups: []
+                        });
+                    } else if (groupIndex !== null) {
+                        // Adding a group to the main group
+                        this.queryGroups[groupIndex].innerGroups.push({
+                            id: null,
+                            operator: 'AND',
+                            criteria: [{
+                                id: null,
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
+                                value: ''
+                            }],
+                            innerGroups: []
+                        });
+                    } else {
+                        // Adding a top-level group
+                        this.queryGroups.push({
+                            id: null,
+                            operator: 'AND',
+                            criteria: [{
+                                id: null,
+                                field: Object.keys(this.fields)[0] || '',
+                                operator: 'equals',
+                                value: ''
+                            }],
+                            innerGroups: []
+                        });
+                    }
+                } else if (type === 'condition') {
+                    if (groupIndex !== null && subIndex !== null && innerIndex !== null) {
+                        // Adding a condition to a nested inner group
+                        this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.push({
+                            id: null,
+                            field: Object.keys(this.fields)[0] || '',
+                            operator: 'equals',
+                            value: ''
+                        });
+                    } else if (groupIndex !== null && subIndex !== null) {
+                        // Adding a condition to a nested group
+                        this.queryGroups[groupIndex].innerGroups[subIndex].criteria.push({
+                            id: null,
+                            field: Object.keys(this.fields)[0] || '',
+                            operator: 'equals',
+                            value: ''
+                        });
+                    } else if (groupIndex !== null) {
+                        // Adding a condition to a main group
+                        this.queryGroups[groupIndex].criteria.push({
+                            id: null,
+                            field: Object.keys(this.fields)[0] || '',
+                            operator: 'equals',
+                            value: ''
+                        });
+                    }
+                }
+            },
+
+            removeItem(type, groupIndex, subIndex = null, innerIndex = null, condIndex = null) {
+                // Function to remove a group or condition at any level
+                if (type === 'group') {
+                    if (groupIndex !== null && subIndex !== null && innerIndex !== null) {
+                        // Remove a nested inner group
+                        const group = this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups.splice(innerIndex, 1)[0];
+                        if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        console.log(this.deleteData);
+                    } else if (groupIndex !== null && subIndex !== null) {
+                        // Remove a nested group
+                        const group = this.queryGroups[groupIndex].innerGroups.splice(subIndex, 1)[0];
+                        if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        console.log(this.deleteData);
+                    } else if (groupIndex !== null) {
+                        // Remove a main group
+                        const group = this.queryGroups.splice(groupIndex, 1)[0];
+                        if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        console.log(this.deleteData);
+                    }
+                } else if (type === 'condition') {
+                    if (groupIndex !== null && subIndex !== null && innerIndex !== null && condIndex !== null) {
+                        // Remove a condition from a nested inner group
+                        const condition = this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.splice(condIndex, 1)[0];
+                        if (condition && condition.id) this.deleteData.criteriaIds.push(condition.id);
+                        if (this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups[innerIndex].criteria.length === 0) {
+                            const group = this.queryGroups[groupIndex].innerGroups[subIndex].innerGroups.splice(innerIndex, 1)[0];
+                            if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        }
+                        console.log(this.deleteData);
+                    } else if (groupIndex !== null && subIndex !== null && condIndex !== null) {
+                        // Remove a condition from a nested group
+                        const condition = this.queryGroups[groupIndex].innerGroups[subIndex].criteria.splice(condIndex, 1)[0];
+                        if (condition && condition.id) this.deleteData.criteriaIds.push(condition.id);
+                        if (this.queryGroups[groupIndex].innerGroups[subIndex].criteria.length === 0) {
+                            const group = this.queryGroups[groupIndex].innerGroups.splice(subIndex, 1)[0];
+                            if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        }
+                        console.log(this.deleteData);
+                    } else if (groupIndex !== null && condIndex !== null) {
+                        // Remove a condition from the main group
+                        const condition = this.queryGroups[groupIndex].criteria.splice(condIndex, 1)[0];
+                        if (condition && condition.id) this.deleteData.criteriaIds.push(condition.id);
+                        if (this.queryGroups[groupIndex].criteria.length === 0) {
+                            const group = this.queryGroups.splice(groupIndex, 1)[0];
+                            if (group && group.id) this.deleteData.groupIds.push(group.id);
+                        }
+                        console.log(this.deleteData);
+                    }
+                }
+            },
+
+            updateInputType(condition, fieldName) {
+                const type = this.fields[fieldName] || 'text'; 
+                condition.type = type;
+            },
+
+            updateHiddenInput() {
+                // Update the hidden input fields with the serialized data
+                document.querySelector('input[name="nestedCriteria"]').value = JSON.stringify(this.queryGroups);
+                document.querySelector('input[name="deleteObjects"]').value = JSON.stringify(this.deleteData);
+            }
+        }
+    }
+</script>

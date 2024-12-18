@@ -93,3 +93,17 @@ jobs:
             -u ${{ secrets.SP_CLIENT_ID }} \
             -p ${{ secrets.SP_CLIENT_SECRET }} \
             --tenant ${{ secrets.SP_TENANT_ID }} --output none
+
+      - name: 'Update Web App with New Image'
+        run: |
+          az webapp config container set \
+            --name factryflow \
+            --resource-group rg-factryflow \
+            --container-image-name ${{ env.LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
+            --container-registry-url https://${{ env.LOGIN_SERVER }} \
+            --container-registry-user ${{ env.USERNAME }} \
+            --container-registry-password ${{ secrets.ACR_TOKEN_PASSWORD }}
+
+      - name: 'Restart Azure Web App'
+        run: |
+          az webapp restart --name factryflow --resource-group rg-factryflow

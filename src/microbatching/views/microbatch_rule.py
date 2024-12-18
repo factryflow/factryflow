@@ -1,5 +1,3 @@
-from common.models import Operator
-from common.utils.services import get_model_fields
 from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
@@ -50,16 +48,7 @@ MICROBATCH_RULE_MODEL_RELATION_FIELDS = {
         "related_name": "microbatch_rule",
         "headers": ["ID", "field", "operator", "value"],
         "fields": ["id", "field", "operator", "value"],
-        "select_fields": {
-            "field": dict(
-                get_model_fields(
-                    "Task", "job_manager", ["item", "task_type", "job", "work_center"]
-                )
-            ),
-            "operator": dict(Operator.choices),
-        },
-        "relationship_fields": "microbatch_rule",
-        "show_edit_actions": True,
+        "show_edit_actions": False,
     },
     "matching_tasks": {
         "model": MicrobatchRuleTaskMatch,
@@ -162,7 +151,7 @@ def match_rules_with_tasks(request):
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
 
-        result = create_microbatch_rule_matches(tasks)
+        result = create_microbatch_rule_matches()
 
         response = HttpResponse(status=204)
         add_notification_headers(

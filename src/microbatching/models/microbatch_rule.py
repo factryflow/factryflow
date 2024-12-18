@@ -1,4 +1,4 @@
-from common.models import BaseModel, BaseModelWithExtras, Operator
+from common.models import BaseCriteria, BaseModel, BaseModelWithExtras
 from django.core.exceptions import ValidationError
 from django.db import models
 from job_manager.models.task import Task
@@ -23,7 +23,7 @@ class MicrobatchRule(BaseModelWithExtras):
         return self.name
 
 
-class MicrobatchRuleCriteria(BaseModel):
+class MicrobatchRuleCriteria(BaseCriteria):
     """
     To assign microbatch rules to tasks, we need to be able to filter tasks by their fields.
     This model represents the criteria for filtering tasks.
@@ -33,11 +33,6 @@ class MicrobatchRuleCriteria(BaseModel):
     microbatch_rule = models.ForeignKey(
         MicrobatchRule, on_delete=models.CASCADE, related_name="criteria"
     )
-    field = models.CharField(max_length=100)
-    operator = models.CharField(
-        max_length=20, choices=Operator.choices, default=Operator.EQUALS
-    )
-    value = models.CharField(max_length=254, blank=True, null=True)
 
     history = HistoricalRecords(table_name="microbatch_rule_criteria_history")
 
@@ -51,8 +46,8 @@ class MicrobatchRuleTaskMatch(BaseModel):
     one task can match with multiple rules.
     """
 
-    task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
-    microbatch_rule = models.ForeignKey(MicrobatchRule, on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    microbatch_rule = models.ForeignKey(MicrobatchRule, on_delete=models.CASCADE)
     is_applied = models.BooleanField(default=False)
 
     history = HistoricalRecords(table_name="microbatch_rule_task_match_history")
