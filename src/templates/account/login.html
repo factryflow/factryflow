@@ -24,11 +24,8 @@
             <form
               id="login-form"
               class="space-y-4"
-              hx-post="{% url 'account_login' %}?next=/chart/"
-              hx-trigger="submit"
-              hx-headers='{"Cache-Control": "no-cache"}'
-              hx-push-url="true"
-              hx-target="body"
+              method="post"
+              action="{% url 'account_login' %}?next=/chart/"
               >
               {% csrf_token %}
 
@@ -116,7 +113,6 @@
 
               <!-- Sign In Button -->
               <button
-                href="{% url 'dashboard' gantt_type='job' home='true' %}"
                 type="submit"
                 class="w-full text-white bg-[#023E8A] focus:ring-4 focus:outline-none focus:ring-primary-300  rounded-lg font-semibold text-base px-5 py-2.5 text-center"
               >
@@ -127,9 +123,7 @@
               <p class="text-sm font-medium text-gray-500 text-center">
                 Already have an Account?
                 <a
-                  hx-get="{% url 'account_signup' %}"
-                  hx-target="body"
-                  hx-push-url="true"
+                  href="{% url 'account_signup' %}"
                   class="font-base text-[#023E8A] hover:underline"
                   >Sign up</a
                 >
