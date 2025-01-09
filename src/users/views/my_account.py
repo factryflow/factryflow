@@ -19,7 +19,6 @@ class MyAccountView(LoginRequiredMixin, View):
         profile_form = UserProfileForm(instance=request.user, user=request.user)
         password_form = PasswordChangeForm(user=request.user)
         
-        # Add styling and Alpine.js attributes to password form fields
         base_class = "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
         for field in password_form.fields.values():
             field.widget.attrs.update({
@@ -83,14 +82,13 @@ class ChangePasswordView(PasswordChangeView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        # Add styling and Alpine.js attributes to password form fields
         base_class = "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3"
         for field in form.fields.values():
             field.widget.attrs.update({
                 "class": base_class
             })
             
-        # Add Alpine.js bindings for password validation
+        # Alpine.js bindings for password validation
         form.fields['new_password1'].widget.attrs.update({
             "x-model": "newPassword",
             "@input": "validatePasswords()"
@@ -103,10 +101,7 @@ class ChangePasswordView(PasswordChangeView):
 
     def form_valid(self, form):
         try:
-            # Save the form first
             form.save()
-            
-            # Update session hash to prevent session invalidation
             update_session_auth_hash(self.request, form.user)
             
             messages.success(self.request, "Password changed successfully!")

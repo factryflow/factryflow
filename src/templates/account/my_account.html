@@ -9,137 +9,169 @@
 
 <div class="flex-wrap">
     <nav class="flex pb-4" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-        <li class="inline-flex items-center">
-        <a href="/"
-            class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
-            <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
-        </a>
-        </li>
-        <li>
-        <div class="flex items-center">
-            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-            <a class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Settings</a>
-        </div>
-        </li>
-        <li>
-        <div class="flex items-center">
-            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-            <a
-            class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">User</a>
-        </div>
-        </li>
-        <li aria-current="page">
-        <div class="flex items-center">
-            <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
-            <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">My Account</span>
-        </div>
-        </li>
-    </ol>
+        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <li class="inline-flex items-center">
+                <a href="/"
+                    class="inline-flex items-center text-xs font-semibold text-[#5E6278]">
+                    <img class="h-4 w-4" src="{% static 'images/home-icon.svg' %}" />
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <a class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">Settings</a>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <a class="ms-1 text-xs font-semibold text-[#5E6278] md:ms-2">User</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <img class="h-4 w-4" src="{% static 'images/right.svg' %}" />
+                    <span class="ms-1 text-xs font-semibold text-[#A1A5B7] md:ms-2">My Account</span>
+                </div>
+            </li>
+        </ol>
     </nav>
 </div>
 
-<!-- User Details Form -->
-<div class="rounded-xl bg-white px-8 py-8 w-full mb-6">
-    <div>
-        <h1 class="text-xl font-semibold text-[#5E6278] pb-8">My Account Details</h1>
+<div x-data="{ selectedTab: 'accountDetails' }" class="w-full">
+    <div @keydown.right.prevent="$focus.wrap().next()" @keydown.left.prevent="$focus.wrap().previous()" 
+        class="flex gap-4 overflow-x-auto border-b-2 border-gray-300 dark:border-slate-700 mb-6" 
+        role="tablist" aria-label="Account settings options">
+
+        <!-- Account Details Tab -->
+        <button @click="selectedTab = 'accountDetails'" 
+                :aria-selected="selectedTab === 'accountDetails'" 
+                :tabindex="selectedTab === 'accountDetails' ? '0' : '-1'"
+                :class="selectedTab === 'accountDetails' 
+                    ? 'font-bold text-[#023E8A] border-b-2 border-[#023E8A]' 
+                    : 'text-[#181C32] font-small border-b-2 border-transparent hover:border-[#F1F1F2] hover:text-[#023E8A]'" 
+                class="h-min px-4 py-3 text-md" type="button" role="tab" aria-controls="tabpanelAccountDetails">
+            Account Details
+        </button>
+
+        <!-- Security Tab -->
+        <button @click="selectedTab = 'security'" 
+                :aria-selected="selectedTab === 'security'" 
+                :tabindex="selectedTab === 'security' ? '0' : '-1'"
+                :class="selectedTab === 'security' 
+                    ? 'font-bold text-[#023E8A] border-b-2 border-[#023E8A]' 
+                    : 'text-[#181C32] font-small border-b-2 border-transparent hover:border-[#F1F1F2] hover:text-[#023E8A]'" 
+                class="h-min px-4 py-3 text-md" type="button" role="tab" aria-controls="tabpanelSecurity">
+            Security
+        </button>
     </div>
-    <form method="post" action="{% url 'users:update_profile' %}">
-        {% csrf_token %}
-        <div class="grid gap-y-6 gap-x-7 mb-6 md:grid-cols-2">
-            {% for field in profile_form %}
+
+    <!-- Account Details Panel -->
+    <div x-show="selectedTab === 'accountDetails'" id="tabpanelAccountDetails" role="tabpanel" aria-label="Account Details">
+        <div class="rounded-xl bg-white px-8 py-8 w-full mb-6">
             <div>
-                <label for="{{ field.id_for_label }}"
-                        class="block mb-2.5 text-sm text-[#181C32] font-semibold">
-                    {{ field.label }} {% if field.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
-                </label>
-                {{ field }}
-                {% if field.errors %}
-                    {% for error in field.errors %}
-                        <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
+                <h1 class="text-xl font-semibold text-[#5E6278] pb-8">My Account Details</h1>
             </div>
-            {% endfor %}
-        </div>
+            <form method="post" action="{% url 'users:update_profile' %}">
+                {% csrf_token %}
+                <div class="grid gap-y-6 gap-x-7 mb-6 md:grid-cols-2">
+                    {% for field in profile_form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}"
+                                class="block mb-2.5 text-sm text-[#181C32] font-semibold">
+                            {{ field.label }} {% if field.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
 
-        <div class="flex justify-left mt-6 space-x-4">
-            <a href="{% url 'dashboard' home='true' gantt_type='job' %}"
-                class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                Cancel
-            </a>
-            <button type="submit"
-                    class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                Save Profile
-            </button>
+                <div class="flex justify-left mt-6 space-x-4">
+                    <a href="{% url 'dashboard' home='true' gantt_type='job' %}"
+                        class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        Save Profile
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
-
-<!-- Password Change Form -->
-<div class="rounded-xl bg-white px-8 py-8 w-full" x-data="passwordValidation()">
-    <div>
-        <h2 class="text-xl font-semibold text-[#5E6278] pb-8">Change Password</h2>
     </div>
-    <form method="post" action="{% url 'users:change_password' %}" @submit.prevent="validateForm($event)">
-        {% csrf_token %}
-        <div class="grid gap-y-6 gap-x-7 mb-6 md:grid-cols-2">
-            <!-- Old Password -->
-            <div>
-                <label for="{{ password_form.old_password.id_for_label }}"
-                        class="block mb-2.5 text-sm text-[#181C32] font-semibold">
-                    {{ password_form.old_password.label }} {% if password_form.old_password.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
-                </label>
-                {{ password_form.old_password }}
-                {% if password_form.old_password.errors %}
-                    {% for error in password_form.old_password.errors %}
-                        <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <!-- New Password -->
-            <div>
-                <label for="{{ password_form.new_password1.id_for_label }}"
-                        class="block mb-2.5 text-sm text-[#181C32] font-semibold">
-                    {{ password_form.new_password1.label }} {% if password_form.new_password1.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
-                </label>
-                {{ password_form.new_password1 }}
-                {% if password_form.new_password1.errors %}
-                    {% for error in password_form.new_password1.errors %}
-                        <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-                <p x-show="passwordErrors.length" class="text-[#FF4D4F] text-sm mt-2" x-text="passwordErrors.join(', ')"></p>
-            </div>
-            <!-- Confirm New Password -->
-            <div>
-                <label for="{{ password_form.new_password2.id_for_label }}"
-                        class="block mb-2.5 text-sm text-[#181C32] font-semibold">
-                    {{ password_form.new_password2.label }} {% if password_form.new_password2.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
-                </label>
-                {{ password_form.new_password2 }}
-                {% if password_form.new_password2.errors %}
-                    {% for error in password_form.new_password2.errors %}
-                        <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-                <p x-show="passwordMismatch" class="text-[#FF4D4F] text-sm mt-2">Passwords do not match.</p>
-            </div>
-        </div>
 
-        <div class="flex justify-left mt-6 space-x-4">
-            <a href="{% url 'dashboard' home='true' gantt_type='job' %}"
-                class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
-                Cancel
-            </a>
-            <button type="submit"
-                    :disabled="passwordMismatch || passwordErrors.length > 0"
-                    class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center"
-                    :class="{ 'opacity-50 cursor-not-allowed': passwordMismatch || passwordErrors.length > 0 }">
-                Change Password
-            </button>
+    <!-- Security Panel -->
+    <div x-show="selectedTab === 'security'" id="tabpanelSecurity" role="tabpanel" aria-label="Security Settings">
+        <div class="rounded-xl bg-white px-8 py-8 w-full" x-data="passwordValidation()">
+            <div>
+                <h2 class="text-xl font-semibold text-[#5E6278] pb-8">Change Password</h2>
+            </div>
+            <form method="post" action="{% url 'users:change_password' %}" @submit.prevent="validateForm($event)">
+                {% csrf_token %}
+                <div class="grid gap-y-6 gap-x-7 mb-6 md:grid-cols-2">
+                    <!-- Old Password -->
+                    <div>
+                        <label for="{{ password_form.old_password.id_for_label }}"
+                                class="block mb-2.5 text-sm text-[#181C32] font-semibold">
+                            {{ password_form.old_password.label }} {% if password_form.old_password.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
+                        </label>
+                        {{ password_form.old_password }}
+                        {% if password_form.old_password.errors %}
+                            {% for error in password_form.old_password.errors %}
+                                <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <!-- New Password -->
+                    <div>
+                        <label for="{{ password_form.new_password1.id_for_label }}"
+                                class="block mb-2.5 text-sm text-[#181C32] font-semibold">
+                            {{ password_form.new_password1.label }} {% if password_form.new_password1.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
+                        </label>
+                        {{ password_form.new_password1 }}
+                        {% if password_form.new_password1.errors %}
+                            {% for error in password_form.new_password1.errors %}
+                                <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        <p x-show="passwordErrors.length" class="text-[#FF4D4F] text-sm mt-2" x-text="passwordErrors.join(', ')"></p>
+                    </div>
+                    <!-- Confirm New Password -->
+                    <div>
+                        <label for="{{ password_form.new_password2.id_for_label }}"
+                                class="block mb-2.5 text-sm text-[#181C32] font-semibold">
+                            {{ password_form.new_password2.label }} {% if password_form.new_password2.field.required %}<span class="text-[#FF4D4F]">*</span>{% endif %}
+                        </label>
+                        {{ password_form.new_password2 }}
+                        {% if password_form.new_password2.errors %}
+                            {% for error in password_form.new_password2.errors %}
+                                <p class="text-[#FF4D4F] text-sm mt-2">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        <p x-show="passwordMismatch" class="text-[#FF4D4F] text-sm mt-2">Passwords do not match.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-left mt-6 space-x-4">
+                    <a href="{% url 'dashboard' home='true' gantt_type='job' %}"
+                        class="text-[#181C32] bg-[#F1F1F2] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            :disabled="passwordMismatch || passwordErrors.length > 0"
+                            class="text-white bg-[#023E8A] focus:ring-4 font-semibold rounded-md text-base w-full sm:w-auto px-6 py-3 text-center"
+                            :class="{ 'opacity-50 cursor-not-allowed': passwordMismatch || passwordErrors.length > 0 }">
+                        Change Password
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
 <script>
