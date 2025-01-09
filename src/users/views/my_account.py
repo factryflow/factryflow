@@ -36,8 +36,8 @@ class MyAccountView(LoginRequiredMixin, View):
         })
         
         return render(request, self.template_name, {
-            'profile_form': profile_form,
-            'password_form': password_form
+            "profile_form": profile_form,
+            "password_form": password_form
         })
 
 class UpdateProfileView(LoginRequiredMixin, View):
@@ -52,9 +52,9 @@ class UpdateProfileView(LoginRequiredMixin, View):
             try:
                 # Only update first_name and last_name
                 user = request.user
-                user.first_name = form.cleaned_data['first_name']
-                user.last_name = form.cleaned_data['last_name']
-                user.save(update_fields=['first_name', 'last_name'])
+                user.first_name = form.cleaned_data["first_name"]
+                user.last_name = form.cleaned_data["last_name"]
+                user.save(update_fields=["first_name", "last_name"])
                 
                 messages.success(request, "Profile updated successfully!")
                 return redirect('users:my_account')
@@ -68,8 +68,8 @@ class UpdateProfileView(LoginRequiredMixin, View):
         # Re-render the form with errors and preserved data
         password_form = PasswordChangeForm(user=request.user)
         return render(request, self.template_name, {
-            'profile_form': form,
-            'password_form': password_form
+            "profile_form": form,
+            "password_form": password_form
         })
 
 class ChangePasswordView(PasswordChangeView):
