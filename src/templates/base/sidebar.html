@@ -242,7 +242,7 @@
           {% with menu_item_id='scheduler_settings' menu_item_name='Scheduler' menu_item_url="/settings" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
-          {% with menu_item_id='account_settings' menu_item_name='My Account' menu_item_url="/users/change-password" %}
+          {% with menu_item_id='account_settings' menu_item_name='My Account' menu_item_url="/users/my-account" %}
             {% partial _dropdown_menu_item %}
           {% endwith %}
           {% if user|can:'view_user' %}
