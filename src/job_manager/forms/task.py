@@ -1,13 +1,11 @@
 from django import forms
+from resource_assigner.models import AssignmentConstraint
 
 from job_manager.models import (
     Task,
     TaskType,
     WorkCenter,
 )
-
-from resource_assigner.models import AssignmentConstraint
-
 
 # -----------------------------------------------------------------------------
 # WorkCenter Forms
@@ -154,7 +152,7 @@ class TaskForm(forms.ModelForm):
             ),
             "task_status": forms.Select(
                 attrs={
-                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-400 font-light text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-gray-100"
                 }
             ),
             "work_center": forms.Select(
