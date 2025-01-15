@@ -154,7 +154,9 @@ class TaskForm(forms.ModelForm):
             ),
             "task_status": forms.Select(
                 attrs={
-                    "class": "pointer-events-none cursor-not-allowed border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit"
+                    "class": "border border-[#E1E3EA] text-gray-900 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-inherit",
+                    "disabled": "disabled",
+                    "readonly": "readonly",
                 }
             ),
             "work_center": forms.Select(
