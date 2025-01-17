@@ -1,39 +1,195 @@
-<div style="position:relative; max-height: 75vh; overflow-y: auto;" class="gantt bg-white p-6 rounded-lg shadow-xl" id="GanttChartDIV"></div>
+<div class="gantt bg-white p-6 rounded-lg shadow-xl">
+    <h1 class="text-2xl pb-4 font-semibold text-[#181C32]">Resource Gantt Chart</h1>
+    <!-- Loading Spinner - Moved outside scrollable container -->
+    <div id="ganttLoadingForResource" class="relative inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#023E8A]"></div>
+    </div>
+    <div style="position:relative; max-height: calc(75vh - 4rem); overflow-y: auto;" id="ResourceGanttChartDIV">
+        <div id="GanttChartForResource" style="position: relative;">
+            <div id="resourceGanttContent"></div>
+        </div>
+    </div>
+</div>
 
 <script>
+    // Global variables for virtualization
+    let allResourceTasks = [];
+    let resourceGanttInstance = null;
+    let isResourceLoading = false;
+    const RESOURCE_ROW_HEIGHT = 40; // Approximate height of each task row
+    const RESOURCE_BUFFER_SIZE = 40; // Number of items to render above and below viewport
+    const RESOURCE_VIEWPORT_ITEMS = 40; // Approximate number of items visible in viewport
+    let currentResourceStartIndex = 0;
+    let lastResourceScrollTop = 0;
 
-    var g = new JSGantt.GanttChart(document.getElementById('GanttChartDIV'), 'day');
+    // Hide loading initially since the div starts empty
+    document.getElementById('ganttLoadingForResource').style.display = 'none';
 
-    g.setOptions({
-        vCaptionType: 'Complete',  // Set to Show Caption : None,Caption,Resource,Duration,Complete,     
-        vQuarterColWidth: 36,
-        vDateTaskDisplayFormat: 'day dd month yyyy', // Shown in tool tip box
-        vDayMajorDateDisplayFormat: 'mon yyyy - Week ww',// Set format to dates in the "Major" header of the "Day" view
-        vWeekMinorDateDisplayFormat: 'dd mon', // Set format to display dates in the "Minor" header of the "Week" view
-        vLang: 'en',
-        vShowTaskInfoLink: 1, // Show link in tool tip (0/1)
-        vShowEndWeekDate: 0,  // Show/Hide the date for the last day of the week in header for daily
-        vShowEndDate: 0,
-        vShowStartDate: 0,
-        vShowComp: 0,
-        vShowTaskInfoComp: 0,
-        vUseSingleCell: 10000, // Set the threshold cell per table row (Helps performance for large data.
-        vFormatArr: ['Day', 'Week', 'Month', 'Quarter'], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers,
+    function initializeResourceGantt() {
+        var g = new JSGantt.GanttChart(document.getElementById('resourceGanttContent'), 'day');
+        resourceGanttInstance = g;
 
-        vMinGpLen: 20,
+        g.setOptions({
+            vCaptionType: 'Complete',
+            vQuarterColWidth: 36,
+            vDateTaskDisplayFormat: 'day dd month yyyy',
+            vDayMajorDateDisplayFormat: 'mon yyyy - Week ww',
+            vWeekMinorDateDisplayFormat: 'dd mon',
+            vLang: 'en',
+            vShowTaskInfoLink: 1,
+            vShowEndWeekDate: 0,
+            vShowEndDate: 0,
+            vShowStartDate: 0,
+            vShowComp: 0,
+            vShowTaskInfoComp: 0,
+            vUseSingleCell: 10000,
+            vFormatArr: ['Day', 'Week', 'Month', 'Quarter'],
+            vMinGpLen: 20,
+        });
+
+        return g;
+    }
+
+    function getVisibleResourceRange(scrollTop) {
+        // Calculate the start index based on scroll position
+        const estimatedStartIndex = Math.floor(scrollTop / RESOURCE_ROW_HEIGHT);
+        const startIndex = Math.max(0, estimatedStartIndex - RESOURCE_BUFFER_SIZE);
+        const endIndex = Math.min(
+            allResourceTasks.length,
+            estimatedStartIndex + RESOURCE_VIEWPORT_ITEMS + (2 * RESOURCE_BUFFER_SIZE)
+        );
+        
+        return { startIndex, endIndex };
+    }
+
+    function drawResourceGanttChart(tasks) {
+        if (isResourceLoading) return;
+        isResourceLoading = true;
+
+        try {
+            // Clear and reinitialize
+            document.getElementById('resourceGanttContent').innerHTML = '';
+            resourceGanttInstance = initializeResourceGantt();
+
+            // Set container height for proper scrolling
+            const totalHeight = allResourceTasks.length * RESOURCE_ROW_HEIGHT;
+            document.getElementById('GanttChartForResource').style.height = `${totalHeight}px`;
+            document.getElementById('resourceGanttContent').style.position = 'absolute';
+            document.getElementById('resourceGanttContent').style.width = '100%';
+            document.getElementById('resourceGanttContent').style.top = `${currentResourceStartIndex * RESOURCE_ROW_HEIGHT}px`;
+
+            // Add visible tasks
+            tasks.forEach(task => {
+                resourceGanttInstance.AddTaskItemObject(task);
+            });
+
+            resourceGanttInstance.Draw();
+        } finally {
+            isResourceLoading = false;
+        }
+    }
+
+    function handleResourceGanttScroll(event) {
+        if (isResourceLoading) return;
+
+        const container = event.target;
+        const scrollTop = container.scrollTop;
+        const scrollDiff = Math.abs(scrollTop - lastResourceScrollTop);
+        
+        // Only process if we've scrolled at least half a row height
+        if (scrollDiff < RESOURCE_ROW_HEIGHT / 2) return;
+
+        // Get the range of items that should be visible
+        const { startIndex, endIndex } = getVisibleResourceRange(scrollTop);
+        
+        // Only redraw if the visible range has changed significantly
+        if (Math.abs(startIndex - currentResourceStartIndex) >= Math.floor(RESOURCE_BUFFER_SIZE / 2)) {
+            currentResourceStartIndex = startIndex;
+            const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
+            drawResourceGanttChart(visibleTasks);
+        }
+
+        lastResourceScrollTop = scrollTop;
+    }
+
+    function loadResourceGanttData() {
+        document.getElementById('ganttLoadingForResource').style.display = 'flex';
+        isResourceLoading = true;
+        currentResourceStartIndex = 0;
+        lastResourceScrollTop = 0;
+
+        // Check if we have cached data in sessionStorage
+        const cachedData = sessionStorage.getItem('resourceGanttData');
+        if (cachedData) {
+            allResourceTasks = JSON.parse(cachedData);
+            const { startIndex, endIndex } = getVisibleResourceRange(0);
+            const initialTasks = allResourceTasks.slice(startIndex, endIndex);
+            drawResourceGanttChart(initialTasks);
+            ensureProperResourceInitialization();
+            isResourceLoading = false;
+            document.getElementById('ganttLoadingForResource').style.display = 'none';
+            return;
+        }
+
+        // If no cached data, fetch from API
+        axios.get(`${localStorage.getItem('API_BASE_URL')}api/resource/gantt`)
+            .then(response => {
+                allResourceTasks = response.data;
+                // Cache the data in sessionStorage
+                sessionStorage.setItem('resourceGanttData', JSON.stringify(allResourceTasks));
+                const { startIndex, endIndex } = getVisibleResourceRange(0);
+                const initialTasks = allResourceTasks.slice(startIndex, endIndex);
+                drawResourceGanttChart(initialTasks);
+                ensureProperResourceInitialization();
+            })
+            .catch(error => {
+                console.error(error);
+            })
+            .finally(() => {
+                isResourceLoading = false;
+                document.getElementById('ganttLoadingForResource').style.display = 'none';
+            });
+    }
+
+    // Function to ensure proper initialization of Resource Gantt chart dimensions
+    function ensureProperResourceInitialization() {
+        // Force a reflow of the container
+        const container = document.getElementById('ResourceGanttChartDIV');
+        const content = document.getElementById('resourceGanttContent');
+        
+        // Set initial dimensions
+        if (allResourceTasks.length > 0) {
+            const totalHeight = allResourceTasks.length * RESOURCE_ROW_HEIGHT;
+            document.getElementById('GanttChartForResource').style.height = `${totalHeight}px`;
+            content.style.position = 'relative';
+            content.style.width = '100%';
+            content.style.top = `${currentResourceStartIndex * RESOURCE_ROW_HEIGHT}px`;
+            
+            // Force a redraw by triggering a resize event
+            window.dispatchEvent(new Event('resize'));
+        }
+    }
+
+    // Initial load
+    loadResourceGanttData();
+
+    // Add scroll event listener with throttle for smoother performance
+    document.getElementById('ResourceGanttChartDIV').addEventListener('scroll', _.throttle(handleResourceGanttScroll, 100));
+
+    // Listen for refresh events
+    document.getElementById('resourceGanttChart').addEventListener('refreshResourceGantt', () => {
+        // Clear session storage to force fresh data load
+        sessionStorage.removeItem('resourceGanttData');
+        loadResourceGanttData();
     });
 
-
-    // to get data from the api and display it in the gantt chart
-    axios.get(`${localStorage.getItem('API_BASE_URL')}/api/resource/gantt`)
-        .then(response => {
-        let tasks = response.data;
-        tasks.forEach(task => {
-            g.AddTaskItemObject(task);
-        });
-        g.Draw();
-        })
-        .catch(error => {
-        console.error(error);
-        });
+    // Handle window resize
+    window.addEventListener('resize', _.debounce(() => {
+        if (!isResourceLoading && allResourceTasks.length > 0) {
+            const container = document.getElementById('ResourceGanttChartDIV');
+            const { startIndex, endIndex } = getVisibleResourceRange(container.scrollTop);
+            const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
+            drawResourceGanttChart(visibleTasks);
+        }
+    }, 100));
 </script>
