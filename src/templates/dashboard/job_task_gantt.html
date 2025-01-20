@@ -1,12 +1,24 @@
 <div class="gantt bg-white p-6 rounded-lg shadow-xl">
-    <h1 class="text-2xl pb-4 font-semibold text-[#181C32]">Job-Task Gantt Chart</h1>
-    <!-- Loading Spinner - Moved outside scrollable container -->
+    <div class="flex justify-between items-center pb-4">
+        <h1 class="text-2xl font-semibold text-[#181C32]">Job-Task Gantt Chart</h1>
+        <div class="text-sm text-gray-600" id="loadingStats">
+            Loaded 0 of 0 items
+        </div>
+    </div>
+    
+    <!-- Initial Loading Spinner -->
     <div id="ganttLoadingForJob" class="relative inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#023E8A]"></div>
     </div>
+
     <div style="position:relative; max-height: calc(75vh - 4rem); overflow-y: auto;" id="GanttChartDIV">
         <div id="GanttChartForJob" style="position: relative;">
             <div id="ganttContent"></div>
+        </div>
+        <!-- Bottom Loading Indicator -->
+        <div id="bottomLoader" class="hidden sticky bottom-0 w-full py-2 bg-white bg-opacity-90 flex justify-center items-center gap-2 border-t border-gray-200">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#023E8A]"></div>
+            <span class="text-sm text-gray-600">Loading more items...</span>
         </div>
     </div>
 </div>
@@ -16,18 +28,29 @@
     let allTasks = [];
     let ganttInstance = null;
     let isLoading = false;
-    const ROW_HEIGHT = 40; // Approximate height of each task row
-    const BUFFER_SIZE = 40; // Number of items to render above and below viewport
-    const VIEWPORT_ITEMS = 40; // Approximate number of items visible in viewport
+    let isBackgroundLoading = false;
+    let currentPage = 1;
+    let totalCount = 0;
+    let pageSize = 200;
+    let loadedItemsCount = 0;
+    const ROW_HEIGHT = 40;
+    const BUFFER_SIZE = 40;
+    const VIEWPORT_ITEMS = 40;
     let currentStartIndex = 0;
     let lastScrollTop = 0;
 
     // Hide loading initially since the div starts empty
     document.getElementById('ganttLoadingForJob').style.display = 'none';
+    document.getElementById('bottomLoader').classList.add('hidden');
     
+    function updateLoadingStats() {
+        const statsElement = document.getElementById('loadingStats');
+        const loadingText = isBackgroundLoading ? ' (Loading more...)' : '';
+        statsElement.textContent = `Loaded ${loadedItemsCount} of ${totalCount} items${loadingText}`;
+    }
+
     function initializeJobGantt() {
         var g = new JSGantt.GanttChart(document.getElementById('ganttContent'), 'day');
-        ganttInstance = g;
 
         g.setOptions({
             vCaptionType: 'Complete',
@@ -68,16 +91,26 @@
     }
 
     function drawJobGanttChart(tasks) {
-        if (isLoading) return;
+        if (isLoading || !tasks || tasks.length === 0) return;
         isLoading = true;
 
         try {
+            // Check if the content is already rendered with the same tasks
+            const currentContent = document.getElementById('ganttContent');
+            const currentTasks = currentContent.getAttribute('data-tasks');
+            const newTasksString = JSON.stringify(tasks.map(t => t.pID));
+            
+            // If the same tasks are already rendered, skip redrawing
+            if (currentTasks === newTasksString) {
+                return;
+            }
+
             // Clear and reinitialize
             document.getElementById('ganttContent').innerHTML = '';
             ganttInstance = initializeJobGantt();
 
             // Set container height for proper scrolling
-            const totalHeight = allTasks.length * ROW_HEIGHT;
+            const totalHeight = totalCount * ROW_HEIGHT;
             document.getElementById('GanttChartForJob').style.height = `${totalHeight}px`;
             document.getElementById('ganttContent').style.position = 'absolute';
             document.getElementById('ganttContent').style.width = '100%';
@@ -89,8 +122,84 @@
             });
 
             ganttInstance.Draw();
+            
+            // Store the current tasks for future comparison
+            currentContent.setAttribute('data-tasks', newTasksString);
+            
+            // Force a redraw to ensure proper rendering
+            window.dispatchEvent(new Event('resize'));
         } finally {
             isLoading = false;
+        }
+    }
+
+    async function loadData() {
+        try {
+            isLoading = true;
+            document.getElementById('ganttLoadingForJob').style.display = 'flex';
+            
+            // Load first page
+            const firstPageResponse = await axios.get(
+                `${localStorage.getItem('API_BASE_URL')}api/job/gantt?page=1&page_size=${pageSize}`
+            );
+            
+            const { data, total_count, items_in_page } = firstPageResponse.data;
+            
+            // Set initial data
+            allTasks = data;
+            totalCount = total_count;
+            loadedItemsCount = items_in_page;
+            currentPage = 2; // Set for next page load
+            
+            // Update stats and render first page
+            updateLoadingStats();
+            const { startIndex, endIndex } = getVisibleRange(0);
+            const visibleTasks = allTasks.slice(startIndex, endIndex);
+            drawJobGanttChart(visibleTasks);
+            ensureProperInitialization();
+            
+            // Start background loading if there's more data
+            if (loadedItemsCount < totalCount) {
+                loadRemainingPages();
+            }
+        } catch (error) {
+            console.error('Error loading initial data:', error);
+        } finally {
+            isLoading = false;
+            document.getElementById('ganttLoadingForJob').style.display = 'none';
+        }
+    }
+
+    async function loadRemainingPages() {
+        if (isBackgroundLoading || loadedItemsCount >= totalCount) return;
+        
+        isBackgroundLoading = true;
+        updateLoadingStats();
+        
+        try {
+            while (loadedItemsCount < totalCount) {
+                const response = await axios.get(
+                    `${localStorage.getItem('API_BASE_URL')}api/job/gantt?page=${currentPage}&page_size=${pageSize}`
+                );
+                
+                const { data, items_in_page } = response.data;
+                
+                // Append new data
+                allTasks = [...allTasks, ...data];
+                loadedItemsCount += items_in_page;
+                currentPage++;
+                
+                // Update loading stats
+                updateLoadingStats();
+                
+                // Small delay to prevent UI blocking
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        } catch (error) {
+            console.error('Error loading remaining pages:', error);
+        } finally {
+            isBackgroundLoading = false;
+            updateLoadingStats();
         }
     }
 
@@ -109,51 +218,15 @@
         
         // Only redraw if the visible range has changed significantly
         if (Math.abs(startIndex - currentStartIndex) >= Math.floor(BUFFER_SIZE / 2)) {
-            currentStartIndex = startIndex;
-            const visibleTasks = allTasks.slice(startIndex, endIndex);
-            drawJobGanttChart(visibleTasks);
+            const newStartIndex = Math.floor(startIndex / BUFFER_SIZE) * BUFFER_SIZE;
+            if (newStartIndex !== currentStartIndex) {
+                currentStartIndex = newStartIndex;
+                const visibleTasks = allTasks.slice(startIndex, endIndex);
+                drawJobGanttChart(visibleTasks);
+            }
         }
 
         lastScrollTop = scrollTop;
-    }
-
-    function loadJobGanttData() {
-        document.getElementById('ganttLoadingForJob').style.display = 'flex';
-        isLoading = true;
-        currentStartIndex = 0;
-        lastScrollTop = 0;
-
-        // Check if we have cached data in sessionStorage
-        const cachedData = sessionStorage.getItem('jobGanttData');
-        if (cachedData) {
-            allTasks = JSON.parse(cachedData);
-            const { startIndex, endIndex } = getVisibleRange(0);
-            const initialTasks = allTasks.slice(startIndex, endIndex);
-            drawJobGanttChart(initialTasks);
-            ensureProperInitialization();
-            isLoading = false;
-            document.getElementById('ganttLoadingForJob').style.display = 'none';
-            return;
-        }
-
-        // If no cached data, fetch from API
-        axios.get(`${localStorage.getItem('API_BASE_URL')}api/job/gantt`)
-            .then(response => {
-                allTasks = response.data;
-                // Cache the data in sessionStorage
-                sessionStorage.setItem('jobGanttData', JSON.stringify(allTasks));
-                const { startIndex, endIndex } = getVisibleRange(0);
-                const initialTasks = allTasks.slice(startIndex, endIndex);
-                drawJobGanttChart(initialTasks);
-                ensureProperInitialization();
-            })
-            .catch(error => {
-                console.error(error);
-            })
-            .finally(() => {
-                isLoading = false;
-                document.getElementById('ganttLoadingForJob').style.display = 'none';
-            });
     }
 
     // Function to ensure proper initialization of Gantt chart dimensions
@@ -164,7 +237,7 @@
         
         // Set initial dimensions
         if (allTasks.length > 0) {
-            const totalHeight = allTasks.length * ROW_HEIGHT;
+            const totalHeight = totalCount * ROW_HEIGHT;
             document.getElementById('GanttChartForJob').style.height = `${totalHeight}px`;
             content.style.position = 'relative';
             content.style.width = '100%';
@@ -175,26 +248,42 @@
         }
     }
 
-    // Initial load
-    loadJobGanttData();
+    // Initialize gantt and start loading data
+    ganttInstance = initializeJobGantt();
+    loadData();
 
     // Add scroll event listener with throttle for smoother performance
     document.getElementById('GanttChartDIV').addEventListener('scroll', _.throttle(handleGanttScroll, 100));
 
     // Listen for refresh events
     document.getElementById('jobGanttChart').addEventListener('refreshJobGantt', () => {
-        // Clear session storage to force fresh data load
-        sessionStorage.removeItem('jobGanttData');
-        loadJobGanttData();
+        // Reset all state
+        allTasks = [];
+        currentPage = 1;
+        currentStartIndex = 0;
+        lastScrollTop = 0;
+        loadedItemsCount = 0;
+        totalCount = 0;
+        
+        // Reinitialize and reload
+        ganttInstance = initializeJobGantt();
+        loadData();
     });
 
-    // Handle window resize
-    window.addEventListener('resize', _.debounce(() => {
-        if (!isLoading && allTasks.length > 0) {
-            const container = document.getElementById('GanttChartDIV');
-            const { startIndex, endIndex } = getVisibleRange(container.scrollTop);
-            const visibleTasks = allTasks.slice(startIndex, endIndex);
-            drawJobGanttChart(visibleTasks);
+    // Handle window resize with better debounce and check
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
         }
-    }, 100));
+        
+        resizeTimeout = setTimeout(() => {
+            if (!isLoading && allTasks.length > 0) {
+                const container = document.getElementById('GanttChartDIV');
+                const { startIndex, endIndex } = getVisibleRange(container.scrollTop);
+                const visibleTasks = allTasks.slice(startIndex, endIndex);
+                drawJobGanttChart(visibleTasks);
+            }
+        }, 250);  // Increased debounce time
+    });
 </script>

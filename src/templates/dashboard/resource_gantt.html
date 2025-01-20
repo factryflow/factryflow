@@ -1,9 +1,16 @@
 <div class="gantt bg-white p-6 rounded-lg shadow-xl">
-    <h1 class="text-2xl pb-4 font-semibold text-[#181C32]">Resource Gantt Chart</h1>
-    <!-- Loading Spinner - Moved outside scrollable container -->
+    <div class="flex justify-between items-center pb-4">
+        <h1 class="text-2xl font-semibold text-[#181C32]">Resource Gantt Chart</h1>
+        <div class="text-sm text-gray-600" id="resourceLoadingStats">
+            Loaded 0 of 0 items
+        </div>
+    </div>
+    
+    <!-- Initial Loading Spinner -->
     <div id="ganttLoadingForResource" class="relative inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#023E8A]"></div>
     </div>
+
     <div style="position:relative; max-height: calc(75vh - 4rem); overflow-y: auto;" id="ResourceGanttChartDIV">
         <div id="GanttChartForResource" style="position: relative;">
             <div id="resourceGanttContent"></div>
@@ -16,18 +23,28 @@
     let allResourceTasks = [];
     let resourceGanttInstance = null;
     let isResourceLoading = false;
-    const RESOURCE_ROW_HEIGHT = 40; // Approximate height of each task row
-    const RESOURCE_BUFFER_SIZE = 40; // Number of items to render above and below viewport
-    const RESOURCE_VIEWPORT_ITEMS = 40; // Approximate number of items visible in viewport
+    let isResourceBackgroundLoading = false;
+    let currentResourcePage = 1;
+    let totalResourceCount = 0;
+    let resourcePageSize = 200;
+    let loadedResourceCount = 0;
+    const RESOURCE_ROW_HEIGHT = 40;
+    const RESOURCE_BUFFER_SIZE = 40;
+    const RESOURCE_VIEWPORT_ITEMS = 40;
     let currentResourceStartIndex = 0;
     let lastResourceScrollTop = 0;
 
     // Hide loading initially since the div starts empty
     document.getElementById('ganttLoadingForResource').style.display = 'none';
+    
+    function updateResourceLoadingStats() {
+        const statsElement = document.getElementById('resourceLoadingStats');
+        const loadingText = isResourceBackgroundLoading ? ' (Loading more...)' : '';
+        statsElement.textContent = `Loaded ${loadedResourceCount} of ${totalResourceCount} items${loadingText}`;
+    }
 
     function initializeResourceGantt() {
         var g = new JSGantt.GanttChart(document.getElementById('resourceGanttContent'), 'day');
-        resourceGanttInstance = g;
 
         g.setOptions({
             vCaptionType: 'Complete',
@@ -63,16 +80,26 @@
     }
 
     function drawResourceGanttChart(tasks) {
-        if (isResourceLoading) return;
+        if (isResourceLoading || !tasks || tasks.length === 0) return;
         isResourceLoading = true;
 
         try {
+            // Check if the content is already rendered with the same tasks
+            const currentContent = document.getElementById('resourceGanttContent');
+            const currentTasks = currentContent.getAttribute('data-tasks');
+            const newTasksString = JSON.stringify(tasks.map(t => t.pID));
+            
+            // If the same tasks are already rendered, skip redrawing
+            if (currentTasks === newTasksString) {
+                return;
+            }
+
             // Clear and reinitialize
             document.getElementById('resourceGanttContent').innerHTML = '';
             resourceGanttInstance = initializeResourceGantt();
 
             // Set container height for proper scrolling
-            const totalHeight = allResourceTasks.length * RESOURCE_ROW_HEIGHT;
+            const totalHeight = totalResourceCount * RESOURCE_ROW_HEIGHT;
             document.getElementById('GanttChartForResource').style.height = `${totalHeight}px`;
             document.getElementById('resourceGanttContent').style.position = 'absolute';
             document.getElementById('resourceGanttContent').style.width = '100%';
@@ -84,8 +111,84 @@
             });
 
             resourceGanttInstance.Draw();
+            
+            // Store the current tasks for future comparison
+            currentContent.setAttribute('data-tasks', newTasksString);
+            
+            // Force a redraw to ensure proper rendering
+            window.dispatchEvent(new Event('resize'));
         } finally {
             isResourceLoading = false;
+        }
+    }
+
+    async function loadResourceData() {
+        try {
+            isResourceLoading = true;
+            document.getElementById('ganttLoadingForResource').style.display = 'flex';
+            
+            // Load first page
+            const firstPageResponse = await axios.get(
+                `${localStorage.getItem('API_BASE_URL')}api/resource/gantt?page=1&page_size=${resourcePageSize}`
+            );
+            
+            const { data, total_count, items_in_page } = firstPageResponse.data;
+            
+            // Set initial data
+            allResourceTasks = data;
+            totalResourceCount = total_count;
+            loadedResourceCount = items_in_page;
+            currentResourcePage = 2; // Set for next page load
+            
+            // Update stats and render first page
+            updateResourceLoadingStats();
+            const { startIndex, endIndex } = getVisibleResourceRange(0);
+            const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
+            drawResourceGanttChart(visibleTasks);
+            ensureProperResourceInitialization();
+            
+            // Start background loading if there's more data
+            if (loadedResourceCount < totalResourceCount) {
+                loadRemainingResourcePages();
+            }
+        } catch (error) {
+            console.error('Error loading initial resource data:', error);
+        } finally {
+            isResourceLoading = false;
+            document.getElementById('ganttLoadingForResource').style.display = 'none';
+        }
+    }
+
+    async function loadRemainingResourcePages() {
+        if (isResourceBackgroundLoading || loadedResourceCount >= totalResourceCount) return;
+        
+        isResourceBackgroundLoading = true;
+        updateResourceLoadingStats();
+        
+        try {
+            while (loadedResourceCount < totalResourceCount) {
+                const response = await axios.get(
+                    `${localStorage.getItem('API_BASE_URL')}api/resource/gantt?page=${currentResourcePage}&page_size=${resourcePageSize}`
+                );
+                
+                const { data, items_in_page } = response.data;
+                
+                // Append new data
+                allResourceTasks = [...allResourceTasks, ...data];
+                loadedResourceCount += items_in_page;
+                currentResourcePage++;
+                
+                // Update loading stats
+                updateResourceLoadingStats();
+                
+                // Small delay to prevent UI blocking
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        } catch (error) {
+            console.error('Error loading remaining resource pages:', error);
+        } finally {
+            isResourceBackgroundLoading = false;
+            updateResourceLoadingStats();
         }
     }
 
@@ -104,51 +207,15 @@
         
         // Only redraw if the visible range has changed significantly
         if (Math.abs(startIndex - currentResourceStartIndex) >= Math.floor(RESOURCE_BUFFER_SIZE / 2)) {
-            currentResourceStartIndex = startIndex;
-            const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
-            drawResourceGanttChart(visibleTasks);
+            const newStartIndex = Math.floor(startIndex / RESOURCE_BUFFER_SIZE) * RESOURCE_BUFFER_SIZE;
+            if (newStartIndex !== currentResourceStartIndex) {
+                currentResourceStartIndex = newStartIndex;
+                const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
+                drawResourceGanttChart(visibleTasks);
+            }
         }
 
         lastResourceScrollTop = scrollTop;
-    }
-
-    function loadResourceGanttData() {
-        document.getElementById('ganttLoadingForResource').style.display = 'flex';
-        isResourceLoading = true;
-        currentResourceStartIndex = 0;
-        lastResourceScrollTop = 0;
-
-        // Check if we have cached data in sessionStorage
-        const cachedData = sessionStorage.getItem('resourceGanttData');
-        if (cachedData) {
-            allResourceTasks = JSON.parse(cachedData);
-            const { startIndex, endIndex } = getVisibleResourceRange(0);
-            const initialTasks = allResourceTasks.slice(startIndex, endIndex);
-            drawResourceGanttChart(initialTasks);
-            ensureProperResourceInitialization();
-            isResourceLoading = false;
-            document.getElementById('ganttLoadingForResource').style.display = 'none';
-            return;
-        }
-
-        // If no cached data, fetch from API
-        axios.get(`${localStorage.getItem('API_BASE_URL')}api/resource/gantt`)
-            .then(response => {
-                allResourceTasks = response.data;
-                // Cache the data in sessionStorage
-                sessionStorage.setItem('resourceGanttData', JSON.stringify(allResourceTasks));
-                const { startIndex, endIndex } = getVisibleResourceRange(0);
-                const initialTasks = allResourceTasks.slice(startIndex, endIndex);
-                drawResourceGanttChart(initialTasks);
-                ensureProperResourceInitialization();
-            })
-            .catch(error => {
-                console.error(error);
-            })
-            .finally(() => {
-                isResourceLoading = false;
-                document.getElementById('ganttLoadingForResource').style.display = 'none';
-            });
     }
 
     // Function to ensure proper initialization of Resource Gantt chart dimensions
@@ -159,7 +226,7 @@
         
         // Set initial dimensions
         if (allResourceTasks.length > 0) {
-            const totalHeight = allResourceTasks.length * RESOURCE_ROW_HEIGHT;
+            const totalHeight = totalResourceCount * RESOURCE_ROW_HEIGHT;
             document.getElementById('GanttChartForResource').style.height = `${totalHeight}px`;
             content.style.position = 'relative';
             content.style.width = '100%';
@@ -170,26 +237,42 @@
         }
     }
 
-    // Initial load
-    loadResourceGanttData();
+    // Initialize gantt and start loading data
+    resourceGanttInstance = initializeResourceGantt();
+    loadResourceData();
 
     // Add scroll event listener with throttle for smoother performance
     document.getElementById('ResourceGanttChartDIV').addEventListener('scroll', _.throttle(handleResourceGanttScroll, 100));
 
     // Listen for refresh events
     document.getElementById('resourceGanttChart').addEventListener('refreshResourceGantt', () => {
-        // Clear session storage to force fresh data load
-        sessionStorage.removeItem('resourceGanttData');
-        loadResourceGanttData();
+        // Reset all state
+        allResourceTasks = [];
+        currentResourcePage = 1;
+        currentResourceStartIndex = 0;
+        lastResourceScrollTop = 0;
+        loadedResourceCount = 0;
+        totalResourceCount = 0;
+        
+        // Reinitialize and reload
+        resourceGanttInstance = initializeResourceGantt();
+        loadResourceData();
     });
 
-    // Handle window resize
-    window.addEventListener('resize', _.debounce(() => {
-        if (!isResourceLoading && allResourceTasks.length > 0) {
-            const container = document.getElementById('ResourceGanttChartDIV');
-            const { startIndex, endIndex } = getVisibleResourceRange(container.scrollTop);
-            const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
-            drawResourceGanttChart(visibleTasks);
+    // Handle window resize with better debounce and check
+    let resourceResizeTimeout;
+    window.addEventListener('resize', () => {
+        if (resourceResizeTimeout) {
+            clearTimeout(resourceResizeTimeout);
         }
-    }, 100));
+        
+        resourceResizeTimeout = setTimeout(() => {
+            if (!isResourceLoading && allResourceTasks.length > 0) {
+                const container = document.getElementById('ResourceGanttChartDIV');
+                const { startIndex, endIndex } = getVisibleResourceRange(container.scrollTop);
+                const visibleTasks = allResourceTasks.slice(startIndex, endIndex);
+                drawResourceGanttChart(visibleTasks);
+            }
+        }, 250);  // Increased debounce time
+    });
 </script>
