@@ -143,7 +143,7 @@ def get_model_fields(model_name, app_name, related_field_names, with_type=False)
             (field.name, HTML_INPUT_TYPES.get(field.get_internal_type(), "text"))
             for field in model._meta.get_fields()
             if not isinstance(field, ManyToOneRel)
-            and field.name not in NOT_REQUIRED_FIELDS_IN_FORM
+            and field.name not in [*NOT_REQUIRED_FIELDS_IN_FORM, *related_field_names]
         ]
     else:
         # the fields of the model
@@ -151,7 +151,7 @@ def get_model_fields(model_name, app_name, related_field_names, with_type=False)
             (field.name, field.name)
             for field in model._meta.get_fields()
             if not isinstance(field, ManyToOneRel)
-            and field.name not in NOT_REQUIRED_FIELDS_IN_FORM
+            and field.name not in [*NOT_REQUIRED_FIELDS_IN_FORM, *related_field_names]
         ]
 
     # get the related fields for each related field name

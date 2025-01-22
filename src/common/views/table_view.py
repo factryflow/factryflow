@@ -94,10 +94,6 @@ class CustomTableView:
             )
         )
 
-        input_fields_with_type["item.name_first"] = "text"
-        input_fields_with_type["item.name_middle"] = "text"
-        input_fields_with_type["item.name_last"] = "text"
-
         return input_fields_with_type
 
     def get_custom_field_json_data(self, instance=None):
