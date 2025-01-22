@@ -40,6 +40,8 @@
     <!-- Tippy.js -->
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
+
+    <script src="https://unpkg.com/htmx-ext-alpine-morph@2.0.0/alpine-morph.js"></script>
     {% include "base/theme.html" %}
     {% include "base/styles.html" %}
     
@@ -63,7 +65,7 @@
         }
     </style>
   </head>
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data hx-debug="true">
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data hx-debug="true" hx-target="this" hx-ext="alpine-morph" hx-swap="morph">
   {% include "base/header.html" %}
   <div class="flex">
     {% include "base/sidebar.html" %}
