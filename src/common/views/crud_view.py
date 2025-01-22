@@ -192,14 +192,14 @@ class CRUDView:
             return redirect(reverse("users:change_password"))
 
         # Retrieve filtering and search parameters from the request
-        self.status_filter = request.GET.get("status", self.status_filter)
-        self.search_query = request.GET.get("query", self.search_query)
+        self.status_filter = request.GET.get("status", "all")
+        self.search_query = request.GET.get("query", None)
         self.page_number = request.GET.get("page", self.page_number)
-        self.parent_filter_param = request.GET.get("parents", self.parent_filter_param)
+        self.parent_filter_param = request.GET.get("parents", False)
         self.parent_filter = True if self.parent_filter_param == "true" else False
 
         self.num_of_rows_per_page = request.GET.get(
-            "num_of_rows_per_page", self.num_of_rows_per_page
+            "num_of_rows_per_page", 25
         )
         self.sort_direction = request.GET.get("sort_direction", self.sort_direction)
         self.sort_by = request.GET.get("sort_by", self.sort_by)

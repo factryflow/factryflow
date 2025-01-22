@@ -5,7 +5,7 @@
 <div class="overflow-x-auto" id="all-{{ model_name }}s-table">
     {% if rows %}
         <div class="overflow-y-auto h-80 sm:h-80 md:h-96 lg:h-[500px]">
-            <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center" x-cloak>
+            <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center table-auto text-balance" x-cloak>
                 <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80] sticky top-0">
                     <tr class="text-[#181C32]">
                         {% for header in headers %}
@@ -92,7 +92,7 @@
                                                 <span
                                                     x-tooltip="{{cell|safe}}"
                                                     class="cursor-pointer">
-                                                    {{ cell|safe|truncatechars:10 }}
+                                                    {{ cell|safe|truncatechars:30 }}
                                                 </span>
                                             {% endif %}
                                         </div>
