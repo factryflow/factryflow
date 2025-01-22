@@ -39,9 +39,6 @@
 
             <!-- Job Task Gantt Chart Tab -->
             <button @click="selectedTab = 'jobGantt'" 
-                    hx-get="{% url 'dashboard' gantt_type='job' home='false' %}" 
-                    hx-swap="innerHTML" 
-                    hx-target="#gantt-chart"
                     :aria-selected="selectedTab === 'jobGantt'" 
                     :tabindex="selectedTab === 'jobGantt' ? '0' : '-1'"
                     :class="selectedTab === 'jobGantt' 
@@ -53,9 +50,6 @@
 
             <!-- Resource Gantt Chart Tab -->
             <button @click="selectedTab = 'resourceGantt'" 
-                    hx-get="{% url 'dashboard' gantt_type='resource' home='false' %}" 
-                    hx-swap="innerHTML" 
-                    hx-target="#gantt-chart"
                     :aria-selected="selectedTab === 'resourceGantt'" 
                     :tabindex="selectedTab === 'resourceGantt' ? '0' : '-1'"
                     :class="selectedTab === 'resourceGantt' 
@@ -64,20 +58,31 @@
                     class="h-min px-4 py-3 text-md" type="button" role="tab" aria-controls="tabpanelResourceGantt">
                 Resource Gantt Chart
             </button>
+
+            <!-- Refresh Button -->
+            <button @click="sessionStorage.removeItem('jobGanttData'); sessionStorage.removeItem('resourceGanttData'); 
+                          if (selectedTab === 'jobGantt') {
+                              refreshJobGantt();
+                          } else {
+                              refreshResourceGantt();
+                          }"
+                    class="ml-auto h-min px-4 py-3 text-md text-[#023E8A] hover:text-[#0056b3] flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh Data
+            </button>
         </div>
-        <div class="px-4 py-6 text-slate-700 dark:text-violet-200 text-lg">
-            <div x-show="selectedTab === 'jobGantt'" id="tabpanelJobGantt" role="tabpanel" aria-label="Job Gantt Chart">
-                <h1 class="text-2xl font-semibold text-[#181C32]">Job-Task Gantt Chart</h1>
-            </div>
-            <div x-show="selectedTab === 'resourceGantt'" id="tabpanelResourceGantt" role="tabpanel" aria-label="Resource Gantt Chart">
-                <h1 class="text-2xl font-semibold text-[#181C32]">Resource Gantt Chart</h1>
-            </div>
-        </div>
-    </div>
     
-    <!-- Gantt Chart Section -->
-    <div id="gantt-chart">
-        {% include gantt_chart %}
+        <!-- Gantt Chart Section -->
+        <div id="gantt-chart">
+            <div x-show="selectedTab === 'jobGantt'" x-cloak id="jobGanttChart">
+                {% include 'dashboard/job_task_gantt.html' %}
+            </div>
+            <div x-show="selectedTab === 'resourceGantt'" x-cloak id="resourceGanttChart">
+                {% include 'dashboard/resource_gantt.html' %}
+            </div>
+        </div>
     </div>
 
     <script>
@@ -85,6 +90,28 @@
             const apiBaseUrl = "{{ API_BASE_URL }}";
             localStorage.setItem('API_BASE_URL', apiBaseUrl);
         });
+
+        function refreshJobGantt() {
+            const jobGanttDiv = document.getElementById('jobGanttChart');
+            if (jobGanttDiv) {
+                const loadingSpinner = jobGanttDiv.querySelector('#ganttLoading');
+                if (loadingSpinner) loadingSpinner.style.display = 'flex';
+                // Trigger a refresh of the job Gantt data
+                const jobGanttEvent = new Event('refreshJobGantt');
+                jobGanttDiv.dispatchEvent(jobGanttEvent);
+            }
+        }
+
+        function refreshResourceGantt() {
+            const resourceGanttDiv = document.getElementById('resourceGanttChart');
+            if (resourceGanttDiv) {
+                const loadingSpinner = resourceGanttDiv.querySelector('#ganttLoading');
+                if (loadingSpinner) loadingSpinner.style.display = 'flex';
+                // Trigger a refresh of the resource Gantt data
+                const resourceGanttEvent = new Event('refreshResourceGantt');
+                resourceGanttDiv.dispatchEvent(resourceGanttEvent);
+            }
+        }
     </script>
 
 {% endblock %}

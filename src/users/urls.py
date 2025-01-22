@@ -1,7 +1,7 @@
 from django.urls import path
 
 from users.views.admin_change_password import AdminChangePasswordView
-from users.views.change_password import ChangePasswordView
+from users.views.my_account import MyAccountView, UpdateProfileView, ChangePasswordView
 from users.views.detail_view import (
     USER_VIEWS,
 )
@@ -29,7 +29,17 @@ urlpatterns = [
         name="edit_users",
     ),
     path(
-        "users/change-password/", ChangePasswordView.as_view(), name="change_password"
+        "users/my-account/", MyAccountView.as_view(), name="my_account"
+    ),
+    path(
+        "users/my-account/update-profile/", 
+        UpdateProfileView.as_view(), 
+        name="update_profile"
+    ),
+    path(
+        "users/my-account/change-password/", 
+        ChangePasswordView.as_view(), 
+        name="change_password"
     ),
     path(
         "users/change-password/<int:id>",
