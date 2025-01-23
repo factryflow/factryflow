@@ -24,7 +24,6 @@ from resource_manager.models import Resource
 from scheduler.constants import DAY_IN_MINUTES, WEEK_IN_MINUTES
 from scheduler.models import SchedulerRuns
 
-
 # --------------------------------------------------------
 # Scheduler Runs Service
 # --------------------------------------------------------
@@ -163,7 +162,8 @@ class SchedulingService:
             return {"error": scheduler_tasks["error"]}
 
         scheduler = Scheduler(
-            tasks=scheduler_tasks["tasks"], resources=scheduler_resources_dict.values()
+            tasks=scheduler_tasks["tasks"],
+            resources=scheduler_resources_dict.values(),
         )
         result = scheduler.schedule()
 
@@ -309,7 +309,9 @@ class SchedulingService:
                 # add constraints to dictionary
                 scheduler_task_dict["constraints"] = constraints
 
-            rule_assignment = TaskRuleAssignment.objects.filter(task=task).first()
+            rule_assignment = TaskRuleAssignment.objects.filter(
+                task=task, is_applied=True
+            ).first()
 
             if rule_assignment and len(constraints) == 0:
                 # check for assignments
@@ -366,7 +368,7 @@ class SchedulingService:
                         )
 
                     # append all the scheduler assignment to the scheduler_assignments list
-                    if scheduler_assignment:
+                    if scheduler_assignment and len(scheduler_assignments) == 0:
                         scheduler_assignments.append(scheduler_assignment)
 
             # add assignments to scheduler task dictionary
@@ -507,14 +509,14 @@ class SchedulingService:
         windows = windows[(windows >= 0) & (windows <= self.horizon_minutes)]
 
         try:
-            windows.reshape(-1, 2)
+            reshaped_windows = windows.reshape(-1, 2)
         except ValueError:
             # If windows size is an odd number, exclude the last entry
             # as its end-date is expected to be beyond the horizon time.
             windows = windows[:-1]
-            windows.reshape(-1, 2)
+            reshaped_windows = windows.reshape(-1, 2)
 
-        return windows.reshape(-1, 2)
+        return reshaped_windows
 
     def _detail_to_minutes(self, detail):
         start_time_minutes = self._time_to_minutes(detail.start_time)
