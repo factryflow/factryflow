@@ -1,5 +1,5 @@
 import datetime
-
+import time
 from django.db import transaction
 from job_manager.models.task import Task
 from job_manager.utils import (
@@ -71,13 +71,13 @@ def save_scheduler_run(
 
 
 @transaction.atomic
-def start_scheduler_run(request):
+def start_scheduler_run(user):
     """
     Start a new scheduler run in background.
     """
     scheduler_start_time = datetime.datetime.now(datetime.timezone.utc)
     try:
-        scheduled_task = SchedulingService(horizon_weeks=5, user=request.user).run(
+        scheduled_task = SchedulingService(horizon_weeks=5, user=user).run(
             selected_tasks=Task.objects.filter(sub_tasks__isnull=True),
         )  # Run the scheduler for the microbatched subtasks
         scheduler_end_time = datetime.datetime.now(datetime.timezone.utc)

@@ -22,3 +22,6 @@ create_user:
 
 add_data:
 	python src/manage.py loaddata src/fixtures/initial_test_data.json
+
+run_background_tasks:
+	python src/manage.py qcluster

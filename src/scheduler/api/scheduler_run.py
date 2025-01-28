@@ -1,8 +1,12 @@
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django_q.tasks import async_task
 
 from scheduler.utils import start_scheduler_run
+from common.utils.views import (
+    add_notification_headers,
+)
 
 from ..models import (
     ResourceAllocations,
@@ -71,10 +75,22 @@ def start_scheduler_run_api_view(request):
     Start a new scheduler run in background.
     """
     try:
-        start_scheduler_run(request)
-    except Exception as e:
-        raise e
+        print("heellll")
+        # start_scheduler_run(request)
+        background_task_id = async_task("scheduler.utils.start_scheduler_run", request)
+        response = HttpResponse(status=202)
+        add_notification_headers(
+            response,
+            f"The Scheduler has been started. You will be notified when it's done. {background_task_id}",
+            "success",
+        )
 
-    return JsonResponse(
-        {"status": "success", "message": "Scheduler run started successfully."}
-    )
+        return response
+    except Exception as e:
+        response = HttpResponse(status=500)
+        add_notification_headers(
+            response,
+            f"Error: str(e)" "error",
+        )
+
+        return response

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from job_manager.models import JobStatusChoices, Task, TaskStatusChoices
 
 # Create your views here.
-from resource_assigner.utils import get_matching_assignment_rules_with_tasks
+from django_q.tasks import async_task
 
 # ------------------------------------------------------------------------------
 # Matching Rule API
@@ -26,13 +26,17 @@ def match_rules_with_tasks(request):
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
 
-        result = get_matching_assignment_rules_with_tasks()
+        # TODO:
+        # store background task id and sync it with frontend
+        background_task_id = async_task(
+            "resource_assigner.utils.get_matching_assignment_rules_with_tasks"
+        )
 
-        response = HttpResponse(status=204)
+        response = HttpResponse(status=200)
         add_notification_headers(
             response,
-            result["message"],
-            result["status"],
+            "The task has been started. You will be notified when it's done.",
+            "success",
         )
         return response
     except Exception as e:

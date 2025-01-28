@@ -5,31 +5,44 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('job_manager', '0004_alter_task_item_alter_task_parent_and_more'),
-        ('microbatching', '0002_alter_historicalmicrobatchrulecriteria_operator_and_more'),
+        ("job_manager", "0004_alter_task_item_alter_task_parent_and_more"),
+        (
+            "microbatching",
+            "0002_alter_historicalmicrobatchrulecriteria_operator_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='microbatchruletaskmatch',
-            name='microbatch_rule',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='microbatching.microbatchrule'),
+            model_name="microbatchruletaskmatch",
+            name="microbatch_rule",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="microbatching.microbatchrule",
+            ),
         ),
         migrations.AlterField(
-            model_name='microbatchruletaskmatch',
-            name='task',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.task'),
+            model_name="microbatchruletaskmatch",
+            name="task",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="job_manager.task"
+            ),
         ),
         migrations.AlterField(
-            model_name='microbatchtask',
-            name='microbatch_task_flow',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='flow_tasks', to='microbatching.microbatchtaskflow'),
+            model_name="microbatchtask",
+            name="microbatch_task_flow",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="flow_tasks",
+                to="microbatching.microbatchtaskflow",
+            ),
         ),
         migrations.AlterField(
-            model_name='microbatchtask',
-            name='task',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.task'),
+            model_name="microbatchtask",
+            name="task",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="job_manager.task"
+            ),
         ),
     ]
