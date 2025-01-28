@@ -11,7 +11,7 @@
     document.querySelectorAll('#all-{{ model_name }}s-table tbody input[type=checkbox]').forEach(checkbox => checkbox.checked = value);
 })">
     <!-- Modal -->
-    <div x-show="runSchedulerDialog" x-cloak x-on:keydown.escape.prevent.stop="runSchedulerDialog = false" role="dialog"
+    <div id="run-scheduler-dialog" x-show="runSchedulerDialog" x-cloak x-on:keydown.escape.prevent.stop="runSchedulerDialog = false" role="dialog"
         aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto">
         <!-- Overlay -->
         <div x-show="runSchedulerDialog" x-transition:enter="transition-opacity ease-in duration-150"
@@ -39,6 +39,15 @@
         </div>
     </div>
 
+    <!-- Loader Animation Template -->
+    {% comment %} This template will be used in the table for Started status {% endcomment %}
+    <template id="loader-template">
+        <div class="flex items-center gap-2">
+            <div class="animate-spin rounded-full h-4 w-4 border-2 border-[#F6C000] border-t-transparent"></div>
+            <span>Started</span>
+        </div>
+    </template>
+
     {% include 'components/common/table.html' %}
 </div>
 {% endpartialdef %}
@@ -54,9 +63,13 @@
 
     {% if view_only %}
         <div class="flex">
-            <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md" 
-            hx-post={% url 'start_scheduler_run' %} type="button" hx-confirm="Are you sure you want to start the scheduler?"
-                @click="runSchedulerDialog = !runSchedulerDialog">{{ button_text }}</button>
+            <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md {% if active_scheduler_run %}opacity-50 cursor-not-allowed{% endif %}" 
+            hx-post={% url 'start_scheduler_run' %} type="button" 
+            {% if not active_scheduler_run %}
+                hx-confirm="Are you sure you want to start the scheduler?"
+                @click="runSchedulerDialog = !runSchedulerDialog"
+            {% endif %}
+            {% if active_scheduler_run %}disabled{% endif %}>{{ button_text }}</button>
         </div>
     {% endif %}
 </div>
