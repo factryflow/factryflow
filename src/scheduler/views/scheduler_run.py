@@ -34,14 +34,6 @@ SCHEDULER_STATUS = {
     "CN": "Cancelled",
 }
 
-class SchedulerRunsTableView(CustomTableView):
-    def process_cell_value(self, value, field):
-        """Process cell value before rendering in table."""
-        if field == 'status' and value == 'ST':
-            # For Started status, use the loader template
-            return '<div class="flex items-center gap-2"><div class="animate-spin rounded-full h-4 w-4 border-2 border-[#F6C000] border-t-transparent"></div><span>Started</span></div>'
-        return super().process_cell_value(value, field)
-
 SCHEDULER_MODEL_FIELDS = [
     "id",
     "start_time",
@@ -105,7 +97,7 @@ SCHEDULER_MODEL_RELATION_FIELDS = {
 }
 
 
-SCHEDULER_RUNS_TABLE_VIEW = SchedulerRunsTableView(
+SCHEDULER_RUNS_TABLE_VIEW = CustomTableView(
     model=SchedulerRuns,
     model_name="scheduler_runs",
     fields=SCHEDULER_MODEL_FIELDS,
@@ -118,16 +110,7 @@ SCHEDULER_RUNS_TABLE_VIEW = SchedulerRunsTableView(
     status_classes=SCHEDULER_STATUS,
 )
 
-class SchedulerRunsCRUDView(CRUDView):
-    def get_all_instances(self, request):
-        context = super().get_all_instances(request)
-        # Check if there's any active scheduler run (status = STARTED)
-        active_scheduler_run = SchedulerRuns.objects.filter(status=SchedulerStatusChoices.STARTED).exists()
-        if isinstance(context, dict):
-            context['active_scheduler_run'] = active_scheduler_run
-        return context if isinstance(context, dict) else render(request, self.list_template_name, {'active_scheduler_run': active_scheduler_run})
-
-SCHEDULER_RUNS_VIEW = SchedulerRunsCRUDView(
+SCHEDULER_RUNS_VIEW = CRUDView(
     model=SchedulerRuns,
     model_name="scheduler_runs",
     model_form=SchedulerRunsForm,
@@ -154,8 +137,6 @@ def start_scheduler_run_view(request):
         if request.htmx:
             headers = {"HX-Redirect": reverse("scheduler_runs")}
             response = HttpResponse(status=204, headers=headers)
-            # headers = {"HX-Redirect": reverse("scheduler_runs")}
-            # response = HttpResponse(status=302, headers=headers)
             return response
     except Exception as e:
         raise e
