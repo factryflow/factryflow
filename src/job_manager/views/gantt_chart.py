@@ -9,8 +9,7 @@ from django.urls import reverse
 
 def dashboard_gantt_chart_view(request, gantt_type: str = "job", home: str = "true"):
     """
-    Dashboard
-        Job Task gantt chart data view
+    Dashboard Job Task gantt chart data view
 
     Args:
         request (HttpRequest): The HTTP request object.
@@ -22,32 +21,11 @@ def dashboard_gantt_chart_view(request, gantt_type: str = "job", home: str = "tr
     if request.user.require_password_change:
         return redirect(reverse("users:change_password"))
 
-    if "HX-Request" in request.headers and home == "false":
-        if gantt_type == "job":
-            return render(
-                request,
-                "dashboard/job_task_gantt.html",
-                {
-                    "gantt_chart_title": "Job Task",
-                    "API_BASE_URL": settings.API_BASE_URL,
-                },
-            )
-        else:
-            return render(
-                request,
-                "dashboard/resource_gantt.html",
-                {
-                    "gantt_chart_title": "Resource",
-                    "API_BASE_URL": settings.API_BASE_URL,
-                },
-            )
-
     return render(
         request,
         "dashboard/base.html",
         {
-            "gantt_chart_title": "Job Task",
-            "gantt_chart": "dashboard/job_task_gantt.html",
+            "gantt_chart_title": "Job Task" if gantt_type == "job" else "Resource",
             "API_BASE_URL": settings.API_BASE_URL,
         },
     )

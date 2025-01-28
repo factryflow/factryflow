@@ -2,10 +2,29 @@
 {% load static %}
 {% load permission_tags %}
 
-<div class="overflow-x-auto" id="all-{{ model_name }}s-table">
+<div class="overflow-x-auto" id="all-{{ model_name }}s-table"
+    x-data="{
+        taskState: {
+            loadedTasks: {},
+            activeTaskId: {% if current_id %}{{ current_id }}{% else %}null{% endif %}
+        },
+        toggleTask(taskId) {
+            if (this.taskState.activeTaskId === taskId) {
+                this.taskState.activeTaskId = null;
+            } else {
+                this.taskState.activeTaskId = taskId;
+            }
+        },
+        isTaskLoaded(taskId) {
+            return this.taskState.loadedTasks[taskId] || false;
+        },
+        markTaskLoaded(taskId) {
+            this.taskState.loadedTasks[taskId] = true;
+        }
+    }">
     {% if rows %}
         <div class="overflow-y-auto h-80 sm:h-80 md:h-96 lg:h-[500px]">
-            <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center" x-cloak>
+            <table class="min-w-full divide-y divide-gray-300 w-full text-sm text-center table-auto text-balance" x-cloak>
                 <thead class="font-semibold capitalize bg-[#FAFAFA] border-y border-[#e1e3ea80] sticky top-0">
                     <tr class="text-[#181C32]">
                         {% for header in headers %}
@@ -92,7 +111,7 @@
                                                 <span
                                                     x-tooltip="{{cell|safe}}"
                                                     class="cursor-pointer">
-                                                    {{ cell|safe|truncatechars:10 }}
+                                                    {{ cell|safe|truncatechars:30 }}
                                                 </span>
                                             {% endif %}
                                         </div>
@@ -100,10 +119,18 @@
                                         {% if forloop.first %}
                                             {% if child_task %}
                                                 <button id="child-task-{{ row.0 }}"
+                                                    @click="toggleTask({{ row.0 }})"
                                                     hx-get="{% url 'get_parent_sub_tasks' id=row.0 %}"
-                                                    hx-target="#child-task-table-{{row.0}}" hx-swap="outerHTML" type="button"
+                                                    hx-target="#child-task-table-{{row.0}}" 
+                                                    hx-swap="outerHTML"
+                                                    :hx-trigger="isTaskLoaded({{ row.0 }}) ? 'none' : 'click'"
+                                                    @htmx:after-request="markTaskLoaded({{ row.0 }})"
+                                                    type="button"
                                                     class="font-medium ms-3 focus:outline-none bg-transparent border-none h-5 w-5">
-                                                    <img src="{% static 'images/down-arrow.svg' %}" alt="Move Down" />
+                                                    <img src="{% static 'images/down-arrow.svg' %}" 
+                                                         :class="{ 'rotate-180 transform': taskState.activeTaskId === {{ row.0 }} }"
+                                                         class="transition-transform duration-200"
+                                                         alt="Toggle" />
                                                 </button>
                                             {% endif %}
                                         {% endif %}
@@ -161,7 +188,12 @@
                             {% endif %}
                         </tr>
                         {% if child_task %}
-                            <tr class="bg-white border-b {% if current_id != row.0 %}hidden{% endif %}" id="child-task-table-{{row.0}}"></tr>
+                            <tr 
+                                class="bg-white border-b"
+                                x-show="taskState.activeTaskId === {{ row.0 }}"
+                                :class="{ 'hidden': taskState.activeTaskId !== {{ row.0 }} }"
+                                id="child-task-table-{{row.0}}">
+                            </tr>
                         {% endif %}
                     {% endfor %}
                 </tbody>

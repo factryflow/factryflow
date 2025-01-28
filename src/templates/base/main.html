@@ -14,12 +14,12 @@
         factryflow
       {% endblock title %}
     </title>
-    <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.css" rel="stylesheet">
 
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.8/htmx.min.js"
             integrity="sha512-wua2xfJY3quQbT5pSx40Tp5+LD/zpw/9hARj1zsjJOA+rCq7N7pf7wlBXXdn5iGjQI5HE7svGvPz529Q3gJDiA=="
             crossorigin="anonymous"
@@ -40,6 +40,8 @@
     <!-- Tippy.js -->
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
+
+    <script src="https://unpkg.com/htmx-ext-alpine-morph@2.0.0/alpine-morph.js"></script>
     {% include "base/theme.html" %}
     {% include "base/styles.html" %}
     
@@ -63,7 +65,7 @@
         }
     </style>
   </head>
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data hx-debug="true">
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' x-data hx-debug="true" hx-target="this" hx-ext="alpine-morph" hx-swap="morph">
   {% include "base/header.html" %}
   <div class="flex">
     {% include "base/sidebar.html" %}

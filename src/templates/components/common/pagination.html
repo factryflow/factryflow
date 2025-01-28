@@ -60,7 +60,7 @@
             </div>
 
             <!-- Dropdown for rows per page -->
-            <div x-data="{ open: false, selected: localStorage.getItem('rowsPerPage') || 25 }" class="relative inline-block text-left">
+            <div x-data="{ open: false, selected: {{ num_of_rows_per_page }} || 25 }" class="relative inline-block text-left">
                 <div>
                     <button @click="open = !open" class="inline-flex justify-between items-center w-full rounded-lg border border-[#E1E3EA80] bg-white px-5 py-3 text-sm font-semibold text-[#181C32]">
                         <span x-text="selected"></span>

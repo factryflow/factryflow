@@ -2,7 +2,7 @@
 {% load user_role %}
 
 {% partialdef _menu_items_names %}
-      <a id="{{user_menu_item_id}}" href="{{user_menu_item_url}}" class="flex items-center hover:text-gray-800 focus-visible:bg-gray-300 focus-visible:text-gray-800 focus-visible:outline-none block px-4 py-2 p-1 text-sm text-gray-900 hover:bg-gray-200">
+      <a id="{{user_menu_item_id}}" href="{{user_menu_item_url}}" class="flex items-center hover:text-gray-800 focus-visible:bg-gray-300 focus-visible:text-gray-800 focus-visible:outline-none px-4 py-2 p-1 text-sm text-gray-900 hover:bg-gray-200">
         <img src="{% static user_menu_item_icon %}" class="h-6 w-6" />
         <span class="ml-2">{{ user_menu_item_name }}</span>
       </a>
@@ -114,7 +114,7 @@
                 {% endwith %}
             </li>
             <li>
-                {% with user_menu_item_id="user-settings" user_menu_item_url="/users/change-password" user_menu_item_icon='images/user_settings.svg' user_menu_item_name='My Account' %}
+                {% with user_menu_item_id="user-settings" user_menu_item_url="/users/my-account" user_menu_item_icon='images/user_settings.svg' user_menu_item_name='My Account' %}
                     {% partial _menu_items_names %}
                 {% endwith %}
             </li>

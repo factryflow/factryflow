@@ -1,6 +1,7 @@
 # views.py
 from datetime import date, datetime
 from django.shortcuts import render
+from django.http import HttpResponse
 
 from common.views import CRUDView, CustomTableView
 from resource_assigner.models import AssignmentConstraint, TaskRuleAssignment
@@ -24,7 +25,9 @@ from job_manager.services import (
     WorkCenterService,
 )
 
-
+from common.utils.views import (
+    add_notification_headers,
+)
 # ------------------------------------------------------------------------------
 # WorkCenter Views
 # ------------------------------------------------------------------------------
@@ -322,6 +325,15 @@ def get_sub_tasks(request, id, number_of_rows=25):
     task_instance = Task.objects.get(id=id)
 
     data = Task.objects.filter(parent=task_instance)
+
+    if not data.exists():
+        response = HttpResponse(status=204)
+        add_notification_headers(
+            response,
+            "No child tasks found for this task.",
+            "info",
+        )
+        return response
 
     rows = []
     for instance in data[:number_of_rows]:
