@@ -199,9 +199,7 @@ class CRUDView:
         self.parent_filter_param = request.GET.get("parents", False)
         self.parent_filter = True if self.parent_filter_param == "true" else False
 
-        self.num_of_rows_per_page = request.GET.get(
-            "num_of_rows_per_page", 25
-        )
+        self.num_of_rows_per_page = request.GET.get("num_of_rows_per_page", 25)
         self.sort_direction = request.GET.get("sort_direction", self.sort_direction)
         self.sort_by = request.GET.get("sort_by", self.sort_by)
 
@@ -246,12 +244,13 @@ class CRUDView:
         }
 
         return render(request, template_name, context)
-    
+
     def check_if_active_scheduler_exists(self):
         if self.model_name == "scheduler_runs":
-            return self.model.objects.filter(status=SchedulerStatusChoices.STARTED).exists()
+            return self.model.objects.filter(
+                status=SchedulerStatusChoices.STARTED
+            ).exists()
         return False
-    
 
     def show_model_form(
         self,

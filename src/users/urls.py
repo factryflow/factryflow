@@ -28,18 +28,16 @@ urlpatterns = [
         USER_VIEWS.show_model_form,
         name="edit_users",
     ),
+    path("users/my-account/", MyAccountView.as_view(), name="my_account"),
     path(
-        "users/my-account/", MyAccountView.as_view(), name="my_account"
+        "users/my-account/update-profile/",
+        UpdateProfileView.as_view(),
+        name="update_profile",
     ),
     path(
-        "users/my-account/update-profile/", 
-        UpdateProfileView.as_view(), 
-        name="update_profile"
-    ),
-    path(
-        "users/my-account/change-password/", 
-        ChangePasswordView.as_view(), 
-        name="change_password"
+        "users/my-account/change-password/",
+        ChangePasswordView.as_view(),
+        name="change_password",
     ),
     path(
         "users/change-password/<int:id>",

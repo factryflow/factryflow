@@ -140,11 +140,11 @@ def start_scheduler_run(user, scheduler_run):
         scheduler_run.details = str(e)
         print(scheduler_run.details)
         scheduler_run.save()
-        
+
         # Create error log
         SchedulerLog.objects.create(
             scheduler_run=scheduler_run,
             logs={"error": str(e)},
         )
-        
+
         raise e

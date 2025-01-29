@@ -79,9 +79,11 @@ def start_scheduler_run_api_view(request):
         scheduler_run = SchedulerRuns.objects.create(
             start_time=datetime.datetime.now(datetime.timezone.utc),
             status=SchedulerStatusChoices.STARTED,
-            details="Scheduler run started"
+            details="Scheduler run started",
         )
-        background_task_id = async_task("scheduler.utils.start_scheduler_run", request.user, scheduler_run)
+        background_task_id = async_task(
+            "scheduler.utils.start_scheduler_run", request.user, scheduler_run
+        )
         response = HttpResponse(status=202)
         add_notification_headers(
             response,

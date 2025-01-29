@@ -141,20 +141,18 @@ def start_scheduler_run_view(request):
         scheduler_run = SchedulerRuns.objects.create(
             start_time=datetime.datetime.now(datetime.timezone.utc),
             status=SchedulerStatusChoices.STARTED,
-            details="Scheduler run started"
+            details="Scheduler run started",
         )
 
         background_task_id = async_task(
-            "scheduler.utils.start_scheduler_run", 
-            request.user,
-            scheduler_run
+            "scheduler.utils.start_scheduler_run", request.user, scheduler_run
         )
         if request.htmx:
             response = HttpResponse(status=204)
             response = add_notification_headers(
                 response,
                 f"The Scheduler has been started. You will be notified when it's done.",
-                "success"
+                "success",
             )
             response["HX-Redirect"] = reverse("scheduler_runs") + f"?start_time=desc"
             return response
