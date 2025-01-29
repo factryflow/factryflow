@@ -18,6 +18,7 @@ from scheduler.models import (
 from scheduler.services import SchedulingService
 
 
+# TODO: Remove this function if not needed
 @transaction.atomic
 def save_scheduler_run(
     scheduled_task,
@@ -71,11 +72,11 @@ def save_scheduler_run(
 
 
 @transaction.atomic
-def start_scheduler_run(user):
+def start_scheduler_run(user, scheduler_run):
     """
     Start a new scheduler run in background.
     """
-    scheduler_start_time = datetime.datetime.now(datetime.timezone.utc)
+    print(scheduler_run)
     try:
         scheduled_task = SchedulingService(horizon_weeks=5, user=user).run(
             selected_tasks=Task.objects.filter(sub_tasks__isnull=True),
@@ -86,34 +87,64 @@ def start_scheduler_run(user):
         if "error" in scheduled_task:
             scheduler_status = SchedulerStatusChoices.FAILED
             scheduler_details = scheduled_task["error"]
-
+            scheduler_results = scheduled_task["error"]
+            scheduler_logs = {"scheduler_error": scheduled_task["error"]}
         else:
             scheduler_status = SchedulerStatusChoices.COMPLETED
             scheduler_details = "Scheduler run completed successfully."
-
-        scheduler_results = {}
-        scheduler_logs = {}
-
-        if "error" in scheduled_task:
-            scheduler_results = scheduled_task["error"]
-            scheduler_logs = {"scheduler_error": scheduled_task["error"]}
-
-        else:
             scheduler_results = scheduled_task["data"]
             scheduler_logs = scheduled_task["logs"]
 
-        save_scheduler_run(
-            scheduler_results,
-            scheduler_details,
-            scheduler_logs,
-            scheduler_start_time,
-            scheduler_end_time,
-            scheduler_status,
+        # Update the existing scheduler run record
+        scheduler_run.end_time = scheduler_end_time
+        scheduler_run.run_duration = scheduler_end_time - scheduler_run.start_time
+        scheduler_run.details = scheduler_details
+        print(scheduler_run.details)
+        scheduler_run.status = scheduler_status
+        scheduler_run.save()
+
+        # Create scheduler log
+        SchedulerLog.objects.create(
+            scheduler_run=scheduler_run,
+            logs=scheduler_logs,
         )
+
+        if scheduler_status == SchedulerStatusChoices.COMPLETED:
+            for task in scheduler_results:
+                assigned_resources = task.get("assigned_resource_ids", [])
+                if assigned_resources:
+                    for resource_id in assigned_resources:
+                        # store resource allocations
+                        ResourceAllocations.objects.create(
+                            resource_id=resource_id,
+                            task_id=task["task_id"],
+                            run_id=scheduler_run,
+                        )
+                        # store resource intervals
+                        ResourceIntervals.objects.create(
+                            resource_id=resource_id,
+                            task_id=task["task_id"],
+                            run_id=scheduler_run,
+                            interval_start=task.get("planned_task_start"),
+                            interval_end=task.get("planned_task_end"),
+                        )
 
         consolidate_parent_task_datetimes()  # Updates the parent Task datetimes based on the Subtask start/end datetimes
         consolidate_job_datetimes()  # Updates the Job datetimes based on the new parent Task datetimes
 
     except Exception as e:
-        # raise the error as exception
+        # Update scheduler run status to failed if there's an exception
+        scheduler_run.status = SchedulerStatusChoices.FAILED
+        scheduler_run.end_time = datetime.datetime.now(datetime.timezone.utc)
+        scheduler_run.run_duration = scheduler_run.end_time - scheduler_run.start_time
+        scheduler_run.details = str(e)
+        print(scheduler_run.details)
+        scheduler_run.save()
+        
+        # Create error log
+        SchedulerLog.objects.create(
+            scheduler_run=scheduler_run,
+            logs={"error": str(e)},
+        )
+        
         raise e

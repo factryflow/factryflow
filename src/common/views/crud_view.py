@@ -15,6 +15,7 @@ from common.utils.views import (
 )
 from common.utils.criteria import get_nested_criteria
 from common.utils.constants import NESTED_CRITERIA_RELATED_MODELS
+from scheduler.models import SchedulerStatusChoices
 
 # ------------------------------------------------------------------------------
 # Custom CRUDView
@@ -241,9 +242,16 @@ class CRUDView:
             "total_instances_count": total_instances_count,
             "sort_by": self.sort_by,
             "sort_direction": self.sort_direction,
+            "has_active_scheduler": self.check_if_active_scheduler_exists(),
         }
 
         return render(request, template_name, context)
+    
+    def check_if_active_scheduler_exists(self):
+        if self.model_name == "scheduler_runs":
+            return self.model.objects.filter(status=SchedulerStatusChoices.STARTED).exists()
+        return False
+    
 
     def show_model_form(
         self,

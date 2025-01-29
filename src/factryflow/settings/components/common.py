@@ -231,7 +231,8 @@ Q_CLUSTER = {
     "name": "DjangoQ",
     "workers": 4,
     "recycle": 500,
-    "timeout": 60,
+    "timeout": 3600,
+    "retry": 3,
     "django_redis": "default",
     "orm": "default",
 }
