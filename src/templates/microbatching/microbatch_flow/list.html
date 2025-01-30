@@ -24,8 +24,12 @@
 
         {% if user|can:crud_action_rules.1 %}
             <div class="flex gap-2">
-                <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md"
-                    hx-post="{% url 'generate_task_flows' %}" type="button">
+                <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    hx-post="{% url 'generate_task_flows' %}" 
+                    type="button"
+                    {% if has_available_tasks_flows %}
+                        disabled
+                    {% endif %}>
                     Generate Task Flows
                 </button>
                 <a href="{% url model_name|add:'_form' %}"

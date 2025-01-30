@@ -241,6 +241,7 @@ class CRUDView:
             "sort_by": self.sort_by,
             "sort_direction": self.sort_direction,
             "has_active_scheduler": self.check_if_active_scheduler_exists(),
+            "has_available_tasks_flows": self.check_if_available_tasks_flows_exists(),
         }
 
         return render(request, template_name, context)
@@ -250,6 +251,10 @@ class CRUDView:
             return self.model.objects.filter(
                 status=SchedulerStatusChoices.STARTED
             ).exists()
+        return False
+    
+    def check_if_available_tasks_flows_exists(self):
+        # TODO: check if microbatch flows are long running tasks then we need to implement this
         return False
 
     def show_model_form(
