@@ -76,7 +76,6 @@ def start_scheduler_run(user, scheduler_run):
     """
     Start a new scheduler run in background.
     """
-    print(scheduler_run)
     try:
         scheduled_task = SchedulingService(horizon_weeks=5, user=user).run(
             selected_tasks=Task.objects.filter(sub_tasks__isnull=True),
@@ -99,7 +98,6 @@ def start_scheduler_run(user, scheduler_run):
         scheduler_run.end_time = scheduler_end_time
         scheduler_run.run_duration = scheduler_end_time - scheduler_run.start_time
         scheduler_run.details = scheduler_details
-        print(scheduler_run.details)
         scheduler_run.status = scheduler_status
         scheduler_run.save()
 
@@ -138,7 +136,6 @@ def start_scheduler_run(user, scheduler_run):
         scheduler_run.end_time = datetime.datetime.now(datetime.timezone.utc)
         scheduler_run.run_duration = scheduler_run.end_time - scheduler_run.start_time
         scheduler_run.details = str(e)
-        print(scheduler_run.details)
         scheduler_run.save()
 
         # Create error log

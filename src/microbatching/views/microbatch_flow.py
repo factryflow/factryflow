@@ -93,9 +93,7 @@ def match_flows_with_tasks(request):
 
         # TODO:
         # store background task id and sync it with frontend
-        background_task_id = async_task(
-            "microbatching.utils.microbatch_flow.create_task_flows"
-        )
+        async_task("microbatching.utils.microbatch_flow.create_task_flows")
 
         response = HttpResponse(status=200)
         add_notification_headers(

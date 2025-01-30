@@ -28,9 +28,7 @@ def match_rules_with_tasks(request):
 
         # TODO:
         # store background task id and sync it with frontend
-        background_task_id = async_task(
-            "resource_assigner.utils.get_matching_assignment_rules_with_tasks"
-        )
+        async_task("resource_assigner.utils.get_matching_assignment_rules_with_tasks")
 
         response = HttpResponse(status=200)
         add_notification_headers(

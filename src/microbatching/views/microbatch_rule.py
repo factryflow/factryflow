@@ -153,9 +153,7 @@ def match_rules_with_tasks(request):
 
         # TODO:
         # store background task id and sync it with frontend
-        background_task_id = async_task(
-            "microbatching.utils.microbatch_rule.create_microbatch_rule_matches"
-        )
+        async_task("microbatching.utils.microbatch_rule.create_microbatch_rule_matches")
 
         response = HttpResponse(status=200)
         add_notification_headers(

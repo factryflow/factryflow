@@ -17,6 +17,7 @@ from common.utils.criteria import get_nested_criteria
 from common.utils.constants import NESTED_CRITERIA_RELATED_MODELS
 from scheduler.models import SchedulerStatusChoices
 
+from django_q.models import Task, OrmQ
 # ------------------------------------------------------------------------------
 # Custom CRUDView
 # ------------------------------------------------------------------------------
@@ -26,6 +27,18 @@ class CRUDView:
     """
     A generic CRUD (Create, Read, Update, Delete) view for handling various models.
     """
+
+    # Background task function mapping
+    BACKGROUND_TASK_FUNCTIONS = {
+        "scheduler_runs": ["scheduler.utils.start_scheduler_run"],
+        "microbatch_flows": [
+            "microbatching.utils.microbatch_flow.create_task_flows",
+            "microbatching.utils.microbatch_rule.create_microbatch_rule_matches",
+        ],
+        "assigment_rules": [
+            "resource_assigner.utils.get_matching_assignment_rules_with_tasks"
+        ],
+    }
 
     def __init__(
         self,
@@ -240,21 +253,28 @@ class CRUDView:
             "total_instances_count": total_instances_count,
             "sort_by": self.sort_by,
             "sort_direction": self.sort_direction,
-            "has_active_scheduler": self.check_if_active_scheduler_exists(),
-            "has_available_tasks_flows": self.check_if_available_tasks_flows_exists(),
+            "has_long_running_background_tasks": self.check_if_long_running_background_tasks_exists(),
         }
 
         return render(request, template_name, context)
 
-    def check_if_active_scheduler_exists(self):
-        if self.model_name == "scheduler_runs":
-            return self.model.objects.filter(
-                status=SchedulerStatusChoices.STARTED
-            ).exists()
-        return False
-    
-    def check_if_available_tasks_flows_exists(self):
-        # TODO: check if microbatch flows are long running tasks then we need to implement this
+    def check_if_long_running_background_tasks_exists(self):
+        """Check if there are any long running background tasks for this model."""
+        # Get the list of background task functions for this model
+        task_functions = self.BACKGROUND_TASK_FUNCTIONS.get(self.model_name, [])
+        if not task_functions:
+            return False
+
+        # Check all queued tasks
+        queued_tasks = OrmQ.objects.all()
+        for task in queued_tasks:
+            try:
+                task_data = task.task()
+                if task_data.get("func") in task_functions:
+                    return True
+            except:
+                continue
+
         return False
 
     def show_model_form(
