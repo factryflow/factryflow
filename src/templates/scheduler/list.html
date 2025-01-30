@@ -25,18 +25,26 @@
 
     {% if view_only %}
         <div class="flex">
-            <button class="text-base font-semibold text-white px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed bg-[#023E8A] rounded-md" 
+            <button class="text-base font-semibold text-white px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed bg-[#023E8A] rounded-md flex items-center gap-2" 
                 hx-post={% url 'start_scheduler_run' %} 
                 type="button" 
-                {% if not has_active_scheduler %}
+                {% if not has_long_running_background_tasks %}
                     hx-confirm="Are you sure you want to start the scheduler?"
                 {% endif %}
-                {% if has_active_scheduler %}
+                {% if has_long_running_background_tasks %}
                     disabled
-                    title="A scheduler run is already in progress"
+                    title="Scheduler is already running. Please wait for it to finish."
                 {% endif %}
                 @click="{% if not has_active_scheduler %}runSchedulerDialog = !runSchedulerDialog{% endif %}">
-                {{ button_text }}
+                {% if has_long_running_background_tasks %}
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Running</span>
+                {% else %}
+                    <span>{{ button_text }}</span>
+                {% endif %}
             </button>
         </div>
     {% endif %}
