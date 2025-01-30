@@ -144,9 +144,7 @@ def start_scheduler_run_view(request):
             details="Scheduler run started",
         )
 
-        background_task_id = async_task(
-            "scheduler.utils.start_scheduler_run", request.user, scheduler_run
-        )
+        async_task("scheduler.utils.start_scheduler_run", request.user, scheduler_run)
         if request.htmx:
             response = HttpResponse(status=204)
             response = add_notification_headers(

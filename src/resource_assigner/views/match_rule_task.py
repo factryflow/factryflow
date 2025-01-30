@@ -1,5 +1,6 @@
 from common.utils.views import add_notification_headers
 from django.http import HttpResponse
+from django.urls import reverse
 from job_manager.models import JobStatusChoices, Task, TaskStatusChoices
 
 # Create your views here.
@@ -30,12 +31,13 @@ def match_rules_with_tasks(request):
         # store background task id and sync it with frontend
         async_task("resource_assigner.utils.get_matching_assignment_rules_with_tasks")
 
-        response = HttpResponse(status=200)
-        add_notification_headers(
+        response = HttpResponse(status=204)
+        response = add_notification_headers(
             response,
             "The task has been started. You will be notified when it's done.",
             "success",
         )
+        response["HX-Redirect"] = reverse("assigment_rules")
         return response
     except Exception as e:
         response = HttpResponse(status=500)

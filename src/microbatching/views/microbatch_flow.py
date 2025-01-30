@@ -95,12 +95,13 @@ def match_flows_with_tasks(request):
         # store background task id and sync it with frontend
         async_task("microbatching.utils.microbatch_flow.create_task_flows")
 
-        response = HttpResponse(status=200)
-        add_notification_headers(
+        response = HttpResponse(status=204)
+        response = add_notification_headers(
             response,
             "The task has been started. You will be notified when it's done.",
             "success",
         )
+        response["HX-Redirect"] = reverse("microbatch_flows")
 
         return response
     except Exception as e:
