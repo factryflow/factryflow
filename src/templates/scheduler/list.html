@@ -7,38 +7,9 @@
 {% load partials %}
 {% load static %}
 {% partialdef partial-table-template %}
-<div x-data="{ runSchedulerDialog: false, showModal: false, selectAll: false }" x-init="$watch('selectAll', value => {
+<div x-init="$watch('selectAll', value => {
     document.querySelectorAll('#all-{{ model_name }}s-table tbody input[type=checkbox]').forEach(checkbox => checkbox.checked = value);
 })">
-    <!-- Modal -->
-    <div x-show="runSchedulerDialog" x-cloak x-on:keydown.escape.prevent.stop="runSchedulerDialog = false" role="dialog"
-        aria-modal="true" class="fixed inset-0 z-10 overflow-y-auto">
-        <!-- Overlay -->
-        <div x-show="runSchedulerDialog" x-transition:enter="transition-opacity ease-in duration-150"
-            x-transition:leave="transition-opacity ease-out duration-150" class="fixed inset-0 bg-black bg-opacity-50">
-        </div>
-        <!-- Panel -->
-        <div x-show="runSchedulerDialog" x-transition:enter="transition-transform ease-out duration-150"
-            x-transition:leave="transition-transform ease-in duration-150" x-on:click="runSchedulerDialog = false"
-            class="relative flex min-h-screen items-center justify-center p-4">
-            <div x-on:click.stop
-                class="relative w-full max-w-lg overflow-y-auto rounded-xl bg-[#FFFFFF] px-0 py-5 shadow-lg">
-                <!-- Title -->
-                <div class="px-9 py-5 flex flex-col justify-center items-center gap-4">
-                    <p class="text-[#5E6278] font-semibold text-xl">Scheduler has been started</p>
-                    <p class="font-normal leading-8 text-[#7E8299] text-[20px] text-center font-sans">
-                        Come after some time and check the result on the same page.
-                    </p>
-                </div>
-                <!-- Button -->
-                <div class="px-9 py-5 flex justify-center items-center gap-3">
-                    <button type="button" x-on:click="runSchedulerDialog = false"
-                        class="rounded-md bg-[#FF4D4F] py-4 px-10 text-white">Ok</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {% include 'components/common/table.html' %}
 </div>
 {% endpartialdef %}
@@ -54,9 +25,27 @@
 
     {% if view_only %}
         <div class="flex">
-            <button class="text-base font-semibold text-white px-6 py-3 bg-[#023E8A] rounded-md" 
-            hx-post={% url 'start_scheduler_run' %} type="button" hx-confirm="Are you sure you want to start the scheduler?"
-                @click="runSchedulerDialog = !runSchedulerDialog">{{ button_text }}</button>
+            <button class="text-base font-semibold text-white px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed bg-[#023E8A] rounded-md flex items-center gap-2" 
+                hx-post={% url 'start_scheduler_run' %} 
+                type="button" 
+                {% if not has_long_running_background_tasks %}
+                    hx-confirm="Are you sure you want to start the scheduler?"
+                {% endif %}
+                {% if has_long_running_background_tasks %}
+                    disabled
+                    title="Scheduler is already running. Please wait for it to finish."
+                {% endif %}
+                @click="{% if not has_active_scheduler %}runSchedulerDialog = !runSchedulerDialog{% endif %}">
+                {% if has_long_running_background_tasks %}
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Running</span>
+                {% else %}
+                    <span>{{ button_text }}</span>
+                {% endif %}
+            </button>
         </div>
     {% endif %}
 </div>

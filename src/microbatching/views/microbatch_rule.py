@@ -1,6 +1,7 @@
 from common.utils.views import add_notification_headers
 from common.views import CRUDView, CustomTableView
 from django.http import HttpResponse
+from django.urls import reverse
 
 # Create your views here.
 from job_manager.models.job import JobStatusChoices
@@ -19,7 +20,7 @@ from microbatching.services.microbatch_rule import (
     MicrobatchRuleCriteriaService,
     MicrobatchRuleService,
 )
-from microbatching.utils.microbatch_rule import create_microbatch_rule_matches
+from django_q.tasks import async_task
 
 # ------------------------------------------------------------------------------
 # Microbatch Views
@@ -151,14 +152,17 @@ def match_rules_with_tasks(request):
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
 
-        result = create_microbatch_rule_matches()
+        # TODO:
+        # store background task id and sync it with frontend
+        async_task("microbatching.utils.microbatch_rule.create_microbatch_rule_matches")
 
         response = HttpResponse(status=204)
-        add_notification_headers(
+        response = add_notification_headers(
             response,
-            result["message"],
-            result["status"],
+            "The task has been started. You will be notified when it's done.",
+            "success",
         )
+        response["HX-Redirect"] = reverse("microbatch_rules")
 
         return response
     except Exception as e:

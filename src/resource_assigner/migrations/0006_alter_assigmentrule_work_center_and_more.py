@@ -5,37 +5,56 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_manager', '0002_historicalresource_weekly_shift_template_and_more'),
-        ('job_manager', '0004_alter_task_item_alter_task_parent_and_more'),
-        ('resource_assigner', '0005_alter_assigmentrulecriteria_operator_and_more'),
+        ("resource_manager", "0002_historicalresource_weekly_shift_template_and_more"),
+        ("job_manager", "0004_alter_task_item_alter_task_parent_and_more"),
+        ("resource_assigner", "0005_alter_assigmentrulecriteria_operator_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='assigmentrule',
-            name='work_center',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.workcenter'),
+            model_name="assigmentrule",
+            name="work_center",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="job_manager.workcenter"
+            ),
         ),
         migrations.AlterField(
-            model_name='assignmentconstraint',
-            name='assignment_rule',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='resource_assigner.assigmentrule'),
+            model_name="assignmentconstraint",
+            name="assignment_rule",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="resource_assigner.assigmentrule",
+            ),
         ),
         migrations.AlterField(
-            model_name='assignmentconstraint',
-            name='resource_group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='constraints', to='resource_manager.resourcegroup'),
+            model_name="assignmentconstraint",
+            name="resource_group",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="constraints",
+                to="resource_manager.resourcegroup",
+            ),
         ),
         migrations.AlterField(
-            model_name='assignmentconstraint',
-            name='task',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='job_manager.task'),
+            model_name="assignmentconstraint",
+            name="task",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="job_manager.task",
+            ),
         ),
         migrations.AlterField(
-            model_name='taskresourceassigment',
-            name='task',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='job_manager.task'),
+            model_name="taskresourceassigment",
+            name="task",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, to="job_manager.task"
+            ),
         ),
     ]

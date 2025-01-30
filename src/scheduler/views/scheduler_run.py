@@ -1,6 +1,8 @@
 from django.urls import reverse
 from django.http import HttpResponse
 from common.views import CRUDView, CustomTableView
+from django_q.tasks import async_task
+import datetime
 
 # Create your views here.
 from scheduler.models import (
@@ -11,7 +13,10 @@ from scheduler.models import (
 )
 from scheduler.forms import SchedulerRunsForm
 from scheduler.services import SchedulerRunsService
-from scheduler.utils import start_scheduler_run
+
+from common.utils.views import (
+    add_notification_headers,
+)
 
 
 # ------------------------------------------------------------------------------
@@ -132,10 +137,22 @@ def start_scheduler_run_view(request):
     Start a new scheduler run in background.
     """
     try:
-        start_scheduler_run(request)
+        # Create initial scheduler run record with STARTED status
+        scheduler_run = SchedulerRuns.objects.create(
+            start_time=datetime.datetime.now(datetime.timezone.utc),
+            status=SchedulerStatusChoices.STARTED,
+            details="Scheduler run started",
+        )
+
+        async_task("scheduler.utils.start_scheduler_run", request.user, scheduler_run)
         if request.htmx:
-            headers = {"HX-Redirect": reverse("scheduler_runs")}
-            response = HttpResponse(status=204, headers=headers)
+            response = HttpResponse(status=204)
+            response = add_notification_headers(
+                response,
+                f"The Scheduler has been started. You will be notified when it's done.",
+                "success",
+            )
+            response["HX-Redirect"] = reverse("scheduler_runs") + f"?start_time=desc"
             return response
     except Exception as e:
         raise e

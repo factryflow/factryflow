@@ -20,12 +20,12 @@ class Item(BaseModelWithExtras):
 
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         # Set item name components if the item name follows a set pattern
-        name_pattern = r'^[A-Za-z0-9]{3}-[A-Za-z0-9]{3}-[A-Za-z0-9]{3}$'
+        name_pattern = r"^[A-Za-z0-9]{3}-[A-Za-z0-9]{3}-[A-Za-z0-9]{3}$"
         if re.match(name_pattern, self.name):
-            names = self.name.split('-')
+            names = self.name.split("-")
             self.name_first = names[0]
             self.name_middle = names[1]
             self.name_last = names[2]

@@ -152,9 +152,9 @@ class UserProfileForm(forms.ModelForm):
             attrs={
                 "class": "border border-[#E1E3EA] text-gray-900 text-sm rounded-md focus:ring-blue-500 focus-visible:outline-none block w-full p-3 bg-gray-100 cursor-not-allowed",
                 "readonly": True,
-                "disabled": True
+                "disabled": True,
             }
-        )
+        ),
     )
     first_name = forms.CharField(
         widget=forms.TextInput(

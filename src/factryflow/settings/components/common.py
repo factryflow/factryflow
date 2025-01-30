@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "taggit",
     "widget_tweaks",
     "waffle",
+    "django_q",
     # apps
     "users",
     "common",
@@ -225,5 +226,15 @@ NINJA_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
+# background jobs settings
+Q_CLUSTER = {
+    "name": "DjangoQ",
+    "workers": 4,
+    "recycle": 500,
+    "timeout": 3600,
+    "retry": 3,
+    "django_redis": "default",
+    "orm": "default",
+}
 
 from factryflow.settings.files_and_storages import *

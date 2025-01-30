@@ -8,9 +8,9 @@ class JobGanttAPIView(View):
         """Use JobGanttChartService to map jobs to
         gantt chart data and return as JSON.
         """
-        page = int(request.GET.get('page', 1))
-        page_size = int(request.GET.get('page_size', 50))
-        
+        page = int(request.GET.get("page", 1))
+        page_size = int(request.GET.get("page_size", 50))
+
         service = JobGanttChartService(user=request.user)
         gantt_data = service.map_jobs_to_gantt(page=page, page_size=page_size)
 
@@ -22,9 +22,9 @@ class ResourceGanttAPIView(View):
         """Use ResourceGanttChartService to map resources to
         gantt chart data and return as JSON.
         """
-        page = int(request.GET.get('page', 1))
-        page_size = int(request.GET.get('page_size', 50))
-        
+        page = int(request.GET.get("page", 1))
+        page_size = int(request.GET.get("page_size", 50))
+
         service = ResourceGanttChartService(user=request.user)
         gantt_data = service.map_resources_to_gantt(page=page, page_size=page_size)
 

@@ -5,25 +5,42 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('job_manager', '0003_alter_job_options_historicaljob_manual_priority_and_more'),
+        (
+            "job_manager",
+            "0003_alter_job_options_historicaljob_manual_priority_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='item',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='job_manager.item'),
+            model_name="task",
+            name="item",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tasks",
+                to="job_manager.item",
+            ),
         ),
         migrations.AlterField(
-            model_name='task',
-            name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sub_tasks', to='job_manager.task'),
+            model_name="task",
+            name="parent",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="sub_tasks",
+                to="job_manager.task",
+            ),
         ),
         migrations.AlterField(
-            model_name='task',
-            name='work_center',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='job_manager.workcenter'),
+            model_name="task",
+            name="work_center",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tasks",
+                to="job_manager.workcenter",
+            ),
         ),
     ]

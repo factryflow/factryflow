@@ -4,40 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('job_manager', '0004_alter_task_item_alter_task_parent_and_more'),
+        ("job_manager", "0004_alter_task_item_alter_task_parent_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='historicalitem',
-            name='name_first',
+            model_name="historicalitem",
+            name="name_first",
             field=models.CharField(blank=True, max_length=150, null=True),
         ),
         migrations.AddField(
-            model_name='historicalitem',
-            name='name_last',
+            model_name="historicalitem",
+            name="name_last",
             field=models.CharField(blank=True, max_length=150, null=True),
         ),
         migrations.AddField(
-            model_name='historicalitem',
-            name='name_middle',
+            model_name="historicalitem",
+            name="name_middle",
             field=models.CharField(blank=True, max_length=150, null=True),
         ),
         migrations.AddField(
-            model_name='item',
-            name='name_first',
+            model_name="item",
+            name="name_first",
             field=models.CharField(blank=True, max_length=150, null=True),
         ),
         migrations.AddField(
-            model_name='item',
-            name='name_last',
+            model_name="item",
+            name="name_last",
             field=models.CharField(blank=True, max_length=150, null=True),
         ),
         migrations.AddField(
-            model_name='item',
-            name='name_middle',
+            model_name="item",
+            name="name_middle",
             field=models.CharField(blank=True, max_length=150, null=True),
         ),
     ]

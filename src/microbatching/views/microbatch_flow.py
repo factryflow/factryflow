@@ -19,7 +19,7 @@ from microbatching.models.microbatch_flow import (
 from microbatching.services.microbatch_flow import (
     MicrobatchFlowService,
 )
-from microbatching.utils.microbatch_flow import create_task_flows
+from django_q.tasks import async_task
 
 # ------------------------------------------------------------------------------
 # Microbatch Views
@@ -91,14 +91,17 @@ def match_flows_with_tasks(request):
         if tasks.count() == 0:
             raise Exception("Tasks not found!")
 
-        result = create_task_flows()
+        # TODO:
+        # store background task id and sync it with frontend
+        async_task("microbatching.utils.microbatch_flow.create_task_flows")
 
         response = HttpResponse(status=204)
-        add_notification_headers(
+        response = add_notification_headers(
             response,
-            result["message"],
-            result["status"],
+            "The task has been started. You will be notified when it's done.",
+            "success",
         )
+        response["HX-Redirect"] = reverse("microbatch_flows")
 
         return response
     except Exception as e:

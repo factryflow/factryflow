@@ -5,42 +5,57 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resource_manager', '0002_historicalresource_weekly_shift_template_and_more'),
-        ('job_manager', '0004_alter_task_item_alter_task_parent_and_more'),
-        ('scheduler', '0002_schedulerlog_historicalschedulerlog'),
+        ("resource_manager", "0002_historicalresource_weekly_shift_template_and_more"),
+        ("job_manager", "0004_alter_task_item_alter_task_parent_and_more"),
+        ("scheduler", "0002_schedulerlog_historicalschedulerlog"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourceallocations',
-            name='resource',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='resource_manager.resource'),
+            model_name="resourceallocations",
+            name="resource",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="resource_manager.resource",
+            ),
         ),
         migrations.AlterField(
-            model_name='resourceallocations',
-            name='run_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='scheduler.schedulerruns'),
+            model_name="resourceallocations",
+            name="run_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="scheduler.schedulerruns",
+            ),
         ),
         migrations.AlterField(
-            model_name='resourceallocations',
-            name='task',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.task'),
+            model_name="resourceallocations",
+            name="task",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="job_manager.task"
+            ),
         ),
         migrations.AlterField(
-            model_name='resourceintervals',
-            name='resource',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='resource_manager.resource'),
+            model_name="resourceintervals",
+            name="resource",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="resource_manager.resource",
+            ),
         ),
         migrations.AlterField(
-            model_name='resourceintervals',
-            name='run_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='scheduler.schedulerruns'),
+            model_name="resourceintervals",
+            name="run_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="scheduler.schedulerruns",
+            ),
         ),
         migrations.AlterField(
-            model_name='resourceintervals',
-            name='task',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='job_manager.task'),
+            model_name="resourceintervals",
+            name="task",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="job_manager.task"
+            ),
         ),
     ]
